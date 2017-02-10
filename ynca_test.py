@@ -5,7 +5,7 @@ import traceback
 import sys
 import threading
 import queue
-
+import re
 
 class YncaProtocol(serial.threaded.LineReader):
 
@@ -13,8 +13,11 @@ class YncaProtocol(serial.threaded.LineReader):
     COMMAND_INTERVAL = 0.1
 
     # YNCA spec says standby timeout is 40 seconds, so use 30 seconds to be on the safe side
-    KEEP_ALIVE_INTERVAL = 5
+    KEEP_ALIVE_INTERVAL = 30
 
+    def __init__(self, callback=None):
+        super(YncaProtocol, self).__init__()
+        self._callback = None
 
     def connection_made(self, transport):
         super(YncaProtocol, self).connection_made(transport)
@@ -24,12 +27,12 @@ class YncaProtocol(serial.threaded.LineReader):
         self._send_thread = threading.Thread(target=self._send_handler)
         self._send_thread.start()
 
-        # When the device is in low power mode the first command is to wake up 
+        # When the device is in low power mode the first command is to wake up and gets lost
         # So send a dummy keep-alive on connect
         self._send_keepalive()
 
     def connection_lost(self, exc):
-        # There seems to be no way to clear the queue so just read all and  add the _EXIT command
+        # There seems to be no way to clear the queue so just read all and add the _EXIT command
         try:
             while self._send_queue.get(False):
                 pass
@@ -42,7 +45,16 @@ class YncaProtocol(serial.threaded.LineReader):
         sys.stdout.write('port closed\n')
 
     def handle_line(self, line):
-        sys.stdout.write(repr(line))
+        #sys.stdout.write(repr(line))
+        # Match lines formatted like @SUBUNIT:FUNCTION=PARAMETER
+        match = re.match(r"@(?P<subunit>.*?):(?P<function>.*?)=(?P<value>.*)", line)
+        if match != None:
+            if self._callback != None:
+                self._callback(match.group("subunit"), match.group("function"), match.group("value"))
+        elif line == "@UNDEFINED":
+            raise Exception("Undefined command")
+        elif line == "@RESTRICTED":
+            raise Exception("Restricted command")
 
     def _send_keepalive(self):
         self.get('SYS','MODELNAME') # This message is suggested by YNCA spec for keep-alive
@@ -72,7 +84,12 @@ class YncaProtocol(serial.threaded.LineReader):
 ser = serial.Serial('/dev/ttyUSB0', 9600, timeout=1)  # open serial port
 print(ser.name)         # check which port was really used
 
+def printit(a,b,c):
+    print("Subunit:{0}, Function:{1}, Value:{2}".format(a,b,c))
+
 with serial.threaded.ReaderThread(ser, YncaProtocol) as protocol:
+    protocol._callback = printit
+
     remaining = 10
     while remaining >= 0:
       print("Remaining: {}".format(remaining))
