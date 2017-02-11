@@ -86,7 +86,7 @@ class YncaProtocol(serial.threaded.LineReader):
 class Ynca:
     def __init__(self, port=None, callback=None):
         self._port = port
-        self._callback = callback
+        self.callback = callback
         self._serial = None
         self._readerthread = None
         self._protocol = None
@@ -96,7 +96,7 @@ class Ynca:
         self._readerthread = serial.threaded.ReaderThread(self._serial, YncaProtocol)
         self._readerthread.start()
         dummy, self._protocol = self._readerthread.connect()
-        self._protocol._callback = self._callback
+        self._protocol._callback = self.callback
 
     def disconnect(self):
         self._readerthread.close()
