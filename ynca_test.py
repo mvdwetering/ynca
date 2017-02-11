@@ -4,6 +4,7 @@ import sys
 import threading
 import time
 
+import serial
 import serial.threaded
 
 
@@ -41,7 +42,7 @@ class YncaProtocol(serial.threaded.LineReader):
             self._send_queue.put("_EXIT")
 
         if exc:
-            sys.stdout.write(exc)
+            sys.stdout.write(repr(exc))
         sys.stdout.write('port closed\n')
 
     def handle_line(self, line):
@@ -95,8 +96,9 @@ class Ynca():
     def connect(self):
         self._serial = serial.Serial(self._port, 9600)
         self._readerthread = serial.threaded.ReaderThread(self._serial, YncaProtocol)
-        dummy, self._protocol = self._readerthread.connect()
         self._readerthread.start()
+        dummy, self._protocol = self._readerthread.connect()
+        self._protocol._callback = self._callback
 
     def disconnect(self):
         self._readerthread.close()
@@ -109,33 +111,24 @@ class Ynca():
 
 
 if __name__ == "__main__":
-    #ser = serial.Serial('/dev/ttyUSB0', 9600, timeout=1)  # open serial port
-    #print(ser.name)  # check which port was really used
 
+    port = "/dev/ttyUSB0"
+    if len(sys.argv) > 1:
+        port = sys.argv[1]
 
     def print_it(a, b, c):
         print("Subunit:{0}, Function:{1}, Value:{2}".format(a, b, c))
 
-
-    #with serial.threaded.ReaderThread(ser, YncaProtocol) as protocol:
-    #    protocol._callback = print_it
-    #
-
-    ynca = Ynca("/dev/ttyUSB0", print_it)
+    ynca = Ynca(port, print_it)
     ynca.connect()
     ynca.get("SYS", "VERSION")
 
     remaining = 10
     while remaining >= 0:
         print("Remaining: {}".format(remaining))
-        # protocol.get('SYS','VERSION')
-        ynca.get("SYS", "VOLUME")
+        ynca.get("SYS", "PWR")
         time.sleep(1)
         remaining -= 1
 
     ynca.disconnect()
 
-    # line = ser.readline()   # read a line
-    # print(line)
-
-    # ser.close()             # close port
