@@ -83,9 +83,7 @@ class YncaProtocol(serial.threaded.LineReader):
         self.put(subunit, funcname, '?')
 
 
-
-class Ynca():
-
+class Ynca:
     def __init__(self, port=None, callback=None):
         self._port = port
         self._callback = callback
@@ -112,12 +110,13 @@ class Ynca():
 
 if __name__ == "__main__":
 
+    def print_it(a, b, c):
+        print("Subunit:{0}, Function:{1}, Value:{2}".format(a, b, c))
+
+
     port = "/dev/ttyUSB0"
     if len(sys.argv) > 1:
         port = sys.argv[1]
-
-    def print_it(a, b, c):
-        print("Subunit:{0}, Function:{1}, Value:{2}".format(a, b, c))
 
     ynca = Ynca(port, print_it)
     ynca.connect()
@@ -131,4 +130,3 @@ if __name__ == "__main__":
         remaining -= 1
 
     ynca.disconnect()
-
