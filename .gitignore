@@ -1,3 +1,16 @@
-__pycache__/ynca_test.cpython-34.pyc
+# general things to ignore
+build/
+dist/
+*.egg-info/
+*.egg
+*.py[cod]
+__pycache__/
+*.so
+*~
 
+# due to using tox and pytest
+.tox
+.cache
+
+# PyCharm
 .idea/workspace.xml
