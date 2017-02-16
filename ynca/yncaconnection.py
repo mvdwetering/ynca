@@ -9,7 +9,7 @@ import serial.threaded
 
 
 class YncaProtocol(serial.threaded.LineReader):
-    # YNCA spec defines a minimum timeinterval of 100 milliseconds between sending commands
+    # YNCA spec specifies that there should be at least 100 milliseconds between commands
     COMMAND_INTERVAL = 0.1
 
     # YNCA spec says standby timeout is 40 seconds, so use 30 seconds to be on the safe side
@@ -83,7 +83,7 @@ class YncaProtocol(serial.threaded.LineReader):
         self.put(subunit, funcname, '?')
 
 
-class Ynca:
+class YncaConnection:
     def __init__(self, port=None, callback=None):
         self._port = port
         self.callback = callback
@@ -92,7 +92,7 @@ class Ynca:
         self._protocol = None
 
     def connect(self):
-        self._serial = serial.Serial(self._port, 9600)
+        self._serial = serial.serial_for_url(self._port)
         self._readerthread = serial.threaded.ReaderThread(self._serial, YncaProtocol)
         self._readerthread.start()
         dummy, self._protocol = self._readerthread.connect()
@@ -118,7 +118,7 @@ if __name__ == "__main__":
     if len(sys.argv) > 1:
         port = sys.argv[1]
 
-    ynca = Ynca(port, print_it)
+    ynca = YncaConnection(port, print_it)
     ynca.connect()
     ynca.get("SYS", "VERSION")
 
