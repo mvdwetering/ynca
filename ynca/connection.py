@@ -13,7 +13,7 @@ class YncaProtocol(serial.threaded.LineReader):
     COMMAND_INTERVAL = 0.1
 
     # YNCA spec says standby timeout is 40 seconds, so use a shorter period to be on the safe side
-    KEEP_ALIVE_INTERVAL = 35
+    KEEP_ALIVE_INTERVAL = 30
 
     # Statuses used by the callback
     STATUS_OK = 0
@@ -32,7 +32,6 @@ class YncaProtocol(serial.threaded.LineReader):
 
     def connection_made(self, transport):
         super(YncaProtocol, self).connection_made(transport)
-        sys.stdout.write('port opened\n')
 
         self._send_queue = queue.Queue()
         self._send_thread = threading.Thread(target=self._send_handler)
@@ -58,7 +57,6 @@ class YncaProtocol(serial.threaded.LineReader):
 
         if exc:
             sys.stdout.write(repr(exc))
-        sys.stdout.write('port closed\n')
 
     def handle_line(self, line):
         ignore = False
@@ -74,7 +72,7 @@ class YncaProtocol(serial.threaded.LineReader):
             status = YncaProtocol.STATUS_RESTRICTED
             line = self._last_sent_command
 
-        match = re.match(r"@(?P<subunit>.+?):(?P<function>.+?)=(?P<value>.+)", line)
+        match = re.match(r"@(?P<subunit>.+?):(?P<function>.+?)=(?P<value>.*)", line)
         if match is not None:
             subunit = match.group("subunit")
             function = match.group("function")
@@ -109,7 +107,7 @@ class YncaProtocol(serial.threaded.LineReader):
                 if not stop:
                     self._last_sent_command = message
                     self.write_line(message)
-                    time.sleep(self.COMMAND_INTERVAL)  # Maintain required commandspacing
+                    time.sleep(self.COMMAND_INTERVAL)  # Maintain required command spacing
             except queue.Empty:
                 # To avoid random message being eaten because device goes to sleep, keep it alive
                 self._send_keepalive()
