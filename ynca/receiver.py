@@ -24,7 +24,7 @@ class YncaReceiver:
         self.powered = False
         self.zones = {}
         self.inputs = {}
-        self._connection = YncaConnection(port, self._update)
+        self._connection = YncaConnection(port, self._connection_update)
         self._connection.connect()
 
         self._initialize_device()
@@ -44,16 +44,16 @@ class YncaReceiver:
         # Note that these are not all inputs, just the external ones
         self._connection.get("SYS", "INPNAME")
 
-        # A device also can have a number of 'internal' inputs like the Tuner, USB, NAPSTER etc..
-        # There is no way to get which of there inputs are supported by the device to just try all that we know of
+        # A device also can have a number of 'internal' inputs like the Tuner, USB, Napster etc..
+        # There is no way to get which of there inputs are supported by the device so just try all that we know of
         for input in YncaReceiver._subunit_input_mapping:
             self._connection.get(input, "AVAIL")
 
-    def _update(self, status, subunit, function, value):
+    def _connection_update(self, status, subunit, function, value):
         print(status, subunit, function, value)
         if status == YncaProtocol.STATUS_OK:
             if subunit == "SYS":
-                self._handle_update(function, value)
+                self._update(function, value)
             elif subunit in YncaReceiver._all_zones:
                 if subunit in self.zones:
                     self.zones[subunit].update(function, value)
@@ -64,7 +64,7 @@ class YncaReceiver:
                 if subunit in YncaReceiver._subunit_input_mapping:
                     self.inputs[YncaReceiver._subunit_input_mapping[subunit]] = YncaReceiver._subunit_input_mapping[subunit]
 
-    def _handle_update(self, function, value):
+    def _update(self, function, value):
         if function == "MODELNAME":
             self.modelname = value
         elif function == "VERSION":
@@ -121,13 +121,10 @@ if __name__ == "__main__":
         port = sys.argv[1]
 
     receiver = YncaReceiver(port)
-    # ynca.connect()
-    # ynca.get("SYS", "VERSION")
 
     remaining = 5
     while remaining >= 0:
         print("Remaining: {}".format(remaining))
-        # ynca.get("SYS", "PWR")
         time.sleep(1)
         remaining -= 1
 
@@ -137,4 +134,3 @@ if __name__ == "__main__":
     print(receiver.zones)
     print("Inputs:")
     print(receiver.inputs)
-    # ynca.disconnect()
