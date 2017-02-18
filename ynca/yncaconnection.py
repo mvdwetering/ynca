@@ -20,6 +20,8 @@ class YncaProtocol(serial.threaded.LineReader):
         self._callback = None
         self._send_queue = None
         self._send_thread = None
+        self._last_sent_command = None
+        self.connected = False;
 
     def connection_made(self, transport):
         super(YncaProtocol, self).connection_made(transport)
@@ -29,12 +31,16 @@ class YncaProtocol(serial.threaded.LineReader):
         self._send_thread = threading.Thread(target=self._send_handler)
         self._send_thread.start()
 
+        self.connected = True;
+
         # When the device is in low power mode the first command is to wake up and gets lost
         # So send a dummy keep-alive on connect
         self._send_keepalive()
 
     def connection_lost(self, exc):
-        # There seems to be no way to clear the queue so just read all and add the _EXIT command
+        self.connected = False;
+
+        # There seems to be no way to clear a queue so just read all and add the _EXIT command
         try:
             while self._send_queue.get(False):
                 pass
@@ -53,9 +59,9 @@ class YncaProtocol(serial.threaded.LineReader):
             if self._callback is not None:
                 self._callback(match.group("subunit"), match.group("function"), match.group("value"))
         elif line == "@UNDEFINED":
-            raise Exception("Undefined command")
+            raise YncaUndefinedError(self._last_sent_command)
         elif line == "@RESTRICTED":
-            raise Exception("Restricted command")
+            raise YncaRestrictedError(self._last_sent_command)
 
     def _send_keepalive(self):
         self.get('SYS', 'MODELNAME')  # This message is suggested by YNCA spec for keep-alive
@@ -69,6 +75,7 @@ class YncaProtocol(serial.threaded.LineReader):
                 if message == "_EXIT":
                     stop = True
                 else:
+                    self._last_sent_command = message
                     self.write_line(message)
                     time.sleep(self.COMMAND_INTERVAL)  # Maintain required commandspacing
             except queue.Empty:
@@ -92,7 +99,8 @@ class YncaConnection:
         self._protocol = None
 
     def connect(self):
-        self._serial = serial.serial_for_url(self._port)
+        if not self._serial:
+            self._serial = serial.serial_for_url(self._port)
         self._readerthread = serial.threaded.ReaderThread(self._serial, YncaProtocol)
         self._readerthread.start()
         dummy, self._protocol = self._readerthread.connect()
@@ -107,26 +115,90 @@ class YncaConnection:
     def get(self, subunit, funcname):
         self._protocol.get(subunit, funcname)
 
+    @property
+    def connected(self):
+        return self._protocol.connected
+
+
+class YncaException(Exception):
+    """Base class for exceptions in this module."""
+    pass
+
+
+class YncaUndefinedError(YncaException):
+    """Exception raised when the command sent was not a defined one
+
+    Attributes:
+        command -- command that caused the exception
+        message -- explanation of the error
+    """
+
+    def __init__(self, command):
+        self.command = command
+        self.message = "The command sent was not a defined one."
+
+    def __str__(self):
+        return "{}\nCommand: {}".format(self.message, self.command)
+
+
+class YncaRestrictedError(YncaException):
+    """Exception raised when a command was not executed on the Product for some reason.
+
+    Attributes:
+        command -- command that caused the exception
+        message -- explanation of the error
+    """
+
+    def __init__(self, command):
+        self.command = command
+        self.message = "A command was not executed on the Product for some reason."
+
+    def __str__(self):
+        return "{}\nCommand: {}".format(self.message, self.command)
+
+
+def terminal(port):
+    """
+    YNCA Terminal provides a simple way of sending YNCA commands to a receiver.
+    This is useful to figure out what a command does.
+
+    Use ? as <value> to GET the value.
+    Type 'quit' to exit.
+
+    Command format: @<subunit>:<function>=<value>
+    """
+
+    def output_response(subunit, function, value):
+        print("<{0}:{1}={2}".format(subunit, function, value))
+
+    connection = YncaConnection(port, output_response)
+    connection.connect()
+    quit_ = False
+    while not quit_:
+        command = input('>')
+
+        if command == "quit":
+            quit_ = True
+        elif command != "":
+            match = re.match(r"@?(?P<subunit>.+?):(?P<function>.+?)=(?P<value>.+)", command)
+            if match is not None:
+                # Because the connection receives on another thread, there is no use in catching YNCA exceptions here
+                # However exceptions will cause the connection to break, re-connect if needed
+                if not connection.connected:
+                    connection.connect()
+                connection.put(match.group("subunit"), match.group("function"), match.group("value"))
+            else:
+                print("Invalid command format")
+
+    connection.disconnect()
+
 
 if __name__ == "__main__":
-
-    def print_it(a, b, c):
-        print("Subunit:{0}, Function:{1}, Value:{2}".format(a, b, c))
-
 
     port = "/dev/ttyUSB0"
     if len(sys.argv) > 1:
         port = sys.argv[1]
 
-    ynca = YncaConnection(port, print_it)
-    ynca.connect()
-    ynca.get("SYS", "VERSION")
+    terminal(port)
 
-    remaining = 10
-    while remaining >= 0:
-        print("Remaining: {}".format(remaining))
-        ynca.get("SYS", "PWR")
-        time.sleep(1)
-        remaining -= 1
-
-    ynca.disconnect()
+    print("Done")
