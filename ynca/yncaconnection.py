@@ -12,8 +12,8 @@ class YncaProtocol(serial.threaded.LineReader):
     # YNCA spec specifies that there should be at least 100 milliseconds between commands
     COMMAND_INTERVAL = 0.1
 
-    # YNCA spec says standby timeout is 40 seconds, so use 30 seconds to be on the safe side
-    KEEP_ALIVE_INTERVAL = 30
+    # YNCA spec says standby timeout is 40 seconds, so use a shorter period to be on the safe side
+    KEEP_ALIVE_INTERVAL = 35
 
     def __init__(self):
         super(YncaProtocol, self).__init__()
@@ -22,6 +22,7 @@ class YncaProtocol(serial.threaded.LineReader):
         self._send_thread = None
         self._last_sent_command = None
         self.connected = False;
+        self._keep_alive_pending = False
 
     def connection_made(self, transport):
         super(YncaProtocol, self).connection_made(transport)
@@ -32,9 +33,11 @@ class YncaProtocol(serial.threaded.LineReader):
         self._send_thread.start()
 
         self.connected = True;
+        self._keep_alive_pending = False
 
         # When the device is in low power mode the first command is to wake up and gets lost
-        # So send a dummy keep-alive on connect
+        # So send a dummy keep-alive on connect and a real one to make sure keep-alive administration is up-to-date
+        self._send_keepalive()
         self._send_keepalive()
 
     def connection_lost(self, exc):
@@ -54,17 +57,25 @@ class YncaProtocol(serial.threaded.LineReader):
     def handle_line(self, line):
         # sys.stdout.write(repr(line))
         # Match lines formatted like @SUBUNIT:FUNCTION=PARAMETER
-        match = re.match(r"@(?P<subunit>.*?):(?P<function>.*?)=(?P<value>.*)", line)
+        match = re.match(r"@(?P<subunit>.+?):(?P<function>.+?)=(?P<value>.+)", line)
         if match is not None:
-            if self._callback is not None:
-                self._callback(match.group("subunit"), match.group("function"), match.group("value"))
+            subunit = match.group("subunit")
+            function = match.group("function")
+            value = match.group("value")
+
+            if self._keep_alive_pending and subunit == "SYS" and function == "MODELNAME":
+                pass  # Ignore keep alive messages
+            elif self._callback is not None:
+                self._callback(subunit, function, value)
         elif line == "@UNDEFINED":
             raise YncaUndefinedError(self._last_sent_command)
         elif line == "@RESTRICTED":
             raise YncaRestrictedError(self._last_sent_command)
 
+        self._keep_alive_pending = False
+
     def _send_keepalive(self):
-        self.get('SYS', 'MODELNAME')  # This message is suggested by YNCA spec for keep-alive
+        self._send_queue.put("_KEEP_ALIVE")
 
     def _send_handler(self):
         stop = False
@@ -74,7 +85,11 @@ class YncaProtocol(serial.threaded.LineReader):
 
                 if message == "_EXIT":
                     stop = True
-                else:
+                elif message == "_KEEP_ALIVE":
+                    message = "@SYS:MODELNAME=?"  # This message is suggested by YNCA spec for keep-alive
+                    self._keep_alive_pending = True
+
+                if not stop:
                     self._last_sent_command = message
                     self.write_line(message)
                     time.sleep(self.COMMAND_INTERVAL)  # Maintain required commandspacing
@@ -169,13 +184,15 @@ def terminal(port):
     """
 
     def output_response(subunit, function, value):
-        print("<{0}:{1}={2}".format(subunit, function, value))
+        print("Response: {0}:{1}={2}".format(subunit, function, value))
+
+    print(terminal.__doc__)
 
     connection = YncaConnection(port, output_response)
     connection.connect()
     quit_ = False
     while not quit_:
-        command = input('>')
+        command = input('>>> ')
 
         if command == "quit":
             quit_ = True
