@@ -15,9 +15,15 @@ class YncaProtocol(serial.threaded.LineReader):
     # YNCA spec says standby timeout is 40 seconds, so use a shorter period to be on the safe side
     KEEP_ALIVE_INTERVAL = 35
 
+    # Statuses used by the callback
+    STATUS_OK = 0
+    STATUS_UNDEFINED = 1
+    STATUS_RESTRICTED = 2
+    STATUS_INVALID = 3
+
     def __init__(self):
         super(YncaProtocol, self).__init__()
-        self._callback = None
+        self.callback = None
         self._send_queue = None
         self._send_thread = None
         self._last_sent_command = None
@@ -55,8 +61,19 @@ class YncaProtocol(serial.threaded.LineReader):
         sys.stdout.write('port closed\n')
 
     def handle_line(self, line):
-        # sys.stdout.write(repr(line))
-        # Match lines formatted like @SUBUNIT:FUNCTION=PARAMETER
+        ignore = False
+        status = YncaProtocol.STATUS_INVALID
+        subunit = None
+        function = None
+        value = line  # For the case where the command is invalid so there is some info to debug with
+
+        if line == "@UNDEFINED":
+            status = YncaProtocol.STATUS_UNDEFINED
+            line = self._last_sent_command
+        elif line == "@RESTRICTED":
+            status = YncaProtocol.STATUS_RESTRICTED
+            line = self._last_sent_command
+
         match = re.match(r"@(?P<subunit>.+?):(?P<function>.+?)=(?P<value>.+)", line)
         if match is not None:
             subunit = match.group("subunit")
@@ -64,15 +81,15 @@ class YncaProtocol(serial.threaded.LineReader):
             value = match.group("value")
 
             if self._keep_alive_pending and subunit == "SYS" and function == "MODELNAME":
-                pass  # Ignore keep alive messages
-            elif self._callback is not None:
-                self._callback(subunit, function, value)
-        elif line == "@UNDEFINED":
-            raise YncaUndefinedError(self._last_sent_command)
-        elif line == "@RESTRICTED":
-            raise YncaRestrictedError(self._last_sent_command)
+                ignore = True
+
+            if status == YncaProtocol.STATUS_INVALID:
+                status = YncaProtocol.STATUS_OK
 
         self._keep_alive_pending = False
+
+        if not ignore and self.callback is not None:
+            self.callback(status, subunit, function, value)
 
     def _send_keepalive(self):
         self._send_queue.put("_KEEP_ALIVE")
@@ -119,7 +136,7 @@ class YncaConnection:
         self._readerthread = serial.threaded.ReaderThread(self._serial, YncaProtocol)
         self._readerthread.start()
         dummy, self._protocol = self._readerthread.connect()
-        self._protocol._callback = self.callback
+        self._protocol.callback = self.callback
 
     def disconnect(self):
         self._readerthread.close()
@@ -135,43 +152,6 @@ class YncaConnection:
         return self._protocol.connected
 
 
-class YncaException(Exception):
-    """Base class for exceptions in this module."""
-    pass
-
-
-class YncaUndefinedError(YncaException):
-    """Exception raised when the command sent was not a defined one
-
-    Attributes:
-        command -- command that caused the exception
-        message -- explanation of the error
-    """
-
-    def __init__(self, command):
-        self.command = command
-        self.message = "The command sent was not a defined one."
-
-    def __str__(self):
-        return "{}\nCommand: {}".format(self.message, self.command)
-
-
-class YncaRestrictedError(YncaException):
-    """Exception raised when a command was not executed on the Product for some reason.
-
-    Attributes:
-        command -- command that caused the exception
-        message -- explanation of the error
-    """
-
-    def __init__(self, command):
-        self.command = command
-        self.message = "A command was not executed on the Product for some reason."
-
-    def __str__(self):
-        return "{}\nCommand: {}".format(self.message, self.command)
-
-
 def terminal(port):
     """
     YNCA Terminal provides a simple way of sending YNCA commands to a receiver.
@@ -183,8 +163,15 @@ def terminal(port):
     Command format: @<subunit>:<function>=<value>
     """
 
-    def output_response(subunit, function, value):
-        print("Response: {0}:{1}={2}".format(subunit, function, value))
+    status_text = {
+        YncaProtocol.STATUS_OK: "OK",
+        YncaProtocol.STATUS_UNDEFINED: "UNDEFINED",
+        YncaProtocol.STATUS_INVALID: "INVALID",
+        YncaProtocol.STATUS_RESTRICTED: "RESTRICTED"
+    }
+
+    def output_response(status, subunit, function, value):
+        print("Response: {3} {0}:{1}={2}".format(subunit, function, value, status_text[status]))
 
     print(terminal.__doc__)
 
