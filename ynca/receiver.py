@@ -1,8 +1,10 @@
 import sys
 
 import time
+from enum import Enum
+from math import modf
 
-from connection import YncaConnection, YncaProtocol
+from .connection import YncaConnection, YncaProtocol
 
 
 class YncaReceiver:
@@ -21,7 +23,6 @@ class YncaReceiver:
     def __init__(self, port=None):
         self.modelname = None
         self.software_version = None
-        self.powered = False
         self.zones = {}
         self.inputs = {}
         self._connection = YncaConnection(port, self._connection_update)
@@ -33,7 +34,6 @@ class YncaReceiver:
         """ Communicate with the device to setup initial state and discover capabilities """
         self._connection.get("SYS", "MODELNAME")
         self._connection.get("SYS", "VERSION")
-        self._connection.get("SYS", "PWR")
 
         # There is no way to get which zones are supported by the device to just try all possible
         # The callback will create any zone instances on success responses
@@ -69,15 +69,27 @@ class YncaReceiver:
             self.modelname = value
         elif function == "VERSION":
             self.software_version = value
-        elif function == "PWR":
-            if value == "On":
-                self.powered = True
-            else:
-                self.powered = False
         elif function.startswith("INPNAME"):
             input_id = function[7:]
             self.inputs[input_id] = value
 
+
+def number_to_string_with_stepsize_zero_point_five(value, decimals, stepsize):
+
+    steps = round(value / stepsize)
+    stepped_value = steps * stepsize
+    after_the_point, before_the_point = modf(stepped_value)
+
+    after_the_point = abs(after_the_point * (10 ** decimals))
+
+    return "{}.{}".format(int(before_the_point), int(after_the_point))
+
+
+class Mute(Enum):
+    on = 1
+    att_minus_20 = 2
+    att_minus_40 = 3
+    off = 4
 
 class YncaZone:
     def __init__(self, zone, connection):
@@ -86,26 +98,15 @@ class YncaZone:
 
         self.name = None
         self.input = None
-        self.volume = None
+        self._power = False
+        self._volume = None
         self.max_volume = 0
-        self.muted = None
+        self._mute = None
+        self._handler_cache = {}
 
         self.get("BASIC")  # Gets PWR, SLEEP, VOL, MUTE, INP, STRAIGHT, ENHANCER and SOUNDPROG (if applicable)
         self.get("MAXVOL")
         self.get("ZONENAME")
-
-    def update(self, function, value):
-        if function == "INP":
-            self.input = value
-        elif function == "VOL":
-            self.volume = float(value)
-        elif function == "MUTE":
-            if value == "Off":
-                self.muted = False
-            else:
-                self.muted = True
-        elif function == "ZONENAME":
-            self.name = value
 
     def put(self, function, value):
         self._connection.put(self.id, function, value)
@@ -113,24 +114,71 @@ class YncaZone:
     def get(self, function):
         self._connection.get(self.id, function)
 
+    def update(self, function, value):
+        if function not in self._handler_cache:
+            self._handler_cache[function] = getattr(self, "_handle_{}".format(function.lower()), None)
 
-if __name__ == "__main__":
+        handler = self._handler_cache[function]
+        if handler is not None:
+            handler(value)
 
-    port = "/dev/ttyUSB0"
-    if len(sys.argv) > 1:
-        port = sys.argv[1]
+    def _handle_inp(self, value):
+        self.input = value
 
-    receiver = YncaReceiver(port)
+    def _handle_vol(self, value):
+        self._volume = float(value)
 
-    remaining = 5
-    while remaining >= 0:
-        print("Remaining: {}".format(remaining))
-        time.sleep(1)
-        remaining -= 1
+    def _handle_maxvol(self, value):
+        self.max_volume = float(value)
 
-    print(receiver)
+    def _handle_mute(self, value):
+        if value == "Off":
+            self._mute = Mute.off
+        elif value == "Att -20dB":
+            self._mute = Mute.att_minus_20
+        elif value == "Att -40dB":
+            self._mute = Mute.att_minus_40
+        else:
+            self._mute = Mute.on
 
-    print("Zones:")
-    print(receiver.zones)
-    print("Inputs:")
-    print(receiver.inputs)
+    def _handle_pwr(self, value):
+        if value == "On":
+            self._power = True
+        else:
+            self._power = False
+
+    def _handle_zonename(self, value):
+        self.name = value
+
+    @property
+    def on(self):
+        return self._power
+
+    @on.setter
+    def on(self, value):
+        assert value in [True, False]  # Is this usefull?
+        self.put("PWR", "On" if value is True else "Standby")
+
+    @property
+    def muted(self):
+        return self._mute
+
+    @muted.setter
+    def muted(self, value):
+        command_value = "On"
+        if value == Mute.off:
+            command_value = "Off"
+        elif value == Mute.att_minus_40:
+            command_value = "Att -40 dB"
+        elif value == Mute.att_minus_20:
+            command_value = "Att -20 dB"
+        self.put("MUTE", command_value)
+
+    @property
+    def volume(self):
+        return self._volume
+
+    @volume.setter
+    def volume(self, value):
+        print("VOL={}".format(number_to_string_with_stepsize_zero_point_five(value, 1, 0.5)))
+        self.put("VOL", number_to_string_with_stepsize_zero_point_five(value, 1, 0.5))
