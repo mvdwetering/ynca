@@ -1,6 +1,3 @@
-import sys
-
-import time
 from enum import Enum
 from math import modf
 
@@ -11,16 +8,27 @@ class YncaReceiver:
     _all_zones = ["MAIN", "ZONE2", "ZONE3", "ZONE4"]
 
     # Map subunits to input names, this is used for discovering what inputs are available
-    # This list currently contains only what my receiver supports, I cannot guess the others
+    # Inputs missing because unknown what subunit they map to: NET
     _subunit_input_mapping = {
-        "TUN": "Tuner",
+        "TUN": "TUNER",
+        "SIRIUS": "SIRIUS",
+        "IPOD": "iPod",
+        "BT": "Bluetooth",
+        "RHAP": "Rhapsody",
+        "SIRIUSIR": "SIRIUS InternetRadio",
+        "PANDORA": "Pandora",
         "NAPSTER": "Napster",
         "PC": "PC",
         "NETRADIO": "NET RADIO",
         "USB": "USB",
+        "IPODUSB": "iPod (USB)",
+        "UAW": "UAW",
     }
 
-    def __init__(self, port=None):
+    # Inputs that are only available on the main unit
+    _main_only_inputs = ["HDMI1", "HDMI2", "HDMI3", "HDMI4", "HDMI5", "HDMI6", "HDMI7", "AV1", "AV2", "AV3", "AV4"]
+
+    def __init__(self, port):
         self.modelname = None
         self.software_version = None
         self.zones = {}
@@ -35,19 +43,19 @@ class YncaReceiver:
         self._connection.get("SYS", "MODELNAME")
         self._connection.get("SYS", "VERSION")
 
-        # There is no way to get which zones are supported by the device to just try all possible
-        # The callback will create any zone instances on success responses
-        for zone in YncaReceiver._all_zones:
-            self._connection.get(zone, "ZONENAME")
-
         # Get userfriendly names for inputs (also allows detection of available inputs)
         # Note that these are not all inputs, just the external ones
         self._connection.get("SYS", "INPNAME")
 
+        # There is no way to get which zones are supported by the device to just try all possible
+        # The callback will create any zone instances on success responses
+        for zone in YncaReceiver._all_zones:
+            self._connection.get(zone, "AVAIL")
+
         # A device also can have a number of 'internal' inputs like the Tuner, USB, Napster etc..
         # There is no way to get which of there inputs are supported by the device so just try all that we know of
-        for input in YncaReceiver._subunit_input_mapping:
-            self._connection.get(input, "AVAIL")
+        for input_ in YncaReceiver._subunit_input_mapping:
+            self._connection.get(input_, "AVAIL")
 
     def _connection_update(self, status, subunit, function, value):
         print(status, subunit, function, value)
@@ -60,7 +68,6 @@ class YncaReceiver:
                 else:
                     self.zones[subunit] = YncaZone(subunit, self._connection)
             elif function == "AVAIL":
-                # subunit in YncaReceiver._all_inputs
                 if subunit in YncaReceiver._subunit_input_mapping:
                     self.inputs[YncaReceiver._subunit_input_mapping[subunit]] = YncaReceiver._subunit_input_mapping[subunit]
 
@@ -91,28 +98,61 @@ class Mute(Enum):
     att_minus_40 = 3
     off = 4
 
+DspSoundPrograms = [
+    "Hall in Munich",
+    "Hall in Vienna",
+    "Chamber",
+    "Cellar Club",
+    "The Roxy Theatre",
+    "The Bottom Line",
+    "Sports",
+    "Action Game",
+    "Roleplaying Game",
+    "Music Video",
+    "Standard",
+    "Spectacle",
+    "Sci-Fi",
+    "Adventure",
+    "Drama",
+    "Mono Movie",
+    "2ch Stereo",
+    "7ch Stereo",
+    "Surround Decoder"]
+
+
 class YncaZone:
     def __init__(self, zone, connection):
-        self.id = zone
+        self.subunit = zone
         self._connection = connection
 
         self.name = None
-        self.input = None
+        self._input = None
         self._power = False
         self._volume = None
-        self.max_volume = 0
+        self.max_volume = 16.5
         self._mute = None
+        self._dsp_sound_program = None
+        self._scenes = {}
+
         self._handler_cache = {}
 
-        self.get("BASIC")  # Gets PWR, SLEEP, VOL, MUTE, INP, STRAIGHT, ENHANCER and SOUNDPROG (if applicable)
+        self.get("BASIC")  # Gets PWR, SLEEP, VOL, MUTE, INP, STRAIGHT, ENHANCER and SOUNDPRG (if applicable)
         self.get("MAXVOL")
         self.get("ZONENAME")
+        self.get("SCENENAME")
+
+    def __str__(self):
+        output = []
+        for key in self.__dict__:
+            output.append("{key}='{value}'".format(key=key, value=self.__dict__[key]))
+
+        return '\n'.join(output)
 
     def put(self, function, value):
-        self._connection.put(self.id, function, value)
+        self._connection.put(self.subunit, function, value)
 
     def get(self, function):
-        self._connection.get(self.id, function)
+        self._connection.get(self.subunit, function)
 
     def update(self, function, value):
         if function not in self._handler_cache:
@@ -121,9 +161,13 @@ class YncaZone:
         handler = self._handler_cache[function]
         if handler is not None:
             handler(value)
+        else:
+            if function.startswith("SCENE") and function.endswith("NAME"):
+                scene_id = int(function[5:6])
+                self._scenes[scene_id] = value
 
     def _handle_inp(self, value):
-        self.input = value
+        self._input = value
 
     def _handle_vol(self, value):
         self._volume = float(value)
@@ -149,6 +193,9 @@ class YncaZone:
 
     def _handle_zonename(self, value):
         self.name = value
+
+    def _handle_soundprg(self, value):
+        self._dsp_sound_program = value
 
     @property
     def on(self):
@@ -182,3 +229,35 @@ class YncaZone:
     def volume(self, value):
         print("VOL={}".format(number_to_string_with_stepsize_zero_point_five(value, 1, 0.5)))
         self.put("VOL", number_to_string_with_stepsize_zero_point_five(value, 1, 0.5))
+
+    @property
+    def input(self):
+        return self._input
+
+    @input.setter
+    def input(self, value):
+        self.put("INP", value)
+
+    @property
+    def dsp_sound_program(self):
+        return self._dsp_sound_program
+
+    @dsp_sound_program.setter
+    def dsp_sound_program(self, value):
+        if value in DspSoundPrograms:
+            self.put("SOUNDPRG", value)
+        else:
+            raise ValueError("Soundprogram not in DspSoundPrograms")
+
+    @property
+    def scene(self):
+        pass  # Not possible to get current scene
+
+    @scene.setter
+    def scene(self, value):
+        if len(self._scenes) == 0:
+            raise ValueError("Zone does not support scenes")
+        elif value not in [1, 2 , 3, 4]:
+            raise ValueError("Invalid value")
+        else:
+            self.put("SCENE=Scene {}", value)
