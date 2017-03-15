@@ -121,8 +121,14 @@ class YncaProtocol(serial.threaded.LineReader):
 
 
 class YncaConnection:
-    def __init__(self, port=None, callback=None):
+    def __init__(self, port, callback=None):
         self._port = port
+
+        # Poor mans IP address format detection.
+        # Not entirely correct, but good enough to see if an IP address is intended or a serial port.
+        if re.match(r"^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}(:\d{1,5})?$", port):
+            self._port = "socket://{}".format(port)
+
         self.callback = callback
         self._serial = None
         self._readerthread = None
