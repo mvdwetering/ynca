@@ -3,9 +3,20 @@ import re
 import sys
 import threading
 import time
+import logging
+from enum import Enum
 
 import serial
 import serial.threaded
+
+
+logger = logging.getLogger(__name__)
+
+
+class YncaProtocolStatus(Enum):
+    OK = 0
+    UNDEFINED = 1
+    RESTRICTED = 2
 
 
 class YncaProtocol(serial.threaded.LineReader):
@@ -14,12 +25,6 @@ class YncaProtocol(serial.threaded.LineReader):
 
     # YNCA spec says standby timeout is 40 seconds, so use a shorter period to be on the safe side
     KEEP_ALIVE_INTERVAL = 30
-
-    # Statuses used by the callback
-    STATUS_OK = 0
-    STATUS_UNDEFINED = 1
-    STATUS_RESTRICTED = 2
-    STATUS_INVALID = 3
 
     def __init__(self):
         super(YncaProtocol, self).__init__()
@@ -33,11 +38,13 @@ class YncaProtocol(serial.threaded.LineReader):
     def connection_made(self, transport):
         super(YncaProtocol, self).connection_made(transport)
 
+        logger.info("Connected")
+
         self._send_queue = queue.Queue()
         self._send_thread = threading.Thread(target=self._send_handler)
         self._send_thread.start()
 
-        self.connected = True;
+        self.connected = True
         self._keep_alive_pending = False
 
         # When the device is in low power mode the first command is to wake up and gets lost
@@ -47,6 +54,8 @@ class YncaProtocol(serial.threaded.LineReader):
 
     def connection_lost(self, exc):
         self.connected = False;
+
+        logger.info("Connection lost")
 
         # There seems to be no way to clear a queue so just read all and add the _EXIT command
         try:
@@ -60,16 +69,18 @@ class YncaProtocol(serial.threaded.LineReader):
 
     def handle_line(self, line):
         ignore = False
-        status = YncaProtocol.STATUS_INVALID
+        status = YncaProtocolStatus.OK
         subunit = None
         function = None
         value = line  # For the case where the command is invalid so there is some info to debug with
 
+        logger.debug("< {}".format(line))
+
         if line == "@UNDEFINED":
-            status = YncaProtocol.STATUS_UNDEFINED
+            status = YncaProtocolStatus.UNDEFINED
             line = self._last_sent_command
         elif line == "@RESTRICTED":
-            status = YncaProtocol.STATUS_RESTRICTED
+            status = YncaProtocolStatus.RESTRICTED
             line = self._last_sent_command
 
         match = re.match(r"@(?P<subunit>.+?):(?P<function>.+?)=(?P<value>.*)", line)
@@ -80,9 +91,6 @@ class YncaProtocol(serial.threaded.LineReader):
 
             if self._keep_alive_pending and subunit == "SYS" and function == "MODELNAME":
                 ignore = True
-
-            if status == YncaProtocol.STATUS_INVALID:
-                status = YncaProtocol.STATUS_OK
 
         self._keep_alive_pending = False
 
@@ -105,6 +113,8 @@ class YncaProtocol(serial.threaded.LineReader):
                     self._keep_alive_pending = True
 
                 if not stop:
+                    logger.debug("> {}".format(message))
+
                     self._last_sent_command = message
                     self.write_line(message)
                     time.sleep(self.COMMAND_INTERVAL)  # Maintain required command spacing
@@ -170,15 +180,8 @@ def console(serial_port):
     Command format: @<subunit>:<function>=<value>
     """
 
-    status_text = {
-        YncaProtocol.STATUS_OK: "OK",
-        YncaProtocol.STATUS_UNDEFINED: "UNDEFINED",
-        YncaProtocol.STATUS_INVALID: "INVALID",
-        YncaProtocol.STATUS_RESTRICTED: "RESTRICTED"
-    }
-
     def output_response(status, subunit, function, value):
-        print("Response: {3} {0}:{1}={2}".format(subunit, function, value, status_text[status]))
+        print("Response: {3} {0}:{1}={2}".format(subunit, function, value, status.name))
 
     print(console.__doc__)
 

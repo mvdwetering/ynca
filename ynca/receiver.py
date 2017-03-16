@@ -1,7 +1,7 @@
 from enum import Enum
 from math import modf
+from .connection import YncaConnection, YncaProtocolStatus
 
-from .connection import YncaConnection, YncaProtocol
 
 
 class YncaReceiver:
@@ -20,7 +20,6 @@ class YncaReceiver:
         "NAPSTER": "Napster",
         "PC": "PC",
         "NETRADIO": "NET RADIO",
-        "USB": "USB",
         "IPODUSB": "iPod (USB)",
         "UAW": "UAW",
     }
@@ -44,7 +43,7 @@ class YncaReceiver:
         self._connection.get("SYS", "VERSION")
 
         # Get userfriendly names for inputs (also allows detection of available inputs)
-        # Note that these are not all inputs, just the external ones
+        # Note that these are not all inputs, just the external ones it seems
         self._connection.get("SYS", "INPNAME")
 
         # There is no way to get which zones are supported by the device to just try all possible
@@ -54,12 +53,11 @@ class YncaReceiver:
 
         # A device also can have a number of 'internal' inputs like the Tuner, USB, Napster etc..
         # There is no way to get which of there inputs are supported by the device so just try all that we know of
-        for input_ in YncaReceiver._subunit_input_mapping:
-            self._connection.get(input_, "AVAIL")
+        for subunit in YncaReceiver._subunit_input_mapping:
+            self._connection.get(subunit, "AVAIL")
 
     def _connection_update(self, status, subunit, function, value):
-        print(status, subunit, function, value)
-        if status == YncaProtocol.STATUS_OK:
+        if status == YncaProtocolStatus.OK:
             if subunit == "SYS":
                 self._update(function, value)
             elif subunit in YncaReceiver._all_zones:
