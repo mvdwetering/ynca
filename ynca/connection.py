@@ -121,13 +121,16 @@ class YncaProtocol(serial.threaded.LineReader):
 
 
 class YncaConnection:
-    def __init__(self, port, callback=None):
-        self._port = port
+    def __init__(self, serial_port, callback=None):
+        self._port = serial_port
 
         # Poor mans IP address format detection.
         # Not entirely correct, but good enough to see if an IP address is intended or a serial port.
-        if re.match(r"^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}(:\d{1,5})?$", port):
-            self._port = "socket://{}".format(port)
+        match = re.match(r"^(?P<ip_address>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})(:(?P<ynca_port>\d{1,5}))?$", serial_port)
+        if match:
+            ip_address = match.group("ip_address")
+            ynca_port = match.group("ynca_port") or "50000"
+            self._port = "socket://{}:{}".format(ip_address, ynca_port)
 
         self.callback = callback
         self._serial = None
@@ -156,7 +159,7 @@ class YncaConnection:
         return self._protocol.connected
 
 
-def terminal(port):
+def console(serial_port):
     """
     YNCA Terminal provides a simple way of sending YNCA commands to a receiver.
     This is useful to figure out what a command does.
@@ -177,9 +180,9 @@ def terminal(port):
     def output_response(status, subunit, function, value):
         print("Response: {3} {0}:{1}={2}".format(subunit, function, value, status_text[status]))
 
-    print(terminal.__doc__)
+    print(console.__doc__)
 
-    connection = YncaConnection(port, output_response)
+    connection = YncaConnection(serial_port, output_response)
     connection.connect()
     quit_ = False
     while not quit_:
@@ -207,6 +210,6 @@ if __name__ == "__main__":
     if len(sys.argv) > 1:
         port = sys.argv[1]
 
-    terminal(port)
+    console(port)
 
     print("Done")
