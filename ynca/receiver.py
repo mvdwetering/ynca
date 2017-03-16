@@ -3,7 +3,6 @@ from math import modf
 from .connection import YncaConnection, YncaProtocolStatus
 
 
-
 class YncaReceiver:
     _all_zones = ["MAIN", "ZONE2", "ZONE3", "ZONE4"]
 
@@ -29,7 +28,7 @@ class YncaReceiver:
 
     def __init__(self, port):
         self.modelname = None
-        self.software_version = None
+        self.firmware_version = None
         self.zones = {}
         self.inputs = {}
         self._connection = YncaConnection(port, self._connection_update)
@@ -73,13 +72,13 @@ class YncaReceiver:
         if function == "MODELNAME":
             self.modelname = value
         elif function == "VERSION":
-            self.software_version = value
+            self.firmware_version = value
         elif function.startswith("INPNAME"):
             input_id = function[7:]
             self.inputs[input_id] = value
 
 
-def number_to_string_with_stepsize_zero_point_five(value, decimals, stepsize):
+def number_to_string_with_stepsize(value, decimals, stepsize):
 
     steps = round(value / stepsize)
     stepped_value = steps * stepsize
@@ -210,6 +209,7 @@ class YncaZone:
 
     @muted.setter
     def muted(self, value):
+        assert value in Mute  # Is this usefull?
         command_value = "On"
         if value == Mute.off:
             command_value = "Off"
@@ -225,8 +225,7 @@ class YncaZone:
 
     @volume.setter
     def volume(self, value):
-        print("VOL={}".format(number_to_string_with_stepsize_zero_point_five(value, 1, 0.5)))
-        self.put("VOL", number_to_string_with_stepsize_zero_point_five(value, 1, 0.5))
+        self.put("VOL", number_to_string_with_stepsize(value, 1, 0.5))
 
     @property
     def input(self):
@@ -249,13 +248,13 @@ class YncaZone:
 
     @property
     def scene(self):
-        pass  # Not possible to get current scene
+        return None  # Not possible to get current scene
 
     @scene.setter
     def scene(self, value):
         if len(self._scenes) == 0:
             raise ValueError("Zone does not support scenes")
-        elif value not in [1, 2 , 3, 4]:
+        elif value not in [1, 2, 3, 4]:
             raise ValueError("Invalid value")
         else:
             self.put("SCENE=Scene {}", value)
