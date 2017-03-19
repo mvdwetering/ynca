@@ -30,18 +30,29 @@ class YncaReceiver:
     # Inputs that are only available on the main unit
     _main_only_inputs = ["HDMI1", "HDMI2", "HDMI3", "HDMI4", "HDMI5", "HDMI6", "HDMI7", "AV1", "AV2", "AV3", "AV4"]
 
-    def __init__(self, port):
-        self._initialized_event = threading.Event()
+    def __init__(self, port, on_update=None):
+        """
+        Constructor for a Receiver object.
 
-        self.modelname = None
+        Communicates with the device to determine capabilities.
+        This is a long running function!
+        """
+        self._initialized_event = threading.Event()
+        self._on_update_callback = None  # None to avoid update callbacks during initialization
+        self._zones_to_initialize = []
+
+        self.model_name = None
         self.firmware_version = None
         self.zones = {}
-        self._zones_to_initialize = []
         self.inputs = {}
         self._connection = YncaConnection(port, self._connection_update)
         self._connection.connect()
 
         self._initialize_device()
+
+        self._on_update_callback = on_update
+        if self._on_update_callback:  # All changed after initialization
+            self._on_update_callback()
 
     def _initialize_device(self):
         """ Communicate with the device to setup initial state and discover capabilities """
@@ -77,10 +88,11 @@ class YncaReceiver:
 
     def _connection_update(self, status, subunit, function, value):
         if status == YncaProtocolStatus.OK:
+            updated = False
             if subunit == "SYS":
-                self._update(function, value)
+                updated = self._update(function, value)
             elif subunit in self.zones:
-                self.zones[subunit].update(function, value)
+                updated = self.zones[subunit].update(function, value)
             elif subunit in YncaReceiver._all_zones:
                 self._zones_to_initialize.append(subunit)
 
@@ -88,15 +100,23 @@ class YncaReceiver:
                 if subunit in YncaReceiver._subunit_input_mapping:
                     self.inputs[YncaReceiver._subunit_input_mapping[subunit]] = YncaReceiver._subunit_input_mapping[subunit]
 
+            if updated and self._on_update_callback:
+                self._on_update_callback()
+
     def _update(self, function, value):
+        updated = True
         if function == "MODELNAME":
-            self.modelname = value
+            self.model_name = value
         elif function == "VERSION":
             self.firmware_version = value
             self._initialized_event.set()
         elif function.startswith("INPNAME"):
             input_id = function[7:]
             self.inputs[input_id] = value
+        else:
+            updated = False
+
+        return updated
 
 
 def number_to_string_with_stepsize(value, decimals, stepsize):
@@ -182,16 +202,21 @@ class YncaZone:
         self._connection.get(self.subunit, function)
 
     def update(self, function, value):
+        updated = True
+
         if function not in self._handler_cache:
             self._handler_cache[function] = getattr(self, "_handle_{}".format(function.lower()), None)
-
         handler = self._handler_cache[function]
+
         if handler is not None:
             handler(value)
+        elif len(function) == 10 and function.startswith("SCENE") and function.endswith("NAME"):
+            scene_id = int(function[5:6])
+            self._scenes[scene_id] = value
         else:
-            if len(function) == 10 and function.startswith("SCENE") and function.endswith("NAME"):
-                scene_id = int(function[5:6])
-                self._scenes[scene_id] = value
+            updated = False
+
+        return updated
 
     def _handle_inp(self, value):
         self._input = value
