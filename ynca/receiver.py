@@ -1,6 +1,10 @@
+import threading
 from enum import Enum
 from math import modf
 from .connection import YncaConnection, YncaProtocolStatus
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class YncaReceiver:
@@ -27,9 +31,12 @@ class YncaReceiver:
     _main_only_inputs = ["HDMI1", "HDMI2", "HDMI3", "HDMI4", "HDMI5", "HDMI6", "HDMI7", "AV1", "AV2", "AV3", "AV4"]
 
     def __init__(self, port):
+        self._initialized_event = threading.Event()
+
         self.modelname = None
         self.firmware_version = None
         self.zones = {}
+        self._zones_to_initialize = []
         self.inputs = {}
         self._connection = YncaConnection(port, self._connection_update)
         self._connection.connect()
@@ -38,32 +45,45 @@ class YncaReceiver:
 
     def _initialize_device(self):
         """ Communicate with the device to setup initial state and discover capabilities """
+        logger.info("Receiver initialization start.")
         self._connection.get("SYS", "MODELNAME")
-        self._connection.get("SYS", "VERSION")
 
         # Get userfriendly names for inputs (also allows detection of available inputs)
         # Note that these are not all inputs, just the external ones it seems
         self._connection.get("SYS", "INPNAME")
-
-        # There is no way to get which zones are supported by the device to just try all possible
-        # The callback will create any zone instances on success responses
-        for zone in YncaReceiver._all_zones:
-            self._connection.get(zone, "AVAIL")
 
         # A device also can have a number of 'internal' inputs like the Tuner, USB, Napster etc..
         # There is no way to get which of there inputs are supported by the device so just try all that we know of
         for subunit in YncaReceiver._subunit_input_mapping:
             self._connection.get(subunit, "AVAIL")
 
+        # There is no way to get which zones are supported by the device to just try all possible
+        # The callback will create any zone instances on success responses
+        for zone in YncaReceiver._all_zones:
+            self._connection.get(zone, "AVAIL")
+
+        self._connection.get("SYS", "VERSION")  # Use version as a "sync" command
+        if not self._initialized_event.wait(10):  # Each command is 100ms (at least) and a lot are sent\
+            logger.error("Receiver initialization phase 1 failed!")
+
+        # Initialize the zones (constructors are synchronous)
+        for zone in self._zones_to_initialize:
+            logger.info("Initializing zone {}.".format(zone))
+            self.zones[zone] = YncaZone(zone, self._connection)
+            self.zones[zone].initialize()
+        self._zones_to_initialize = None
+
+        logger.info("Receiver initialization done.")
+
     def _connection_update(self, status, subunit, function, value):
         if status == YncaProtocolStatus.OK:
             if subunit == "SYS":
                 self._update(function, value)
+            elif subunit in self.zones:
+                self.zones[subunit].update(function, value)
             elif subunit in YncaReceiver._all_zones:
-                if subunit in self.zones:
-                    self.zones[subunit].update(function, value)
-                else:
-                    self.zones[subunit] = YncaZone(subunit, self._connection)
+                self._zones_to_initialize.append(subunit)
+
             elif function == "AVAIL":
                 if subunit in YncaReceiver._subunit_input_mapping:
                     self.inputs[YncaReceiver._subunit_input_mapping[subunit]] = YncaReceiver._subunit_input_mapping[subunit]
@@ -73,6 +93,7 @@ class YncaReceiver:
             self.modelname = value
         elif function == "VERSION":
             self.firmware_version = value
+            self._initialized_event.set()
         elif function.startswith("INPNAME"):
             input_id = function[7:]
             self.inputs[input_id] = value
@@ -119,6 +140,7 @@ DspSoundPrograms = [
 
 class YncaZone:
     def __init__(self, zone, connection):
+        self._initialized_event = threading.Event()
         self.subunit = zone
         self._connection = connection
 
@@ -133,10 +155,18 @@ class YncaZone:
 
         self._handler_cache = {}
 
-        self.get("BASIC")  # Gets PWR, SLEEP, VOL, MUTE, INP, STRAIGHT, ENHANCER and SOUNDPRG (if applicable)
-        self.get("MAXVOL")
-        self.get("ZONENAME")
-        self.get("SCENENAME")
+    def initialize(self):
+        """
+        Initialize the Zone based on capabilities of the device.
+        This is a long running function!
+        """
+        self._get("BASIC")  # Gets PWR, SLEEP, VOL, MUTE, INP, STRAIGHT, ENHANCER and SOUNDPRG (if applicable)
+        self._get("MAXVOL")
+        self._get("SCENENAME")
+        self._get("ZONENAME")
+
+        if not self._initialized_event.wait(2):  # Each command takes at least 100ms + big margin
+            logger.error("Zone initialization failed!")
 
     def __str__(self):
         output = []
@@ -145,10 +175,10 @@ class YncaZone:
 
         return '\n'.join(output)
 
-    def put(self, function, value):
+    def _put(self, function, value):
         self._connection.put(self.subunit, function, value)
 
-    def get(self, function):
+    def _get(self, function):
         self._connection.get(self.subunit, function)
 
     def update(self, function, value):
@@ -159,7 +189,7 @@ class YncaZone:
         if handler is not None:
             handler(value)
         else:
-            if function.startswith("SCENE") and function.endswith("NAME"):
+            if len(function) == 10 and function.startswith("SCENE") and function.endswith("NAME"):
                 scene_id = int(function[5:6])
                 self._scenes[scene_id] = value
 
@@ -190,25 +220,30 @@ class YncaZone:
 
     def _handle_zonename(self, value):
         self.name = value
+        self._initialized_event.set()
 
     def _handle_soundprg(self, value):
         self._dsp_sound_program = value
 
     @property
     def on(self):
+        """Get current on state"""
         return self._power
 
     @on.setter
     def on(self, value):
+        """Turn on/off zone"""
         assert value in [True, False]  # Is this usefull?
-        self.put("PWR", "On" if value is True else "Standby")
+        self._put("PWR", "On" if value is True else "Standby")
 
     @property
     def muted(self):
+        """Get current mute state"""
         return self._mute
 
     @muted.setter
     def muted(self, value):
+        """Mute"""
         assert value in Mute  # Is this usefull?
         command_value = "On"
         if value == Mute.off:
@@ -217,44 +252,66 @@ class YncaZone:
             command_value = "Att -40 dB"
         elif value == Mute.att_minus_20:
             command_value = "Att -20 dB"
-        self.put("MUTE", command_value)
+        self._put("MUTE", command_value)
 
     @property
     def volume(self):
+        """Get current volume in dB"""
         return self._volume
 
     @volume.setter
     def volume(self, value):
-        self.put("VOL", number_to_string_with_stepsize(value, 1, 0.5))
+        """Set volume in dB. The receiver only works with 0.5 increments. Input values will be round."""
+        self._put("VOL", number_to_string_with_stepsize(value, 1, 0.5))
+
+    def volume_up(self, step_size=0.5):
+        """
+        Increase the volume with given stepsize.
+        Supported stepsizes are: 0.5, 1, 2 and 5
+        """
+        value = "Up"
+        if step_size in [1, 2, 5]:
+            value = "Up {} dB".format(step_size)
+        self._put("VOL", value)
+
+    def volume_down(self, step_size=0.5):
+        """
+        Decrease the volume with given stepsize.
+        Supported stepsizes are: 0.5, 1, 2 and 5
+        """
+        value = "Down"
+        if step_size in [1, 2, 5]:
+            value = "Down {} dB".format(step_size)
+        self._put("VOL", value)
 
     @property
     def input(self):
+        """Get current input"""
         return self._input
 
     @input.setter
     def input(self, value):
-        self.put("INP", value)
+        """Set input"""
+        self._put("INP", value)
 
     @property
     def dsp_sound_program(self):
+        """Get the current DSP sound program"""
         return self._dsp_sound_program
 
     @dsp_sound_program.setter
     def dsp_sound_program(self, value):
+        """Set the DSP sound program"""
         if value in DspSoundPrograms:
-            self.put("SOUNDPRG", value)
+            self._put("SOUNDPRG", value)
         else:
             raise ValueError("Soundprogram not in DspSoundPrograms")
 
-    @property
-    def scene(self):
-        return None  # Not possible to get current scene
-
-    @scene.setter
-    def scene(self, value):
+    def activate_scene(self, scene_id):
+        """Activate a scene"""
         if len(self._scenes) == 0:
             raise ValueError("Zone does not support scenes")
-        elif value not in [1, 2, 3, 4]:
-            raise ValueError("Invalid value")
+        elif scene_id not in [1, 2, 3, 4]:
+            raise ValueError("Invalid scene ID, should et 1, 2, 3 or 4")
         else:
-            self.put("SCENE=Scene {}", value)
+            self._put("SCENE=Scene {}", scene_id)
