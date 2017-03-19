@@ -1,14 +1,14 @@
 Things todo before release worthy
 
-* Use logger
 * Document stuff (design decisions)
-* export receiver through package
-* Synchronous initialisation
 * Expose yncaconsole/termnial
 * Update callback
-* Updating of Input/Zone names (check if it works or fix)
 
 Done
 * Scene support (list, get, set)
 * Sound prog support (list, get, set)
 * Use normal IP address:port on creation (without socket://)
+* Synchronous initialisation
+* export receiver through package
+* Updating of Input/Zone names (check if it works or fix)
+* Use logger
