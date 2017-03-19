@@ -2,7 +2,6 @@ Things todo before release worthy
 
 * Document stuff (design decisions)
 * Expose yncaconsole/termnial
-* Update callback
 
 Done
 * Scene support (list, get, set)
@@ -12,3 +11,4 @@ Done
 * export receiver through package
 * Updating of Input/Zone names (check if it works or fix)
 * Use logger
+* Update callback

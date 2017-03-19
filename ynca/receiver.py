@@ -54,6 +54,13 @@ class YncaReceiver:
         if self._on_update_callback:  # All changed after initialization
             self._on_update_callback()
 
+    def __str__(self):
+        output = []
+        for key in self.__dict__:
+            output.append("{key}={value}".format(key=key, value=self.__dict__[key]))
+
+        return '\n'.join(output)
+
     def _initialize_device(self):
         """ Communicate with the device to setup initial state and discover capabilities """
         logger.info("Receiver initialization start.")
@@ -191,7 +198,7 @@ class YncaZone:
     def __str__(self):
         output = []
         for key in self.__dict__:
-            output.append("{key}='{value}'".format(key=key, value=self.__dict__[key]))
+            output.append("{key}={value}".format(key=key, value=self.__dict__[key]))
 
         return '\n'.join(output)
 
