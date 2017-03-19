@@ -1,34 +1,36 @@
 import threading
-from enum import Enum
-from math import modf
+
+from .constants import DSP_SOUND_PROGRAMS, Mute
+from .helpers import number_to_string_with_stepsize
 from .connection import YncaConnection, YncaProtocolStatus
 import logging
 
 logger = logging.getLogger(__name__)
 
+ALL_ZONES = ["MAIN", "ZONE2", "ZONE3", "ZONE4"]
+
+# Map subunits to input names, this is used for discovering what inputs are available
+# Inputs missing because unknown what subunit they map to: NET
+SUBUNIT_INPUT_MAPPINGS = {
+    "TUN": "TUNER",
+    "SIRIUS": "SIRIUS",
+    "IPOD": "iPod",
+    "BT": "Bluetooth",
+    "RHAP": "Rhapsody",
+    "SIRIUSIR": "SIRIUS InternetRadio",
+    "PANDORA": "Pandora",
+    "NAPSTER": "Napster",
+    "PC": "PC",
+    "NETRADIO": "NET RADIO",
+    "IPODUSB": "iPod (USB)",
+    "UAW": "UAW",
+}
+
+# Inputs that are only available on the main unit
+MAIN_ONLY_INPUTS = ["HDMI1", "HDMI2", "HDMI3", "HDMI4", "HDMI5", "HDMI6", "HDMI7", "AV1", "AV2", "AV3", "AV4"]
+
 
 class YncaReceiver:
-    _all_zones = ["MAIN", "ZONE2", "ZONE3", "ZONE4"]
-
-    # Map subunits to input names, this is used for discovering what inputs are available
-    # Inputs missing because unknown what subunit they map to: NET
-    _subunit_input_mapping = {
-        "TUN": "TUNER",
-        "SIRIUS": "SIRIUS",
-        "IPOD": "iPod",
-        "BT": "Bluetooth",
-        "RHAP": "Rhapsody",
-        "SIRIUSIR": "SIRIUS InternetRadio",
-        "PANDORA": "Pandora",
-        "NAPSTER": "Napster",
-        "PC": "PC",
-        "NETRADIO": "NET RADIO",
-        "IPODUSB": "iPod (USB)",
-        "UAW": "UAW",
-    }
-
-    # Inputs that are only available on the main unit
-    _main_only_inputs = ["HDMI1", "HDMI2", "HDMI3", "HDMI4", "HDMI5", "HDMI6", "HDMI7", "AV1", "AV2", "AV3", "AV4"]
 
     def __init__(self, port, on_update=None):
         """
@@ -66,18 +68,18 @@ class YncaReceiver:
         logger.info("Receiver initialization start.")
         self._connection.get("SYS", "MODELNAME")
 
-        # Get userfriendly names for inputs (also allows detection of available inputs)
+        # Get user-friendly names for inputs (also allows detection of available inputs)
         # Note that these are not all inputs, just the external ones it seems
         self._connection.get("SYS", "INPNAME")
 
         # A device also can have a number of 'internal' inputs like the Tuner, USB, Napster etc..
         # There is no way to get which of there inputs are supported by the device so just try all that we know of
-        for subunit in YncaReceiver._subunit_input_mapping:
+        for subunit in SUBUNIT_INPUT_MAPPINGS:
             self._connection.get(subunit, "AVAIL")
 
         # There is no way to get which zones are supported by the device to just try all possible
         # The callback will create any zone instances on success responses
-        for zone in YncaReceiver._all_zones:
+        for zone in ALL_ZONES:
             self._connection.get(zone, "AVAIL")
 
         self._connection.get("SYS", "VERSION")  # Use version as a "sync" command
@@ -97,20 +99,20 @@ class YncaReceiver:
         if status == YncaProtocolStatus.OK:
             updated = False
             if subunit == "SYS":
-                updated = self._update(function, value)
+                updated = self._sys_update(function, value)
             elif subunit in self.zones:
                 updated = self.zones[subunit].update(function, value)
-            elif subunit in YncaReceiver._all_zones:
+            elif subunit in ALL_ZONES:
                 self._zones_to_initialize.append(subunit)
 
             elif function == "AVAIL":
-                if subunit in YncaReceiver._subunit_input_mapping:
-                    self.inputs[YncaReceiver._subunit_input_mapping[subunit]] = YncaReceiver._subunit_input_mapping[subunit]
+                if subunit in SUBUNIT_INPUT_MAPPINGS:
+                    self.inputs[SUBUNIT_INPUT_MAPPINGS[subunit]] = SUBUNIT_INPUT_MAPPINGS[subunit]
 
             if updated and self._on_update_callback:
                 self._on_update_callback()
 
-    def _update(self, function, value):
+    def _sys_update(self, function, value):
         updated = True
         if function == "MODELNAME":
             self.model_name = value
@@ -124,45 +126,6 @@ class YncaReceiver:
             updated = False
 
         return updated
-
-
-def number_to_string_with_stepsize(value, decimals, stepsize):
-
-    steps = round(value / stepsize)
-    stepped_value = steps * stepsize
-    after_the_point, before_the_point = modf(stepped_value)
-
-    after_the_point = abs(after_the_point * (10 ** decimals))
-
-    return "{}.{}".format(int(before_the_point), int(after_the_point))
-
-
-class Mute(Enum):
-    on = 1
-    att_minus_20 = 2
-    att_minus_40 = 3
-    off = 4
-
-DspSoundPrograms = [
-    "Hall in Munich",
-    "Hall in Vienna",
-    "Chamber",
-    "Cellar Club",
-    "The Roxy Theatre",
-    "The Bottom Line",
-    "Sports",
-    "Action Game",
-    "Roleplaying Game",
-    "Music Video",
-    "Standard",
-    "Spectacle",
-    "Sci-Fi",
-    "Adventure",
-    "Drama",
-    "Mono Movie",
-    "2ch Stereo",
-    "7ch Stereo",
-    "Surround Decoder"]
 
 
 class YncaZone:
@@ -334,7 +297,7 @@ class YncaZone:
     @dsp_sound_program.setter
     def dsp_sound_program(self, value):
         """Set the DSP sound program"""
-        if value in DspSoundPrograms:
+        if value in DSP_SOUND_PROGRAMS:
             self._put("SOUNDPRG", value)
         else:
             raise ValueError("Soundprogram not in DspSoundPrograms")

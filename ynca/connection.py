@@ -169,7 +169,7 @@ class YncaConnection:
         return self._protocol.connected
 
 
-def console(serial_port):
+def ynca_console(serial_port):
     """
     YNCA Terminal provides a simple way of sending YNCA commands to a receiver.
     This is useful to figure out what a command does.
@@ -183,7 +183,7 @@ def console(serial_port):
     def output_response(status, subunit, function, value):
         print("Response: {3} {0}:{1}={2}".format(subunit, function, value, status.name))
 
-    print(console.__doc__)
+    print(ynca_console.__doc__)
 
     connection = YncaConnection(serial_port, output_response)
     connection.connect()
@@ -213,6 +213,6 @@ if __name__ == "__main__":
     if len(sys.argv) > 1:
         port = sys.argv[1]
 
-    console(port)
+    ynca_console(port)
 
     print("Done")
