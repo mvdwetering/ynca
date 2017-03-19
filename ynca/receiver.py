@@ -1,9 +1,9 @@
 import threading
+import logging
 
 from .constants import DSP_SOUND_PROGRAMS, Mute
 from .helpers import number_to_string_with_stepsize
 from .connection import YncaConnection, YncaProtocolStatus
-import logging
 
 logger = logging.getLogger(__name__)
 
@@ -26,9 +26,6 @@ SUBUNIT_INPUT_MAPPINGS = {
     "UAW": "UAW",
 }
 
-# Inputs that are only available on the main unit
-MAIN_ONLY_INPUTS = ["HDMI1", "HDMI2", "HDMI3", "HDMI4", "HDMI5", "HDMI6", "HDMI7", "AV1", "AV2", "AV3", "AV4"]
-
 
 class YncaReceiver:
 
@@ -38,6 +35,8 @@ class YncaReceiver:
 
         Communicates with the device to determine capabilities.
         This is a long running function!
+
+        Most useful functionality is available through the zones.
         """
         self._initialized_event = threading.Event()
         self._on_update_callback = None  # None to avoid update callbacks during initialization
@@ -131,14 +130,14 @@ class YncaReceiver:
 class YncaZone:
     def __init__(self, zone, connection):
         self._initialized_event = threading.Event()
-        self.subunit = zone
         self._connection = connection
+        self.subunit = zone
 
         self.name = None
+        self.max_volume = 16.5
         self._input = None
         self._power = False
         self._volume = None
-        self.max_volume = 16.5
         self._mute = None
         self._dsp_sound_program = None
         self._scenes = {}
@@ -232,11 +231,11 @@ class YncaZone:
         self._put("PWR", "On" if value is True else "Standby")
 
     @property
-    def muted(self):
+    def mute(self):
         """Get current mute state"""
         return self._mute
 
-    @muted.setter
+    @mute.setter
     def muted(self, value):
         """Mute"""
         assert value in Mute  # Is this usefull?

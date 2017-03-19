@@ -1,16 +1,17 @@
 import sys
-
 import time
+import logging
+
 import ynca
 
-import logging
+""" Yeah, not really a test, more ofa script to see things are not breaking horribly. """
 
 update_number = 1
 
 if __name__ == "__main__":
     def updated():
         global update_number
-        print("Updated".format(update_number))
+        print("Update {}".format(update_number))
         update_number += 1
 
     logger = logging.getLogger()
@@ -19,7 +20,7 @@ if __name__ == "__main__":
     console_handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
     logger.addHandler(console_handler)
     logger.setLevel(logging.INFO)
-    logging.getLogger("ynca.connection").setLevel(logging.DEBUG)
+    #logging.getLogger("ynca.connection").setLevel(logging.DEBUG)
 
     port = "/dev/ttyUSB0"
     if len(sys.argv) > 1:
