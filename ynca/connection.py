@@ -171,7 +171,7 @@ class YncaConnection:
 
 def ynca_console(serial_port):
     """
-    YNCA Terminal provides a simple way of sending YNCA commands to a receiver.
+    YNCA console provides a simple way of sending YNCA commands to a receiver.
     This is useful to figure out what a command does.
 
     Use ? as <value> to GET the value.
