@@ -131,18 +131,16 @@ class YncaZone:
     def __init__(self, zone, connection):
         self._initialized_event = threading.Event()
         self._connection = connection
-        self.subunit = zone
+        self._subunit = zone
 
-        self.name = None
-        self.max_volume = 16.5
+        self._name = None
+        self._max_volume = 16.5
         self._input = None
         self._power = False
         self._volume = None
         self._mute = None
         self._dsp_sound_program = None
         self._scenes = {}
-
-        self._handler_cache = {}
 
     def initialize(self):
         """
@@ -165,18 +163,15 @@ class YncaZone:
         return '\n'.join(output)
 
     def _put(self, function, value):
-        self._connection.put(self.subunit, function, value)
+        self._connection.put(self._subunit, function, value)
 
     def _get(self, function):
-        self._connection.get(self.subunit, function)
+        self._connection.get(self._subunit, function)
 
     def update(self, function, value):
         updated = True
 
-        if function not in self._handler_cache:
-            self._handler_cache[function] = getattr(self, "_handle_{}".format(function.lower()), None)
-        handler = self._handler_cache[function]
-
+        handler = getattr(self, "_handle_{}".format(function.lower()), None)
         if handler is not None:
             handler(value)
         elif len(function) == 10 and function.startswith("SCENE") and function.endswith("NAME"):
@@ -194,7 +189,7 @@ class YncaZone:
         self._volume = float(value)
 
     def _handle_maxvol(self, value):
-        self.max_volume = float(value)
+        self._max_volume = float(value)
 
     def _handle_mute(self, value):
         if value == "Off":
@@ -213,11 +208,16 @@ class YncaZone:
             self._power = False
 
     def _handle_zonename(self, value):
-        self.name = value
+        self._name = value
         self._initialized_event.set()
 
     def _handle_soundprg(self, value):
         self._dsp_sound_program = value
+
+    @property
+    def name(self):
+        """Get zone name"""
+        return self._name
 
     @property
     def on(self):
@@ -236,7 +236,7 @@ class YncaZone:
         return self._mute
 
     @mute.setter
-    def muted(self, value):
+    def mute(self, value):
         """Mute"""
         assert value in Mute  # Is this usefull?
         command_value = "On"
@@ -247,6 +247,11 @@ class YncaZone:
         elif value == Mute.att_minus_20:
             command_value = "Att -20 dB"
         self._put("MUTE", command_value)
+
+    @property
+    def max_volume(self):
+        """Get maximum volume in dB"""
+        return self._max_volume
 
     @property
     def volume(self):
@@ -309,3 +314,4 @@ class YncaZone:
             raise ValueError("Invalid scene ID, should et 1, 2, 3 or 4")
         else:
             self._put("SCENE=Scene {}", scene_id)
+
