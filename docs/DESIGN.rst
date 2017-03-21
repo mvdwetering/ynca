@@ -26,7 +26,7 @@ Detection of the inputs on the zone
 -----------------------------------
 The seems to be no way to check which inputs are available per zone.
 
-The MAIN zone seems to have all inputs. Other zones have less. Mainly the video inputs seem missing, but also
+The ``MAIN`` zone seems to have all inputs. Other zones have less. Mainly the video inputs seem missing, but also
 some audio.
 
 For now lets not attempt to limit zone inputs.
@@ -34,8 +34,8 @@ For now lets not attempt to limit zone inputs.
 
 Zone detection
 --------------
-Since there is no explicit command for supported zones, just check availability by checking all known
-zone subunits (MAIN, ZONE2-ZONE4), if they respond properly to ``AVAIL`` then they are on the device.
+Since there is no explicit command for supported zones, just check availability by checking all known zone subunits
+ (``MAIN``, ``ZONE2``, ``ZONE3`` and ``ZONE4``), if they respond properly to ``AVAIL`` then they are on the device.
 
 
 Keep alive
