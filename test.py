@@ -44,7 +44,7 @@ if __name__ == "__main__":
     receiver.zones["MAIN"].volume = -50.7
     receiver.zones["MAIN"].volume = -50.8
     receiver.zones["MAIN"].volume = -51.0
-    receiver.zones["MAIN"].volume = -51.11234
+    receiver.zones["MAIN"].volume = -35
 
     remaining = 2
     while remaining >= 0:
