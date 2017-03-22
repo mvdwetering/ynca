@@ -88,7 +88,7 @@ class YncaReceiver:
         # Initialize the zones (constructors are synchronous)
         for zone in self._zones_to_initialize:
             logger.info("Initializing zone {}.".format(zone))
-            self.zones[zone] = YncaZone(zone, self._connection)
+            self.zones[zone] = YncaZone(zone, self._connection, self.inputs)
             self.zones[zone].initialize()
         self._zones_to_initialize = None
 
@@ -132,6 +132,7 @@ class YncaZone:
         self._initialized_event = threading.Event()
         self._connection = connection
         self._subunit = zone
+        self._inputs = inputs
         self._initialized = False
 
         self._name = None
@@ -308,6 +309,12 @@ class YncaZone:
     def input(self, value):
         """Set input"""
         self._put("INP", value)
+
+    @property
+    def inputs(self):
+        """Get full list of inputs, some may not be applicable to this zone."""
+        # TODO filter inputs based on availability in this zone.
+        return self._inputs
 
     @property
     def dsp_sound_program(self):
