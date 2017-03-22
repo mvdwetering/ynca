@@ -1,7 +1,7 @@
 YNCA Protocol recap
 ===================
 
-This is a short collection of the basic for the YNCA protocol. The specs are always leading!
+This is a short collection of the basics for the YNCA protocol. The real specs are always leading!
 
 
 Supported receivers
