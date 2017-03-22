@@ -14,6 +14,12 @@ if __name__ == "__main__":
         print("Update {}".format(update_number))
         update_number += 1
 
+    def updated_zone1():
+        print("- Update zone1")
+
+    def updated_zone2():
+        print("- Update zone2")
+
     logger = logging.getLogger()
 
     console_handler = logging.StreamHandler()
@@ -27,6 +33,8 @@ if __name__ == "__main__":
         port = sys.argv[1]
 
     receiver = ynca.YncaReceiver(port, updated)
+    receiver.zones["MAIN"].on_update_callback = updated_zone1
+    receiver.zones["ZONE2"].on_update_callback = updated_zone2
 
     print(receiver)
 
@@ -34,6 +42,7 @@ if __name__ == "__main__":
     for zone in receiver.zones:
         print("--- {} ---".format(zone))
         print(receiver.zones[zone])
+
     print("Inputs:")
     print(receiver.inputs)
 
@@ -45,6 +54,9 @@ if __name__ == "__main__":
     receiver.zones["MAIN"].volume = -50.8
     receiver.zones["MAIN"].volume = -51.0
     receiver.zones["MAIN"].volume = -35
+
+    receiver.zones["ZONE2"].mute = ynca.Mute.off
+    receiver.zones["ZONE2"].mute = ynca.Mute.on
 
     remaining = 2
     while remaining >= 0:

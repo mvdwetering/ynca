@@ -128,10 +128,11 @@ class YncaReceiver:
 
 
 class YncaZone:
-    def __init__(self, zone, connection):
+    def __init__(self, zone, connection, inputs):
         self._initialized_event = threading.Event()
         self._connection = connection
         self._subunit = zone
+        self._initialized = False
 
         self._name = None
         self._max_volume = 16.5
@@ -141,6 +142,8 @@ class YncaZone:
         self._mute = None
         self._dsp_sound_program = None
         self._scenes = {}
+
+        self.on_update_callback = None
 
     def initialize(self):
         """
@@ -152,8 +155,13 @@ class YncaZone:
         self._get("SCENENAME")
         self._get("ZONENAME")
 
-        if not self._initialized_event.wait(2):  # Each command takes at least 100ms + big margin
+        if self._initialized_event.wait(2):  # Each command takes at least 100ms + big margin
+            self._initialized = True
+        else:
             logger.error("Zone initialization failed!")
+
+        if self._initialized and self.on_update_callback:
+            self.on_update_callback()
 
     def __str__(self):
         output = []
@@ -179,6 +187,9 @@ class YncaZone:
             self._scenes[scene_id] = value
         else:
             updated = False
+
+        if updated and self._initialized and self.on_update_callback:
+            self.on_update_callback()
 
         return updated
 
