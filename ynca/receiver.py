@@ -254,6 +254,11 @@ class YncaZone:
         return self._max_volume
 
     @property
+    def min_volume(self):
+        """Get maximum volume in dB"""
+        return -80.5  # Seems to be fixed and the same for all zones
+
+    @property
     def volume(self):
         """Get current volume in dB"""
         return self._volume
