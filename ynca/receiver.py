@@ -38,6 +38,7 @@ class YncaReceiver:
 
         Most useful functionality is available through the zones.
         """
+        self._power = None
         self._initialized_event = threading.Event()
         self._on_update_callback = None  # None to avoid update callbacks during initialization
         self._zones_to_initialize = []
@@ -65,24 +66,25 @@ class YncaReceiver:
     def _initialize_device(self):
         """ Communicate with the device to setup initial state and discover capabilities """
         logger.info("Receiver initialization start.")
-        self._connection.get("SYS", "MODELNAME")
+        self._sys_get("MODELNAME")
+        self._sys_get("PWR")
 
-        # Get user-friendly names for inputs (also allows detection of available inputs)
-        # Note that these are not all inputs, just the external ones it seems
-        self._connection.get("SYS", "INPNAME")
+        # Get user-friendly names for inputs (also allows detection of a number of available inputs)
+        # Note that these are not all inputs, just the external ones it seems.
+        self._sys_get("INPNAME")
 
         # A device also can have a number of 'internal' inputs like the Tuner, USB, Napster etc..
-        # There is no way to get which of there inputs are supported by the device so just try all that we know of
+        # There is no way to get which of there inputs are supported by the device so just try all that we know of.
         for subunit in SUBUNIT_INPUT_MAPPINGS:
             self._connection.get(subunit, "AVAIL")
 
-        # There is no way to get which zones are supported by the device to just try all possible
-        # The callback will create any zone instances on success responses
+        # There is no way to get which zones are supported by the device to just try all possible.
+        # The callback will create any zone instances on success responses.
         for zone in ALL_ZONES:
             self._connection.get(zone, "AVAIL")
 
-        self._connection.get("SYS", "VERSION")  # Use version as a "sync" command
-        if not self._initialized_event.wait(10):  # Each command is 100ms (at least) and a lot are sent\
+        self._sys_get("VERSION")  # Use version as a "sync" command
+        if not self._initialized_event.wait(10):  # Each command is 100ms (at least) and a lot are sent.
             logger.error("Receiver initialization phase 1 failed!")
 
         # Initialize the zones (constructors are synchronous)
@@ -118,6 +120,11 @@ class YncaReceiver:
         elif function == "VERSION":
             self.firmware_version = value
             self._initialized_event.set()
+        elif function == "PWR":
+            if value == "On":
+                self._power = True
+            else:
+                self._power = False
         elif function.startswith("INPNAME"):
             input_id = function[7:]
             self.inputs[input_id] = value
@@ -125,6 +132,23 @@ class YncaReceiver:
             updated = False
 
         return updated
+
+    def _sys_put(self, function, value):
+        self._connection.put("SYS", function, value)
+
+    def _sys_get(self, function):
+        self._connection.get("SYS", function)
+
+    @property
+    def on(self):
+        """Get current on state"""
+        return self._power
+
+    @on.setter
+    def on(self, value):
+        """Turn on/off receiver"""
+        assert value in [True, False]  # Is this usefull?
+        self._sys_put("PWR", "On" if value is True else "Standby")
 
 
 class YncaZone:
@@ -138,7 +162,7 @@ class YncaZone:
         self._name = None
         self._max_volume = 16.5
         self._input = None
-        self._power = False
+        self._power = None
         self._volume = None
         self._mute = None
         self._dsp_sound_program = None
