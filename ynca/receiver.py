@@ -96,48 +96,46 @@ class YncaReceiver:
 
         logger.info("Receiver initialization done.")
 
-    def _connection_update(self, status, subunit, function, value):
+    def _connection_update(self, status, subunit, function_, value):
         if status == YncaProtocolStatus.OK:
-            updated = False
             if subunit == "SYS":
-                updated = self._sys_update(function, value)
+                if self._sys_update(function_, value):
+                    if self._on_update_callback:
+                        self._on_update_callback()
             elif subunit in self.zones:
-                updated = self.zones[subunit].update(function, value)
+                self.zones[subunit].update(function_, value)
             elif subunit in ALL_ZONES:
                 self._zones_to_initialize.append(subunit)
 
-            elif function == "AVAIL":
+            elif function_ == "AVAIL":
                 if subunit in SUBUNIT_INPUT_MAPPINGS:
                     self.inputs[SUBUNIT_INPUT_MAPPINGS[subunit]] = SUBUNIT_INPUT_MAPPINGS[subunit]
 
-            if updated and self._on_update_callback:
-                self._on_update_callback()
-
-    def _sys_update(self, function, value):
+    def _sys_update(self, function_, value):
         updated = True
-        if function == "MODELNAME":
+        if function_ == "MODELNAME":
             self.model_name = value
-        elif function == "VERSION":
+        elif function_ == "VERSION":
             self.firmware_version = value
             self._initialized_event.set()
-        elif function == "PWR":
+        elif function_ == "PWR":
             if value == "On":
                 self._power = True
             else:
                 self._power = False
-        elif function.startswith("INPNAME"):
-            input_id = function[7:]
+        elif function_.startswith("INPNAME"):
+            input_id = function_[7:]
             self.inputs[input_id] = value
         else:
             updated = False
 
         return updated
 
-    def _sys_put(self, function, value):
-        self._connection.put("SYS", function, value)
+    def _sys_put(self, function_, value):
+        self._connection.put("SYS", function_, value)
 
-    def _sys_get(self, function):
-        self._connection.get("SYS", function)
+    def _sys_get(self, function_):
+        self._connection.get("SYS", function_)
 
     @property
     def on(self):
@@ -195,20 +193,20 @@ class YncaZone:
 
         return '\n'.join(output)
 
-    def _put(self, function, value):
-        self._connection.put(self._subunit, function, value)
+    def _put(self, function_, value):
+        self._connection.put(self._subunit, function_, value)
 
-    def _get(self, function):
-        self._connection.get(self._subunit, function)
+    def _get(self, function_):
+        self._connection.get(self._subunit, function_)
 
-    def update(self, function, value):
+    def update(self, function_, value):
         updated = True
 
-        handler = getattr(self, "_handle_{}".format(function.lower()), None)
+        handler = getattr(self, "_handle_{}".format(function_.lower()), None)
         if handler is not None:
             handler(value)
-        elif len(function) == 10 and function.startswith("SCENE") and function.endswith("NAME"):
-            scene_id = int(function[5:6])
+        elif len(function_) == 10 and function_.startswith("SCENE") and function_.endswith("NAME"):
+            scene_id = int(function_[5:6])
             self._scenes[scene_id] = value
         else:
             updated = False
