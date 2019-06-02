@@ -20,7 +20,7 @@ This package contains:
 ``YncaReceiver``
     a class that represents YNCA capable receiver and allows you to control it
 ``ynca_console``
-    a function that provides a console to directly give YNCA commands and see the responses (debugging)
+    function that provides an interactive console for YNCA commands (debugging)
 
 Example
 =======
