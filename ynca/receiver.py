@@ -125,6 +125,9 @@ class YncaReceiver:
                 self._power = False
         elif function_.startswith("INPNAME"):
             input_id = function_[7:]
+            if input_id == 'VAUX':
+                # Input ID used to set/get INP is actually V-AUX so compensate for that
+                input_id = 'V-AUX'
             self.inputs[input_id] = value
         else:
             updated = False
