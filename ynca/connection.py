@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import queue
 import re
 import sys
@@ -137,9 +139,9 @@ class YncaConnection:
         serial_url -- Can be a devicename (e.g. /dev/ttyUSB0 or COM3),
                       but also any of supported url handlers by pyserial
                       https://pyserial.readthedocs.io/en/latest/url_handlers.html
-                      This allows to setup serial over IP connections with socket:// or
-                      select a specific usb-2-serial adapter with hwgrep:// when
-                      the links to ttyUSB# change randomly.
+                      This allows to setup IP connections with socket://ip:50000
+                      or select a specific usb-2-serial with hwgrep:// which is
+                      useful when the links to ttyUSB# change randomly.
 
         callback -- Callback to be called when changes happen. Should be defined as
                     `def my_callback(status, subunit, function, value):`
