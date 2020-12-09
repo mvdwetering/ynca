@@ -171,13 +171,14 @@ class YncaConnection:
 
 def ynca_console(serial_port):
     """
-    YNCA console provides a simple way of sending YNCA commands to a receiver.
+    With the YNCA console you can manually send YNCA commands to a receiver.
     This is useful to figure out what a command does.
 
     Use ? as <value> to GET the value.
     Type 'quit' to exit.
 
     Command format: @<subunit>:<function>=<value>
+    Example: @SYS:MODELNAME=?
     """
 
     def output_response(status, subunit, function, value):
@@ -189,7 +190,7 @@ def ynca_console(serial_port):
     connection.connect()
     quit_ = False
     while not quit_:
-        command = input('>>> ')
+        command = input('>> ')
 
         if command == "quit":
             quit_ = True
