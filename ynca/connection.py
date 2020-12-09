@@ -131,17 +131,21 @@ class YncaProtocol(serial.threaded.LineReader):
 
 
 class YncaConnection:
-    def __init__(self, serial_port, callback=None):
-        self._port = serial_port
+    def __init__(self, serial_url, callback=None):
+        """Instantiate a YncaConnection
 
-        # Poor mans IP address format detection.
-        # Not entirely correct, but good enough to see if an IP address is intended or a serial port.
-        match = re.match(r"^(?P<ip_address>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})(:(?P<ynca_port>\d{1,5}))?$", serial_port)
-        if match:
-            ip_address = match.group("ip_address")
-            ynca_port = match.group("ynca_port") or "50000"
-            self._port = "socket://{}:{}".format(ip_address, ynca_port)
+        serial_url -- Can be a devicename (e.g. /dev/ttyUSB0 or COM3),
+                      but also any of supported url handlers by pyserial
+                      https://pyserial.readthedocs.io/en/latest/url_handlers.html
+                      This allows to setup serial over IP connections with socket:// or
+                      select a specific usb-2-serial adapter with hwgrep:// when
+                      the links to ttyUSB# change randomly.
 
+        callback -- Callback to be called when changes happen. Should be defined as
+                    `def my_callback(status, subunit, function, value):`
+
+        """
+        self._port = serial_url
         self.callback = callback
         self._serial = None
         self._readerthread = None
