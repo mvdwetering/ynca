@@ -21,7 +21,7 @@ class YncaProtocolStatus(Enum):
 
 class YncaProtocol(serial.threaded.LineReader):
     # YNCA spec specifies that there should be at least 100 milliseconds between commands
-    COMMAND_INTERVAL = 0.1
+    COMMAND_SPACING = 0.1
 
     # YNCA spec says standby timeout is 40 seconds, so use a shorter period to be on the safe side
     KEEP_ALIVE_INTERVAL = 30
@@ -117,7 +117,7 @@ class YncaProtocol(serial.threaded.LineReader):
 
                     self._last_sent_command = message
                     self.write_line(message)
-                    time.sleep(self.COMMAND_INTERVAL)  # Maintain required command spacing
+                    time.sleep(self.COMMAND_SPACING)  # Maintain required command spacing
             except queue.Empty:
                 # To avoid random message being eaten because device goes to sleep, keep it alive
                 self._send_keepalive()
