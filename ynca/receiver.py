@@ -167,6 +167,7 @@ class YncaZone:
         self._volume = None
         self._mute = None
         self._dsp_sound_program = None
+        self._straight = None
         self._scenes = {}
 
         self.on_update_callback = None
@@ -250,6 +251,12 @@ class YncaZone:
 
     def _handle_soundprg(self, value):
         self._dsp_sound_program = value
+
+    def _handle_straight(self, value):
+        if value == "On":
+            self._straight = True
+        else:
+            self._straight = False
 
     @property
     def name(self):
@@ -353,6 +360,18 @@ class YncaZone:
             self._put("SOUNDPRG", value)
         else:
             raise ValueError("Soundprogram not in DspSoundPrograms")
+
+    @property
+    def straight(self):
+        """Get the current Straight value"""
+        return self._straight
+
+    @straight.setter
+    def straight(self, value):
+        """Set the Straight value"""
+        assert value in [True, False]  # Is this usefull?
+        self._put("STRAIGHT", "On" if value is True else "Off")
+
 
     def activate_scene(self, scene_id):
         """Activate a scene"""
