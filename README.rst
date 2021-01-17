@@ -33,7 +33,7 @@ Example
     # Create a receiver object. This call takes a while (multiple seconds) since
     # it communicates quite a lot with the actual device.
     # Note that later calls that control the receiver are are fast (they get async responses)
-    receiver = ynca.YncaReceiver("/dev/tty1")  # Port could also be e.g. COM3 on Windows or 192.168.1.12 for IP connection
+    receiver = ynca.YncaReceiver("/dev/tty1")  # Port could also be e.g. COM3 on Windows or socket://192.168.1.12:50000 for IP connection
 
     # Attributes that are still None after initialization are not supported by the receiver/zone
     # ``receiver.zones`` is a dictionary with all available zone object for the receiver
