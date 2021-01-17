@@ -14,3 +14,6 @@ __pycache__/
 
 # PyCharm
 .idea/workspace.xml
+
+# VSCode
+.vscode/
