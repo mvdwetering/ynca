@@ -34,7 +34,7 @@ class YncaProtocol(serial.threaded.LineReader):
         self._send_queue = None
         self._send_thread = None
         self._last_sent_command = None
-        self.connected = False;
+        self.connected = False
         self._keep_alive_pending = False
 
     def connection_made(self, transport):
@@ -55,7 +55,7 @@ class YncaProtocol(serial.threaded.LineReader):
         self._send_keepalive()
 
     def connection_lost(self, exc):
-        self.connected = False;
+        self.connected = False
 
         logger.info("Connection lost")
 
@@ -91,7 +91,11 @@ class YncaProtocol(serial.threaded.LineReader):
             function = match.group("function")
             value = match.group("value")
 
-            if self._keep_alive_pending and subunit == "SYS" and function == "MODELNAME":
+            if (
+                self._keep_alive_pending
+                and subunit == "SYS"
+                and function == "MODELNAME"
+            ):
                 ignore = True
 
         self._keep_alive_pending = False
@@ -119,17 +123,22 @@ class YncaProtocol(serial.threaded.LineReader):
 
                     self._last_sent_command = message
                     self.write_line(message)
-                    time.sleep(self.COMMAND_SPACING)  # Maintain required command spacing
+                    time.sleep(
+                        self.COMMAND_SPACING
+                    )  # Maintain required command spacing
             except queue.Empty:
                 # To avoid random message being eaten because device goes to sleep, keep it alive
                 self._send_keepalive()
 
     def put(self, subunit, funcname, parameter):
         self._send_queue.put(
-            '@{subunit}:{funcname}={parameter}'.format(subunit=subunit, funcname=funcname, parameter=parameter))
+            "@{subunit}:{funcname}={parameter}".format(
+                subunit=subunit, funcname=funcname, parameter=parameter
+            )
+        )
 
     def get(self, subunit, funcname):
-        self.put(subunit, funcname, '?')
+        self.put(subunit, funcname, "?")
 
 
 class YncaConnection:
@@ -196,18 +205,24 @@ def ynca_console(serial_port):
     connection.connect()
     quit_ = False
     while not quit_:
-        command = input('>> ')
+        command = input(">> ")
 
         if command == "quit":
             quit_ = True
         elif command != "":
-            match = re.match(r"@?(?P<subunit>.+?):(?P<function>.+?)=(?P<value>.+)", command)
+            match = re.match(
+                r"@?(?P<subunit>.+?):(?P<function>.+?)=(?P<value>.+)", command
+            )
             if match is not None:
                 # Because the connection receives on another thread, there is no use in catching YNCA exceptions here
                 # However exceptions will cause the connection to break, re-connect if needed
                 if not connection.connected:
                     connection.connect()
-                connection.put(match.group("subunit"), match.group("function"), match.group("value"))
+                connection.put(
+                    match.group("subunit"),
+                    match.group("function"),
+                    match.group("value"),
+                )
             else:
                 print("Invalid command format")
 
