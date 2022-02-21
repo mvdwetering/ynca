@@ -1,7 +1,12 @@
 import threading
 import logging
 
+from typing import Dict
+
+from serial.serialutil import SerialException
+
 from .constants import DSP_SOUND_PROGRAMS, Mute
+from .errors import YncaException, YncaConnectionError
 from .helpers import number_to_string_with_stepsize
 from .connection import YncaConnection, YncaProtocolStatus
 
@@ -28,44 +33,65 @@ SUBUNIT_INPUT_MAPPINGS = {
 
 
 class YncaReceiver:
-
     def __init__(self, port, on_update=None):
         """
         Constructor for a Receiver object.
+        """
+        self._port = port
+        self._initialized_event = threading.Event()
+        self._on_update_callback = on_update
+        self._reset_internal_state()
+
+    def _reset_internal_state(self):
+        self._power = None
+        self.model_name = None
+        self.firmware_version = None
+        self.zones: Dict[str, YncaZone] = {}
+        self.inputs: Dict[str, str] = {}
+
+    def initialize(self):
+        """
+        Initializes the receiver.
 
         Communicates with the device to determine capabilities.
         This is a long running function!
-
-        Most useful functionality is available through the zones.
+        It will take several seconds to complete
         """
-        self._power = None
-        self._initialized_event = threading.Event()
-        self._on_update_callback = None  # None to avoid update callbacks during initialization
-        self._zones_to_initialize = []
+        self._reset_internal_state()
 
-        self.model_name = None
-        self.firmware_version = None
-        self.zones = {}
-        self.inputs = {}
-        self._connection = YncaConnection(port, self._connection_update)
-        self._connection.connect()
+        # Avoid update callbacks during initialization
+        stored_on_update_callback = self._on_update_callback
+        self._on_update_callback = None
 
-        self._initialize_device()
+        try:
+            self._connection = YncaConnection(self._port, self._connection_update)
+            self._connection.connect()
+            self._initialize_device()
+        except SerialException as e:
+            raise YncaConnectionError(e)
+        finally:
+            self._connection.disconnect()
 
-        self._on_update_callback = on_update
-        if self._on_update_callback:  # All changed after initialization
+        # Re-install on_update callback and call it to signal changes occurred during initialization
+        self._on_update_callback = stored_on_update_callback
+        if self._on_update_callback:
             self._on_update_callback()
+
+    def close(self):
+        if self._connection:
+            self._connection.disconnect()
 
     def __str__(self):
         output = []
         for key in self.__dict__:
             output.append("{key}={value}".format(key=key, value=self.__dict__[key]))
 
-        return '\n'.join(output)
+        return "\n".join(output)
 
     def _initialize_device(self):
         """ Communicate with the device to setup initial state and discover capabilities """
         logger.info("Receiver initialization start.")
+
         self._sys_get("MODELNAME")
         self._sys_get("PWR")
 
@@ -84,7 +110,9 @@ class YncaReceiver:
             self._connection.get(zone, "AVAIL")
 
         self._sys_get("VERSION")  # Use version as a "sync" command
-        if not self._initialized_event.wait(10):  # Each command is 100ms (at least) and a lot are sent.
+        if not self._initialized_event.wait(
+            10
+        ):  # Each command is 100ms (at least) and a lot are sent.
             logger.error("Receiver initialization phase 1 failed!")
 
         # Initialize the zones (constructors are synchronous)
@@ -99,17 +127,16 @@ class YncaReceiver:
     def _connection_update(self, status, subunit, function_, value):
         if status == YncaProtocolStatus.OK:
             if subunit == "SYS":
-                if self._sys_update(function_, value):
-                    if self._on_update_callback:
-                        self._on_update_callback()
+                self._sys_update(function_, value)
             elif subunit in self.zones:
                 self.zones[subunit].update(function_, value)
             elif subunit in ALL_ZONES:
                 self._zones_to_initialize.append(subunit)
-
             elif function_ == "AVAIL":
                 if subunit in SUBUNIT_INPUT_MAPPINGS:
-                    self.inputs[SUBUNIT_INPUT_MAPPINGS[subunit]] = SUBUNIT_INPUT_MAPPINGS[subunit]
+                    self.inputs[
+                        SUBUNIT_INPUT_MAPPINGS[subunit]
+                    ] = SUBUNIT_INPUT_MAPPINGS[subunit]
 
     def _sys_update(self, function_, value):
         updated = True
@@ -125,14 +152,15 @@ class YncaReceiver:
                 self._power = False
         elif function_.startswith("INPNAME"):
             input_id = function_[7:]
-            if input_id == 'VAUX':
+            if input_id == "VAUX":
                 # Input ID used to set/get INP is actually V-AUX so compensate for that
-                input_id = 'V-AUX'
+                input_id = "V-AUX"
             self.inputs[input_id] = value
         else:
             updated = False
 
-        return updated
+        if updated and self._on_update_callback:
+            self._on_update_callback()
 
     def _sys_put(self, function_, value):
         self._connection.put("SYS", function_, value)
@@ -177,12 +205,16 @@ class YncaZone:
         Initialize the Zone based on capabilities of the device.
         This is a long running function!
         """
-        self._get("BASIC")  # Gets PWR, SLEEP, VOL, MUTE, INP, STRAIGHT, ENHANCER and SOUNDPRG (if applicable)
+        self._get(
+            "BASIC"
+        )  # Gets PWR, SLEEP, VOL, MUTE, INP, STRAIGHT, ENHANCER and SOUNDPRG (if applicable)
         self._get("MAXVOL")
         self._get("SCENENAME")
         self._get("ZONENAME")
 
-        if self._initialized_event.wait(2):  # Each command takes at least 100ms + big margin
+        if self._initialized_event.wait(
+            2
+        ):  # Each command takes at least 100ms + big margin
             self._initialized = True
         else:
             logger.error("Zone initialization failed!")
@@ -195,7 +227,7 @@ class YncaZone:
         for key in self.__dict__:
             output.append("{key}={value}".format(key=key, value=self.__dict__[key]))
 
-        return '\n'.join(output)
+        return "\n".join(output)
 
     def _put(self, function_, value):
         self._connection.put(self._subunit, function_, value)
@@ -209,7 +241,11 @@ class YncaZone:
         handler = getattr(self, "_handle_{}".format(function_.lower()), None)
         if handler is not None:
             handler(value)
-        elif len(function_) == 10 and function_.startswith("SCENE") and function_.endswith("NAME"):
+        elif (
+            len(function_) == 10
+            and function_.startswith("SCENE")
+            and function_.endswith("NAME")
+        ):
             scene_id = int(function_[5:6])
             self._scenes[scene_id] = value
         else:
@@ -372,7 +408,6 @@ class YncaZone:
         assert value in [True, False]  # Is this usefull?
         self._put("STRAIGHT", "On" if value is True else "Off")
 
-
     def activate_scene(self, scene_id):
         """Activate a scene"""
         if len(self._scenes) == 0:
@@ -381,4 +416,3 @@ class YncaZone:
             raise ValueError("Invalid scene ID, should et 1, 2, 3 or 4")
         else:
             self._put("SCENE=Scene {}", scene_id)
-
