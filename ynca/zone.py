@@ -3,6 +3,8 @@ import logging
 
 from typing import Dict
 
+from ynca.connection import YncaConnection
+
 from .constants import DSP_SOUND_PROGRAMS, Mute
 from .helpers import number_to_string_with_stepsize
 
@@ -10,10 +12,16 @@ logger = logging.getLogger(__name__)
 
 
 class YncaZone:
-    def __init__(self, zone, connection, inputs, on_update=None):
+    def __init__(
+        self,
+        subunit_id: str,
+        connection: YncaConnection,
+        inputs: Dict[str, str],
+        on_update=None,
+    ):
         self._initialized_event = threading.Event()
         self._connection = connection
-        self._subunit = zone
+        self._subunit = subunit_id
         self._inputs = inputs
         self._initialized = False
         self.on_update_callback = on_update
@@ -59,13 +67,13 @@ class YncaZone:
 
         return "\n".join(output)
 
-    def _put(self, function_, value):
+    def _put(self, function_: str, value: str):
         self._connection.put(self._subunit, function_, value)
 
-    def _get(self, function_):
+    def _get(self, function_: str):
         self._connection.get(self._subunit, function_)
 
-    def update(self, function_, value):
+    def update(self, function_: str, value: str):
         updated = True
 
         handler = getattr(self, "_handle_{}".format(function_.lower()), None)
@@ -86,16 +94,16 @@ class YncaZone:
 
         return updated
 
-    def _handle_inp(self, value):
+    def _handle_inp(self, value: str):
         self._input = value
 
-    def _handle_vol(self, value):
+    def _handle_vol(self, value: str):
         self._volume = float(value)
 
-    def _handle_maxvol(self, value):
+    def _handle_maxvol(self, value: str):
         self._max_volume = float(value)
 
-    def _handle_mute(self, value):
+    def _handle_mute(self, value: str):
         if value == "Off":
             self._mute = Mute.off
         elif value == "Att -20dB":
@@ -105,20 +113,20 @@ class YncaZone:
         else:
             self._mute = Mute.on
 
-    def _handle_pwr(self, value):
+    def _handle_pwr(self, value: str):
         if value == "On":
             self._power = True
         else:
             self._power = False
 
-    def _handle_zonename(self, value):
+    def _handle_zonename(self, value: str):
         self._name = value
         self._initialized_event.set()
 
-    def _handle_soundprg(self, value):
+    def _handle_soundprg(self, value: str):
         self._dsp_sound_program = value
 
-    def _handle_straight(self, value):
+    def _handle_straight(self, value: str):
         if value == "On":
             self._straight = True
         else:
@@ -135,7 +143,7 @@ class YncaZone:
         return self._power
 
     @on.setter
-    def on(self, value):
+    def on(self, value: bool):
         """Turn on/off zone"""
         assert value in [True, False]  # Is this usefull?
         self._put("PWR", "On" if value is True else "Standby")
@@ -146,7 +154,7 @@ class YncaZone:
         return self._mute
 
     @mute.setter
-    def mute(self, value):
+    def mute(self, value: Mute):
         """Mute"""
         assert value in Mute  # Is this usefull?
         command_value = "On"
@@ -165,7 +173,7 @@ class YncaZone:
 
     @property
     def min_volume(self):
-        """Get maximum volume in dB"""
+        """Get minimum volume in dB"""
         return -80.5  # Seems to be fixed and the same for all zones
 
     @property
@@ -174,11 +182,11 @@ class YncaZone:
         return self._volume
 
     @volume.setter
-    def volume(self, value):
-        """Set volume in dB. The receiver only works with 0.5 increments. Input values will be round."""
+    def volume(self, value: float):
+        """Set volume in dB. The receiver only works with 0.5 increments. Input values will be rounded to nearest 0.5 step."""
         self._put("VOL", number_to_string_with_stepsize(value, 1, 0.5))
 
-    def volume_up(self, step_size=0.5):
+    def volume_up(self, step_size: float = 0.5):
         """
         Increase the volume with given stepsize.
         Supported stepsizes are: 0.5, 1, 2 and 5
@@ -188,7 +196,7 @@ class YncaZone:
             value = "Up {} dB".format(step_size)
         self._put("VOL", value)
 
-    def volume_down(self, step_size=0.5):
+    def volume_down(self, step_size:float=0.5):
         """
         Decrease the volume with given stepsize.
         Supported stepsizes are: 0.5, 1, 2 and 5
@@ -204,7 +212,7 @@ class YncaZone:
         return self._input
 
     @input.setter
-    def input(self, value):
+    def input(self, value:str):
         """Set input"""
         self._put("INP", value)
 
@@ -220,7 +228,7 @@ class YncaZone:
         return self._dsp_sound_program
 
     @dsp_sound_program.setter
-    def dsp_sound_program(self, value):
+    def dsp_sound_program(self, value:str):
         """Set the DSP sound program"""
         if value in DSP_SOUND_PROGRAMS:
             self._put("SOUNDPRG", value)
@@ -233,12 +241,11 @@ class YncaZone:
         return self._straight
 
     @straight.setter
-    def straight(self, value):
+    def straight(self, value:bool):
         """Set the Straight value"""
-        assert value in [True, False]  # Is this usefull?
         self._put("STRAIGHT", "On" if value is True else "Off")
 
-    def activate_scene(self, scene_id):
+    def activate_scene(self, scene_id:int):
         """Activate a scene"""
         if len(self._scenes) == 0:
             raise ValueError("Zone does not support scenes")

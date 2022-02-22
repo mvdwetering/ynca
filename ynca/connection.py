@@ -1,16 +1,16 @@
 #!/usr/bin/env python3
 
+import logging
 import queue
 import re
 import sys
 import threading
 import time
-import logging
 from enum import Enum
+from typing import Callable
 
 import serial
 import serial.threaded
-
 
 logger = logging.getLogger(__name__)
 
@@ -142,7 +142,9 @@ class YncaProtocol(serial.threaded.LineReader):
 
 
 class YncaConnection:
-    def __init__(self, serial_url, callback=None):
+    def __init__(
+        self, serial_url: str, callback: Callable[[str, str, str], None] = None
+    ):
         """Instantiate a YncaConnection
 
         serial_url -- Can be a devicename (e.g. /dev/ttyUSB0 or COM3),
@@ -173,10 +175,10 @@ class YncaConnection:
     def disconnect(self):
         self._readerthread.close()
 
-    def put(self, subunit, funcname, parameter):
+    def put(self, subunit: str, funcname: str, parameter: str):
         self._protocol.put(subunit, funcname, parameter)
 
-    def get(self, subunit, funcname):
+    def get(self, subunit: str, funcname: str):
         self._protocol.get(subunit, funcname)
 
     @property
@@ -184,7 +186,7 @@ class YncaConnection:
         return self._protocol.connected
 
 
-def ynca_console(serial_port):
+def ynca_console(serial_port: str):
     """
     With the YNCA console you can manually send YNCA commands to a receiver.
     This is useful to figure out what a command does.

@@ -32,7 +32,7 @@ SUBUNIT_INPUT_MAPPINGS = {
 
 
 class YncaReceiver:
-    def __init__(self, port, on_update=None):
+    def __init__(self, port: str, on_update=None):
         """
         Constructor for a Receiver object.
         """
@@ -88,7 +88,7 @@ class YncaReceiver:
         return "\n".join(output)
 
     def _initialize_device(self):
-        """ Communicate with the device to setup initial state and discover capabilities """
+        """Communicate with the device to setup initial state and discover capabilities"""
         logger.info("Receiver initialization start.")
 
         self._sys_get("MODELNAME")
@@ -123,7 +123,9 @@ class YncaReceiver:
 
         logger.info("Receiver initialization done.")
 
-    def _connection_update(self, status, subunit, function_, value):
+    def _connection_update(
+        self, status: YncaProtocolStatus, subunit: str, function_: str, value: str
+    ):
         if status == YncaProtocolStatus.OK:
             if subunit == "SYS":
                 self._sys_update(function_, value)
@@ -137,7 +139,7 @@ class YncaReceiver:
                         SUBUNIT_INPUT_MAPPINGS[subunit]
                     ] = SUBUNIT_INPUT_MAPPINGS[subunit]
 
-    def _sys_update(self, function_, value):
+    def _sys_update(self, function_: str, value: str):
         updated = True
         if function_ == "MODELNAME":
             self.model_name = value
@@ -161,10 +163,10 @@ class YncaReceiver:
         if updated and self._on_update_callback:
             self._on_update_callback()
 
-    def _sys_put(self, function_, value):
+    def _sys_put(self, function_: str, value: str):
         self._connection.put("SYS", function_, value)
 
-    def _sys_get(self, function_):
+    def _sys_get(self, function_: str):
         self._connection.get("SYS", function_)
 
     @property
@@ -173,7 +175,6 @@ class YncaReceiver:
         return self._power
 
     @on.setter
-    def on(self, value):
+    def on(self, value: bool):
         """Turn on/off receiver"""
-        assert value in [True, False]  # Is this usefull?
         self._sys_put("PWR", "On" if value is True else "Standby")
