@@ -33,7 +33,7 @@ class YncaZone:
 
     def _reset_internal_state(self):
         self._name = None
-        self._max_volume = 16.5
+        self._max_volume = 16.5  # is 16.5 for zones where it is not configurable
         self._input = None
         self._power = None
         self._volume = None

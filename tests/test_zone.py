@@ -139,6 +139,15 @@ def test_initialize_minimal(connection, update_callback):
 
     assert update_callback.call_count == 1
     assert z.name == "ZoneName"
+    assert z.on is None
+    assert z.input is None
+    assert z.volume is None
+    assert z.max_volume == 16.5
+    assert z.min_volume == -80.5
+    assert z.mute is None
+    assert z.straight is None
+    assert z.dsp_sound_program is None
+    assert len(z.scenes.keys()) == 0
 
 
 def test_initialize_full(connection, update_callback):
@@ -159,6 +168,12 @@ def test_initialize_full(connection, update_callback):
     assert z.straight is False
     assert z.dsp_sound_program == "Standard"
     assert z.name == "ZoneName"
+
+    assert len(z.scenes.keys()) == 4
+    assert z.scenes["1"] == "Scene name 1"
+    assert z.scenes["2"] == "Scene name 2"
+    assert z.scenes["3"] == "Scene name 3"
+    assert z.scenes["4"] == "Scene name 4"
 
 
 def test_on(connection, initialized_zone):
@@ -292,11 +307,5 @@ def test_scene(connection, initialized_zone):
     connection.put.assert_called_with(SUBUNIT, "SCENE", "Scene 2")
 
     # Updates from device
-    assert len(initialized_zone.scenes.keys()) == 4
-    assert initialized_zone.scenes["1"] == "Scene name 1"
-    assert initialized_zone.scenes["2"] == "Scene name 2"
-    assert initialized_zone.scenes["3"] == "Scene name 3"
-    assert initialized_zone.scenes["4"] == "Scene name 4"
-
     connection.send_protocol_message(SUBUNIT, "SCENE3NAME", "New Name")
     assert initialized_zone.scenes["3"] == "New Name"
