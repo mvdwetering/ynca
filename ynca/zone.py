@@ -3,10 +3,11 @@ import logging
 
 from typing import Dict
 
-from ynca.connection import YncaConnection
+from .connection import YncaConnection, YncaProtocolStatus
 
 from .constants import DSP_SOUND_PROGRAMS, Mute
 from .helpers import number_to_string_with_stepsize
+from .errors import YncaZoneInitializationFailedException
 
 logger = logging.getLogger(__name__)
 
@@ -19,12 +20,15 @@ class YncaZone:
         inputs: Dict[str, str],
         on_update=None,
     ):
-        self._initialized_event = threading.Event()
-        self._connection = connection
         self._subunit = subunit_id
         self._inputs = inputs
         self._initialized = False
         self.on_update_callback = on_update
+
+        self._connection = connection
+        connection.register_callback(self._protocol_message_received)
+
+        self._initialized_event = threading.Event()
         self._reset_internal_state()
 
     def _reset_internal_state(self):
@@ -43,6 +47,8 @@ class YncaZone:
         Initialize the Zone based on capabilities of the device.
         This is a long running function!
         """
+        self._initialized = False
+
         self._get(
             "BASIC"
         )  # Gets PWR, SLEEP, VOL, MUTE, INP, STRAIGHT, ENHANCER and SOUNDPRG (if applicable)
@@ -50,14 +56,16 @@ class YncaZone:
         self._get("SCENENAME")
         self._get("ZONENAME")
 
+        # Receiving Zonename during initialization will set the event
         if self._initialized_event.wait(
             2
         ):  # Each command takes at least 100ms + big margin
             self._initialized = True
         else:
             logger.error("Zone initialization failed!")
+            raise YncaZoneInitializationFailedException(self._subunit)
 
-        if self._initialized and self.on_update_callback:
+        if self.on_update_callback:
             self.on_update_callback()
 
     def __str__(self):
@@ -73,10 +81,14 @@ class YncaZone:
     def _get(self, function_: str):
         self._connection.get(self._subunit, function_)
 
-    def update(self, function_: str, value: str):
-        updated = True
+    def _protocol_message_received(
+        self, status: YncaProtocolStatus, subunit: str, function_: str, value: str
+    ):
+        if self._subunit is not subunit or status is not YncaProtocolStatus.OK:
+            return
 
-        handler = getattr(self, "_handle_{}".format(function_.lower()), None)
+        updated = True
+        handler = getattr(self, f"_handle_{function_.lower()}", None)
         if handler is not None:
             handler(value)
         elif (
@@ -84,7 +96,7 @@ class YncaZone:
             and function_.startswith("SCENE")
             and function_.endswith("NAME")
         ):
-            scene_id = int(function_[5:6])
+            scene_id = function_[5:6]
             self._scenes[scene_id] = value
         else:
             updated = False
@@ -106,9 +118,9 @@ class YncaZone:
     def _handle_mute(self, value: str):
         if value == "Off":
             self._mute = Mute.off
-        elif value == "Att -20dB":
+        elif value == "Att -20 dB":
             self._mute = Mute.att_minus_20
-        elif value == "Att -40dB":
+        elif value == "Att -40 dB":
             self._mute = Mute.att_minus_40
         else:
             self._mute = Mute.on
@@ -121,7 +133,11 @@ class YncaZone:
 
     def _handle_zonename(self, value: str):
         self._name = value
-        self._initialized_event.set()
+
+        # During initialization this is used to signal
+        # that initialization is done
+        if not self._initialized:
+            self._initialized_event.set()
 
     def _handle_soundprg(self, value: str):
         self._dsp_sound_program = value
@@ -145,7 +161,6 @@ class YncaZone:
     @on.setter
     def on(self, value: bool):
         """Turn on/off zone"""
-        assert value in [True, False]  # Is this usefull?
         self._put("PWR", "On" if value is True else "Standby")
 
     @property
@@ -196,7 +211,7 @@ class YncaZone:
             value = "Up {} dB".format(step_size)
         self._put("VOL", value)
 
-    def volume_down(self, step_size:float=0.5):
+    def volume_down(self, step_size: float = 0.5):
         """
         Decrease the volume with given stepsize.
         Supported stepsizes are: 0.5, 1, 2 and 5
@@ -212,7 +227,7 @@ class YncaZone:
         return self._input
 
     @input.setter
-    def input(self, value:str):
+    def input(self, value: str):
         """Set input"""
         self._put("INP", value)
 
@@ -228,7 +243,7 @@ class YncaZone:
         return self._dsp_sound_program
 
     @dsp_sound_program.setter
-    def dsp_sound_program(self, value:str):
+    def dsp_sound_program(self, value: str):
         """Set the DSP sound program"""
         if value in DSP_SOUND_PROGRAMS:
             self._put("SOUNDPRG", value)
@@ -241,15 +256,20 @@ class YncaZone:
         return self._straight
 
     @straight.setter
-    def straight(self, value:bool):
+    def straight(self, value: bool):
         """Set the Straight value"""
         self._put("STRAIGHT", "On" if value is True else "Off")
 
-    def activate_scene(self, scene_id:int):
+    @property
+    def scenes(self):
+        """Get the dictionary with scenes where key, value = id, name"""
+        return self._scenes
+
+    def activate_scene(self, scene_id: str):
         """Activate a scene"""
         if len(self._scenes) == 0:
             raise ValueError("Zone does not support scenes")
-        elif scene_id not in [1, 2, 3, 4]:
-            raise ValueError("Invalid scene ID, should et 1, 2, 3 or 4")
+        elif scene_id not in self._scenes.keys():
+            raise ValueError("Invalid scene ID")
         else:
-            self._put("SCENE=Scene {}", scene_id)
+            self._put("SCENE", f"Scene {scene_id}")

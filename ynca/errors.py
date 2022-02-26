@@ -6,6 +6,8 @@ class YncaException(Exception):
 
 
 class YncaConnectionError(YncaException):
-    """
-    Connection to the device failed
-    """
+    """ Connection to the device failed """
+
+
+class YncaZoneInitializationFailedException(YncaException):
+    """ Initialization of Zone failed """

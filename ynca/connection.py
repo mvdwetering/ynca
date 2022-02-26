@@ -7,7 +7,7 @@ import sys
 import threading
 import time
 from enum import Enum
-from typing import Callable
+from typing import Callable, Set
 
 import serial
 import serial.threaded
@@ -143,7 +143,9 @@ class YncaProtocol(serial.threaded.LineReader):
 
 class YncaConnection:
     def __init__(
-        self, serial_url: str, callback: Callable[[str, str, str], None] = None
+        self,
+        serial_url: str,
+        callback: Callable[[YncaProtocolStatus, str, str, str], None] = None,
     ):
         """Instantiate a YncaConnection
 
@@ -159,10 +161,29 @@ class YncaConnection:
 
         """
         self._port = serial_url
-        self.callback = callback
         self._serial = None
         self._readerthread = None
         self._protocol = None
+
+        self.callbacks: Set[Callable[[YncaProtocolStatus, str, str, str], None]] = set()
+        if callback:
+            self.register_callback(callback)
+
+    def register_callback(
+        self, callback: Callable[[YncaProtocolStatus, str, str, str], None]
+    ):
+        self.callbacks.add(callback)
+
+    def unregister_callback(
+        self, callback: Callable[[YncaProtocolStatus, str, str, str], None]
+    ):
+        self.callbacks.remove(callback)
+
+    def _call_registered_callbacks(
+        self, status: YncaProtocolStatus, subunit: str, function: str, value: str
+    ):
+        for callback in self.callbacks:
+            callback(status, subunit, function, value)
 
     def connect(self):
         if not self._serial:
@@ -170,7 +191,7 @@ class YncaConnection:
         self._readerthread = serial.threaded.ReaderThread(self._serial, YncaProtocol)
         self._readerthread.start()
         dummy, self._protocol = self._readerthread.connect()
-        self._protocol.callback = self.callback
+        self._protocol.callback = self._call_registered_callbacks
 
     def disconnect(self):
         self._readerthread.close()
