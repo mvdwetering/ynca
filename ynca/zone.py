@@ -72,7 +72,7 @@ class YncaZone(Subunit):
 
         return "\n".join(output)
 
-    def _unhandled_subunit_message_received(
+    def _subunit_message_received_without_handler(
         self, status: YncaProtocolStatus, function_: str, value: str
     ) -> bool:
         updated = True

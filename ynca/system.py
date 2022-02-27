@@ -103,7 +103,7 @@ class System(Subunit):
     ):
         super()._protocol_message_received(status, subunit, function_, value)
 
-        # TODO move this handling aout of the SYS subunit
+        # TODO move this handling out of the SYS subunit
         if not self._initialized:
             if subunit in ALL_ZONES and subunit not in self.zones:
                 self.zones.append(subunit)
@@ -113,7 +113,7 @@ class System(Subunit):
                         SUBUNIT_INPUT_MAPPINGS[subunit]
                     ] = SUBUNIT_INPUT_MAPPINGS[subunit]
 
-    def _unhandled_subunit_message_received(
+    def _subunit_message_received_without_handler(
         self, status: YncaProtocolStatus, function_: str, value: str
     ) -> bool:
         updated = True

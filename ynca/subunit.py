@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 class Subunit:
     def __init__(self, id: str, connection: YncaConnection):
         """
-        Abstract Subunit class, do not instantiate manually.
+        Baseclass for Subunits, should be subclassed do not instantiate manually.
         """
         self._subunit_id = id
         self._connection = connection
@@ -28,12 +28,12 @@ class Subunit:
         """
         raise NotImplementedError()
 
-    def _unhandled_subunit_message_received(
+    def _subunit_message_received_without_handler(
         self, status: YncaProtocolStatus, function_: str, value: str
     ) -> bool:
         """
         Called when a message for this subunit was received with no handler
-        Implement in subclasses for cases where simple handler is not enough.
+        Implement in subclasses for cases where a simple handler is not enough.
         """
         return False
 
@@ -46,8 +46,7 @@ class Subunit:
         self, status: YncaProtocolStatus, subunit: str, function_: str, value: str
     ):
         if status is not YncaProtocolStatus.OK or self._subunit_id != subunit:
-            # Can't really handle errors since at this point we can't see to
-            # what command it belonged
+            # Can't really handle errors since at this point we can't see to what command it belonged
             return
 
         updated = False
@@ -56,7 +55,9 @@ class Subunit:
             handler(value)
             updated = True
         else:
-            updated = self._unhandled_subunit_message_received(status, function_, value)
+            updated = self._subunit_message_received_without_handler(
+                status, function_, value
+            )
 
         if updated:
             self._call_registered_update_callbacks()
