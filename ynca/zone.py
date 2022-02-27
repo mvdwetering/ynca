@@ -3,29 +3,26 @@ import logging
 
 from typing import Callable, Dict, Set
 
-from .connection import YncaConnection, YncaProtocolStatus
 
+from .connection import YncaConnection, YncaProtocolStatus
 from .constants import DSP_SOUND_PROGRAMS, Mute
 from .helpers import number_to_string_with_stepsize
 from .errors import YncaInitializationFailedException
+from .subunit import Subunit
 
 logger = logging.getLogger(__name__)
 
 
-class YncaZone:
+class YncaZone(Subunit):
     def __init__(
         self,
         subunit_id: str,
         connection: YncaConnection,
         inputs: Dict[str, str],
     ):
-        self._subunit = subunit_id
+        super().__init__(subunit_id, connection)
         self._inputs = inputs
         self._initialized = False
-        self._update_callbacks: Set[Callable[[], None]] = set()
-
-        self._connection = connection
-        connection.register_message_callback(self._protocol_message_received)
 
         self._initialized_event = threading.Event()
         self._reset_internal_state()
@@ -42,11 +39,6 @@ class YncaZone:
         self._scenes: Dict[str, str] = {}
 
         self._initialized_event.clear()
-
-    def close(self):
-        self._connection.unregister_message_callback(self._protocol_message_received)
-        self._connection = None
-        self._update_callbacks = set()
 
     def initialize(self):
         """
@@ -68,7 +60,7 @@ class YncaZone:
             self._initialized = True
         else:
             raise YncaInitializationFailedException(
-                f"Zone {self._subunit} initialization failed"
+                f"Zone {self._subunit_id} initialization failed"
             )
 
         self._call_registered_update_callbacks()
@@ -80,24 +72,12 @@ class YncaZone:
 
         return "\n".join(output)
 
-    def _put(self, function_: str, value: str):
-        self._connection.put(self._subunit, function_, value)
-
-    def _get(self, function_: str):
-        self._connection.get(self._subunit, function_)
-
-    def _protocol_message_received(
-        self, status: YncaProtocolStatus, subunit: str, function_: str, value: str
-    ):
-        if self._subunit != subunit or status is not YncaProtocolStatus.OK:
-            return
-
+    def _unhandled_subunit_message_received(
+        self, status: YncaProtocolStatus, function_: str, value: str
+    ) -> bool:
         updated = True
 
-        handler = getattr(self, f"_handle_{function_.lower()}", None)
-        if handler is not None:
-            handler(value)
-        elif (
+        if (
             len(function_) == 10
             and function_.startswith("SCENE")
             and function_.endswith("NAME")
@@ -106,9 +86,6 @@ class YncaZone:
             self._scenes[scene_id] = value
         else:
             updated = False
-
-        if updated:
-            self._call_registered_update_callbacks()
 
         return updated
 
@@ -132,10 +109,7 @@ class YncaZone:
             self._mute = Mute.on
 
     def _handle_pwr(self, value: str):
-        if value == "On":
-            self._power = True
-        else:
-            self._power = False
+        self._power = value == "On"
 
     def _handle_zonename(self, value: str):
         self._name = value
@@ -149,21 +123,7 @@ class YncaZone:
         self._dsp_sound_program = value
 
     def _handle_straight(self, value: str):
-        if value == "On":
-            self._straight = True
-        else:
-            self._straight = False
-
-    def register_update_callback(self, callback: Callable[[], None]):
-        self._update_callbacks.add(callback)
-
-    def unregister_update_callback(self, callback: Callable[[], None]):
-        self._update_callbacks.remove(callback)
-
-    def _call_registered_update_callbacks(self):
-        if self._initialized:
-            for callback in self._update_callbacks:
-                callback()
+        self._straight = value == "On"
 
     @property
     def name(self):

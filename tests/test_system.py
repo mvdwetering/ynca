@@ -4,7 +4,7 @@ from typing import Callable
 from unittest import mock
 import pytest
 
-from ynca.receiver import YncaReceiver
+from ynca.system import System
 from ynca.errors import YncaInitializationFailedException
 
 from .connectionmock import YncaConnectionMock
@@ -166,16 +166,16 @@ def update_callback() -> Callable[[], None]:
 
 
 @pytest.fixture
-def initialized_receiver(connection) -> YncaReceiver:
+def initialized_receiver(connection) -> System:
     connection.get_response_list = INITIALIZE_FULL_RESPONSES
-    r = YncaReceiver(connection)
+    r = System(SYS, connection)
     r.initialize()
     return r
 
 
 def test_construct(connection, update_callback):
 
-    r = YncaReceiver(connection)
+    r = System(SYS, connection)
 
     assert connection.register_message_callback.call_count == 1
     assert update_callback.call_count == 0
@@ -183,9 +183,7 @@ def test_construct(connection, update_callback):
 
 def test_initialize_fail(connection, update_callback):
 
-    r = YncaReceiver(
-        connection,
-    )
+    r = System(SYS, connection)
     r.register_update_callback(update_callback)
 
     with pytest.raises(YncaInitializationFailedException):
@@ -204,7 +202,7 @@ def test_initialize_minimal(connection, update_callback):
         ),
     ]
 
-    r = YncaReceiver(connection)
+    r = System(SYS, connection)
     r.register_update_callback(update_callback)
 
     r.initialize()
@@ -221,7 +219,7 @@ def test_initialize_full(connection, update_callback):
 
     connection.get_response_list = INITIALIZE_FULL_RESPONSES
 
-    r = YncaReceiver(connection)
+    r = System(SYS, connection)
     r.register_update_callback(update_callback)
 
     r.initialize()
