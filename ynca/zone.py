@@ -176,7 +176,12 @@ class YncaZone(Subunit):
     @volume.setter
     def volume(self, value: float):
         """Set volume in dB. The receiver only works with 0.5 increments. Input values will be rounded to nearest 0.5 step."""
-        self._put("VOL", number_to_string_with_stepsize(value, 1, 0.5))
+        if self.min_volume <= value <= self._max_volume:
+            self._put("VOL", number_to_string_with_stepsize(value, 1, 0.5))
+        else:
+            raise ValueError(
+                "Volume out of range, must be between min_volume and max_volume"
+            )
 
     def volume_up(self, step_size: float = 0.5):
         """

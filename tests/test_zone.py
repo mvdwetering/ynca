@@ -189,6 +189,8 @@ def test_mute(connection, initialized_zone):
 
 def test_volume(connection, initialized_zone):
     # Writing to device
+
+    # Positive with step rounding
     initialized_zone.volume = 0
     connection.put.assert_called_with(SUBUNIT, "VOL", "0.0")
     initialized_zone.volume = 0.1
@@ -196,6 +198,7 @@ def test_volume(connection, initialized_zone):
     initialized_zone.volume = 0.4
     connection.put.assert_called_with(SUBUNIT, "VOL", "0.5")
 
+    # Negative with step rounding
     initialized_zone.volume = -5
     connection.put.assert_called_with(SUBUNIT, "VOL", "-5.0")
     initialized_zone.volume = -0.5
@@ -205,6 +208,13 @@ def test_volume(connection, initialized_zone):
     initialized_zone.volume = -0.1
     connection.put.assert_called_with(SUBUNIT, "VOL", "0.0")
 
+    # Out of range
+    with pytest.raises(ValueError):
+        initialized_zone.volume = initialized_zone.min_volume - 1
+    with pytest.raises(ValueError):
+        initialized_zone.volume = initialized_zone.max_volume + 1
+
+    # Up
     initialized_zone.volume_up()
     connection.put.assert_called_with(SUBUNIT, "VOL", "Up")
     initialized_zone.volume_up(1)
@@ -216,6 +226,7 @@ def test_volume(connection, initialized_zone):
     initialized_zone.volume_up(50)
     connection.put.assert_called_with(SUBUNIT, "VOL", "Up")
 
+    # Down
     initialized_zone.volume_down()
     connection.put.assert_called_with(SUBUNIT, "VOL", "Down")
     initialized_zone.volume_down(1)
