@@ -1,13 +1,13 @@
 Design stuff document
 =====================
 
-This file contains some design decisions. Mainly for future me.
+This file contains some design decisions. Mainly intended for future me.
 
 Scope
 =====
-The library is intended for automation applications, so control, not configuration.
+The library is intended for automation applications, so focused on control, not configuration.
 So things like setting/reading volume, mute inputs are in.
-Things like setting name, speaker delays etc... are out for now.
+Things like configuring name, speaker delays etc... are out for now.
 
 Controlling the subunits like Tuner and other Mediaplayer-like components would be nice, but also out of scope for now.
 
@@ -48,8 +48,8 @@ Since there is no explicit command for supported zones, just check availability 
 
 Keep alive
 ==========
-The unit can go to sleep of break the connection in case of IP.
-The first command received when the unit is asleep is lost.
+The unit can go to sleep or break the connection in case of IP.
+The first command sent to the unit when it is asleep is lost.
 To avoid this keep the connection alive by sending a dummy command when the connection is idle for a while.
 The YNCA spec recommends using the ``@SYS:MODELNAME=?`` command.
 

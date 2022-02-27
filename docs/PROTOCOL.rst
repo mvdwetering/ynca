@@ -22,10 +22,10 @@ The YNCA spec refers to setting a value as a ``PUT`` and reading a value as ``GE
 Both commands have a similar format in the format ``@SUBUNIT:FUNCTION=VALUE``
 For a ``GET`` the ``VALUE`` will always be '?'
 
-The receiver will generate responses when a value changes or when a ``GET`` command is received.
-Note there is no way to tell if a response is because of a ``GET`` request or the value got changes in another way
+The receiver will generate messages when a value changes or when a ``GET`` command is received.
+Note there is no way to tell if a message is because of a ``GET`` request or the value got changes in another way
 (e.g. using the remote control or buttons on the device)
-This also means that sending a ``PUT`` not always results in a response, only when the value changes!
+This also means that sending a ``PUT`` not always results in a message, only when the value changes!
 
 Examples
 --------
