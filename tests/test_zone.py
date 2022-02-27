@@ -1,5 +1,6 @@
 """Test YNCA Zone"""
 
+from typing import Callable
 from unittest import mock
 import pytest
 
@@ -93,14 +94,14 @@ def connection():
 
 
 @pytest.fixture
-def update_callback():
+def update_callback() -> Callable[[], None]:
     return mock.MagicMock()
 
 
 @pytest.fixture
-def initialized_zone(connection, update_callback):
+def initialized_zone(connection, update_callback) -> YncaZone:
     connection.get_response_list = INITIALIZE_FULL_RESPONSES
-    z = YncaZone(SUBUNIT, connection, {}, update_callback)
+    z = YncaZone(SUBUNIT, connection, {})
     z.initialize()
     return z
 
@@ -115,7 +116,8 @@ def test_construct(connection, update_callback):
 
 def test_initialize_fail(connection, update_callback):
 
-    z = YncaZone(SUBUNIT, connection, {}, update_callback)
+    z = YncaZone(SUBUNIT, connection, {})
+    z.register_update_callback(update_callback)
 
     with pytest.raises(YncaZoneInitializationFailedException):
         z.initialize()
@@ -133,11 +135,13 @@ def test_initialize_minimal(connection, update_callback):
         ),
     ]
 
-    z = YncaZone(SUBUNIT, connection, {}, update_callback)
+    z = YncaZone(SUBUNIT, connection, {})
+    z.register_update_callback(update_callback)
+    z.unregister_update_callback(update_callback)
 
     z.initialize()
 
-    assert update_callback.call_count == 1
+    assert update_callback.call_count == 0
     assert z.name == "ZoneName"
     assert z.on is None
     assert z.input is None
@@ -154,7 +158,8 @@ def test_initialize_full(connection, update_callback):
 
     connection.get_response_list = INITIALIZE_FULL_RESPONSES
 
-    z = YncaZone(SUBUNIT, connection, {}, update_callback)
+    z = YncaZone(SUBUNIT, connection, {})
+    z.register_update_callback(update_callback)
 
     z.initialize()
 
@@ -309,3 +314,26 @@ def test_scene(connection, initialized_zone):
     # Updates from device
     connection.send_protocol_message(SUBUNIT, "SCENE3NAME", "New Name")
     assert initialized_zone.scenes["3"] == "New Name"
+
+
+def test_callbacks(connection, initialized_zone, update_callback):
+    update_callback_2 = mock.MagicMock()
+
+    # Register multiple callbacks, both get called
+    initialized_zone.register_update_callback(update_callback)
+    initialized_zone.register_update_callback(update_callback_2)
+    connection.send_protocol_message(SUBUNIT, "VOL", "1")
+    assert update_callback.call_count == 1
+    assert update_callback_2.call_count == 1
+
+    # Double registration (second gets ignored)
+    initialized_zone.register_update_callback(update_callback_2)
+    connection.send_protocol_message(SUBUNIT, "VOL", "1")
+    assert update_callback.call_count == 2
+    assert update_callback_2.call_count == 2
+
+    # Unregistration
+    initialized_zone.unregister_update_callback(update_callback_2)
+    connection.send_protocol_message(SUBUNIT, "VOL", "1")
+    assert update_callback.call_count == 3
+    assert update_callback_2.call_count == 2
