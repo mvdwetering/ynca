@@ -7,7 +7,7 @@ from .connection import YncaConnection, YncaProtocolStatus
 
 from .constants import DSP_SOUND_PROGRAMS, Mute
 from .helpers import number_to_string_with_stepsize
-from .errors import YncaZoneInitializationFailedException
+from .errors import YncaInitializationFailedException
 
 logger = logging.getLogger(__name__)
 
@@ -25,7 +25,7 @@ class YncaZone:
         self._update_callbacks: Set[Callable[[], None]] = set()
 
         self._connection = connection
-        connection.register_callback(self._protocol_message_received)
+        connection.register_message_callback(self._protocol_message_received)
 
         self._initialized_event = threading.Event()
         self._reset_internal_state()
@@ -41,8 +41,10 @@ class YncaZone:
         self._straight = None
         self._scenes: Dict[str, str] = {}
 
+        self._initialized_event.clear()
+
     def close(self):
-        self._connection.unregister_callback(self._protocol_message_received)
+        self._connection.unregister_message_callback(self._protocol_message_received)
         self._connection = None
         self._update_callbacks = set()
 
@@ -65,8 +67,9 @@ class YncaZone:
         ):  # Each command takes at least 100ms + big margin
             self._initialized = True
         else:
-            logger.error("Zone initialization failed!")
-            raise YncaZoneInitializationFailedException(self._subunit)
+            raise YncaInitializationFailedException(
+                f"Zone {self._subunit} initialization failed"
+            )
 
         self._call_registered_update_callbacks()
 
@@ -86,10 +89,11 @@ class YncaZone:
     def _protocol_message_received(
         self, status: YncaProtocolStatus, subunit: str, function_: str, value: str
     ):
-        if self._subunit is not subunit or status is not YncaProtocolStatus.OK:
+        if self._subunit != subunit or status is not YncaProtocolStatus.OK:
             return
 
         updated = True
+
         handler = getattr(self, f"_handle_{function_.lower()}", None)
         if handler is not None:
             handler(value)
@@ -103,7 +107,7 @@ class YncaZone:
         else:
             updated = False
 
-        if updated and self._initialized:
+        if updated:
             self._call_registered_update_callbacks()
 
         return updated
@@ -157,8 +161,9 @@ class YncaZone:
         self._update_callbacks.remove(callback)
 
     def _call_registered_update_callbacks(self):
-        for callback in self._update_callbacks:
-            callback()
+        if self._initialized:
+            for callback in self._update_callbacks:
+                callback()
 
     @property
     def name(self):

@@ -7,10 +7,11 @@ import pytest
 from ynca.connection import YncaConnection, YncaProtocolStatus
 from ynca.constants import Mute
 from ynca.zone import YncaZone
-from ynca.errors import YncaZoneInitializationFailedException
+from ynca.errors import YncaInitializationFailedException
+
+from .connectionmock import YncaConnectionMock
 
 SUBUNIT = "SUBUNIT"
-
 
 INITIALIZE_FULL_RESPONSES = [
     (
@@ -55,37 +56,6 @@ INITIALIZE_FULL_RESPONSES = [
 ]
 
 
-class YncaConnectionMock(mock.MagicMock):
-    def __init__(self, *args, **kwargs) -> None:
-        # Would like to have a MagicMock with `spec=YncaConnection`, but then
-        # I can not add the response logic to the mock :/
-        super().__init__(*args, **kwargs)
-
-    def setup_responses(self):
-        # Need to separate from __init__ otherwise it would run into infinite
-        # recursion when executing `self.get.side_effect = xyz`
-        self.get.side_effect = self._get_response
-        self._get_response_list_offset = 0
-        self._get_response_list = []
-
-    def _get_response(self, subunit, function):
-        print(f"get_response({subunit}, {function})")
-        try:
-            (match, responses) = self.get_response_list[self._get_response_list_offset]
-            print(f"match={match}, responses={responses}")
-            if match[0] == subunit and match[1] == function:
-                self._get_response_list_offset += 1
-                for response in responses:
-                    self.send_protocol_message(response[0], response[1], response[2])
-        except Exception as e:
-            print(f"Skipping: {subunit}, {function} because of {e}")
-
-    def send_protocol_message(self, subunit, function, value=None):
-        self.register_callback.call_args.args[0](
-            YncaProtocolStatus.OK, subunit, function, value
-        )
-
-
 @pytest.fixture
 def connection():
     c = YncaConnectionMock()
@@ -99,7 +69,7 @@ def update_callback() -> Callable[[], None]:
 
 
 @pytest.fixture
-def initialized_zone(connection, update_callback) -> YncaZone:
+def initialized_zone(connection) -> YncaZone:
     connection.get_response_list = INITIALIZE_FULL_RESPONSES
     z = YncaZone(SUBUNIT, connection, {})
     z.initialize()
@@ -110,7 +80,7 @@ def test_construct(connection, update_callback):
 
     z = YncaZone(SUBUNIT, connection, {})
 
-    assert connection.register_callback.call_count == 1
+    assert connection.register_message_callback.call_count == 1
     assert update_callback.call_count == 0
 
 
@@ -119,7 +89,7 @@ def test_initialize_fail(connection, update_callback):
     z = YncaZone(SUBUNIT, connection, {})
     z.register_update_callback(update_callback)
 
-    with pytest.raises(YncaZoneInitializationFailedException):
+    with pytest.raises(YncaInitializationFailedException):
         z.initialize()
 
     assert update_callback.call_count == 0

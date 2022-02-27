@@ -145,7 +145,6 @@ class YncaConnection:
     def __init__(
         self,
         serial_url: str,
-        callback: Callable[[YncaProtocolStatus, str, str, str], None] = None,
     ):
         """Instantiate a YncaConnection
 
@@ -155,35 +154,31 @@ class YncaConnection:
                       This allows to setup IP connections with socket://ip:50000
                       or select a specific usb-2-serial with hwgrep:// which is
                       useful when the links to ttyUSB# change randomly.
-
-        callback -- Callback to be called when changes happen. Should be defined as
-                    `def my_callback(status, subunit, function, value):`
-
         """
         self._port = serial_url
         self._serial = None
         self._readerthread = None
         self._protocol = None
 
-        self.callbacks: Set[Callable[[YncaProtocolStatus, str, str, str], None]] = set()
-        if callback:
-            self.register_callback(callback)
+        self._message_callbacks: Set[
+            Callable[[YncaProtocolStatus, str, str, str], None]
+        ] = set()
 
-    def register_callback(
+    def register_message_callback(
         self, callback: Callable[[YncaProtocolStatus, str, str, str], None]
     ):
-        self.callbacks.add(callback)
+        self._message_callbacks.add(callback)
 
-    def unregister_callback(
+    def unregister_message_callback(
         self, callback: Callable[[YncaProtocolStatus, str, str, str], None]
     ):
-        self.callbacks.remove(callback)
+        self._message_callbacks.remove(callback)
 
-    def _call_registered_callbacks(
-        self, status: YncaProtocolStatus, subunit: str, function: str, value: str
+    def _call_registered_message_callbacks(
+        self, status: YncaProtocolStatus, subunit: str, function_: str, value: str
     ):
-        for callback in self.callbacks:
-            callback(status, subunit, function, value)
+        for callback in self._message_callbacks:
+            callback(status, subunit, function_, value)
 
     def connect(self):
         if not self._serial:
@@ -191,7 +186,7 @@ class YncaConnection:
         self._readerthread = serial.threaded.ReaderThread(self._serial, YncaProtocol)
         self._readerthread.start()
         dummy, self._protocol = self._readerthread.connect()
-        self._protocol.callback = self._call_registered_callbacks
+        self._protocol.callback = self._call_registered_message_callbacks
 
     def disconnect(self):
         self._readerthread.close()
