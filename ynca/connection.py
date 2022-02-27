@@ -7,10 +7,12 @@ import sys
 import threading
 import time
 from enum import Enum
-from typing import Callable, Set
+from typing import Callable, Optional, Set
 
-import serial
-import serial.threaded
+import serial  # type: ignore
+import serial.threaded  # type: ignore
+
+from .errors import YncaConnectionError
 
 logger = logging.getLogger(__name__)
 
@@ -76,7 +78,7 @@ class YncaProtocol(serial.threaded.LineReader):
         function = None
         value = line  # For the case where the command is invalid so there is some info to debug with
 
-        logger.debug("< {}".format(line))
+        logger.debug("< %s", line)
 
         if line == "@UNDEFINED":
             status = YncaProtocolStatus.UNDEFINED
@@ -119,7 +121,7 @@ class YncaProtocol(serial.threaded.LineReader):
                     self._keep_alive_pending = True
 
                 if not stop:
-                    logger.debug("> {}".format(message))
+                    logger.debug("> %s", message)
 
                     self._last_sent_command = message
                     self.write_line(message)
@@ -131,11 +133,7 @@ class YncaProtocol(serial.threaded.LineReader):
                 self._send_keepalive()
 
     def put(self, subunit, funcname, parameter):
-        self._send_queue.put(
-            "@{subunit}:{funcname}={parameter}".format(
-                subunit=subunit, funcname=funcname, parameter=parameter
-            )
-        )
+        self._send_queue.put(f"@{subunit}:{funcname}={parameter}")
 
     def get(self, subunit, funcname):
         self.put(subunit, funcname, "?")
@@ -158,7 +156,7 @@ class YncaConnection:
         self._port = serial_url
         self._serial = None
         self._readerthread = None
-        self._protocol = None
+        self._protocol: Optional[YncaProtocol] = None
 
         self._message_callbacks: Set[
             Callable[[YncaProtocolStatus, str, str, str], None]
@@ -181,21 +179,30 @@ class YncaConnection:
             callback(status, subunit, function_, value)
 
     def connect(self):
-        if not self._serial:
-            self._serial = serial.serial_for_url(self._port)
-        self._readerthread = serial.threaded.ReaderThread(self._serial, YncaProtocol)
-        self._readerthread.start()
-        dummy, self._protocol = self._readerthread.connect()
+        try:
+            if not self._serial:
+                self._serial = serial.serial_for_url(self._port)
+            self._readerthread = serial.threaded.ReaderThread(
+                self._serial, YncaProtocol
+            )
+            self._readerthread.start()
+            _, self._protocol = self._readerthread.connect()
+        except serial.SerialException as e:
+            raise YncaConnectionError(e)
+
         self._protocol.callback = self._call_registered_message_callbacks
 
-    def disconnect(self):
-        self._readerthread.close()
+    def close(self):
+        if self._readerthread:
+            self._readerthread.close()
 
     def put(self, subunit: str, funcname: str, parameter: str):
-        self._protocol.put(subunit, funcname, parameter)
+        if self._protocol:
+            self._protocol.put(subunit, funcname, parameter)
 
     def get(self, subunit: str, funcname: str):
-        self._protocol.get(subunit, funcname)
+        if self._protocol:
+            self._protocol.get(subunit, funcname)
 
     @property
     def connected(self):
@@ -215,11 +222,12 @@ def ynca_console(serial_port: str):
     """
 
     def output_response(status, subunit, function, value):
-        print("Response: {3} {0}:{1}={2}".format(subunit, function, value, status.name))
+        print(f"Response: {status.name} {subunit}:{function}={value}")
 
     print(ynca_console.__doc__)
 
-    connection = YncaConnection(serial_port, output_response)
+    connection = YncaConnection(serial_port)
+    connection.register_message_callback(output_response)
     connection.connect()
     quit_ = False
     while not quit_:
@@ -244,7 +252,7 @@ def ynca_console(serial_port: str):
             else:
                 print("Invalid command format")
 
-    connection.disconnect()
+    connection.close()
 
 
 if __name__ == "__main__":
