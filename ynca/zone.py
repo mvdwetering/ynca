@@ -13,7 +13,7 @@ from .subunit import SubunitBase
 logger = logging.getLogger(__name__)
 
 
-class YncaZone(SubunitBase):
+class Zone(SubunitBase):
     def __init__(
         self,
         subunit_id: str,
