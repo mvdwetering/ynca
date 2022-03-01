@@ -8,20 +8,18 @@ from .connection import YncaConnection, YncaProtocolStatus
 from .constants import DSP_SOUND_PROGRAMS, Mute
 from .helpers import number_to_string_with_stepsize
 from .errors import YncaInitializationFailedException
-from .subunit import Subunit
+from .subunit import SubunitBase
 
 logger = logging.getLogger(__name__)
 
 
-class YncaZone(Subunit):
+class YncaZone(SubunitBase):
     def __init__(
         self,
         subunit_id: str,
         connection: YncaConnection,
-        inputs: Dict[str, str],
     ):
         super().__init__(subunit_id, connection)
-        self._inputs = inputs
         self._initialized = False
 
         self._initialized_event = threading.Event()
@@ -60,7 +58,7 @@ class YncaZone(Subunit):
             self._initialized = True
         else:
             raise YncaInitializationFailedException(
-                f"Zone {self._subunit_id} initialization failed"
+                f"Zone {self.id} initialization failed"
             )
 
         self._call_registered_update_callbacks()
@@ -212,12 +210,6 @@ class YncaZone(Subunit):
     def input(self, value: str):
         """Set input"""
         self._put("INP", value)
-
-    @property
-    def inputs(self):
-        """Get full list of inputs, some may not be applicable to this zone."""
-        # TODO filter inputs based on availability in this zone.
-        return self._inputs
 
     @property
     def dsp_sound_program(self):

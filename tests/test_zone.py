@@ -71,14 +71,14 @@ def update_callback() -> Callable[[], None]:
 @pytest.fixture
 def initialized_zone(connection) -> YncaZone:
     connection.get_response_list = INITIALIZE_FULL_RESPONSES
-    z = YncaZone(SUBUNIT, connection, {})
+    z = YncaZone(SUBUNIT, connection)
     z.initialize()
     return z
 
 
 def test_construct(connection, update_callback):
 
-    z = YncaZone(SUBUNIT, connection, {})
+    z = YncaZone(SUBUNIT, connection)
 
     assert connection.register_message_callback.call_count == 1
     assert update_callback.call_count == 0
@@ -86,7 +86,7 @@ def test_construct(connection, update_callback):
 
 def test_initialize_fail(connection, update_callback):
 
-    z = YncaZone(SUBUNIT, connection, {})
+    z = YncaZone(SUBUNIT, connection)
     z.register_update_callback(update_callback)
 
     with pytest.raises(YncaInitializationFailedException):
@@ -105,7 +105,7 @@ def test_initialize_minimal(connection, update_callback):
         ),
     ]
 
-    z = YncaZone(SUBUNIT, connection, {})
+    z = YncaZone(SUBUNIT, connection)
     z.register_update_callback(update_callback)
     z.unregister_update_callback(update_callback)
 
@@ -128,7 +128,7 @@ def test_initialize_full(connection, update_callback):
 
     connection.get_response_list = INITIALIZE_FULL_RESPONSES
 
-    z = YncaZone(SUBUNIT, connection, {})
+    z = YncaZone(SUBUNIT, connection)
     z.register_update_callback(update_callback)
 
     z.initialize()

@@ -20,7 +20,8 @@ DSP_SOUND_PROGRAMS = [
     "Mono Movie",
     "2ch Stereo",
     "7ch Stereo",
-    "Surround Decoder"]
+    "Surround Decoder",
+]
 
 
 class Mute(Enum):
@@ -29,3 +30,29 @@ class Mute(Enum):
     att_minus_40 = 3
     off = 4
 
+
+"""Known Subunits in YNCA"""
+
+
+class Subunit(str, Enum):
+    SYS = "SYS"
+    MAIN = "MAIN"
+    ZONE2 = "ZONE2"
+    ZONE3 = "ZONE3"
+    ZONE4 = "ZONE4"
+    TUN = "TUN"
+    SIRIUS = "SIRIUS"
+    IPOD = "IPOD"
+    BT = "BT"
+    RHAP = "RHAP"
+    SIRIUSIR = "SIRIUSIR"
+    PANDORA = "PANDORA"
+    NAPSTER = "NAPSTER"
+    PC = "PC"
+    NETRADIO = "NETRADIO"
+    IPODUSB = "IPODUSB"
+    UAW = "UAW"
+
+
+"""Subunits that are zones """
+ZONES = [Subunit.MAIN, Subunit.ZONE2, Subunit.ZONE3, Subunit.ZONE4]

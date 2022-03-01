@@ -49,102 +49,6 @@ INITIALIZE_FULL_RESPONSES = [
         ],
     ),
     (
-        ("TUN", "AVAIL"),
-        [
-            ("TUN", "AVAIL", "Not Ready"),
-        ],
-    ),
-    (
-        ("SIRIUS", "AVAIL"),
-        [
-            ("@RESTRICTED"),
-        ],
-    ),
-    (
-        ("IPOD", "AVAIL"),
-        [
-            ("IPOD", "AVAIL", "Not Connected"),
-        ],
-    ),
-    (
-        ("BT", "AVAIL"),
-        [
-            ("BT", "AVAIL", "Not Connected"),
-        ],
-    ),
-    (
-        ("RHAP", "AVAIL"),
-        [
-            ("@RESTRICTED"),
-        ],
-    ),
-    (
-        ("SIRIUSIR", "AVAIL"),
-        [
-            ("@RESTRICTED"),
-        ],
-    ),
-    (
-        ("PANDORA", "AVAIL"),
-        [
-            ("@RESTRICTED"),
-        ],
-    ),
-    (
-        ("NAPSTER", "AVAIL"),
-        [
-            ("NAPSTER", "AVAIL", "Not Connected"),
-        ],
-    ),
-    (
-        ("PC", "AVAIL"),
-        [
-            ("PC", "AVAIL", "Not Connected"),
-        ],
-    ),
-    (
-        ("NETRADIO", "AVAIL"),
-        [
-            ("NETRADIO", "AVAIL", "Not Connected"),
-        ],
-    ),
-    (
-        ("IPODUSB", "AVAIL"),
-        [
-            ("IPODUSB", "AVAIL", "Not Connected"),
-        ],
-    ),
-    (
-        ("UAW", "AVAIL"),
-        [
-            ("UAW", "AVAIL", "Not Connected"),
-        ],
-    ),
-    (
-        ("MAIN", "AVAIL"),
-        [
-            ("MAIN", "AVAIL", "Not Ready"),
-        ],
-    ),
-    (
-        ("ZONE2", "AVAIL"),
-        [
-            ("ZONE2", "AVAIL", "Not Ready"),
-        ],
-    ),
-    (
-        ("ZONE3", "AVAIL"),
-        [
-            ("@RESTRICTED"),
-        ],
-    ),
-    (
-        ("ZONE4", "AVAIL"),
-        [
-            ("@RESTRICTED"),
-        ],
-    ),
-    (
         (SYS, "VERSION"),
         [
             (SYS, "VERSION", "Version"),
@@ -166,16 +70,16 @@ def update_callback() -> Callable[[], None]:
 
 
 @pytest.fixture
-def initialized_receiver(connection) -> System:
+def initialized_system(connection) -> System:
     connection.get_response_list = INITIALIZE_FULL_RESPONSES
-    r = System(SYS, connection)
+    r = System(connection)
     r.initialize()
     return r
 
 
 def test_construct(connection, update_callback):
 
-    r = System(SYS, connection)
+    r = System(connection)
 
     assert connection.register_message_callback.call_count == 1
     assert update_callback.call_count == 0
@@ -183,7 +87,7 @@ def test_construct(connection, update_callback):
 
 def test_initialize_fail(connection, update_callback):
 
-    r = System(SYS, connection)
+    r = System(connection)
     r.register_update_callback(update_callback)
 
     with pytest.raises(YncaInitializationFailedException):
@@ -202,96 +106,85 @@ def test_initialize_minimal(connection, update_callback):
         ),
     ]
 
-    r = System(SYS, connection)
-    r.register_update_callback(update_callback)
+    s = System(connection)
+    s.register_update_callback(update_callback)
 
-    r.initialize()
+    s.initialize()
 
     assert update_callback.call_count == 1
-    assert r.firmware_version == "Version"
-    assert r.on is None
-    assert r.model_name is None
-    assert len(r.inputs.keys()) == 0
-    assert len(r.zones) == 0
+    assert s.version == "Version"
+    assert s.on is None
+    assert s.model_name is None
+    assert len(s.inputs.keys()) == 0
 
 
 def test_initialize_full(connection, update_callback):
 
     connection.get_response_list = INITIALIZE_FULL_RESPONSES
 
-    r = System(SYS, connection)
-    r.register_update_callback(update_callback)
+    s = System(connection)
+    s.register_update_callback(update_callback)
 
-    r.initialize()
+    s.initialize()
 
     assert update_callback.call_count == 1
-    assert r.firmware_version == "Version"
-    assert r.model_name == "ModelName"
-    assert r.on is False
-    assert r.zones == ["MAIN", "ZONE2"]
+    assert s.version == "Version"
+    assert s.model_name == "ModelName"
+    assert s.on is False
 
-    assert len(r.inputs.keys()) == 27
-    assert r.inputs["PHONO"] == "InputPhono"
-    assert r.inputs["HDMI1"] == "InputHdmi1"
-    assert r.inputs["HDMI2"] == "InputHdmi2"
-    assert r.inputs["HDMI3"] == "InputHdmi3"
-    assert r.inputs["HDMI4"] == "InputHdmi4"
-    assert r.inputs["HDMI5"] == "InputHdmi5"
-    assert r.inputs["HDMI6"] == "InputHdmi6"
-    assert r.inputs["HDMI7"] == "InputHdmi7"
-    assert r.inputs["AV1"] == "InputAv1"
-    assert r.inputs["AV2"] == "InputAv2"
-    assert r.inputs["AV3"] == "InputAv3"
-    assert r.inputs["AV4"] == "InputAv4"
-    assert r.inputs["AV5"] == "InputAv5"
-    assert r.inputs["AV6"] == "InputAv6"
-    assert r.inputs["V-AUX"] == "InputVAux"
-    assert r.inputs["AUDIO1"] == "InputAudio1"
-    assert r.inputs["AUDIO2"] == "InputAudio2"
-    assert r.inputs["DOCK"] == "InputDock"
-    assert r.inputs["USB"] == "InputUsb"
-    assert r.inputs["TUNER"] == "TUNER"
-    assert r.inputs["iPod"] == "iPod"
-    assert r.inputs["Bluetooth"] == "Bluetooth"
-    assert r.inputs["Napster"] == "Napster"
-    assert r.inputs["PC"] == "PC"
-    assert r.inputs["NET RADIO"] == "NET RADIO"
-    assert r.inputs["iPod (USB)"] == "iPod (USB)"
-    assert r.inputs["UAW"] == "UAW"
+    assert len(s.inputs.keys()) == 19
+    assert s.inputs["PHONO"] == "InputPhono"
+    assert s.inputs["HDMI1"] == "InputHdmi1"
+    assert s.inputs["HDMI2"] == "InputHdmi2"
+    assert s.inputs["HDMI3"] == "InputHdmi3"
+    assert s.inputs["HDMI4"] == "InputHdmi4"
+    assert s.inputs["HDMI5"] == "InputHdmi5"
+    assert s.inputs["HDMI6"] == "InputHdmi6"
+    assert s.inputs["HDMI7"] == "InputHdmi7"
+    assert s.inputs["AV1"] == "InputAv1"
+    assert s.inputs["AV2"] == "InputAv2"
+    assert s.inputs["AV3"] == "InputAv3"
+    assert s.inputs["AV4"] == "InputAv4"
+    assert s.inputs["AV5"] == "InputAv5"
+    assert s.inputs["AV6"] == "InputAv6"
+    assert s.inputs["V-AUX"] == "InputVAux"
+    assert s.inputs["AUDIO1"] == "InputAudio1"
+    assert s.inputs["AUDIO2"] == "InputAudio2"
+    assert s.inputs["DOCK"] == "InputDock"
+    assert s.inputs["USB"] == "InputUsb"
 
 
-def test_on(connection, initialized_receiver):
+def test_on(connection, initialized_system):
     # Writing to device
-    initialized_receiver.on = True
+    initialized_system.on = True
     connection.put.assert_called_with(SYS, "PWR", "On")
-    initialized_receiver.on = False
+    initialized_system.on = False
     connection.put.assert_called_with(SYS, "PWR", "Standby")
 
     # Updates from device
     connection.send_protocol_message(SYS, "PWR", "On")
-    assert initialized_receiver.on == True
+    assert initialized_system.on == True
     connection.send_protocol_message(SYS, "PWR", "Standby")
-    assert initialized_receiver.on == False
+    assert initialized_system.on == False
 
-
-def test_callbacks(connection, initialized_receiver, update_callback):
+    update_callback_1 = mock.MagicMock()
     update_callback_2 = mock.MagicMock()
 
     # Register multiple callbacks, both get called
-    initialized_receiver.register_update_callback(update_callback)
-    initialized_receiver.register_update_callback(update_callback_2)
+    initialized_system.register_update_callback(update_callback_1)
+    initialized_system.register_update_callback(update_callback_2)
     connection.send_protocol_message(SYS, "PWR", "On")
-    assert update_callback.call_count == 1
+    assert update_callback_1.call_count == 1
     assert update_callback_2.call_count == 1
 
     # Double registration (second gets ignored)
-    initialized_receiver.register_update_callback(update_callback_2)
+    initialized_system.register_update_callback(update_callback_2)
     connection.send_protocol_message(SYS, "PWR", "On")
-    assert update_callback.call_count == 2
+    assert update_callback_1.call_count == 2
     assert update_callback_2.call_count == 2
 
     # Unregistration
-    initialized_receiver.unregister_update_callback(update_callback_2)
+    initialized_system.unregister_update_callback(update_callback_2)
     connection.send_protocol_message(SYS, "PWR", "On")
-    assert update_callback.call_count == 3
+    assert update_callback_1.call_count == 3
     assert update_callback_2.call_count == 2

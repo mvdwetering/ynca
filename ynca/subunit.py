@@ -7,12 +7,12 @@ from .connection import YncaConnection, YncaProtocolStatus
 logger = logging.getLogger(__name__)
 
 
-class Subunit:
+class SubunitBase:
     def __init__(self, id: str, connection: YncaConnection):
         """
         Baseclass for Subunits, should be subclassed do not instantiate manually.
         """
-        self._subunit_id = id
+        self.id = id
         self._connection = connection
 
         self._update_callbacks: Set[Callable[[], None]] = set()
@@ -45,7 +45,7 @@ class Subunit:
     def _protocol_message_received(
         self, status: YncaProtocolStatus, subunit: str, function_: str, value: str
     ):
-        if status is not YncaProtocolStatus.OK or self._subunit_id != subunit:
+        if status is not YncaProtocolStatus.OK or self.id != subunit:
             # Can't really handle errors since at this point we can't see to what command it belonged
             return
 
@@ -63,10 +63,10 @@ class Subunit:
             self._call_registered_update_callbacks()
 
     def _put(self, function_: str, value: str):
-        self._connection.put(self._subunit_id, function_, value)
+        self._connection.put(self.id, function_, value)
 
     def _get(self, function_: str):
-        self._connection.get(self._subunit_id, function_)
+        self._connection.get(self.id, function_)
 
     def register_update_callback(self, callback: Callable[[], None]):
         self._update_callbacks.add(callback)
