@@ -2,7 +2,7 @@ import sys
 import time
 import logging
 
-from ynca import Ynca, Mute
+from ynca import YncaReceiver, Mute, ZONES, Subunit
 
 """ Yeah, not really a test, more of a script to see things are not breaking horribly. """
 
@@ -31,41 +31,54 @@ if __name__ == "__main__":
     logger.setLevel(logging.INFO)
     logging.getLogger("ynca.connection").setLevel(logging.DEBUG)
     logging.getLogger("ynca.receiver").setLevel(logging.DEBUG)
+    logging.getLogger("ynca.system").setLevel(logging.DEBUG)
     logging.getLogger("ynca.zone").setLevel(logging.DEBUG)
 
     port = "/dev/ttyUSB0"
     if len(sys.argv) > 1:
         port = sys.argv[1]
 
-    ynca = Ynca.create_from_serial_url(port)
+    ynca = YncaReceiver(port)
+    ynca.initialize()
 
-    ynca.receiver.register_update_callback(updated)
-    ynca.zones["MAIN"].register_update_callback(updated_zone1)
-    ynca.zones["ZONE2"].register_update_callback(updated_zone2)
+    sys = ynca.subunits[Subunit.SYS]
+    main = ynca.subunits[Subunit.MAIN]
+    zone2 = ynca.subunits[Subunit.ZONE2]
 
-    print(ynca.receiver)
+    sys.register_update_callback(updated)
+    main.register_update_callback(updated_zone1)
+    zone2.register_update_callback(updated_zone2)
+
+    print(sys)
 
     print("Zones:")
-    for id, zone in ynca.zones.items():
-        print("--- {} ---".format(id))
-        print(zone)
+    for subunit_id in ZONES:
+        try:
+            zone = ynca.subunits[subunit_id]
+            print("--- {} ---".format(zone.id))
+            print(zone)
+        except KeyError:
+            pass
 
     print("Inputs:")
-    print(ynca.receiver.inputs)
+    print(ynca.inputs)
 
-    ynca.zones["MAIN"].volume = -50
-    ynca.zones["MAIN"].volume = -50.2
-    ynca.zones["MAIN"].volume = -50.4
-    ynca.zones["MAIN"].volume = -50.5
-    ynca.zones["MAIN"].volume = -50.7
-    ynca.zones["MAIN"].volume = -50.8
-    ynca.zones["MAIN"].volume = -51.0
-    ynca.zones["MAIN"].volume = -35
+    print("Subunits:")
+    print(ynca.subunits)
 
-    ynca.zones["ZONE2"].on = True
-    ynca.zones["ZONE2"].mute = Mute.off
-    ynca.zones["ZONE2"].mute = Mute.on
-    ynca.zones["ZONE2"].on = False
+    main.volume = -50
+    main.volume = -50.2
+    main.volume = -50.4
+    main.volume = -50.5
+    main.volume = -50.7
+    main.volume = -50.8
+    main.volume = -51.0
+    main.volume = -35
+
+    zone2.on = True
+    zone2.mute = Mute.off
+    zone2.mute = Mute.on
+    zone2.on = False
 
     remaining = 2
     while remaining >= 0:
