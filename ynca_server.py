@@ -92,6 +92,7 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
 
     def __init__(self, request, client_address, server):
         self.store = server.store
+        self.disconnect_after_num_commands = server.disconnect_after_num_commands
         super().__init__(request, client_address, server)
 
     def write_line(self, line: str):
@@ -163,6 +164,8 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
         #
         # Note that the connection is closed when this handler returns!
 
+        commands_received = 0
+
         print(f"--- Client connected from: {self.client_address[0]}")
         while True:
             line = self.rfile.readline()
@@ -180,12 +183,33 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
                 else:
                     self.handle_put(command.subunit, command.function, command.value)
 
+            commands_received += 1
+            if (
+                self.disconnect_after_num_commands is not None
+                and commands_received >= self.disconnect_after_num_commands
+            ):
+                print(
+                    "--- Disconnecting because of `disconnect_after_num_commands` limit reached"
+                )
+                return
+
 
 class YncaServer(socketserver.TCPServer):
-    def __init__(self, server_address: Tuple[str, int], initfile=None) -> None:
+    def __init__(
+        self,
+        server_address: Tuple[str, int],
+        initfile=None,
+        disconnect_after_num_commands=None,
+    ) -> None:
         super().__init__(server_address, YncaCommandHandler)
 
         self.store = YncaDataStore()
+        self.disconnect_after_num_commands = disconnect_after_num_commands
+
+        if disconnect_after_num_commands is not None:
+            print(
+                f"--- Each connection will be disconnected after receiving {disconnect_after_num_commands} commands!"
+            )
 
         if initfile:
             self.store.fill_from_file(initfile)
@@ -202,7 +226,9 @@ class YncaServer(socketserver.TCPServer):
 
 def main(args):
     # with socketserver.TCPServer((args.host, args.port), YncaCommandHandler) as server:
-    with YncaServer((args.host, args.port), args.initfile) as server:
+    with YncaServer(
+        (args.host, args.port), args.initfile, args.disconnect_after_num_commands
+    ) as server:
         # Activate the server; this will keep running until you
         # interrupt the program with Ctrl-C
 
@@ -223,12 +249,20 @@ if __name__ == "__main__":
         default="localhost",
     )
     parser.add_argument(
-        "--port", help="Port to use, default is the standard port 50000", default=50000
+        "--port",
+        help="Port to use, default is the standard port 50000",
+        default=50000,
+        type=int,
     )
-
     parser.add_argument(
         "--initfile",
         help="File to use to initialize the YncaDatastore. Needs to contain Ynca command logging in format `> @SUBUNIT:FUNCTION=VALUE` for sent values, and `< @SUBUNIT:FUNCTION=VALUE`. E.g. output of example script with loglevel DEBUG.",
+    )
+    parser.add_argument(
+        "--disconnect_after_num_commands",
+        help="Disconnect after receiving this amount of commands",
+        default=None,
+        type=int,
     )
     parser.add_argument(
         "--loglevel",
