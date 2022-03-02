@@ -1,10 +1,10 @@
+""" A bit of a messy example/manual test script. """
+
 import sys
 import time
 import logging
 
 from ynca import YncaReceiver, Mute, ZONES, Subunit
-
-""" Yeah, not really a test, more of a script to see things are not breaking horribly. """
 
 update_number = 1
 
