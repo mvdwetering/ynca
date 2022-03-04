@@ -54,7 +54,7 @@ class YncaReceiver:
                 inputs[input_id] = input_id
         return inputs
 
-    def _perform_subunit_availability_check(self):
+    def _detect_available_subunits(self):
         logger.debug("Subunit availability check start")
         self._initialized_event.clear()
         self._connection.register_message_callback(self._protocol_message_received)
@@ -105,7 +105,7 @@ class YncaReceiver:
         connection.connect()
         self._connection = connection
 
-        self._perform_subunit_availability_check()
+        self._detect_available_subunits()
         self._initialize_available_subunits()
 
     def _protocol_message_received(
