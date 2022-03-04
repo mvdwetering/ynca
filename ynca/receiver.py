@@ -54,6 +54,48 @@ class YncaReceiver:
                 inputs[input_id] = input_id
         return inputs
 
+    def _perform_subunit_availability_check(self):
+        logger.debug("Subunit availability check start")
+        self._initialized_event.clear()
+        self._connection.register_message_callback(self._protocol_message_received)
+
+        # Figure out what subunits are available
+        num_commands_sent_start = self._connection.num_commands_sent
+        self._available_subunits = {}
+        for subunit_id in Subunit:
+            self._connection.get(subunit_id, "AVAIL")
+
+        # Use @SYS:VERSION=? as end marker (even though this is not the SYS subunit)
+        self._connection.get(Subunit.SYS, "VERSION")
+
+        if not self._initialized_event.wait(
+            (self._connection.num_commands_sent - num_commands_sent_start) * 0.120
+        ):  # Each command is ~100ms + some margin
+            raise YncaInitializationFailedException(
+                f"Subunit availability check failed"
+            )
+
+        self._connection.unregister_message_callback(self._protocol_message_received)
+        logger.debug("Subunit availability check done")
+
+    def _initialize_available_subunits(self):
+        # Every receiver has a System subunit (can not even check for its existence)
+        system = System(self._connection)
+        system.initialize()
+        self.subunits[system.id] = system
+
+        # Initialize detected subunits
+        for subunit_id, available in self._available_subunits.items():
+            if not available:
+                continue
+            subunit = None
+            if subunit_id in ZONES:
+                subunit = Zone(subunit_id, self._connection)
+
+            if subunit is not None:
+                subunit.initialize()
+                self.subunits[subunit.id] = subunit
+
     def initialize(self):
         """
         Sets up a connection to the device and initializes the YncaReceiver.
@@ -63,43 +105,8 @@ class YncaReceiver:
         connection.connect()
         self._connection = connection
 
-        logger.debug("Subunit availability check start")
-        self._initialized_event.clear()
-        connection.register_message_callback(self._protocol_message_received)
-
-        # Figure out what subunits are available
-        num_commands_sent_start = connection.num_commands_sent
-        self._available_subunits = {}
-        for subunit in Subunit:
-            self._connection.get(subunit, "AVAIL")
-
-        # Use @SYS:VERSION=? as end marker (even though this is not the SYS subunit)
-        self._connection.get(Subunit.SYS, "VERSION")
-
-        if not self._initialized_event.wait(
-            (connection.num_commands_sent - num_commands_sent_start) * 0.120
-        ):  # Each command is ~100ms + some margin
-            raise YncaInitializationFailedException(
-                f"Subunit availability check failed"
-            )
-
-        connection.unregister_message_callback(self._protocol_message_received)
-        logger.debug("Subunit availability check done")
-
-        # Every receiver has a System subunit (can not even check for its existence)
-        system = System(connection)
-        system.initialize()
-        self.subunits[system.id] = system
-
-        # Initialize zones
-        for zone_id in ZONES:
-            try:
-                if self._available_subunits[zone_id] is True:
-                    zone = Zone(zone_id, connection)
-                    zone.initialize()
-                    self.subunits[zone.id] = zone
-            except KeyError:
-                pass
+        self._perform_subunit_availability_check()
+        self._initialize_available_subunits()
 
     def _protocol_message_received(
         self, status: YncaProtocolStatus, subunit: str, function_: str, value: str
