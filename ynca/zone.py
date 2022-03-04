@@ -20,9 +20,6 @@ class Zone(SubunitBase):
         connection: YncaConnection,
     ):
         super().__init__(subunit_id, connection)
-        self._initialized = False
-
-        self._initialized_event = threading.Event()
         self._reset_internal_state()
 
     def _reset_internal_state(self):
@@ -36,32 +33,14 @@ class Zone(SubunitBase):
         self._straight = None
         self._scenes: Dict[str, str] = {}
 
-        self._initialized_event.clear()
-
-    def initialize(self):
-        """
-        Initialize the Zone based on capabilities of the device.
-        This is a long running function!
-        """
-        self._initialized = False
+    def on_initialize(self):
+        self._reset_internal_state()
 
         # BASIC gets PWR, SLEEP, VOL, MUTE, INP, STRAIGHT, ENHANCER and SOUNDPRG (if applicable)
         self._get("BASIC")
         self._get("MAXVOL")
         self._get("SCENENAME")
         self._get("ZONENAME")
-
-        # Receiving Zonename during initialization will set the event
-        if self._initialized_event.wait(
-            2
-        ):  # Each command takes at least 100ms + big margin
-            self._initialized = True
-        else:
-            raise YncaInitializationFailedException(
-                f"Zone {self.id} initialization failed"
-            )
-
-        self._call_registered_update_callbacks()
 
     def __str__(self):
         output = []
@@ -111,11 +90,6 @@ class Zone(SubunitBase):
 
     def _handle_zonename(self, value: str):
         self._name = value
-
-        # During initialization this is used to signal
-        # that initialization is done
-        if not self._initialized:
-            self._initialized_event.set()
 
     def _handle_soundprg(self, value: str):
         self._dsp_sound_program = value

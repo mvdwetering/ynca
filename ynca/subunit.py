@@ -1,6 +1,10 @@
 import logging
+import threading
 
 from typing import Callable, Dict, List, Set
+
+from .constants import Subunit
+from .errors import YncaInitializationFailedException
 
 from .connection import YncaConnection, YncaProtocolStatus
 
@@ -13,17 +17,51 @@ class SubunitBase:
         Baseclass for Subunits, should be subclassed do not instantiate manually.
         """
         self.id = id
-        self._connection = connection
-
         self._update_callbacks: Set[Callable[[], None]] = set()
-        self._initialized = False
 
+        self._initialized = False
+        self._initialized_event = threading.Event()
+
+        self._connection = connection
         self._connection.register_message_callback(self._protocol_message_received)
 
     def initialize(self):
         """
-        Initializes the data for the subunit.
+        Initializes the data for the subunit and makes sure to wait until done.
+        This call can take a long time
+        """
 
+        logger.debug("Subunit %s initialization start.", self.id)
+
+        self._initialized_event.clear()
+        self._initialized = False
+
+        num_commands_sent_start = self._connection.num_commands_sent
+
+        # Invoke subunit specific initialization implemented in the derived classes
+        self.on_initialize()
+
+        # Use SYS:VERSION as a sync since it is available on all receivers
+        # and has a guarenteed response
+        self._connection.get(Subunit.SYS, "VERSION")
+
+        num_commands_sent = self._connection.num_commands_sent - num_commands_sent_start
+
+        if self._initialized_event.wait(
+            num_commands_sent * 0.120
+        ):  # Each command takes at least 100ms + some margin
+            self._initialized = True
+        else:
+            raise YncaInitializationFailedException(
+                f"Subunit {self.id} initialization failed"
+            )
+
+        logger.debug("Subunit %s initialization done.", self.id)
+        self._call_registered_update_callbacks()
+
+    def on_initialize(self):
+        """
+        Initializes the data for the subunit.
         Needs to be implemented in derived classes.
         """
         raise NotImplementedError()
@@ -45,8 +83,15 @@ class SubunitBase:
     def _protocol_message_received(
         self, status: YncaProtocolStatus, subunit: str, function_: str, value: str
     ):
-        if status is not YncaProtocolStatus.OK or self.id != subunit:
+        if status is not YncaProtocolStatus.OK:
             # Can't really handle errors since at this point we can't see to what command it belonged
+            return
+
+        if not self._initialized and subunit == Subunit.SYS and function_ == "VERSION":
+            # During initialization SYS:VERSION is used to signal that initialization is done
+            self._initialized_event.set()
+
+        if self.id != subunit:
             return
 
         updated = False

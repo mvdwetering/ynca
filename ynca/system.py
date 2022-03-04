@@ -28,16 +28,7 @@ class System(SubunitBase):
         self.inputs: Dict[str, str] = {}
         self._initialized_event.clear()
 
-    def initialize(self):
-        """
-        Initializes the receiver.
-
-        Communicates with the device to determine capabilities.
-        This is a long running function!
-        It will take several seconds to complete
-        """
-        logger.info("SYS initialization start.")
-
+    def on_initialize(self):
         self._reset_internal_state()
 
         self._get("MODELNAME")
@@ -47,20 +38,9 @@ class System(SubunitBase):
         # Note that these are not all inputs, just the external ones it seems.
         self._get("INPNAME")
 
-        # Use version as a "sync" command to know when we have all responses
-        self._get("VERSION")
-
-        if not self._initialized_event.wait(
-            4 * 0.125
-        ):  # Each command is ~100ms + margin
-            raise YncaInitializationFailedException(
-                f"Subunit {self.id} initialization failed"
-            )
-
-        logger.info("SYS initialization done.")
-
-        self._initialized = True
-        self._call_registered_update_callbacks()
+        # Version is also used behind the scenes as a sync for initialization
+        # So we should not send it here else it might mess up the synchronization
+        # self._get("VERSION")
 
     def __str__(self):
         output = []

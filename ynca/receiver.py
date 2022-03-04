@@ -68,6 +68,7 @@ class YncaReceiver:
         connection.register_message_callback(self._protocol_message_received)
 
         # Figure out what subunits are available
+        num_commands_sent_start = connection.num_commands_sent
         self._available_subunits = {}
         for subunit in Subunit:
             self._connection.get(subunit, "AVAIL")
@@ -76,7 +77,7 @@ class YncaReceiver:
         self._connection.get(Subunit.SYS, "VERSION")
 
         if not self._initialized_event.wait(
-            (len(Subunit) + 1) * 0.125
+            (connection.num_commands_sent - num_commands_sent_start) * 0.120
         ):  # Each command is ~100ms + some margin
             raise YncaInitializationFailedException(
                 f"Subunit availability check failed"

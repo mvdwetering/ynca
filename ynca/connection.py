@@ -24,6 +24,7 @@ class YncaProtocolStatus(Enum):
 
 
 class YncaProtocol(serial.threaded.LineReader):
+
     # YNCA spec specifies that there should be at least 100 milliseconds between commands
     COMMAND_SPACING = 0.1
 
@@ -38,6 +39,7 @@ class YncaProtocol(serial.threaded.LineReader):
         self._last_sent_command = None
         self.connected = False
         self._keep_alive_pending = False
+        self.num_commands_sent = 0
 
     def connection_made(self, transport):
         super(YncaProtocol, self).connection_made(transport)
@@ -134,6 +136,7 @@ class YncaProtocol(serial.threaded.LineReader):
 
     def put(self, subunit, funcname, parameter):
         self._send_queue.put(f"@{subunit}:{funcname}={parameter}")
+        self.num_commands_sent += 1
 
     def get(self, subunit, funcname):
         self.put(subunit, funcname, "?")
@@ -207,6 +210,10 @@ class YncaConnection:
     @property
     def connected(self):
         return self._protocol.connected
+
+    @property
+    def num_commands_sent(self):
+        return self._protocol.num_commands_sent
 
 
 def ynca_console(serial_port: str):

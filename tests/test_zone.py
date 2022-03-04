@@ -11,6 +11,7 @@ from ynca.errors import YncaInitializationFailedException
 
 from .connectionmock import YncaConnectionMock
 
+SYS = "SYS"
 SUBUNIT = "SUBUNIT"
 
 INITIALIZE_FULL_RESPONSES = [
@@ -51,6 +52,12 @@ INITIALIZE_FULL_RESPONSES = [
         (SUBUNIT, "ZONENAME"),
         [
             (SUBUNIT, "ZONENAME", "ZoneName"),
+        ],
+    ),
+    (
+        (SYS, "VERSION"),
+        [
+            (SYS, "VERSION", "Version"),
         ],
     ),
 ]
@@ -101,6 +108,12 @@ def test_initialize_minimal(connection, update_callback):
             (SUBUNIT, "ZONENAME"),
             [
                 (SUBUNIT, "ZONENAME", "ZoneName"),
+            ],
+        ),
+        (
+            (SYS, "VERSION"),
+            [
+                (SYS, "VERSION", "Version"),
             ],
         ),
     ]

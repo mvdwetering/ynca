@@ -8,6 +8,13 @@ class YncaConnectionMock(mock.MagicMock):
         # Would like to have a MagicMock with `spec=YncaConnection`, but then
         # I can not add the response logic to the mock :/
         super().__init__(*args, **kwargs)
+        self._num_commands_sent = 10
+
+    @property
+    def num_commands_sent(self):
+        resp = self._num_commands_sent
+        self._num_commands_sent += 10
+        return resp
 
     def setup_responses(self):
         # Need to separate from __init__ otherwise it would run into infinite
