@@ -33,7 +33,8 @@ class YncaProtocol(serial.threaded.LineReader):
 
     def __init__(self):
         super(YncaProtocol, self).__init__()
-        self.callback = None
+        self.message_callback = None
+        self.disconnect_callback = None
         self._send_queue = None
         self._send_thread = None
         self._last_sent_command = None
@@ -69,16 +70,19 @@ class YncaProtocol(serial.threaded.LineReader):
                 pass
         except queue.Empty:
             self._send_queue.put("_EXIT")
+        self._send_thread.join(2)
 
         if exc:
-            sys.stdout.write(repr(exc))
+            logger.error(exc)
+
+        if self.disconnect_callback:
+            self.disconnect_callback()
 
     def handle_line(self, line):
         ignore = False
         status = YncaProtocolStatus.OK
         subunit = None
         function = None
-        value = line  # For the case where the command is invalid so there is some info to debug with
 
         logger.debug("< %s", line)
 
@@ -104,8 +108,8 @@ class YncaProtocol(serial.threaded.LineReader):
 
         self._keep_alive_pending = False
 
-        if not ignore and self.callback is not None:
-            self.callback(status, subunit, function, value)
+        if not ignore and self.message_callback is not None:
+            self.message_callback(status, subunit, function, value)
 
     def _send_keepalive(self):
         self._send_queue.put("_KEEP_ALIVE")
@@ -181,10 +185,9 @@ class YncaConnection:
         for callback in self._message_callbacks:
             callback(status, subunit, function_, value)
 
-    def connect(self):
+    def connect(self, disconnect_callback: Callable[[], None] = None):
         try:
-            if not self._serial:
-                self._serial = serial.serial_for_url(self._port)
+            self._serial = serial.serial_for_url(self._port)
             self._readerthread = serial.threaded.ReaderThread(
                 self._serial, YncaProtocol
             )
@@ -193,9 +196,14 @@ class YncaConnection:
         except serial.SerialException as e:
             raise YncaConnectionError(e)
 
-        self._protocol.callback = self._call_registered_message_callbacks
+        self._protocol.message_callback = self._call_registered_message_callbacks
+        self._protocol.disconnect_callback = disconnect_callback
 
     def close(self):
+        # Disconnect callback is for unexpected disconnects
+        # Don't need it to be called on planned `close()`
+        self._protocol.disconnect_callback = None
+
         if self._readerthread:
             self._readerthread.close()
 
@@ -229,13 +237,16 @@ def ynca_console(serial_port: str):
     """
 
     def output_response(status, subunit, function, value):
-        print(f"Response: {status.name} {subunit}:{function}={value}")
+        print(f"Response: {status.name} @{subunit}:{function}={value}")
+
+    def disconnected_callback():
+        print("\n *** Connection lost, will attempt to reconnect on next command ***")
 
     print(ynca_console.__doc__)
 
     connection = YncaConnection(serial_port)
     connection.register_message_callback(output_response)
-    connection.connect()
+    connection.connect(disconnected_callback)
     quit_ = False
     while not quit_:
         command = input(">> ")
@@ -250,7 +261,7 @@ def ynca_console(serial_port: str):
                 # Because the connection receives on another thread, there is no use in catching YNCA exceptions here
                 # However exceptions will cause the connection to break, re-connect if needed
                 if not connection.connected:
-                    connection.connect()
+                    connection.connect(disconnected_callback)
                 connection.put(
                     match.group("subunit"),
                     match.group("function"),
