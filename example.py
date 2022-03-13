@@ -1,10 +1,11 @@
+#!/usr/bin/env python3
 """ A bit of a messy example/manual test script. """
 
 import sys
 import time
 import logging
 
-from ynca import YncaReceiver, Mute, ZONES, Subunit
+from ynca import Receiver, Mute, ZONES, Subunit
 
 update_number = 1
 
@@ -38,12 +39,12 @@ if __name__ == "__main__":
     if len(sys.argv) > 1:
         port = sys.argv[1]
 
-    ynca = YncaReceiver(port)
-    ynca.initialize()
+    receiver = Receiver(port)
+    receiver.initialize()
 
-    sys = ynca.subunits[Subunit.SYS]
-    main = ynca.subunits[Subunit.MAIN]
-    zone2 = ynca.subunits[Subunit.ZONE2]
+    sys = receiver.subunits[Subunit.SYS]
+    main = receiver.subunits[Subunit.MAIN]
+    zone2 = receiver.subunits[Subunit.ZONE2]
 
     sys.register_update_callback(updated)
     main.register_update_callback(updated_zone1)
@@ -54,17 +55,17 @@ if __name__ == "__main__":
     print("Zones:")
     for subunit_id in ZONES:
         try:
-            zone = ynca.subunits[subunit_id]
+            zone = receiver.subunits[subunit_id]
             print("--- {} ---".format(zone.id))
             print(zone)
         except KeyError:
             pass
 
     print("Inputs:")
-    print(ynca.inputs)
+    print(receiver.inputs)
 
     print("Subunits:")
-    print(ynca.subunits)
+    print(receiver.subunits)
 
     main.volume = -50
     main.volume = -50.2
@@ -86,4 +87,4 @@ if __name__ == "__main__":
         time.sleep(1)
         remaining -= 1
 
-    ynca.close()
+    receiver.close()

@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """
 Simple socket server to test without a real YNCA device
 
@@ -254,7 +255,8 @@ class YncaServer(socketserver.TCPServer):
 
 
 def main(args):
-    # with socketserver.TCPServer((args.host, args.port), YncaCommandHandler) as server:
+    print(__doc__)
+
     with YncaServer(
         (args.host, args.port),
         args.initfile,
