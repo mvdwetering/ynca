@@ -1,8 +1,8 @@
 """
-Simple socket server to test without a YNCA device
+Simple socket server to test without a real YNCA device
 
 Note that it just responds to commands and does not implement
-special interactions like when turning on a ZONE the SYS unit turns on.
+special interactions like return @RESTRICTED when subunit is not available when turned off.
 
 It is intended to be just enough to test without a real device
 """
@@ -44,7 +44,7 @@ class YncaDataStore:
                 # Error values are stored based on command sent on previous line
                 if RESTRICTED in line or UNDEFINED in line:
                     # Only set RESTRICTED or UNDEFINED for non existing entries
-                    # Avoids "removal" of valid values e.g. when subunit got turned off
+                    # Avoids "removal" of valid values that were already stored
                     if self.get_data(command.subunit, command.function) == UNDEFINED:
                         self.add_data(
                             command.subunit,
@@ -92,13 +92,20 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
 
     def __init__(self, request, client_address, server):
         self.store = server.store
-        self.disconnect_after_num_commands = server.disconnect_after_num_commands
+        self.disconnect_after_receiving_num_commands = (
+            server.disconnect_after_receiving_num_commands
+        )
+        self.disconnect_after_sending_num_commands = (
+            server.disconnect_after_sending_num_commands
+        )
+        self._commands_sent = 0
         super().__init__(request, client_address, server)
 
     def write_line(self, line: str):
         print(f"< {line}")
         line += "\r\n"
         self.wfile.write(line.encode("utf-8"))
+        self._commands_sent += 1
 
     def handle_get(self, subunit, function, skip_error_response=False):
 
@@ -172,8 +179,11 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
             if line == b"":
                 print("--- Client disconnected")
                 return
+
             line = line.strip()
-            line = line.decode("utf-8")
+            line = line.decode(
+                "utf-8"
+            )  # Note that YNCA spec says in some places that text can be ASCII, Latin-1 or UTF-8 without a way to indicate what it is :/
             print(f"> {line}")
 
             command = line_to_command(line)
@@ -185,11 +195,20 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
 
             commands_received += 1
             if (
-                self.disconnect_after_num_commands is not None
-                and commands_received >= self.disconnect_after_num_commands
+                self.disconnect_after_receiving_num_commands is not None
+                and commands_received >= self.disconnect_after_receiving_num_commands
             ):
                 print(
-                    "--- Disconnecting because of `disconnect_after_num_commands` limit reached"
+                    f"--- Disconnecting because of `disconnect_after_receiving_num_commands` limit {self.disconnect_after_receiving_num_commands} reached"
+                )
+                return
+
+            if (
+                self.disconnect_after_sending_num_commands is not None
+                and self._commands_sent >= self.disconnect_after_sending_num_commands
+            ):
+                print(
+                    "--- Disconnecting because of `disconnect_after_sending_num_commands` {self.disconnect_after_sending_num_commands} limit reached"
                 )
                 return
 
@@ -199,16 +218,26 @@ class YncaServer(socketserver.TCPServer):
         self,
         server_address: Tuple[str, int],
         initfile=None,
-        disconnect_after_num_commands=None,
+        disconnect_after_receiving_num_commands=None,
+        disconnect_after_sending_num_commands=None,
     ) -> None:
         super().__init__(server_address, YncaCommandHandler)
 
         self.store = YncaDataStore()
-        self.disconnect_after_num_commands = disconnect_after_num_commands
+        self.disconnect_after_receiving_num_commands = (
+            disconnect_after_receiving_num_commands
+        )
+        self.disconnect_after_sending_num_commands = (
+            disconnect_after_sending_num_commands
+        )
 
-        if disconnect_after_num_commands is not None:
+        if disconnect_after_receiving_num_commands is not None:
             print(
-                f"--- Each connection will be disconnected after receiving {disconnect_after_num_commands} commands!"
+                f"--- Each connection will be disconnected after receiving {disconnect_after_receiving_num_commands} commands!"
+            )
+        if disconnect_after_sending_num_commands is not None:
+            print(
+                f"--- Each connection will be disconnected after sending {disconnect_after_sending_num_commands} commands!"
             )
 
         if initfile:
@@ -227,7 +256,10 @@ class YncaServer(socketserver.TCPServer):
 def main(args):
     # with socketserver.TCPServer((args.host, args.port), YncaCommandHandler) as server:
     with YncaServer(
-        (args.host, args.port), args.initfile, args.disconnect_after_num_commands
+        (args.host, args.port),
+        args.initfile,
+        args.disconnect_after_receiving_num_commands,
+        args.disconnect_after_sending_num_commands,
     ) as server:
         # Activate the server; this will keep running until you
         # interrupt the program with Ctrl-C
@@ -259,8 +291,14 @@ if __name__ == "__main__":
         help="File to use to initialize the YncaDatastore. Needs to contain Ynca command logging in format `> @SUBUNIT:FUNCTION=VALUE` for sent values, and `< @SUBUNIT:FUNCTION=VALUE`. E.g. output of example script with loglevel DEBUG.",
     )
     parser.add_argument(
-        "--disconnect_after_num_commands",
+        "--disconnect_after_receiving_num_commands",
         help="Disconnect after receiving this amount of commands",
+        default=None,
+        type=int,
+    )
+    parser.add_argument(
+        "--disconnect_after_sending_num_commands",
+        help="Disconnect after sending this amount of commands",
         default=None,
         type=int,
     )
