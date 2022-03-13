@@ -1,4 +1,4 @@
-"""Test YNCA Zone"""
+"""Test Zone subunit"""
 
 from typing import Callable
 from unittest import mock

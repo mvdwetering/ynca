@@ -1,4 +1,4 @@
-"""Test YNCA Receiver"""
+"""Test SYS subunit"""
 
 from typing import Callable
 from unittest import mock
