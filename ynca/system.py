@@ -42,13 +42,6 @@ class System(SubunitBase):
         # So we should not send it here else it might mess up the synchronization
         # self._get("VERSION")
 
-    def __str__(self):
-        output = []
-        for key in self.__dict__:
-            output.append("{key}={value}".format(key=key, value=self.__dict__[key]))
-
-        return "\n".join(output)
-
     def _subunit_message_received_without_handler(
         self, status: YncaProtocolStatus, function_: str, value: str
     ) -> bool:
