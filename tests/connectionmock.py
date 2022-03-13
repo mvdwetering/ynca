@@ -9,6 +9,7 @@ class YncaConnectionMock(mock.MagicMock):
         # I can not add the response logic to the mock :/
         super().__init__(*args, **kwargs)
         self._num_commands_sent = 10
+        self.get_response_list = []
 
     @property
     def num_commands_sent(self):
@@ -21,7 +22,6 @@ class YncaConnectionMock(mock.MagicMock):
         # recursion when executing `self.get.side_effect = xyz`
         self.get.side_effect = self._get_response
         self._get_response_list_offset = 0
-        self._get_response_list = []
 
     def _get_response(self, subunit, function):
         print(f"get_response({subunit}, {function})")
@@ -41,11 +41,9 @@ class YncaConnectionMock(mock.MagicMock):
             print(f"Skipping: {subunit}, {function} because of {e}")
 
     def send_protocol_message(self, subunit, function, value=None):
-        self.register_message_callback.call_args.args[0](
-            YncaProtocolStatus.OK, subunit, function, value
-        )
+        for callback in self.register_message_callback.call_args.args:
+            callback(YncaProtocolStatus.OK, subunit, function, value)
 
     def send_protocol_error(self, error):
-        self.register_message_callback.call_args.args[0](
-            YncaProtocolStatus[error[1:]], None, None, None
-        )
+        for callback in self.register_message_callback.call_args.args:
+            callback(YncaProtocolStatus[error[1:]], None, None, None)
