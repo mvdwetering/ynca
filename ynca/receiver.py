@@ -29,9 +29,9 @@ SUBUNIT_INPUT_MAPPINGS: Dict[str, str] = {
 }
 
 
-class YncaReceiver:
+class Receiver:
     def __init__(self, serial_url: str):
-        """Create a YncaReceiver"""
+        """Create a Receiver"""
         self._serial_url = serial_url
         self._connection: Optional[YncaConnection] = None
         self._available_subunits: Dict[str, bool] = {}
@@ -44,7 +44,10 @@ class YncaReceiver:
     def inputs(self) -> Dict[str, str]:
         # Receiver has the main inputs as discovered by System subunit
         # These are the externally connectable inputs like HDMI1, AV1 etc...
-        inputs = cast(System, self.subunits[Subunit.SYS]).inputs
+        inputs = {}
+
+        if Subunit.SYS in self.subunits:
+            inputs = cast(System, self.subunits[Subunit.SYS]).inputs
 
         # Next to that there are internal inputs provided by subunits
         # for example the "Tuner"input is provided by the TUN subunit
@@ -98,10 +101,11 @@ class YncaReceiver:
 
     def initialize(self):
         """
-        Sets up a connection to the device and initializes the YncaReceiver.
+        Sets up a connection to the device and initializes the Receiver.
         This call takes several seconds.
         """
-        connection = YncaConnection(self._serial_url)
+        # connection = YncaConnection(self._serial_url)
+        connection = YncaConnection.create_from_serial_url(self._serial_url)
         connection.connect()
         self._connection = connection
 
@@ -120,4 +124,5 @@ class YncaReceiver:
     def close(self):
         for subunit in self.subunits.values():
             subunit.close()
-        self._connection.close()
+        if self._connection:
+            self._connection.close()
