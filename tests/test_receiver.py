@@ -1,5 +1,6 @@
 """Test YNCA Receiver"""
 
+from asyncio import BaseTransport
 from typing import Callable
 from unittest import mock
 import pytest
@@ -13,7 +14,11 @@ from .connectionmock import YncaConnectionMock
 
 SYS = "SYS"
 MAIN = "MAIN"
+ZONE4 = "ZONE4"
 NETRADIO = "NETRADIO"
+BT = "BT"
+
+RESTRICTED = "@RESTRICTED"
 
 INITIALIZE_MINIMAL_RESPONSES = [
     # Receiver detect subunits sync
@@ -38,6 +43,18 @@ INITIALIZE_FULL_RESPONSES = [
         (MAIN, "AVAIL"),
         [
             (MAIN, "AVAIL", "Not Ready"),
+        ],
+    ),
+    (
+        (ZONE4, "AVAIL"),
+        [
+            (RESTRICTED, None, None),
+        ],
+    ),
+    (
+        (BT, "AVAIL"),
+        [
+            (BT, "AVAIL", "Not Connected"),
         ],
     ),
     (
@@ -167,10 +184,11 @@ def test_init_full(connection):
         r = ynca.Receiver("serial_url")
         r.initialize()
 
-        assert len(r.inputs.keys()) == 3
+        assert len(r.inputs.keys()) == 4
         assert r.inputs["ONE"] == "InputOne"
         assert r.inputs["TWO"] == "InputTwo"
         assert r.inputs["NET RADIO"] == "NET RADIO"
+        assert r.inputs["Bluetooth"] == "Bluetooth"
 
         assert len(r.subunits.keys()) == 2
 
