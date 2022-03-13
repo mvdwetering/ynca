@@ -15,6 +15,23 @@ SYS = "SYS"
 MAIN = "MAIN"
 NETRADIO = "NETRADIO"
 
+INITIALIZE_MINIMAL_RESPONSES = [
+    # Receiver detect subunits sync
+    (
+        (SYS, "VERSION"),
+        [
+            (SYS, "VERSION", "Version"),
+        ],
+    ),
+    # SYS Subunit initialize sync
+    (
+        (SYS, "VERSION"),
+        [
+            (SYS, "VERSION", "Version"),
+        ],
+    ),
+]
+
 
 INITIALIZE_FULL_RESPONSES = [
     (
@@ -100,25 +117,11 @@ def test_minimal_init(connection):
         ynca.receiver.YncaConnection, "create_from_serial_url"
     ) as create_from_serial_url:
         create_from_serial_url.return_value = connection
+        connection.get_response_list = INITIALIZE_MINIMAL_RESPONSES
 
-        connection.get_response_list = [
-            # Receiver detect subunits sync
-            (
-                (SYS, "VERSION"),
-                [
-                    (SYS, "VERSION", "Version"),
-                ],
-            ),
-            # SYS Subunit initialize sync
-            (
-                (SYS, "VERSION"),
-                [
-                    (SYS, "VERSION", "Version"),
-                ],
-            ),
-        ]
+        disconnect_callback = mock.MagicMock()
 
-        r = ynca.Receiver("serial_url")
+        r = ynca.Receiver("serial_url", disconnect_callback)
         r.initialize()
 
         assert len(r.inputs.keys()) == 0
@@ -126,6 +129,28 @@ def test_minimal_init(connection):
         assert len(r.subunits.keys()) == 1
         assert isinstance(r.subunits[SYS], System)
         assert r.subunits[SYS].version == "Version"
+
+        r.close()
+
+        disconnect_callback.assert_not_called()
+
+
+def test_disconnect_callback(connection):
+
+    with mock.patch.object(
+        ynca.receiver.YncaConnection, "create_from_serial_url"
+    ) as create_from_serial_url:
+        create_from_serial_url.return_value = connection
+        connection.get_response_list = INITIALIZE_MINIMAL_RESPONSES
+
+        disconnect_callback = mock.MagicMock()
+
+        r = ynca.Receiver("serial_url", disconnect_callback)
+        r.initialize()
+
+        # Report disconnect from connection by using callback registered in connect call
+        connection.connect.call_args.args[0]()
+        disconnect_callback.assert_called_once()
 
         r.close()
 

@@ -1,7 +1,7 @@
 import threading
 import logging
 
-from typing import Dict, Optional, cast
+from typing import Callable, Dict, Optional, cast
 
 from .connection import YncaConnection, YncaProtocolStatus
 from .constants import ZONES, Subunit
@@ -30,12 +30,13 @@ SUBUNIT_INPUT_MAPPINGS: Dict[str, str] = {
 
 
 class Receiver:
-    def __init__(self, serial_url: str):
+    def __init__(self, serial_url: str, disconnect_callback: Callable[[], None] = None):
         """Create a Receiver"""
         self._serial_url = serial_url
         self._connection: Optional[YncaConnection] = None
         self._available_subunits: Dict[str, bool] = {}
         self._initialized_event = threading.Event()
+        self._disconnect_callback = disconnect_callback
 
         # This is the list of instantiated Subunit classes
         self.subunits: Dict[str, Subunit] = {}
@@ -104,9 +105,8 @@ class Receiver:
         Sets up a connection to the device and initializes the Receiver.
         This call takes several seconds.
         """
-        # connection = YncaConnection(self._serial_url)
         connection = YncaConnection.create_from_serial_url(self._serial_url)
-        connection.connect()
+        connection.connect(self._disconnect_callback)
         self._connection = connection
 
         self._detect_available_subunits()
