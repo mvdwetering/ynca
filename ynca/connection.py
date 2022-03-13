@@ -147,6 +147,10 @@ class YncaProtocol(serial.threaded.LineReader):
 
 
 class YncaConnection:
+    @classmethod
+    def create_from_serial_url(cls, serial_url):
+        return cls(serial_url)
+
     def __init__(
         self,
         serial_url: str,
