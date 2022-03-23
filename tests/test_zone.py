@@ -4,10 +4,8 @@ from typing import Callable
 from unittest import mock
 import pytest
 
-from ynca.connection import YncaConnection, YncaProtocolStatus
 from ynca.constants import Mute
 from ynca.zone import Zone
-from ynca.errors import YncaInitializationFailedException
 
 from .connectionmock import YncaConnectionMock
 
@@ -88,17 +86,6 @@ def test_construct(connection, update_callback):
     z = Zone(SUBUNIT, connection)
 
     assert connection.register_message_callback.call_count == 1
-    assert update_callback.call_count == 0
-
-
-def test_initialize_fail(connection, update_callback):
-
-    z = Zone(SUBUNIT, connection)
-    z.register_update_callback(update_callback)
-
-    with pytest.raises(YncaInitializationFailedException):
-        z.initialize()
-
     assert update_callback.call_count == 0
 
 

@@ -1,7 +1,7 @@
 import threading
 import logging
 
-from typing import Callable, Dict, Optional, cast
+from typing import Callable, Dict, Optional, cast, Set
 
 from .connection import YncaConnection, YncaProtocolStatus
 from .constants import ZONES, Subunit
@@ -34,7 +34,7 @@ class Receiver:
         """Create a Receiver"""
         self._serial_url = serial_url
         self._connection: Optional[YncaConnection] = None
-        self._available_subunits: Dict[str, bool] = {}
+        self._available_subunits: Set = set()
         self._initialized_event = threading.Event()
         self._disconnect_callback = disconnect_callback
 
@@ -52,8 +52,8 @@ class Receiver:
 
         # Next to that there are internal inputs provided by subunits
         # for example the "Tuner"input is provided by the TUN subunit
-        for subunit, available in self._available_subunits.items():
-            if available and subunit in SUBUNIT_INPUT_MAPPINGS.keys():
+        for subunit in self._available_subunits:
+            if subunit in SUBUNIT_INPUT_MAPPINGS.keys():
                 input_id = SUBUNIT_INPUT_MAPPINGS[subunit]
                 inputs[input_id] = input_id
         return inputs
@@ -65,7 +65,7 @@ class Receiver:
 
         # Figure out what subunits are available
         num_commands_sent_start = self._connection.num_commands_sent
-        self._available_subunits = {}
+        self._available_subunits = set()
         for subunit_id in Subunit:
             self._connection.get(subunit_id, "AVAIL")
 
@@ -89,9 +89,7 @@ class Receiver:
         self.subunits[system.id] = system
 
         # Initialize detected subunits
-        for subunit_id, available in self._available_subunits.items():
-            if not available:
-                continue
+        for subunit_id in self._available_subunits:
             subunit = None
             if subunit_id in ZONES:
                 subunit = Zone(subunit_id, self._connection)
@@ -116,7 +114,7 @@ class Receiver:
         self, status: YncaProtocolStatus, subunit: str, function_: str, value: str
     ):
         if function_ == "AVAIL":
-            self._available_subunits[subunit] = status is YncaProtocolStatus.OK
+            self._available_subunits.add(subunit)
 
         if subunit == Subunit.SYS and function_ == "VERSION":
             self._initialized_event.set()

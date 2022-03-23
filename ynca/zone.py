@@ -208,9 +208,7 @@ class Zone(SubunitBase):
 
     def activate_scene(self, scene_id: str):
         """Activate a scene"""
-        if len(self._scenes) == 0:
-            raise ValueError("Zone does not support scenes")
-        elif scene_id not in self._scenes.keys():
+        if scene_id not in self._scenes.keys():
             raise ValueError("Invalid scene ID")
         else:
             self._put("SCENE", f"Scene {scene_id}")

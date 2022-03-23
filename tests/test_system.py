@@ -5,7 +5,6 @@ from unittest import mock
 import pytest
 
 from ynca.system import System
-from ynca.errors import YncaInitializationFailedException
 
 from .connectionmock import YncaConnectionMock
 
@@ -85,17 +84,6 @@ def test_construct(connection, update_callback):
     assert update_callback.call_count == 0
 
 
-def test_initialize_fail(connection, update_callback):
-
-    r = System(connection)
-    r.register_update_callback(update_callback)
-
-    with pytest.raises(YncaInitializationFailedException):
-        r.initialize()
-
-    assert update_callback.call_count == 0
-
-
 def test_initialize_minimal(connection, update_callback):
     connection.get_response_list = [
         (
@@ -154,18 +142,7 @@ def test_initialize_full(connection, update_callback):
     assert s.inputs["USB"] == "InputUsb"
 
 
-def test_on(connection, initialized_system):
-    # Writing to device
-    initialized_system.on = True
-    connection.put.assert_called_with(SYS, "PWR", "On")
-    initialized_system.on = False
-    connection.put.assert_called_with(SYS, "PWR", "Standby")
-
-    # Updates from device
-    connection.send_protocol_message(SYS, "PWR", "On")
-    assert initialized_system.on == True
-    connection.send_protocol_message(SYS, "PWR", "Standby")
-    assert initialized_system.on == False
+def test_registration(connection, initialized_system):
 
     update_callback_1 = mock.MagicMock()
     update_callback_2 = mock.MagicMock()
@@ -188,3 +165,26 @@ def test_on(connection, initialized_system):
     connection.send_protocol_message(SYS, "PWR", "On")
     assert update_callback_1.call_count == 3
     assert update_callback_2.call_count == 2
+
+
+def test_on(connection, initialized_system):
+    # Writing to device
+    initialized_system.on = True
+    connection.put.assert_called_with(SYS, "PWR", "On")
+    initialized_system.on = False
+    connection.put.assert_called_with(SYS, "PWR", "Standby")
+
+    # Updates from device
+    connection.send_protocol_message(SYS, "PWR", "On")
+    assert initialized_system.on == True
+    connection.send_protocol_message(SYS, "PWR", "Standby")
+    assert initialized_system.on == False
+
+
+def test_unhandled_function(connection, initialized_system):
+
+    # Updates from device
+    update_callback_1 = mock.MagicMock()
+    initialized_system.register_update_callback(update_callback_1)
+    connection.send_protocol_message(SYS, "UnknownFunction", "On")
+    assert update_callback_1.call_count == 0

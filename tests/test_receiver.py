@@ -1,7 +1,3 @@
-"""Test YNCA Receiver"""
-
-from asyncio import BaseTransport
-from typing import Callable
 from unittest import mock
 import pytest
 
@@ -9,6 +5,7 @@ import ynca
 
 from ynca.system import System
 from ynca.zone import Zone
+from ynca.errors import YncaInitializationFailedException
 
 from .connectionmock import YncaConnectionMock
 
@@ -128,7 +125,7 @@ def test_construct():
     r.close()
 
 
-def test_minimal_init(connection):
+def test_initialize_minimal(connection):
 
     with mock.patch.object(
         ynca.receiver.YncaConnection, "create_from_serial_url"
@@ -148,6 +145,23 @@ def test_minimal_init(connection):
         assert r.subunits[SYS].version == "Version"
 
         r.close()
+
+        disconnect_callback.assert_not_called()
+
+
+def test_initialize_fail(connection):
+
+    with mock.patch.object(
+        ynca.receiver.YncaConnection, "create_from_serial_url"
+    ) as create_from_serial_url:
+        create_from_serial_url.return_value = connection
+        connection.get_response_list = []
+
+        disconnect_callback = mock.MagicMock()
+
+        r = ynca.Receiver("serial_url", disconnect_callback)
+        with pytest.raises(YncaInitializationFailedException):
+            r.initialize()
 
         disconnect_callback.assert_not_called()
 
@@ -172,7 +186,7 @@ def test_disconnect_callback(connection):
         r.close()
 
 
-def test_init_full(connection):
+def test_initialize_full(connection):
 
     with mock.patch.object(
         ynca.receiver.YncaConnection, "create_from_serial_url"

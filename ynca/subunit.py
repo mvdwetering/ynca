@@ -64,7 +64,7 @@ class SubunitBase:
         Initializes the data for the subunit.
         Needs to be implemented in derived classes.
         """
-        raise NotImplementedError()
+        raise NotImplementedError()  # pragma: no cover
 
     def _subunit_message_received_without_handler(
         self, status: YncaProtocolStatus, function_: str, value: str
