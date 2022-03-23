@@ -48,7 +48,7 @@ class SubunitBase:
         num_commands_sent = self._connection.num_commands_sent - num_commands_sent_start
 
         if self._initialized_event.wait(
-            num_commands_sent * 0.120
+            num_commands_sent * 0.150
         ):  # Each command takes at least 100ms + some margin
             self._initialized = True
         else:

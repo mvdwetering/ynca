@@ -45,7 +45,7 @@ class YncaProtocol(serial.threaded.LineReader):
     def connection_made(self, transport):
         super(YncaProtocol, self).connection_made(transport)
 
-        logger.info("Connected")
+        logger.debug("Connected")
 
         self._send_queue = queue.Queue()
         self._send_thread = threading.Thread(target=self._send_handler)
@@ -62,7 +62,7 @@ class YncaProtocol(serial.threaded.LineReader):
     def connection_lost(self, exc):
         self.connected = False
 
-        logger.info("Connection lost")
+        logger.debug("Connection lost")
 
         # There seems to be no way to clear a queue so just read all and add the _EXIT command
         try:
@@ -83,15 +83,14 @@ class YncaProtocol(serial.threaded.LineReader):
         status = YncaProtocolStatus.OK
         subunit = None
         function = None
+        value = None
 
         logger.debug("< %s", line)
 
         if line == "@UNDEFINED":
             status = YncaProtocolStatus.UNDEFINED
-            line = self._last_sent_command
         elif line == "@RESTRICTED":
             status = YncaProtocolStatus.RESTRICTED
-            line = self._last_sent_command
 
         match = re.match(r"@(?P<subunit>.+?):(?P<function>.+?)=(?P<value>.*)", line)
         if match is not None:

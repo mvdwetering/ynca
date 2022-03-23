@@ -73,7 +73,7 @@ class Receiver:
         self._connection.get(Subunit.SYS, "VERSION")
 
         if not self._initialized_event.wait(
-            (self._connection.num_commands_sent - num_commands_sent_start) * 0.120
+            (self._connection.num_commands_sent - num_commands_sent_start) * 0.150
         ):  # Each command is ~100ms + some margin
             raise YncaInitializationFailedException(
                 f"Subunit availability check failed"
