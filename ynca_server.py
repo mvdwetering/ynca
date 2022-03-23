@@ -179,6 +179,7 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
             line = self.rfile.readline()
             if line == b"":
                 print("--- Client disconnected")
+                print("--- Waiting for connections")
                 return
 
             line = line.strip()
