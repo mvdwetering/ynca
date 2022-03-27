@@ -4,6 +4,6 @@ from typing import Dict, List
 
 from .connection import YncaConnection, YncaConnectionError, ynca_console
 from .constants import DSP_SOUND_PROGRAMS, Mute, Subunit, ZONES
-from .receiver import Receiver
+from .receiver import Receiver, YncaInitializationFailedException
 
 logging.getLogger(__name__).addHandler(logging.NullHandler())
