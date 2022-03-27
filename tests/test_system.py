@@ -6,7 +6,7 @@ import pytest
 
 from ynca.system import System
 
-from .connectionmock import YncaConnectionMock
+from .mock_yncaconnection import YncaConnectionMock
 
 SYS = "SYS"
 

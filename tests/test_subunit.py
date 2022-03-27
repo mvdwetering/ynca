@@ -7,7 +7,7 @@ import pytest
 from ynca.subunit import SubunitBase
 from ynca.errors import YncaInitializationFailedException
 
-from .connectionmock import YncaConnectionMock
+from .mock_yncaconnection import YncaConnectionMock
 
 
 class SubunitImpl(SubunitBase):

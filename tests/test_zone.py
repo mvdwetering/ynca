@@ -7,7 +7,7 @@ import pytest
 from ynca.constants import Mute
 from ynca.zone import Zone
 
-from .connectionmock import YncaConnectionMock
+from .mock_yncaconnection import YncaConnectionMock
 
 SYS = "SYS"
 SUBUNIT = "SUBUNIT"

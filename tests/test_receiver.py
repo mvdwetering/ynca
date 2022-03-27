@@ -7,7 +7,7 @@ from ynca.system import System
 from ynca.zone import Zone
 from ynca.errors import YncaConnectionError, YncaInitializationFailedException
 
-from .connectionmock import YncaConnectionMock
+from .mock_yncaconnection import YncaConnectionMock
 
 SYS = "SYS"
 MAIN = "MAIN"
