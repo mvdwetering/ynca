@@ -1,11 +1,12 @@
 import threading
 import logging
+import time
 
 from typing import Callable, Dict, Optional, cast, Set
 
 from .connection import YncaConnection, YncaProtocolStatus
 from .constants import ZONES, Subunit
-from .errors import YncaInitializationFailedException
+from .errors import YncaConnectionError, YncaInitializationFailedException
 from .system import System
 from .zone import Zone
 
@@ -97,6 +98,44 @@ class Receiver:
             if subunit is not None:
                 subunit.initialize()
                 self.subunits[subunit.id] = subunit
+
+    def connection_check(self) -> str:
+        """
+        Does a quick connection check by setting up a connection and requesting the modelname.
+        Connection gets closed again automatically.
+
+        This is a fast way to check the connection and if it is a YNCA device without
+        executing the timeconsuming `initialize()` method.
+        """
+        connection_check_event = threading.Event()
+        modelname = None
+
+        def _connection_check_message_received(
+            status: YncaProtocolStatus, subunit: str, function_: str, value: str
+        ):
+            if subunit == Subunit.SYS and function_ == "MODELNAME":
+                nonlocal modelname
+                modelname = value
+                connection_check_event.set()
+
+        try:
+            connection = YncaConnection.create_from_serial_url(self._serial_url)
+            connection.connect(self._disconnect_callback)
+            connection.register_message_callback(_connection_check_message_received)
+            connection.get(Subunit.SYS, "MODELNAME")
+
+            # Give it a bit of time to receive a response
+            if not connection_check_event.wait(0.5):
+                raise YncaConnectionError(
+                    "Connectioncheck failed, no valid response in time from device"
+                )
+        finally:
+            if connection:
+                connection.unregister_message_callback(
+                    _connection_check_message_received
+                )
+                connection.close()
+        return modelname
 
     def initialize(self):
         """

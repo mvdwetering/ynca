@@ -5,7 +5,7 @@ import ynca
 
 from ynca.system import System
 from ynca.zone import Zone
-from ynca.errors import YncaInitializationFailedException
+from ynca.errors import YncaConnectionError, YncaInitializationFailedException
 
 from .connectionmock import YncaConnectionMock
 
@@ -16,6 +16,15 @@ NETRADIO = "NETRADIO"
 BT = "BT"
 
 RESTRICTED = "@RESTRICTED"
+
+CONNECTION_CHECK_RESPONSES = [
+    (
+        (SYS, "MODELNAME"),
+        [
+            (SYS, "MODELNAME", "ModelName"),
+        ],
+    ),
+]
 
 INITIALIZE_MINIMAL_RESPONSES = [
     # Receiver detect subunits sync
@@ -123,6 +132,57 @@ def test_construct():
     assert len(r.inputs.keys()) == 0
 
     r.close()
+
+
+def test_check_connection_success(connection):
+
+    with mock.patch.object(
+        ynca.receiver.YncaConnection, "create_from_serial_url"
+    ) as create_from_serial_url:
+        create_from_serial_url.return_value = connection
+        connection.get_response_list = CONNECTION_CHECK_RESPONSES
+
+        disconnect_callback = mock.MagicMock()
+
+        r = ynca.Receiver("serial_url", disconnect_callback)
+        modelname = r.connection_check()
+        assert modelname == "ModelName"
+        r.close()
+
+        disconnect_callback.assert_not_called()
+
+
+def test_check_connection_fail_connect(connection):
+
+    with mock.patch.object(
+        ynca.receiver.YncaConnection, "create_from_serial_url"
+    ) as create_from_serial_url:
+        create_from_serial_url.return_value = connection
+        connection.connect.side_effect = YncaConnectionError("something is wrong")
+
+        disconnect_callback = mock.MagicMock()
+
+        r = ynca.Receiver("serial_url", disconnect_callback)
+        with pytest.raises(YncaConnectionError):
+            r.connection_check()
+
+        disconnect_callback.assert_not_called()
+
+
+def test_check_connection_fail_no_response(connection):
+
+    with mock.patch.object(
+        ynca.receiver.YncaConnection, "create_from_serial_url"
+    ) as create_from_serial_url:
+        create_from_serial_url.return_value = connection
+
+        disconnect_callback = mock.MagicMock()
+
+        r = ynca.Receiver("serial_url", disconnect_callback)
+        with pytest.raises(YncaConnectionError):
+            r.connection_check()
+
+        disconnect_callback.assert_not_called()
 
 
 def test_initialize_minimal(connection):
