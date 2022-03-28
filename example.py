@@ -41,9 +41,9 @@ if __name__ == "__main__":
     receiver.initialize()
     print("Initialize done")
 
-    sys = receiver.subunits[Subunit.SYS]
-    main = receiver.subunits[Subunit.MAIN]
-    zone2 = receiver.subunits[Subunit.ZONE2]
+    sys = receiver.subunit(Subunit.SYS)
+    main = receiver.subunit(Subunit.MAIN)
+    zone2 = receiver.subunit(Subunit.ZONE2)
 
     sys.register_update_callback(updated)
     main.register_update_callback(updated_main)
@@ -54,7 +54,7 @@ if __name__ == "__main__":
     print("Zones:")
     for subunit_id in ZONES:
         try:
-            zone = receiver.subunits[subunit_id]
+            zone = receiver.subunit(subunit_id)
             print("--- {} ---".format(zone.id))
             print(f"{zone.name=}")
             print(f"{zone.volume=}")
@@ -66,7 +66,7 @@ if __name__ == "__main__":
     print(receiver.inputs)
 
     print("Subunits:")
-    print(receiver.subunits)
+    print(receiver._subunits)
 
     main.on = True
     current_volume = main.volume

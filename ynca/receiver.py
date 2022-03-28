@@ -40,7 +40,7 @@ class Receiver:
         self._disconnect_callback = disconnect_callback
 
         # This is the list of instantiated Subunit classes
-        self.subunits: Dict[str, Subunit] = {}
+        self._subunits: Dict[str, Subunit] = {}
 
     @property
     def inputs(self) -> Dict[str, str]:
@@ -48,8 +48,8 @@ class Receiver:
         # These are the externally connectable inputs like HDMI1, AV1 etc...
         inputs = {}
 
-        if Subunit.SYS in self.subunits:
-            inputs = cast(System, self.subunits[Subunit.SYS]).inputs
+        if Subunit.SYS in self._subunits:
+            inputs = cast(System, self._subunits[Subunit.SYS]).inputs
 
         # Next to that there are internal inputs provided by subunits
         # for example the "Tuner"input is provided by the TUN subunit
@@ -87,7 +87,7 @@ class Receiver:
         # Every receiver has a System subunit (can not even check for its existence)
         system = System(self._connection)
         system.initialize()
-        self.subunits[system.id] = system
+        self._subunits[system.id] = system
 
         # Initialize detected subunits
         for subunit_id in self._available_subunits:
@@ -97,7 +97,7 @@ class Receiver:
 
             if subunit is not None:
                 subunit.initialize()
-                self.subunits[subunit.id] = subunit
+                self._subunits[subunit.id] = subunit
 
     def connection_check(self) -> str:
         """
@@ -159,7 +159,13 @@ class Receiver:
             self._initialized_event.set()
 
     def close(self):
-        for subunit in self.subunits.values():
+        for subunit in self._subunits.values():
             subunit.close()
         if self._connection:
             self._connection.close()
+
+    def subunit(self, subunit_id: str):
+        try:
+            return self._subunits[subunit_id]
+        except:
+            return None

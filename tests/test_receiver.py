@@ -128,7 +128,6 @@ def connection():
 def test_construct():
 
     r = ynca.Receiver("serial_url")
-    assert len(r.subunits.keys()) == 0
     assert len(r.inputs.keys()) == 0
 
     r.close()
@@ -200,9 +199,8 @@ def test_initialize_minimal(connection):
 
         assert len(r.inputs.keys()) == 0
 
-        assert len(r.subunits.keys()) == 1
-        assert isinstance(r.subunits[SYS], System)
-        assert r.subunits[SYS].version == "Version"
+        assert isinstance(r.subunit(SYS), System)
+        assert r.subunit(SYS).version == "Version"
 
         r.close()
 
@@ -264,13 +262,13 @@ def test_initialize_full(connection):
         assert r.inputs["NET RADIO"] == "NET RADIO"
         assert r.inputs["Bluetooth"] == "Bluetooth"
 
-        assert len(r.subunits.keys()) == 2
+        assert len(r._subunits.keys()) == 2
 
-        assert isinstance(r.subunits[SYS], System)
-        assert r.subunits[SYS].model_name == "ModelName"
-        assert r.subunits[SYS].version == "Version"
+        assert isinstance(r.subunit(SYS), System)
+        assert r.subunit(SYS).model_name == "ModelName"
+        assert r.subunit(SYS).version == "Version"
 
-        assert isinstance(r.subunits[MAIN], Zone)
-        assert r.subunits[MAIN].name == "MainZoneName"
+        assert isinstance(r.subunit(MAIN), Zone)
+        assert r.subunit(MAIN).name == "MainZoneName"
 
         r.close()
