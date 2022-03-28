@@ -271,4 +271,6 @@ def test_initialize_full(connection):
         assert isinstance(r.subunit(MAIN), Zone)
         assert r.subunit(MAIN).name == "MainZoneName"
 
+        assert r.subunit("Unknown") is None
+
         r.close()
