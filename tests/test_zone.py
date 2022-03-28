@@ -44,6 +44,7 @@ INITIALIZE_FULL_RESPONSES = [
             (SUBUNIT, "SCENE2NAME", "Scene name 2"),
             (SUBUNIT, "SCENE3NAME", "Scene name 3"),
             (SUBUNIT, "SCENE4NAME", "Scene name 4"),
+            (SUBUNIT, "SCENE42NAME", "Scene name 42"),
         ],
     ),
     (
@@ -144,11 +145,12 @@ def test_initialize_full(connection, update_callback):
     assert z.dsp_sound_program == "Standard"
     assert z.name == "ZoneName"
 
-    assert len(z.scenes.keys()) == 4
+    assert len(z.scenes.keys()) == 5
     assert z.scenes["1"] == "Scene name 1"
     assert z.scenes["2"] == "Scene name 2"
     assert z.scenes["3"] == "Scene name 3"
     assert z.scenes["4"] == "Scene name 4"
+    assert z.scenes["42"] == "Scene name 42"
 
 
 def test_on(connection, initialized_zone):
@@ -289,8 +291,8 @@ def test_scene(connection, initialized_zone):
     with pytest.raises(ValueError):
         initialized_zone.activate_scene("Invalid")
 
-    initialized_zone.activate_scene("2")
-    connection.put.assert_called_with(SUBUNIT, "SCENE", "Scene 2")
+    initialized_zone.activate_scene("42")
+    connection.put.assert_called_with(SUBUNIT, "SCENE", "Scene 42")
 
     # Updates from device
     connection.send_protocol_message(SUBUNIT, "SCENE3NAME", "New Name")

@@ -1,3 +1,4 @@
+import re
 import threading
 import logging
 
@@ -47,12 +48,8 @@ class Zone(SubunitBase):
     ) -> bool:
         updated = True
 
-        if (
-            len(function_) == 10
-            and function_.startswith("SCENE")
-            and function_.endswith("NAME")
-        ):
-            scene_id = function_[5:6]
+        if matches := re.match(r"SCENE(\d+)NAME", function_):
+            scene_id = matches[1]
             self._scenes[scene_id] = value
         else:
             updated = False
