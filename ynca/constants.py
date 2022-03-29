@@ -24,11 +24,11 @@ DSP_SOUND_PROGRAMS = [
 ]
 
 
-class Mute(Enum):
-    on = 1
-    att_minus_20 = 2
-    att_minus_40 = 3
-    off = 4
+class Mute(str, Enum):
+    on = "On"
+    att_minus_20 = "Att -20 dB"
+    att_minus_40 = "Att -40 dB"
+    off = "Off"
 
 
 """Known Subunits in YNCA"""
@@ -53,6 +53,30 @@ class Subunit(str, Enum):
     IPODUSB = "IPODUSB"
     UAW = "UAW"
 
+
+class Avail(str, Enum):
+    NOT_CONNECTED = "Not Connected"
+    NOT_READY = "Not Ready"
+    READY = "Ready"
+
+
+class Repeat(str, Enum):
+    OFF = "Off"
+    SINGLE = "Single"
+    ALL = "All"
+
+
+class Playbackinfo(str, Enum):
+    STOP = "Stop"
+    PAUSE = "Pause"
+    PLAY = "Play"
+
+class Playback(str, Enum):
+    STOP = "Stop"
+    PAUSE = "Pause"
+    PLAY = "Play"
+    SKIP_REV = "Skip Rev"
+    SKIP_FWD = "Skip Fwd"
 
 """Subunits that are zones """
 ZONES = [Subunit.MAIN, Subunit.ZONE2, Subunit.ZONE3, Subunit.ZONE4]
