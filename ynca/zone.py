@@ -1,14 +1,12 @@
+from __future__ import annotations
 import re
-import threading
 import logging
 
-from typing import Callable, Dict, Set
-
+from typing import Dict
 
 from .connection import YncaConnection, YncaProtocolStatus
-from .constants import DSP_SOUND_PROGRAMS, Mute
+from .constants import DSP_SOUND_PROGRAMS, Mute, Playback
 from .helpers import number_to_string_with_stepsize
-from .errors import YncaInitializationFailedException
 from .subunit import SubunitBase
 
 logger = logging.getLogger(__name__)
@@ -24,15 +22,16 @@ class Zone(SubunitBase):
         self._reset_internal_state()
 
     def _reset_internal_state(self):
-        self._name = None
         self._max_volume = 16.5  # is 16.5 for zones where it is not configurable
-        self._input = None
-        self._power = None
         self._volume = None
-        self._mute = None
-        self._dsp_sound_program = None
-        self._straight = None
         self._scenes: Dict[str, str] = {}
+
+        self._attr_inp = None
+        self._attr_pwr = None
+        self._attr_mute = None
+        self._attr_soundprg = None
+        self._attr_straight = None
+        self._attr_zonename = None
 
     def on_initialize(self):
         self._reset_internal_state()
@@ -56,46 +55,21 @@ class Zone(SubunitBase):
 
         return updated
 
-    def _handle_inp(self, value: str):
-        self._input = value
-
     def _handle_vol(self, value: str):
         self._volume = float(value)
 
     def _handle_maxvol(self, value: str):
         self._max_volume = float(value)
 
-    def _handle_mute(self, value: str):
-        if value == "Off":
-            self._mute = Mute.off
-        elif value == "Att -20 dB":
-            self._mute = Mute.att_minus_20
-        elif value == "Att -40 dB":
-            self._mute = Mute.att_minus_40
-        else:
-            self._mute = Mute.on
-
-    def _handle_pwr(self, value: str):
-        self._power = value == "On"
-
-    def _handle_zonename(self, value: str):
-        self._name = value
-
-    def _handle_soundprg(self, value: str):
-        self._dsp_sound_program = value
-
-    def _handle_straight(self, value: str):
-        self._straight = value == "On"
-
     @property
-    def name(self):
+    def name(self) -> str | None:
         """Get zone name"""
-        return self._name
+        return self._attr_zonename
 
     @property
-    def on(self):
+    def on(self) -> bool | None:
         """Get current on state"""
-        return self._power
+        return self._attr_pwr == "On" if self._attr_pwr is not None else None
 
     @on.setter
     def on(self, value: bool):
@@ -103,35 +77,27 @@ class Zone(SubunitBase):
         self._put("PWR", "On" if value is True else "Standby")
 
     @property
-    def mute(self):
+    def mute(self) -> Mute | None:
         """Get current mute state"""
-        return self._mute
+        return Mute(self._attr_mute) if self._attr_mute is not None else None
 
     @mute.setter
     def mute(self, value: Mute):
         """Mute"""
-        assert value in Mute  # Is this usefull?
-        command_value = "On"
-        if value == Mute.off:
-            command_value = "Off"
-        elif value == Mute.att_minus_40:
-            command_value = "Att -40 dB"
-        elif value == Mute.att_minus_20:
-            command_value = "Att -20 dB"
-        self._put("MUTE", command_value)
+        self._put("MUTE", value)
 
     @property
-    def max_volume(self):
+    def max_volume(self) -> float | None:
         """Get maximum volume in dB"""
         return self._max_volume
 
     @property
-    def min_volume(self):
+    def min_volume(self) -> float:
         """Get minimum volume in dB"""
         return -80.5  # Seems to be fixed and the same for all zones
 
     @property
-    def volume(self):
+    def volume(self) -> float:
         """Get current volume in dB"""
         return self._volume
 
@@ -166,9 +132,9 @@ class Zone(SubunitBase):
         self._put("VOL", value)
 
     @property
-    def input(self):
+    def input(self) -> str:
         """Get current input"""
-        return self._input
+        return self._attr_inp
 
     @input.setter
     def input(self, value: str):
@@ -176,9 +142,9 @@ class Zone(SubunitBase):
         self._put("INP", value)
 
     @property
-    def dsp_sound_program(self):
+    def dsp_sound_program(self) -> str:
         """Get the current DSP sound program"""
-        return self._dsp_sound_program
+        return self._attr_soundprg
 
     @dsp_sound_program.setter
     def dsp_sound_program(self, value: str):
@@ -189,9 +155,9 @@ class Zone(SubunitBase):
             raise ValueError("Soundprogram not in DspSoundPrograms")
 
     @property
-    def straight(self):
+    def straight(self) -> bool | None:
         """Get the current Straight value"""
-        return self._straight
+        return self._attr_straight == "On" if self._attr_straight is not None else None
 
     @straight.setter
     def straight(self, value: bool):
@@ -199,7 +165,7 @@ class Zone(SubunitBase):
         self._put("STRAIGHT", "On" if value is True else "Off")
 
     @property
-    def scenes(self):
+    def scenes(self) -> Dict[str, str]:
         """Get the dictionary with scenes where key, value = id, name"""
         return self._scenes
 
@@ -209,3 +175,7 @@ class Zone(SubunitBase):
             raise ValueError("Invalid scene ID")
         else:
             self._put("SCENE", f"Scene {scene_id}")
+
+    def playback(self, parameter: Playback):
+        """Change playback state (will forward to subunit it seems)"""
+        self._put("PLAYBACK", parameter)

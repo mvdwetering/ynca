@@ -1,10 +1,8 @@
-import threading
 import logging
 
-from typing import Callable, Dict, List, Set
+from typing import Dict
 
 from .connection import YncaConnection, YncaProtocolStatus
-from .errors import YncaInitializationFailedException
 from .subunit import SubunitBase
 
 logger = logging.getLogger(__name__)
@@ -16,17 +14,15 @@ class System(SubunitBase):
         Constructor for a Receiver object.
         """
         super().__init__("SYS", connection)
-
-        self._initialized_event = threading.Event()
         self._reset_internal_state()
 
     def _reset_internal_state(self):
         self._initialized = False
-        self._power = None
-        self._model_name = None
-        self._version = None
         self.inputs: Dict[str, str] = {}
-        self._initialized_event.clear()
+
+        self._attr_pwr = None
+        self._attr_modelname = None
+        self._attr_version = None
 
     def on_initialize(self):
         self._reset_internal_state()
@@ -58,24 +54,10 @@ class System(SubunitBase):
 
         return updated
 
-    def _handle_pwr(self, value: str):
-        self._power = value == "On"
-
-    def _handle_modelname(self, value: str):
-        self._model_name = value
-
-    def _handle_version(self, value: str):
-        self._version = value
-
-        # During initialization this is used to signal
-        # that initialization is done
-        if not self._initialized:
-            self._initialized_event.set()
-
     @property
     def on(self):
         """Get current on state"""
-        return self._power
+        return self._attr_pwr == "On" if self._attr_pwr is not None else None
 
     @on.setter
     def on(self, value: bool):
@@ -85,9 +67,9 @@ class System(SubunitBase):
     @property
     def model_name(self):
         """Get model name"""
-        return self._model_name
+        return self._attr_modelname
 
     @property
     def version(self):
         """Get firmware version"""
-        return self._version
+        return self._attr_version
