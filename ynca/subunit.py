@@ -66,19 +66,21 @@ class SubunitBase:
         """
         raise NotImplementedError()  # pragma: no cover
 
+    def close(self):
+        self._connection.unregister_message_callback(self._protocol_message_received)
+        self._connection = None
+        self._update_callbacks = set()
+
     def _subunit_message_received_without_handler(
         self, status: YncaProtocolStatus, function_: str, value: str
     ) -> bool:
         """
         Called when a message for this subunit was received with no handler
         Implement in subclasses for cases where a simple handler is not enough.
+
+        Return True if state was updated because of the message.
         """
         return False
-
-    def close(self):
-        self._connection.unregister_message_callback(self._protocol_message_received)
-        self._connection = None
-        self._update_callbacks = set()
 
     def _protocol_message_received(
         self, status: YncaProtocolStatus, subunit: str, function_: str, value: str
@@ -87,16 +89,19 @@ class SubunitBase:
             # Can't really handle errors since at this point we can't see to what command it belonged
             return
 
+        # During initialization SYS:VERSION is used to signal that initialization is done
         if not self._initialized and subunit == Subunit.SYS and function_ == "VERSION":
-            # During initialization SYS:VERSION is used to signal that initialization is done
             self._initialized_event.set()
 
         if self.id != subunit:
             return
 
         updated = False
-        handler = getattr(self, f"_handle_{function_.lower()}", None)
-        if handler is not None:
+
+        if hasattr(self, f"_attr_{function_.lower()}"):
+            setattr(self, f"_attr_{function_.lower()}", value)
+            updated = True
+        elif handler := getattr(self, f"_handle_{function_.lower()}", None):
             handler(value)
             updated = True
         else:
