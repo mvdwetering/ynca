@@ -1,9 +1,10 @@
+from __future__ import annotations
 import logging
 import threading
 
 from typing import Callable, Dict, List, Set
 
-from .constants import Subunit
+from .constants import Avail, Subunit
 from .errors import YncaInitializationFailedException
 
 from .connection import YncaConnection, YncaProtocolStatus
@@ -18,6 +19,8 @@ class SubunitBase:
         """
         self.id = id
         self._update_callbacks: Set[Callable[[], None]] = set()
+
+        self._attr_avail: Avail | None = None
 
         self._initialized = False
         self._initialized_event = threading.Event()
@@ -37,6 +40,8 @@ class SubunitBase:
         self._initialized = False
 
         num_commands_sent_start = self._connection.num_commands_sent
+
+        self._connection.get(self.id, "AVAIL")
 
         # Invoke subunit specific initialization implemented in the derived classes
         self.on_initialize()
@@ -128,3 +133,8 @@ class SubunitBase:
         if self._initialized:
             for callback in self._update_callbacks:
                 callback()
+
+    @property
+    def avail(self) -> Avail:
+        """Get avail status"""
+        return self._attr_avail
