@@ -4,7 +4,7 @@ import pytest
 import ynca
 
 from ynca.system import System
-from ynca.zone import Zone
+from ynca.zone import Main
 from ynca.errors import YncaConnectionError, YncaInitializationFailedException
 
 from .mock_yncaconnection import YncaConnectionMock
@@ -199,8 +199,8 @@ def test_initialize_minimal(connection):
 
         assert len(r.inputs.keys()) == 0
 
-        assert isinstance(r.subunit(SYS), System)
-        assert r.subunit(SYS).version == "Version"
+        assert isinstance(r.SYS, System)
+        assert r.SYS.version == "Version"
 
         r.close()
 
@@ -264,13 +264,15 @@ def test_initialize_full(connection):
 
         assert len(r._subunits.keys()) == 2
 
-        assert isinstance(r.subunit(SYS), System)
-        assert r.subunit(SYS).model_name == "ModelName"
-        assert r.subunit(SYS).version == "Version"
+        assert isinstance(r.SYS, System)
+        assert r.SYS.model_name == "ModelName"
+        assert r.SYS.version == "Version"
 
-        assert isinstance(r.subunit(MAIN), Zone)
-        assert r.subunit(MAIN).name == "MainZoneName"
-
-        assert r.subunit("Unknown") is None
+        assert isinstance(r.MAIN, Main)
+        assert r.MAIN.name == "MainZoneName"
+        assert r.ZONE2 is None
+        assert r.ZONE3 is None
+        assert r.ZONE4 is None
+        assert r.PC is None
 
         r.close()

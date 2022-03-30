@@ -1,8 +1,8 @@
-import threading
+from __future__ import annotations
+
 import logging
-
-from typing import Callable, Dict, Optional, cast, Set
-
+import threading
+from typing import Callable, Dict, Optional, Set, cast
 
 from .connection import YncaConnection, YncaProtocolStatus
 from .constants import ZONES, Subunit
@@ -171,8 +171,30 @@ class Receiver:
         if self._connection:
             self._connection.close()
 
-    def subunit(self, subunit_id: str):
-        try:
-            return self._subunits[subunit_id]
-        except:
-            return None
+    # Add properties for all known subunits
+    # They are limited as defined by the spec and it is easy to access as a user of the library
+    # Also helps with typing compared to using generic SubunitBase types
+
+    @property
+    def SYS(self) -> System | None:
+        return self._subunits.get(Subunit.SYS, None)
+
+    @property
+    def MAIN(self) -> Main | None:
+        return self._subunits.get(Subunit.MAIN, None)
+
+    @property
+    def ZONE2(self) -> Zone2 | None:
+        return self._subunits.get(Subunit.ZONE2, None)
+
+    @property
+    def ZONE3(self) -> Zone3 | None:
+        return self._subunits.get(Subunit.ZONE3, None)
+
+    @property
+    def ZONE4(self) -> Zone4 | None:
+        return self._subunits.get(Subunit.ZONE4, None)
+
+    @property
+    def PC(self) -> Pc | None:
+        return self._subunits.get(Subunit.PC, None)
