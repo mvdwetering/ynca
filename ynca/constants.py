@@ -50,6 +50,7 @@ class Subunit(str, Enum):
     NAPSTER = "NAPSTER"
     PC = "PC"
     NETRADIO = "NETRADIO"
+    USB = "USB"
     IPODUSB = "IPODUSB"
     UAW = "UAW"
 

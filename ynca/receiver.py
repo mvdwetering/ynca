@@ -11,6 +11,7 @@ from .errors import YncaConnectionError, YncaInitializationFailedException
 from .netradio import NetRadio
 from .pc import Pc
 from .system import System
+from .usb import Usb
 from .zone import Main, Zone2, Zone3, Zone4
 
 logger = logging.getLogger(__name__)
@@ -28,6 +29,7 @@ SUBUNIT_INPUT_MAPPINGS: Dict[Subunit, str] = {
     Subunit.NAPSTER: "Napster",
     Subunit.PC: "PC",
     Subunit.NETRADIO: "NET RADIO",
+    Subunit.USB: "USB",
     Subunit.IPODUSB: "iPod (USB)",
     Subunit.UAW: "UAW",
 }
@@ -40,6 +42,7 @@ SUBUNIT_ID_CLASS_MAPPING = {
     Subunit.ZONE4: Zone4,
     Subunit.PC: Pc,
     Subunit.NETRADIO: NetRadio,
+    Subunit.USB: Usb,
 }
 
 
@@ -206,5 +209,9 @@ class Receiver:
     @property
     def NETRADIO(self) -> NetRadio | None:
         return self._subunits.get(Subunit.NETRADIO, None)
+
+    @property
+    def USB(self) -> Usb | None:
+        return self._subunits.get(Subunit.USB, None)
 
     # TODO: Add more subunits
