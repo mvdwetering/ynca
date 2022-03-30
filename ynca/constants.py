@@ -66,10 +66,11 @@ class Repeat(str, Enum):
     ALL = "All"
 
 
-class Playbackinfo(str, Enum):
+class PlaybackInfo(str, Enum):
     STOP = "Stop"
     PAUSE = "Pause"
     PLAY = "Play"
+
 
 class Playback(str, Enum):
     STOP = "Stop"
@@ -77,6 +78,7 @@ class Playback(str, Enum):
     PLAY = "Play"
     SKIP_REV = "Skip Rev"
     SKIP_FWD = "Skip Fwd"
+
 
 """Subunits that are zones """
 ZONES = [Subunit.MAIN, Subunit.ZONE2, Subunit.ZONE3, Subunit.ZONE4]

@@ -9,7 +9,7 @@ from .constants import (
     Subunit,
     ZONES,
     Playback,
-    Playbackinfo,
+    PlaybackInfo,
     Repeat,
     Avail,
 )

@@ -2,7 +2,9 @@ from __future__ import annotations
 import logging
 import threading
 
-from typing import Callable, Dict, List, Optional, Set
+from typing import Callable, Optional, Set
+
+from ynca.function_mixins import FunctionMixinBase
 
 from .constants import Avail, Subunit
 from .errors import YncaInitializationFailedException
@@ -28,6 +30,20 @@ class SubunitBase:
         self._connection = connection
         self._connection.register_message_callback(self._protocol_message_received)
 
+        for function_mixin_class in self.function_mixin_classes():
+            function_mixin_class.function_mixin_initialize_attributes(self)
+
+    def function_mixin_classes(self):
+        # Go through the inheritance list and return direct descendatns of FunctionMixinBase
+        # Direct descendant derived from mro list lenght 3
+        # which is the [mixinclass, mixinfunctionbaseclass, object]
+        for function_mixin_class in self.__class__.__mro__:
+            if (
+                issubclass(function_mixin_class, FunctionMixinBase)
+                and len(function_mixin_class.__mro__) == 3
+            ):
+                yield function_mixin_class
+
     def initialize(self):
         """
         Initializes the data for the subunit and makes sure to wait until done.
@@ -41,7 +57,15 @@ class SubunitBase:
 
         num_commands_sent_start = self._connection.num_commands_sent
 
-        self._connection.get(self.id, "AVAIL")
+        # Build list of YNCA functions to request
+        functions = ["AVAIL"]
+
+        for function_mixin_class in self.function_mixin_classes():
+            functions.extend(function_mixin_class.FUNCTION_MIXIN_FUNCTIONS)
+
+        # Request YNCA functions
+        for function in functions:
+            self._connection.get(self.id, function)
 
         # Invoke subunit specific initialization implemented in the derived classes
         self.on_initialize()
@@ -67,9 +91,9 @@ class SubunitBase:
     def on_initialize(self):
         """
         Initializes the data for the subunit.
-        Needs to be implemented in derived classes.
+        Can be implemented in derived classes.
         """
-        raise NotImplementedError()  # pragma: no cover
+        pass
 
     def close(self):
         self._connection.unregister_message_callback(self._protocol_message_received)
