@@ -84,20 +84,25 @@ class Receiver:
         logger.debug("Subunit availability check done")
 
     def _initialize_available_subunits(self):
-        # Every receiver has a System subunit (can not even check for its existence)
+        # Every receiver has a System subunit
+        # It also does not respond to AVAIL=? so it will not end up in _available_subunits
         system = System(self._connection)
         system.initialize()
         self._subunits[system.id] = system
 
+        subunit_id_class_map = {
+            "MAIN": Zone,
+            "ZONE2": Zone,
+            "ZONE3": Zone,
+            "ZONE4": Zone,
+        }
+
         # Initialize detected subunits
         for subunit_id in self._available_subunits:
-            subunit = None
-            if subunit_id in ZONES:
-                subunit = Zone(subunit_id, self._connection)
-
-            if subunit is not None:
-                subunit.initialize()
-                self._subunits[subunit.id] = subunit
+            if subunit_class := subunit_id_class_map.get(subunit_id, None):
+                subunit_instance = subunit_class(subunit_id, self._connection)
+                subunit_instance.initialize()
+                self._subunits[subunit_instance.id] = subunit_instance
 
     def connection_check(self) -> str:
         """
