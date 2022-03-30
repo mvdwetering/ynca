@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-
 import logging
 import queue
 import re
@@ -32,7 +31,7 @@ class YncaProtocol(serial.threaded.LineReader):
     KEEP_ALIVE_INTERVAL = 30
 
     def __init__(self):
-        super(YncaProtocol, self).__init__()
+        super().__init__()
         self.message_callback = None
         self.disconnect_callback = None
         self._send_queue = None
@@ -43,7 +42,7 @@ class YncaProtocol(serial.threaded.LineReader):
         self.num_commands_sent = 0
 
     def connection_made(self, transport):
-        super(YncaProtocol, self).connection_made(transport)
+        super().connection_made(transport)
 
         logger.debug("Connected")
 
@@ -165,7 +164,7 @@ class YncaConnection:
         """
         self._port = serial_url
         self._serial = None
-        self._readerthread = None
+        self._readerthread: Optional[serial.threaded.ReaderThread] = None
         self._protocol: Optional[YncaProtocol] = None
 
         self._message_callbacks: Set[
@@ -199,8 +198,9 @@ class YncaConnection:
         except serial.SerialException as e:
             raise YncaConnectionError(e)
 
-        self._protocol.message_callback = self._call_registered_message_callbacks
-        self._protocol.disconnect_callback = disconnect_callback
+        if self._protocol:
+            self._protocol.message_callback = self._call_registered_message_callbacks
+            self._protocol.disconnect_callback = disconnect_callback
 
     def close(self):
         # Disconnect callback is for unexpected disconnects
