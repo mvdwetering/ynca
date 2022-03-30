@@ -5,14 +5,15 @@ import logging
 from typing import Dict
 
 from .connection import YncaConnection, YncaProtocolStatus
-from .constants import DSP_SOUND_PROGRAMS, Mute, Playback
+from .constants import DSP_SOUND_PROGRAMS, Mute, Subunit
+from .function_mixins import PlaybackFunctionMixin
 from .helpers import number_to_string_with_stepsize
 from .subunit import SubunitBase
 
 logger = logging.getLogger(__name__)
 
 
-class Zone(SubunitBase):
+class Zone(PlaybackFunctionMixin, SubunitBase):
     def __init__(
         self,
         subunit_id: str,
@@ -176,6 +177,34 @@ class Zone(SubunitBase):
         else:
             self._put("SCENE", f"Scene {scene_id}")
 
-    def playback(self, parameter: Playback):
-        """Change playback state (will forward to subunit it seems)"""
-        self._put("PLAYBACK", parameter)
+
+class Main(Zone):
+    def __init__(
+        self,
+        connection: YncaConnection,
+    ):
+        super().__init__(Subunit.MAIN, connection)
+
+
+class Zone2(Zone):
+    def __init__(
+        self,
+        connection: YncaConnection,
+    ):
+        super().__init__(Subunit.ZONE2, connection)
+
+
+class Zone3(Zone):
+    def __init__(
+        self,
+        connection: YncaConnection,
+    ):
+        super().__init__(Subunit.ZONE3, connection)
+
+
+class Zone4(Zone):
+    def __init__(
+        self,
+        connection: YncaConnection,
+    ):
+        super().__init__(Subunit.ZONE4, connection)

@@ -4,8 +4,8 @@ from typing import Callable
 from unittest import mock
 import pytest
 
-from ynca.constants import Mute
-from ynca.zone import Zone
+from ynca.constants import Mute, Subunit
+from ynca.zone import Zone, Main, Zone2, Zone3, Zone4
 
 from .mock_yncaconnection import YncaConnectionMock
 
@@ -84,10 +84,23 @@ def initialized_zone(connection) -> Zone:
 
 def test_construct(connection, update_callback):
 
-    z = Zone(SUBUNIT, connection)
+    Zone(SUBUNIT, connection)
 
     assert connection.register_message_callback.call_count == 1
     assert update_callback.call_count == 0
+
+
+def test_construct_specific_zones(connection):
+
+    # Just grabbing coverage :/
+    z = Main(connection)
+    z.id = Subunit.MAIN
+    z = Zone2(connection)
+    z.id = Subunit.ZONE2
+    z = Zone3(connection)
+    z.id = Subunit.ZONE3
+    z = Zone4(connection)
+    z.id = Subunit.ZONE4
 
 
 def test_initialize_minimal(connection, update_callback):
@@ -299,6 +312,7 @@ def test_scene(connection, initialized_zone):
     assert initialized_zone.scenes["3"] == "New Name"
 
 
+# TODO: This seems generic and probably should be moved to the subunit test
 def test_callbacks(connection, initialized_zone, update_callback):
     update_callback_2 = mock.MagicMock()
 

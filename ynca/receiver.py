@@ -9,7 +9,7 @@ from .constants import ZONES, Subunit
 from .errors import YncaConnectionError, YncaInitializationFailedException
 from .pc import Pc
 from .system import System
-from .zone import Zone
+from .zone import Main, Zone2, Zone3, Zone4
 
 logger = logging.getLogger(__name__)
 
@@ -92,17 +92,17 @@ class Receiver:
         self._subunits[system.id] = system
 
         subunit_id_class_map = {
-            "MAIN": Zone,
-            "ZONE2": Zone,
-            "ZONE3": Zone,
-            "ZONE4": Zone,
+            "MAIN": Main,
+            "ZONE2": Zone2,
+            "ZONE3": Zone3,
+            "ZONE4": Zone4,
             "PC": Pc,
         }
 
         # Initialize detected subunits
         for subunit_id in self._available_subunits:
             if subunit_class := subunit_id_class_map.get(subunit_id, None):
-                subunit_instance = subunit_class(subunit_id, self._connection)
+                subunit_instance = subunit_class(self._connection)
                 subunit_instance.initialize()
                 self._subunits[subunit_instance.id] = subunit_instance
 
