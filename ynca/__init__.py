@@ -13,6 +13,10 @@ from .constants import (
     Repeat,
     Avail,
 )
-from .receiver import Receiver, YncaInitializationFailedException
+from .receiver import (
+    Receiver,
+    YncaInitializationFailedException,
+    SUBUNIT_INPUT_MAPPINGS,
+)
 
 logging.getLogger(__name__).addHandler(logging.NullHandler())
