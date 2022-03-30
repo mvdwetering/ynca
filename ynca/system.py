@@ -65,7 +65,7 @@ class System(SubunitBase):
         self._put("PWR", "On" if value is True else "Standby")
 
     @property
-    def model_name(self):
+    def modelname(self):
         """Get model name"""
         return self._attr_modelname
 
