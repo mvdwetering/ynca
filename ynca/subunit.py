@@ -2,7 +2,7 @@ from __future__ import annotations
 import logging
 import threading
 
-from typing import Callable, Dict, List, Set
+from typing import Callable, Dict, List, Optional, Set
 
 from .constants import Avail, Subunit
 from .errors import YncaInitializationFailedException
@@ -135,6 +135,6 @@ class SubunitBase:
                 callback()
 
     @property
-    def avail(self) -> Avail:
+    def avail(self) -> Optional[Avail]:
         """Get avail status"""
         return self._attr_avail

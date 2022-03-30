@@ -1,12 +1,13 @@
 import threading
 import logging
-import time
 
 from typing import Callable, Dict, Optional, cast, Set
+
 
 from .connection import YncaConnection, YncaProtocolStatus
 from .constants import ZONES, Subunit
 from .errors import YncaConnectionError, YncaInitializationFailedException
+from .pc import Pc
 from .system import System
 from .zone import Zone
 
@@ -95,6 +96,7 @@ class Receiver:
             "ZONE2": Zone,
             "ZONE3": Zone,
             "ZONE4": Zone,
+            "PC": Pc,
         }
 
         # Initialize detected subunits
@@ -113,7 +115,7 @@ class Receiver:
         executing the timeconsuming `initialize()` method.
         """
         connection_check_event = threading.Event()
-        modelname = None
+        modelname = ""
 
         def _connection_check_message_received(
             status: YncaProtocolStatus, subunit: str, function_: str, value: str
