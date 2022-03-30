@@ -102,7 +102,7 @@ def test_initialize_minimal(connection, update_callback):
     assert update_callback.call_count == 1
     assert s.version == "Version"
     assert s.on is None
-    assert s.model_name is None
+    assert s.modelname is None
     assert len(s.inputs.keys()) == 0
 
 
@@ -117,7 +117,7 @@ def test_initialize_full(connection, update_callback):
 
     assert update_callback.call_count == 1
     assert s.version == "Version"
-    assert s.model_name == "ModelName"
+    assert s.modelname == "ModelName"
     assert s.on is False
 
     assert len(s.inputs.keys()) == 19

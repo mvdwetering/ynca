@@ -12,7 +12,6 @@ from .mock_yncaconnection import YncaConnectionMock
 SYS = "SYS"
 MAIN = "MAIN"
 ZONE4 = "ZONE4"
-NETRADIO = "NETRADIO"
 BT = "BT"
 
 RESTRICTED = "@RESTRICTED"
@@ -61,12 +60,6 @@ INITIALIZE_FULL_RESPONSES = [
         (BT, "AVAIL"),
         [
             (BT, "AVAIL", "Not Connected"),
-        ],
-    ),
-    (
-        (NETRADIO, "AVAIL"),
-        [
-            (NETRADIO, "AVAIL", "Not Ready"),
         ],
     ),
     # Receiver detect subunits sync
@@ -256,16 +249,15 @@ def test_initialize_full(connection):
         r = ynca.Receiver("serial_url")
         r.initialize()
 
-        assert len(r.inputs.keys()) == 4
+        assert len(r.inputs.keys()) == 3
         assert r.inputs["ONE"] == "InputOne"
         assert r.inputs["TWO"] == "InputTwo"
-        assert r.inputs["NET RADIO"] == "NET RADIO"
         assert r.inputs["Bluetooth"] == "Bluetooth"
 
         assert len(r._subunits.keys()) == 2
 
         assert isinstance(r.SYS, System)
-        assert r.SYS.model_name == "ModelName"
+        assert r.SYS.modelname == "ModelName"
         assert r.SYS.version == "Version"
 
         assert isinstance(r.MAIN, Main)

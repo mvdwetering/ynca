@@ -77,6 +77,19 @@ class MetainfoFunctionMixin(FunctionMixinBase):
         return self._attr_song
 
 
+class StationFunctionMixin(FunctionMixinBase):
+
+    FUNCTION_MIXIN_FUNCTIONS = ["STATION"]
+
+    def function_mixin_initialize_attributes(self):
+        self._attr_station: str | None = None
+
+    @property
+    def station(self) -> Optional[str]:
+        """Get current station"""
+        return self._attr_station
+
+
 class RepeatShuffleFunctionMixin(FunctionMixinBase):
 
     FUNCTION_MIXIN_FUNCTIONS = ["REPEAT", "SHUFFLE"]

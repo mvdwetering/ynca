@@ -4,9 +4,11 @@ import logging
 import threading
 from typing import Callable, Dict, Optional, Set, cast
 
+
 from .connection import YncaConnection, YncaProtocolStatus
 from .constants import ZONES, Subunit
 from .errors import YncaConnectionError, YncaInitializationFailedException
+from .netradio import NetRadio
 from .pc import Pc
 from .system import System
 from .zone import Main, Zone2, Zone3, Zone4
@@ -15,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 # Map subunits to input names, this is used for discovering what inputs are available
 # Inputs missing because unknown what subunit they map to: NET
-SUBUNIT_INPUT_MAPPINGS: Dict[str, str] = {
+SUBUNIT_INPUT_MAPPINGS: Dict[Subunit, str] = {
     Subunit.TUN: "TUNER",
     Subunit.SIRIUS: "SIRIUS",
     Subunit.IPOD: "iPod",
@@ -28,6 +30,16 @@ SUBUNIT_INPUT_MAPPINGS: Dict[str, str] = {
     Subunit.NETRADIO: "NET RADIO",
     Subunit.IPODUSB: "iPod (USB)",
     Subunit.UAW: "UAW",
+}
+
+
+SUBUNIT_ID_CLASS_MAPPING = {
+    Subunit.MAIN: Main,
+    Subunit.ZONE2: Zone2,
+    Subunit.ZONE3: Zone3,
+    Subunit.ZONE4: Zone4,
+    Subunit.PC: Pc,
+    Subunit.NETRADIO: NetRadio,
 }
 
 
@@ -91,17 +103,9 @@ class Receiver:
         system.initialize()
         self._subunits[system.id] = system
 
-        subunit_id_class_map = {
-            "MAIN": Main,
-            "ZONE2": Zone2,
-            "ZONE3": Zone3,
-            "ZONE4": Zone4,
-            "PC": Pc,
-        }
-
         # Initialize detected subunits
         for subunit_id in self._available_subunits:
-            if subunit_class := subunit_id_class_map.get(subunit_id, None):
+            if subunit_class := SUBUNIT_ID_CLASS_MAPPING.get(subunit_id, None):
                 subunit_instance = subunit_class(self._connection)
                 subunit_instance.initialize()
                 self._subunits[subunit_instance.id] = subunit_instance
@@ -198,3 +202,9 @@ class Receiver:
     @property
     def PC(self) -> Pc | None:
         return self._subunits.get(Subunit.PC, None)
+
+    @property
+    def NETRADIO(self) -> NetRadio | None:
+        return self._subunits.get(Subunit.NETRADIO, None)
+
+    # TODO: Add more subunits
