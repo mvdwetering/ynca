@@ -1,13 +1,11 @@
 import logging
-from typing import Dict, List
-
 
 from .connection import YncaConnection, YncaConnectionError, ynca_console
 from .constants import (
     DSP_SOUND_PROGRAMS,
     Mute,
     Subunit,
-    ZONES,
+    ZONE_SUBUNIT_IDS,
     Playback,
     PlaybackInfo,
     Repeat,
@@ -18,5 +16,7 @@ from .receiver import (
     YncaInitializationFailedException,
     SUBUNIT_INPUT_MAPPINGS,
 )
+
+from .zone import Zone
 
 logging.getLogger(__name__).addHandler(logging.NullHandler())

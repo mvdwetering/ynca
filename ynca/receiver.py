@@ -6,7 +6,7 @@ from typing import Callable, Dict, Optional, Set, cast
 
 
 from .connection import YncaConnection, YncaProtocolStatus
-from .constants import ZONES, Subunit
+from .constants import Subunit
 from .errors import YncaConnectionError, YncaInitializationFailedException
 from .netradio import NetRadio
 from .pc import Pc
