@@ -2,14 +2,14 @@ from __future__ import annotations
 
 import logging
 import threading
-from typing import Callable, Dict, Optional, Set, cast
-
+from typing import Callable, Dict, Optional, Set, Type, cast
 
 from .connection import YncaConnection, YncaProtocolStatus
 from .constants import Subunit
 from .errors import YncaConnectionError, YncaInitializationFailedException
 from .netradio import NetRadio
 from .pc import Pc
+from .subunit import SubunitBase
 from .system import System
 from .usb import Usb
 from .zone import Main, Zone2, Zone3, Zone4
@@ -56,7 +56,7 @@ class Receiver:
         self._disconnect_callback = disconnect_callback
 
         # This is the list of instantiated Subunit classes
-        self._subunits: Dict[str, Subunit] = {}
+        self._subunits: Dict[Subunit, Type[SubunitBase]] = {}
 
     @property
     def inputs(self) -> Dict[str, str]:
@@ -184,34 +184,34 @@ class Receiver:
 
     @property
     def SYS(self) -> System | None:
-        return self._subunits.get(Subunit.SYS, None)
+        return cast(System, self._subunits.get(Subunit.SYS, None))
 
     @property
     def MAIN(self) -> Main | None:
-        return self._subunits.get(Subunit.MAIN, None)
+        return cast(Main, self._subunits.get(Subunit.MAIN, None))
 
     @property
     def ZONE2(self) -> Zone2 | None:
-        return self._subunits.get(Subunit.ZONE2, None)
+        return cast(Zone2, self._subunits.get(Subunit.ZONE2, None))
 
     @property
     def ZONE3(self) -> Zone3 | None:
-        return self._subunits.get(Subunit.ZONE3, None)
+        return cast(Zone3, self._subunits.get(Subunit.ZONE3, None))
 
     @property
     def ZONE4(self) -> Zone4 | None:
-        return self._subunits.get(Subunit.ZONE4, None)
+        return cast(Zone4, self._subunits.get(Subunit.ZONE4, None))
 
     @property
     def PC(self) -> Pc | None:
-        return self._subunits.get(Subunit.PC, None)
+        return cast(Pc, self._subunits.get(Subunit.PC, None))
 
     @property
     def NETRADIO(self) -> NetRadio | None:
-        return self._subunits.get(Subunit.NETRADIO, None)
+        return cast(NetRadio, self._subunits.get(Subunit.NETRADIO, None))
 
     @property
     def USB(self) -> Usb | None:
-        return self._subunits.get(Subunit.USB, None)
+        return cast(Usb, self._subunits.get(Subunit.USB, None))
 
     # TODO: Add more subunits
