@@ -70,15 +70,15 @@ INITIALIZE_FULL_RESPONSES = [
         ],
     ),
     (
-        (SYS, "MODELNAME"),
-        [
-            (SYS, "MODELNAME", "ModelName"),
-        ],
-    ),
-    (
         (SYS, "PWR"),
         [
             (SYS, "PWR", "Standby"),
+        ],
+    ),
+    (
+        (SYS, "MODELNAME"),
+        [
+            (SYS, "MODELNAME", "ModelName"),
         ],
     ),
     (

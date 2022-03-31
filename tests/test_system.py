@@ -12,15 +12,15 @@ SYS = "SYS"
 
 INITIALIZE_FULL_RESPONSES = [
     (
-        (SYS, "MODELNAME"),
-        [
-            (SYS, "MODELNAME", "ModelName"),
-        ],
-    ),
-    (
         (SYS, "PWR"),
         [
             (SYS, "PWR", "Standby"),
+        ],
+    ),
+    (
+        (SYS, "MODELNAME"),
+        [
+            (SYS, "MODELNAME", "ModelName"),
         ],
     ),
     (
@@ -101,7 +101,7 @@ def test_initialize_minimal(connection, update_callback):
 
     assert update_callback.call_count == 1
     assert s.version == "Version"
-    assert s.on is None
+    assert s.pwr is None
     assert s.modelname is None
     assert len(s.inputs.keys()) == 0
 
@@ -118,7 +118,7 @@ def test_initialize_full(connection, update_callback):
     assert update_callback.call_count == 1
     assert s.version == "Version"
     assert s.modelname == "ModelName"
-    assert s.on is False
+    assert s.pwr is False
 
     assert len(s.inputs.keys()) == 19
     assert s.inputs["PHONO"] == "InputPhono"
@@ -165,20 +165,6 @@ def test_registration(connection, initialized_system):
     connection.send_protocol_message(SYS, "PWR", "On")
     assert update_callback_1.call_count == 3
     assert update_callback_2.call_count == 2
-
-
-def test_on(connection, initialized_system):
-    # Writing to device
-    initialized_system.on = True
-    connection.put.assert_called_with(SYS, "PWR", "On")
-    initialized_system.on = False
-    connection.put.assert_called_with(SYS, "PWR", "Standby")
-
-    # Updates from device
-    connection.send_protocol_message(SYS, "PWR", "On")
-    assert initialized_system.on == True
-    connection.send_protocol_message(SYS, "PWR", "Standby")
-    assert initialized_system.on == False
 
 
 def test_unhandled_function(connection, initialized_system):

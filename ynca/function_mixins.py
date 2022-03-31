@@ -117,3 +117,21 @@ class RepeatShuffleFunctionMixin(FunctionMixinBase):
     def shuffle(self, value: bool):
         """Turn on/off shuffle"""
         self._put("SHUFFLE", "On" if value is True else "Off")  # type: ignore
+
+
+class PowerFunctionMixin(FunctionMixinBase):
+
+    FUNCTION_MIXIN_FUNCTIONS = ["PWR"]
+
+    def function_mixin_initialize_attributes(self):
+        self._attr_pwr: str | None = None
+
+    @property
+    def pwr(self) -> Optional[bool]:
+        """Get power state of subunit"""
+        return self._attr_pwr == "On" if self._attr_pwr is not None else None
+
+    @pwr.setter
+    def pwr(self, value: bool):
+        """Turn on/off subunit"""
+        self._put("PWR", "On" if value is True else "Standby") # type: ignore

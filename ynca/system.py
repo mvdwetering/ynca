@@ -3,12 +3,13 @@ import logging
 from typing import Dict
 
 from .connection import YncaConnection, YncaProtocolStatus
+from .function_mixins import PowerFunctionMixin
 from .subunit import SubunitBase
 
 logger = logging.getLogger(__name__)
 
 
-class System(SubunitBase):
+class System(PowerFunctionMixin, SubunitBase):
     def __init__(self, connection: YncaConnection):
         """
         Constructor for a Receiver object.
@@ -20,7 +21,6 @@ class System(SubunitBase):
         self._initialized = False
         self.inputs: Dict[str, str] = {}
 
-        self._attr_pwr = None
         self._attr_modelname = None
         self._attr_version = None
 
@@ -28,7 +28,6 @@ class System(SubunitBase):
         self._reset_internal_state()
 
         self._get("MODELNAME")
-        self._get("PWR")
 
         # Get user-friendly names for inputs (also allows detection of a number of available inputs)
         # Note that these are not all inputs, just the external ones it seems.
@@ -53,16 +52,6 @@ class System(SubunitBase):
             updated = False
 
         return updated
-
-    @property
-    def on(self):
-        """Get current on state"""
-        return self._attr_pwr == "On" if self._attr_pwr is not None else None
-
-    @on.setter
-    def on(self, value: bool):
-        """Turn on/off receiver"""
-        self._put("PWR", "On" if value is True else "Standby")
 
     @property
     def modelname(self):

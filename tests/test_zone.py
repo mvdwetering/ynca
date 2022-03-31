@@ -127,7 +127,7 @@ def test_initialize_minimal(connection, update_callback):
 
     assert update_callback.call_count == 0
     assert z.name == "ZoneName"
-    assert z.on is None
+    assert z.pwr is None
     assert z.input is None
     assert z.volume is None
     assert z.max_volume == 16.5
@@ -148,7 +148,7 @@ def test_initialize_full(connection, update_callback):
     z.initialize()
 
     assert update_callback.call_count == 1
-    assert z.on is False
+    assert z.pwr is False
     assert z.input == "HDMI1"
     assert z.volume == -30.0
     assert z.max_volume == 1.2
@@ -164,20 +164,6 @@ def test_initialize_full(connection, update_callback):
     assert z.scenes["3"] == "Scene name 3"
     assert z.scenes["4"] == "Scene name 4"
     assert z.scenes["42"] == "Scene name 42"
-
-
-def test_on(connection, initialized_zone):
-    # Writing to device
-    initialized_zone.on = True
-    connection.put.assert_called_with(SUBUNIT, "PWR", "On")
-    initialized_zone.on = False
-    connection.put.assert_called_with(SUBUNIT, "PWR", "Standby")
-
-    # Updates from device
-    connection.send_protocol_message(SUBUNIT, "PWR", "On")
-    assert initialized_zone.on == True
-    connection.send_protocol_message(SUBUNIT, "PWR", "Standby")
-    assert initialized_zone.on == False
 
 
 def test_mute(connection, initialized_zone):

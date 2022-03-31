@@ -6,14 +6,14 @@ from typing import Dict
 
 from .connection import YncaConnection, YncaProtocolStatus
 from .constants import DSP_SOUND_PROGRAMS, Mute, Subunit
-from .function_mixins import PlaybackFunctionMixin
+from .function_mixins import PlaybackFunctionMixin, PowerFunctionMixin
 from .helpers import number_to_string_with_stepsize
 from .subunit import SubunitBase
 
 logger = logging.getLogger(__name__)
 
 
-class Zone(PlaybackFunctionMixin, SubunitBase):
+class Zone(PowerFunctionMixin, PlaybackFunctionMixin, SubunitBase):
     def __init__(
         self,
         subunit_id: str,
@@ -28,7 +28,6 @@ class Zone(PlaybackFunctionMixin, SubunitBase):
         self._scenes: Dict[str, str] = {}
 
         self._attr_inp = None
-        self._attr_pwr = None
         self._attr_mute = None
         self._attr_soundprg = None
         self._attr_straight = None
@@ -66,16 +65,6 @@ class Zone(PlaybackFunctionMixin, SubunitBase):
     def name(self) -> str | None:
         """Get zone name"""
         return self._attr_zonename
-
-    @property
-    def on(self) -> bool | None:
-        """Get current on state"""
-        return self._attr_pwr == "On" if self._attr_pwr is not None else None
-
-    @on.setter
-    def on(self, value: bool):
-        """Turn on/off zone"""
-        self._put("PWR", "On" if value is True else "Standby")
 
     @property
     def mute(self) -> Mute | None:
