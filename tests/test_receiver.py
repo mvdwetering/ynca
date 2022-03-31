@@ -266,5 +266,7 @@ def test_initialize_full(connection):
         assert r.ZONE3 is None
         assert r.ZONE4 is None
         assert r.PC is None
+        assert r.USB is None
+        assert r.NETRADIO is None
 
         r.close()

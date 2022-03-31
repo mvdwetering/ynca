@@ -1,16 +1,16 @@
-"""Test Pc subunit"""
+"""Test Usb subunit"""
 
 from typing import Callable
 from unittest import mock
 import pytest
 from ynca.constants import PlaybackInfo, Repeat
 
-from ynca.pc import Pc
+from ynca.usb import Usb
 
 from .mock_yncaconnection import YncaConnectionMock
 
 SYS = "SYS"
-SUBUNIT = "PC"
+SUBUNIT = "USB"
 
 INITIALIZE_FULL_RESPONSES = [
     (
@@ -65,25 +65,24 @@ def connection():
 def update_callback() -> Callable[[], None]:
     return mock.MagicMock()
 
-
 def test_initialize(connection, update_callback):
 
     connection.get_response_list = INITIALIZE_FULL_RESPONSES
 
-    pc = Pc(connection)
-    pc.register_update_callback(update_callback)
+    usb = Usb(connection)
+    usb.register_update_callback(update_callback)
 
-    pc.initialize()
+    usb.initialize()
 
     assert update_callback.call_count == 1
-    assert pc.repeat is Repeat.SINGLE
-    assert pc.shuffle is True
-    assert pc.album == "Album"
-    assert pc.artist == "Artist"
-    assert pc.song == "Song"
-    assert pc.playbackinfo is PlaybackInfo.PAUSE
+    assert usb.repeat is Repeat.SINGLE
+    assert usb.shuffle is True
+    assert usb.album == "Album"
+    assert usb.artist == "Artist"
+    assert usb.song == "Song"
+    assert usb.playbackinfo is PlaybackInfo.PAUSE
 
-    pc.repeat = Repeat.ALL
+    usb.repeat = Repeat.ALL
     connection.put.assert_called_with(SUBUNIT, "REPEAT", "All")
-    pc.shuffle = False
+    usb.shuffle = False
     connection.put.assert_called_with(SUBUNIT, "SHUFFLE", "Off")
