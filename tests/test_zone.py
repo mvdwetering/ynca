@@ -4,8 +4,8 @@ from typing import Callable
 from unittest import mock
 import pytest
 
-from ynca.constants import Mute, Subunit
-from ynca.zone import Zone, Main, Zone2, Zone3, Zone4
+from ynca.constants import Mute, Subunit, SoundPrg
+from ynca.zone import ZoneBase, Main, Zone2, Zone3, Zone4
 
 from .mock_yncaconnection import YncaConnectionMock
 
@@ -75,16 +75,16 @@ def update_callback() -> Callable[[], None]:
 
 
 @pytest.fixture
-def initialized_zone(connection) -> Zone:
+def initialized_zone(connection) -> ZoneBase:
     connection.get_response_list = INITIALIZE_FULL_RESPONSES
-    z = Zone(SUBUNIT, connection)
+    z = ZoneBase(SUBUNIT, connection)
     z.initialize()
     return z
 
 
 def test_construct(connection, update_callback):
 
-    Zone(SUBUNIT, connection)
+    ZoneBase(SUBUNIT, connection)
 
     assert connection.register_message_callback.call_count == 1
     assert update_callback.call_count == 0
@@ -119,7 +119,7 @@ def test_initialize_minimal(connection, update_callback):
         ),
     ]
 
-    z = Zone(SUBUNIT, connection)
+    z = ZoneBase(SUBUNIT, connection)
     z.register_update_callback(update_callback)
     z.unregister_update_callback(update_callback)
 
@@ -134,7 +134,7 @@ def test_initialize_minimal(connection, update_callback):
     assert z.min_volume == -80.5
     assert z.mute is None
     assert z.straight is None
-    assert z.dsp_sound_program is None
+    assert z.soundprg is None
     assert len(z.scenes.keys()) == 0
 
 
@@ -142,7 +142,7 @@ def test_initialize_full(connection, update_callback):
 
     connection.get_response_list = INITIALIZE_FULL_RESPONSES
 
-    z = Zone(SUBUNIT, connection)
+    z = ZoneBase(SUBUNIT, connection)
     z.register_update_callback(update_callback)
 
     z.initialize()
@@ -155,7 +155,7 @@ def test_initialize_full(connection, update_callback):
     assert z.min_volume == -80.5
     assert z.mute is Mute.off
     assert z.straight is False
-    assert z.dsp_sound_program == "Standard"
+    assert z.soundprg == "Standard"
     assert z.name == "ZoneName"
 
     assert len(z.scenes.keys()) == 5
@@ -258,17 +258,14 @@ def test_input(connection, initialized_zone):
     assert initialized_zone.input == "NewInput"
 
 
-def test_dsp_sound_program(connection, initialized_zone):
+def test_soundprg(connection, initialized_zone):
     # Writing to device
-    with pytest.raises(ValueError):
-        initialized_zone.dsp_sound_program = "Invalid"
-
-    initialized_zone.dsp_sound_program = "The Roxy Theatre"
+    initialized_zone.soundprg = SoundPrg.THE_ROXY_THEATRE
     connection.put.assert_called_with(SUBUNIT, "SOUNDPRG", "The Roxy Theatre")
 
     # Updates from device
     connection.send_protocol_message(SUBUNIT, "SOUNDPRG", "Sci-Fi")
-    assert initialized_zone.dsp_sound_program == "Sci-Fi"
+    assert initialized_zone.soundprg == SoundPrg.SCI_FI
 
 
 def test_straight(connection, initialized_zone):

@@ -2,7 +2,7 @@ import logging
 
 from .connection import YncaConnection, YncaConnectionError, ynca_console
 from .constants import (
-    DSP_SOUND_PROGRAMS,
+    SoundPrg,
     Mute,
     Subunit,
     ZONE_SUBUNIT_IDS,
@@ -17,6 +17,6 @@ from .receiver import (
     SUBUNIT_INPUT_MAPPINGS,
 )
 
-from .zone import Zone
+from .zone import ZoneBase
 
 logging.getLogger(__name__).addHandler(logging.NullHandler())

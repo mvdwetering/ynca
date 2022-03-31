@@ -5,7 +5,7 @@ import logging
 from typing import Dict
 
 from .connection import YncaConnection, YncaProtocolStatus
-from .constants import DSP_SOUND_PROGRAMS, Mute, Subunit
+from .constants import SoundPrg, Mute, Subunit
 from .function_mixins import PlaybackFunctionMixin, PowerFunctionMixin
 from .helpers import number_to_string_with_stepsize
 from .subunit import SubunitBase
@@ -13,7 +13,7 @@ from .subunit import SubunitBase
 logger = logging.getLogger(__name__)
 
 
-class Zone(PowerFunctionMixin, PlaybackFunctionMixin, SubunitBase):
+class ZoneBase(PowerFunctionMixin, PlaybackFunctionMixin, SubunitBase):
     def __init__(
         self,
         subunit_id: str,
@@ -132,17 +132,16 @@ class Zone(PowerFunctionMixin, PlaybackFunctionMixin, SubunitBase):
         self._put("INP", value)
 
     @property
-    def dsp_sound_program(self) -> str:
+    def soundprg(self) -> SoundPrg | None:
         """Get the current DSP sound program"""
-        return self._attr_soundprg
+        return (
+            SoundPrg(self._attr_soundprg) if self._attr_soundprg is not None else None
+        )
 
-    @dsp_sound_program.setter
-    def dsp_sound_program(self, value: str):
+    @soundprg.setter
+    def soundprg(self, value: SoundPrg):
         """Set the DSP sound program"""
-        if value in DSP_SOUND_PROGRAMS:
-            self._put("SOUNDPRG", value)
-        else:
-            raise ValueError("Soundprogram not in DspSoundPrograms")
+        self._put("SOUNDPRG", value)
 
     @property
     def straight(self) -> bool | None:
@@ -167,7 +166,7 @@ class Zone(PowerFunctionMixin, PlaybackFunctionMixin, SubunitBase):
             self._put("SCENE", f"Scene {scene_id}")
 
 
-class Main(Zone):
+class Main(ZoneBase):
     def __init__(
         self,
         connection: YncaConnection,
@@ -175,7 +174,7 @@ class Main(Zone):
         super().__init__(Subunit.MAIN, connection)
 
 
-class Zone2(Zone):
+class Zone2(ZoneBase):
     def __init__(
         self,
         connection: YncaConnection,
@@ -183,7 +182,7 @@ class Zone2(Zone):
         super().__init__(Subunit.ZONE2, connection)
 
 
-class Zone3(Zone):
+class Zone3(ZoneBase):
     def __init__(
         self,
         connection: YncaConnection,
@@ -191,7 +190,7 @@ class Zone3(Zone):
         super().__init__(Subunit.ZONE3, connection)
 
 
-class Zone4(Zone):
+class Zone4(ZoneBase):
     def __init__(
         self,
         connection: YncaConnection,

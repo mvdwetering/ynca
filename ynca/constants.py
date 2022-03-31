@@ -1,27 +1,27 @@
 """Misc constants"""
 from enum import Enum
 
-DSP_SOUND_PROGRAMS = [
-    "Hall in Munich",
-    "Hall in Vienna",
-    "Chamber",
-    "Cellar Club",
-    "The Roxy Theatre",
-    "The Bottom Line",
-    "Sports",
-    "Action Game",
-    "Roleplaying Game",
-    "Music Video",
-    "Standard",
-    "Spectacle",
-    "Sci-Fi",
-    "Adventure",
-    "Drama",
-    "Mono Movie",
-    "2ch Stereo",
-    "7ch Stereo",
-    "Surround Decoder",
-]
+
+class SoundPrg(str, Enum):
+    HALL_IN_MUNICH = "Hall in Munich"
+    HALL_IN_VIENNA = "Hall in Vienna"
+    CHAMBER = "Chamber"
+    CELLAR_CLUB = "Cellar Club"
+    THE_ROXY_THEATRE = "The Roxy Theatre"
+    THE_BOTTOM_LINE = ("The Bottom Line",)
+    SPORTS = "Sports"
+    ACTION_GAME = "Action Game"
+    ROLEPLAYING_GAME = "Roleplaying Game"
+    MUSIC_VIDEO = "Music Video"
+    STANDARD = "Standard"
+    SPECTACLE = "Spectacle"
+    SCI_FI = "Sci-Fi"
+    ADVENTURE = "Adventure"
+    DRAMA = "Drama"
+    MONO_MOVIE = "Mono Movie"
+    TWO_CH_STEREO = "2ch Stereo"
+    SEVEN_CH_STEREO = "7ch Stereo"
+    SURROUND_DECODER = "Surround Decoder"
 
 
 class Mute(str, Enum):
