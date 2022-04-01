@@ -44,3 +44,7 @@ class Ipod(MediaPlaybackSubunitBase):
 
 class Napster(MediaPlaybackSubunitBase):
     id = Subunit.NAPSTER
+
+
+class IpodUsb(MediaPlaybackSubunitBase):
+    id = Subunit.IPODUSB

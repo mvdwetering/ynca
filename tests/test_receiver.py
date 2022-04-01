@@ -293,6 +293,8 @@ def test_initialize_full(connection):
         assert r.ZONE4 is None
 
         assert r.IPOD is None
+        assert r.IPODUSB is None
+        assert r.NAPSTER is None
         assert r.NETRADIO is None
         assert r.PANDORA is None
         assert r.PC is None

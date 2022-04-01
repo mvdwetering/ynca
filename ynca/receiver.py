@@ -9,7 +9,7 @@ from .connection import YncaConnection, YncaProtocolStatus
 from .constants import Subunit
 from .errors import YncaConnectionError, YncaInitializationFailedException
 from .helpers import all_subclasses
-from .mediaplayback_subunits import Ipod, Pc, Rhap, Usb, Napster
+from .mediaplayback_subunits import Ipod, IpodUsb, Pc, Rhap, Usb, Napster
 from .netradio import NetRadio
 from .pandora import Pandora
 from .sirius import Sirius, SiriusIr
@@ -179,7 +179,7 @@ class Receiver:
             self._connection.close()
 
     # Add properties for all known subunits
-    # They are limited as defined by the spec and it is easy to access as a user of the library
+    # The amount is limited as defined by the spec and it is easy to access as a user of the library
     # Also helps with typing compared to using generic SubunitBase types
 
     @property
@@ -229,6 +229,10 @@ class Receiver:
     @property
     def IPOD(self) -> Ipod | None:
         return cast(Ipod, self._subunits.get(Subunit.IPOD, None))
+
+    @property
+    def IPODUSB(self) -> IpodUsb | None:
+        return cast(IpodUsb, self._subunits.get(Subunit.IPODUSB, None))
 
     @property
     def BT(self) -> Bt | None:
