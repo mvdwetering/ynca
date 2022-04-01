@@ -40,7 +40,3 @@ class Pc(MediaPlaybackSubunitBase):
 
 class Ipod(MediaPlaybackSubunitBase):
     id = Subunit.IPOD
-
-
-class Pandora(MediaPlaybackSubunitBase):
-    id = Subunit.PANDORA
