@@ -48,3 +48,14 @@ class Napster(MediaPlaybackSubunitBase):
 
 class IpodUsb(MediaPlaybackSubunitBase):
     id = Subunit.IPODUSB
+
+
+# These are assumed capabilities
+# Could not really get it correctly from the logs
+# But this is what I would expect.
+class Spotify(MediaPlaybackSubunitBase):
+    id = Subunit.SPOTIFY
+
+
+class Server(MediaPlaybackSubunitBase):
+    id = Subunit.SERVER

@@ -3,16 +3,18 @@ from __future__ import annotations
 import logging
 import threading
 from typing import Callable, Dict, Optional, Set, Type, cast
+from xmlrpc.client import Server
 
+from .airplay import Airplay
 from .bt import Bt
 from .connection import YncaConnection, YncaProtocolStatus
 from .constants import Subunit
 from .errors import YncaConnectionError, YncaInitializationFailedException
 from .helpers import all_subclasses
-from .mediaplayback_subunits import Ipod, IpodUsb, Pc, Rhap, Usb, Napster
+from .mediaplayback_subunits import Ipod, IpodUsb, Napster, Pc, Rhap, Spotify, Usb
 from .netradio import NetRadio
 from .pandora import Pandora
-from .sirius import Sirius, SiriusIr
+from .sirius import Sirius, SiriusIr, SiriusXm
 from .subunit import SubunitBase
 from .system import System
 from .tun import Tun
@@ -37,6 +39,10 @@ SUBUNIT_INPUT_MAPPINGS: Dict[Subunit, str] = {
     Subunit.USB: "USB",
     Subunit.IPODUSB: "iPod (USB)",
     Subunit.UAW: "UAW",
+    Subunit.SPOTIFY: "Spotify",
+    Subunit.SIRIUSXM: "SiriusXM",
+    Subunit.SERVER: "SERVER",
+    Subunit.AIRPLAY: "AirPlay",
 }
 
 
@@ -253,3 +259,19 @@ class Receiver:
     @property
     def NAPSTER(self) -> Napster | None:
         return cast(Napster, self._subunits.get(Subunit.NAPSTER, None))
+
+    @property
+    def SPOTIFY(self) -> Spotify | None:
+        return cast(Spotify, self._subunits.get(Subunit.SPOTIFY, None))
+
+    @property
+    def SERVER(self) -> Server | None:
+        return cast(Server, self._subunits.get(Subunit.SERVER, None))
+
+    @property
+    def SIRIUSXM(self) -> SiriusXm | None:
+        return cast(SiriusXm, self._subunits.get(Subunit.SIRIUSXM, None))
+
+    @property
+    def AIRPLAY(self) -> Airplay | None:
+        return cast(Airplay, self._subunits.get(Subunit.AIRPLAY, None))

@@ -52,3 +52,10 @@ class SiriusIr(
     SubunitBase,
 ):
     id = Subunit.SIRIUSIR
+
+
+class SiriusXm(
+    PlaybackFunctionMixin,
+    SubunitBase,
+):
+    id = Subunit.SIRIUSXM

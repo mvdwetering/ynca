@@ -52,6 +52,12 @@ class Subunit(str, Enum):
     USB = "USB"
     IPODUSB = "IPODUSB"
     UAW = "UAW"
+    # These are from a log found on the internet
+    # http://www.remotecentral.com/cgi-bin/mboard/rs232-ip/thread.cgi?694
+    SIRIUSXM = "SIRIUSXM"
+    SPOTIFY = "SPOTIFY"
+    SERVER = "SERVER"
+    AIRPLAY = "AIRPLAY"
 
 
 class Avail(str, Enum):

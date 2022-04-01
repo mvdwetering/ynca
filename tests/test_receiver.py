@@ -292,6 +292,7 @@ def test_initialize_full(connection):
         assert r.ZONE3 is None
         assert r.ZONE4 is None
 
+        assert r.AIRPLAY is None
         assert r.IPOD is None
         assert r.IPODUSB is None
         assert r.NAPSTER is None
@@ -299,8 +300,11 @@ def test_initialize_full(connection):
         assert r.PANDORA is None
         assert r.PC is None
         assert r.RHAP is None
+        assert r.SERVER is None
         assert r.SIRIUS is None
         assert r.SIRIUSIR is None
+        assert r.SIRIUSXM is None
+        assert r.SPOTIFY is None
         assert r.TUN is None
         assert r.UAW is None
         assert r.USB is None
