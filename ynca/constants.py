@@ -31,10 +31,9 @@ class Mute(str, Enum):
     off = "Off"
 
 
-"""Known Subunits in YNCA"""
-
-
 class Subunit(str, Enum):
+    """Known Subunits in YNCA"""
+
     SYS = "SYS"
     MAIN = "MAIN"
     ZONE2 = "ZONE2"
@@ -79,6 +78,11 @@ class Playback(str, Enum):
     PLAY = "Play"
     SKIP_REV = "Skip Rev"
     SKIP_FWD = "Skip Fwd"
+
+
+class Band(str, Enum):
+    AM = "AM"
+    FM = "FM"
 
 
 """Subunits that are zones """
