@@ -9,7 +9,7 @@ from .connection import YncaConnection, YncaProtocolStatus
 from .constants import Subunit
 from .errors import YncaConnectionError, YncaInitializationFailedException
 from .helpers import all_subclasses
-from .mediaplayback_subunits import Ipod, Pc, Rhap, Usb
+from .mediaplayback_subunits import Ipod, Pc, Rhap, Usb, Napster
 from .netradio import NetRadio
 from .pandora import Pandora
 from .sirius import Sirius, SiriusIr
@@ -246,4 +246,6 @@ class Receiver:
     def UAW(self) -> Uaw | None:
         return cast(Uaw, self._subunits.get(Subunit.UAW, None))
 
-    # TODO: Add more subunits
+    @property
+    def NAPSTER(self) -> Napster | None:
+        return cast(Napster, self._subunits.get(Subunit.NAPSTER, None))

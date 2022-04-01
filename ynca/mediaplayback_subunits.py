@@ -40,3 +40,7 @@ class Pc(MediaPlaybackSubunitBase):
 
 class Ipod(MediaPlaybackSubunitBase):
     id = Subunit.IPOD
+
+
+class Napster(MediaPlaybackSubunitBase):
+    id = Subunit.NAPSTER
