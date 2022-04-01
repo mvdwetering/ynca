@@ -5,18 +5,9 @@ import sys
 import time
 import logging
 
-from ynca import Receiver, Mute, ZONES, Subunit
+from ynca import Receiver, Mute, ZONE_SUBUNIT_IDS, Subunit
 
 if __name__ == "__main__":
-
-    def updated():
-        print("- Update sys")
-
-    def updated_main():
-        print("- Update main")
-
-    def updated_zone2():
-        print("- Update zone2")
 
     logger = logging.getLogger()
 
@@ -26,63 +17,53 @@ if __name__ == "__main__":
     )
     logger.addHandler(console_handler)
     logger.setLevel(logging.DEBUG)
-    # logging.getLogger("ynca.connection").setLevel(logging.DEBUG)
-    # logging.getLogger("ynca.receiver").setLevel(logging.DEBUG)
-    # logging.getLogger("ynca.subunit").setLevel(logging.DEBUG)
-    # logging.getLogger("ynca.system").setLevel(logging.DEBUG)
-    # logging.getLogger("ynca.zone").setLevel(logging.DEBUG)
 
     port = "/dev/ttyUSB0"
     if len(sys.argv) > 1:
         port = sys.argv[1]
 
     receiver = Receiver(port)
+
     print("Initialize start")
+    print("This takes a while (approximately 10 seconds on a 2 zone receiver)")
     receiver.initialize()
-    print("Initialize done")
+    print("Initialize done\n")
 
-    sys = receiver.subunit(Subunit.SYS)
-    main = receiver.subunit(Subunit.MAIN)
-    zone2 = receiver.subunit(Subunit.ZONE2)
+    def updated_sys():
+        print("- Update sys")
 
-    sys.register_update_callback(updated)
-    main.register_update_callback(updated_main)
-    zone2.register_update_callback(updated_zone2)
+    def updated_main():
+        print("- Update main")
 
-    print(sys)
+    receiver.SYS.register_update_callback(updated_sys)
+    receiver.MAIN.register_update_callback(updated_main)
 
     print("Zones:")
-    for subunit_id in ZONES:
-        try:
-            zone = receiver.subunit(subunit_id)
-            print("--- {} ---".format(zone.id))
-            print(f"{zone.name=}")
-            print(f"{zone.volume=}")
-            print(f"{zone.input=}")
-        except KeyError:
-            pass
+    for subunit_id in ZONE_SUBUNIT_IDS:
+        if zone := getattr(receiver, subunit_id, None):
+            print("  --- {} ---".format(zone.id))
+            print(f"  {zone.name=}")
+            print(f"  {zone.volume=}")
+            print(f"  {zone.input=}")
 
     print("Inputs:")
-    print(receiver.inputs)
+    for id, name in receiver.inputs.items():
+        print(f"  {id}: {name}")
 
-    print("Subunits:")
-    print(receiver._subunits)
-
-    main.on = True
+    main = receiver.MAIN
+    main.pwr = True
     current_volume = main.volume
     main.volume = -50
     main.volume = -50.5
     main.volume_up()
+    main.mute = Mute.off
+    main.mute = Mute.on
     main.volume = current_volume
 
-    zone2.on = True
-    zone2.mute = Mute.off
-    zone2.mute = Mute.on
-    zone2.on = False
-
     print(
-        "Wait a bit to see updates coming in as it takes the receiver a while to get it all processed"
+        "Wait a bit to see updates coming in as it takes the receiver a while to get it all processed."
     )
+    print("This is more insightful when enabling debug logging.")
     time.sleep(2)
 
     receiver.close()
