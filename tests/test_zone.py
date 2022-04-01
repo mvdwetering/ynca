@@ -62,7 +62,8 @@ INITIALIZE_FULL_RESPONSES = [
 ]
 
 
-class TestZone(ZoneBase):
+# Need a zone class with an id for testing
+class DummyZone(ZoneBase):
     id = "TESTZONE"
 
 
@@ -81,14 +82,14 @@ def update_callback() -> Callable[[], None]:
 @pytest.fixture
 def initialized_zone(connection) -> ZoneBase:
     connection.get_response_list = INITIALIZE_FULL_RESPONSES
-    z = TestZone(connection)
+    z = DummyZone(connection)
     z.initialize()
     return z
 
 
 def test_construct(connection, update_callback):
 
-    TestZone(connection)
+    DummyZone(connection)
 
     assert connection.register_message_callback.call_count == 1
     assert update_callback.call_count == 0
@@ -123,7 +124,7 @@ def test_initialize_minimal(connection, update_callback):
         ),
     ]
 
-    z = TestZone(connection)
+    z = DummyZone(connection)
     z.register_update_callback(update_callback)
     z.unregister_update_callback(update_callback)
 
@@ -146,7 +147,7 @@ def test_initialize_full(connection, update_callback):
 
     connection.get_response_list = INITIALIZE_FULL_RESPONSES
 
-    z = TestZone(connection)
+    z = DummyZone(connection)
     z.register_update_callback(update_callback)
 
     z.initialize()

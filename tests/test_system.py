@@ -1,12 +1,9 @@
 """Test SYS subunit"""
 
-from typing import Callable
 from unittest import mock
 import pytest
 
 from ynca.system import System
-
-from .mock_yncaconnection import YncaConnectionMock
 
 SYS = "SYS"
 
@@ -54,18 +51,6 @@ INITIALIZE_FULL_RESPONSES = [
         ],
     ),
 ]
-
-
-@pytest.fixture
-def connection():
-    c = YncaConnectionMock()
-    c.setup_responses()
-    return c
-
-
-@pytest.fixture
-def update_callback() -> Callable[[], None]:
-    return mock.MagicMock()
 
 
 @pytest.fixture

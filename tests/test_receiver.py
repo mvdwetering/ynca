@@ -1,13 +1,10 @@
 from unittest import mock
+
 import pytest
-
 import ynca
-
+from ynca.errors import YncaConnectionError, YncaInitializationFailedException
 from ynca.system import System
 from ynca.zone import Main
-from ynca.errors import YncaConnectionError, YncaInitializationFailedException
-
-from .mock_yncaconnection import YncaConnectionMock
 
 SYS = "SYS"
 MAIN = "MAIN"
@@ -109,13 +106,6 @@ INITIALIZE_FULL_RESPONSES = [
         ],
     ),
 ]
-
-
-@pytest.fixture
-def connection():
-    c = YncaConnectionMock()
-    c.setup_responses()
-    return c
 
 
 def test_construct():

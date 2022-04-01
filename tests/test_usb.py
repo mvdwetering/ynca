@@ -1,13 +1,7 @@
 """Test Usb subunit"""
 
-from typing import Callable
-from unittest import mock
-import pytest
 from ynca.constants import PlaybackInfo, Repeat
-
 from ynca.usb import Usb
-
-from .mock_yncaconnection import YncaConnectionMock
 
 SYS = "SYS"
 SUBUNIT = "USB"
@@ -53,17 +47,6 @@ INITIALIZE_FULL_RESPONSES = [
     ),
 ]
 
-
-@pytest.fixture
-def connection():
-    c = YncaConnectionMock()
-    c.setup_responses()
-    return c
-
-
-@pytest.fixture
-def update_callback() -> Callable[[], None]:
-    return mock.MagicMock()
 
 def test_initialize(connection, update_callback):
 
