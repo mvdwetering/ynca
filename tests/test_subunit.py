@@ -29,6 +29,10 @@ INITIALIZE_FULL_RESPONSES = [
     ),
 ]
 
+# Need a class with an ID to test some of the handling
+class TestSubunit(SubunitBase):
+    id = SUBUNIT
+
 
 @pytest.fixture
 def connection():
@@ -43,16 +47,16 @@ def update_callback() -> Callable[[], None]:
 
 
 @pytest.fixture
-def initialized_SubunitBase(connection) -> SubunitBase:
+def initialized_SubunitBase(connection) -> TestSubunit:
     connection.get_response_list = INITIALIZE_FULL_RESPONSES
-    sui = SubunitBase(SUBUNIT, connection)
+    sui = TestSubunit(connection)
     sui.initialize()
     return sui
 
 
 def test_construct(connection, update_callback):
 
-    sui = SubunitBase(SUBUNIT, connection)
+    sui = TestSubunit(connection)
 
     assert connection.register_message_callback.call_count == 1
     assert update_callback.call_count == 0
@@ -60,7 +64,7 @@ def test_construct(connection, update_callback):
 
 def test_initialize_fail(connection, update_callback):
 
-    sui = SubunitBase(SUBUNIT, connection)
+    sui = TestSubunit(connection)
     sui.register_update_callback(update_callback)
 
     with pytest.raises(YncaInitializationFailedException):
@@ -73,7 +77,7 @@ def test_initialize(connection, update_callback):
 
     connection.get_response_list = INITIALIZE_FULL_RESPONSES
 
-    sui = SubunitBase(SUBUNIT, connection)
+    sui = TestSubunit(connection)
     sui.register_update_callback(update_callback)
 
     sui.initialize()

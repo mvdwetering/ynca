@@ -20,3 +20,10 @@ def number_to_string_with_stepsize(value: float, decimals: int, stepsize: float)
         output += f".{str(after_the_point).rjust(decimals, '0')}"
 
     return output
+
+
+# From: https://stackoverflow.com/a/3862957/4124648
+def all_subclasses(cls):
+    return set(cls.__subclasses__()).union(
+        [s for c in cls.__subclasses__() for s in all_subclasses(c)]
+    )

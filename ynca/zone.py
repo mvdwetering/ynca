@@ -16,10 +16,9 @@ logger = logging.getLogger(__name__)
 class ZoneBase(PowerFunctionMixin, PlaybackFunctionMixin, SubunitBase):
     def __init__(
         self,
-        subunit_id: str,
         connection: YncaConnection,
     ):
-        super().__init__(subunit_id, connection)
+        super().__init__(connection)
         self._reset_internal_state()
 
     def _reset_internal_state(self):
@@ -167,32 +166,15 @@ class ZoneBase(PowerFunctionMixin, PlaybackFunctionMixin, SubunitBase):
 
 
 class Main(ZoneBase):
-    def __init__(
-        self,
-        connection: YncaConnection,
-    ):
-        super().__init__(Subunit.MAIN, connection)
-
+    id = Subunit.MAIN
 
 class Zone2(ZoneBase):
-    def __init__(
-        self,
-        connection: YncaConnection,
-    ):
-        super().__init__(Subunit.ZONE2, connection)
+    id = Subunit.ZONE2
 
 
 class Zone3(ZoneBase):
-    def __init__(
-        self,
-        connection: YncaConnection,
-    ):
-        super().__init__(Subunit.ZONE3, connection)
+    id = Subunit.ZONE3
 
 
 class Zone4(ZoneBase):
-    def __init__(
-        self,
-        connection: YncaConnection,
-    ):
-        super().__init__(Subunit.ZONE4, connection)
+    id = Subunit.ZONE4

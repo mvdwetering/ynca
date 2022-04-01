@@ -15,11 +15,14 @@ logger = logging.getLogger(__name__)
 
 
 class SubunitBase:
-    def __init__(self, id: str, connection: YncaConnection):
+
+    # To be set in subclasses
+    id: str | None = None
+
+    def __init__(self, connection: YncaConnection):
         """
         Baseclass for Subunits, should be subclassed do not instantiate manually.
         """
-        self.id = id
         self._update_callbacks: Set[Callable[[], None]] = set()
 
         self._attr_avail: Avail | None = None

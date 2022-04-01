@@ -10,7 +10,7 @@ from ynca.zone import ZoneBase, Main, Zone2, Zone3, Zone4
 from .mock_yncaconnection import YncaConnectionMock
 
 SYS = "SYS"
-SUBUNIT = "SUBUNIT"
+SUBUNIT = "TESTZONE"
 
 INITIALIZE_FULL_RESPONSES = [
     (
@@ -62,6 +62,10 @@ INITIALIZE_FULL_RESPONSES = [
 ]
 
 
+class TestZone(ZoneBase):
+    id = "TESTZONE"
+
+
 @pytest.fixture
 def connection():
     c = YncaConnectionMock()
@@ -77,14 +81,14 @@ def update_callback() -> Callable[[], None]:
 @pytest.fixture
 def initialized_zone(connection) -> ZoneBase:
     connection.get_response_list = INITIALIZE_FULL_RESPONSES
-    z = ZoneBase(SUBUNIT, connection)
+    z = TestZone(connection)
     z.initialize()
     return z
 
 
 def test_construct(connection, update_callback):
 
-    ZoneBase(SUBUNIT, connection)
+    TestZone(connection)
 
     assert connection.register_message_callback.call_count == 1
     assert update_callback.call_count == 0
@@ -119,7 +123,7 @@ def test_initialize_minimal(connection, update_callback):
         ),
     ]
 
-    z = ZoneBase(SUBUNIT, connection)
+    z = TestZone(connection)
     z.register_update_callback(update_callback)
     z.unregister_update_callback(update_callback)
 
@@ -142,7 +146,7 @@ def test_initialize_full(connection, update_callback):
 
     connection.get_response_list = INITIALIZE_FULL_RESPONSES
 
-    z = ZoneBase(SUBUNIT, connection)
+    z = TestZone(connection)
     z.register_update_callback(update_callback)
 
     z.initialize()

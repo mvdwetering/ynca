@@ -7,6 +7,7 @@ from typing import Callable, Dict, Optional, Set, Type, cast
 from .connection import YncaConnection, YncaProtocolStatus
 from .constants import Subunit
 from .errors import YncaConnectionError, YncaInitializationFailedException
+from .helpers import all_subclasses
 from .netradio import NetRadio
 from .pc import Pc
 from .subunit import SubunitBase
@@ -32,17 +33,6 @@ SUBUNIT_INPUT_MAPPINGS: Dict[Subunit, str] = {
     Subunit.USB: "USB",
     Subunit.IPODUSB: "iPod (USB)",
     Subunit.UAW: "UAW",
-}
-
-
-SUBUNIT_ID_CLASS_MAPPING = {
-    Subunit.MAIN: Main,
-    Subunit.ZONE2: Zone2,
-    Subunit.ZONE3: Zone3,
-    Subunit.ZONE4: Zone4,
-    Subunit.PC: Pc,
-    Subunit.NETRADIO: NetRadio,
-    Subunit.USB: Usb,
 }
 
 
@@ -99,6 +89,13 @@ class Receiver:
         self._connection.unregister_message_callback(self._protocol_message_received)
         logger.debug("Subunit availability check done")
 
+    def _get_subunit_class(self, subunit_id):
+        subunit_classes = all_subclasses(SubunitBase)
+        for subunit_class in subunit_classes:
+            if subunit_class.id == subunit_id:
+                return subunit_class
+        return None
+
     def _initialize_available_subunits(self):
         # Every receiver has a System subunit
         # It also does not respond to AVAIL=? so it will not end up in _available_subunits
@@ -108,7 +105,7 @@ class Receiver:
 
         # Initialize detected subunits
         for subunit_id in self._available_subunits:
-            if subunit_class := SUBUNIT_ID_CLASS_MAPPING.get(subunit_id, None):
+            if subunit_class := self._get_subunit_class(subunit_id):
                 subunit_instance = subunit_class(self._connection)
                 subunit_instance.initialize()
                 self._subunits[subunit_instance.id] = subunit_instance

@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import logging
 
-from .connection import YncaConnection
 from .constants import Subunit
 from .function_mixins import (
     MetainfoFunctionMixin,
@@ -22,8 +21,4 @@ class Usb(
     RepeatShuffleFunctionMixin,
     SubunitBase,
 ):
-    def __init__(
-        self,
-        connection: YncaConnection,
-    ):
-        super().__init__(Subunit.USB, connection)
+    id = Subunit.USB

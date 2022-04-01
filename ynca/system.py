@@ -3,6 +3,7 @@ import logging
 from typing import Dict
 
 from .connection import YncaConnection, YncaProtocolStatus
+from .constants import Subunit
 from .function_mixins import PowerFunctionMixin
 from .subunit import SubunitBase
 
@@ -10,11 +11,13 @@ logger = logging.getLogger(__name__)
 
 
 class System(PowerFunctionMixin, SubunitBase):
+    id = Subunit.SYS
+
     def __init__(self, connection: YncaConnection):
         """
         Constructor for a Receiver object.
         """
-        super().__init__("SYS", connection)
+        super().__init__(connection)
         self._reset_internal_state()
 
     def _reset_internal_state(self):
