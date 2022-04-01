@@ -1,384 +1,277 @@
-import threading
-import logging
+from __future__ import annotations
 
-from .constants import DSP_SOUND_PROGRAMS, Mute
-from .helpers import number_to_string_with_stepsize
+import logging
+import threading
+from typing import Callable, Dict, Optional, Set, Type, cast
+from xmlrpc.client import Server
+
+from .airplay import Airplay
+from .bt import Bt
 from .connection import YncaConnection, YncaProtocolStatus
+from .constants import Subunit
+from .errors import YncaConnectionError, YncaInitializationFailedException
+from .helpers import all_subclasses
+from .mediaplayback_subunits import Ipod, IpodUsb, Napster, Pc, Rhap, Spotify, Usb
+from .netradio import NetRadio
+from .pandora import Pandora
+from .sirius import Sirius, SiriusIr, SiriusXm
+from .subunit import SubunitBase
+from .system import System
+from .tun import Tun
+from .uaw import Uaw
+from .zone import Main, Zone2, Zone3, Zone4
 
 logger = logging.getLogger(__name__)
 
-ALL_ZONES = ["MAIN", "ZONE2", "ZONE3", "ZONE4"]
-
 # Map subunits to input names, this is used for discovering what inputs are available
 # Inputs missing because unknown what subunit they map to: NET
-SUBUNIT_INPUT_MAPPINGS = {
-    "TUN": "TUNER",
-    "SIRIUS": "SIRIUS",
-    "IPOD": "iPod",
-    "BT": "Bluetooth",
-    "RHAP": "Rhapsody",
-    "SIRIUSIR": "SIRIUS InternetRadio",
-    "PANDORA": "Pandora",
-    "NAPSTER": "Napster",
-    "PC": "PC",
-    "NETRADIO": "NET RADIO",
-    "IPODUSB": "iPod (USB)",
-    "UAW": "UAW",
+SUBUNIT_INPUT_MAPPINGS: Dict[Subunit, str] = {
+    Subunit.TUN: "TUNER",
+    Subunit.SIRIUS: "SIRIUS",
+    Subunit.IPOD: "iPod",
+    Subunit.BT: "Bluetooth",
+    Subunit.RHAP: "Rhapsody",
+    Subunit.SIRIUSIR: "SIRIUS InternetRadio",
+    Subunit.PANDORA: "Pandora",
+    Subunit.NAPSTER: "Napster",
+    Subunit.PC: "PC",
+    Subunit.NETRADIO: "NET RADIO",
+    Subunit.USB: "USB",
+    Subunit.IPODUSB: "iPod (USB)",
+    Subunit.UAW: "UAW",
+    Subunit.SPOTIFY: "Spotify",
+    Subunit.SIRIUSXM: "SiriusXM",
+    Subunit.SERVER: "SERVER",
+    Subunit.AIRPLAY: "AirPlay",
 }
 
 
-class YncaReceiver:
-
-    def __init__(self, port, on_update=None):
-        """
-        Constructor for a Receiver object.
-
-        Communicates with the device to determine capabilities.
-        This is a long running function!
-
-        Most useful functionality is available through the zones.
-        """
-        self._power = None
+class Receiver:
+    def __init__(self, serial_url: str, disconnect_callback: Callable[[], None] = None):
+        """Create a Receiver"""
+        self._serial_url = serial_url
+        self._connection: Optional[YncaConnection] = None
+        self._available_subunits: Set = set()
         self._initialized_event = threading.Event()
-        self._on_update_callback = None  # None to avoid update callbacks during initialization
-        self._zones_to_initialize = []
+        self._disconnect_callback = disconnect_callback
 
-        self.model_name = None
-        self.firmware_version = None
-        self.zones = {}
-        self.inputs = {}
-        self._connection = YncaConnection(port, self._connection_update)
-        self._connection.connect()
-
-        self._initialize_device()
-
-        self._on_update_callback = on_update
-        if self._on_update_callback:  # All changed after initialization
-            self._on_update_callback()
-
-    def __str__(self):
-        output = []
-        for key in self.__dict__:
-            output.append("{key}={value}".format(key=key, value=self.__dict__[key]))
-
-        return '\n'.join(output)
-
-    def _initialize_device(self):
-        """ Communicate with the device to setup initial state and discover capabilities """
-        logger.info("Receiver initialization start.")
-        self._sys_get("MODELNAME")
-        self._sys_get("PWR")
-
-        # Get user-friendly names for inputs (also allows detection of a number of available inputs)
-        # Note that these are not all inputs, just the external ones it seems.
-        self._sys_get("INPNAME")
-
-        # A device also can have a number of 'internal' inputs like the Tuner, USB, Napster etc..
-        # There is no way to get which of there inputs are supported by the device so just try all that we know of.
-        for subunit in SUBUNIT_INPUT_MAPPINGS:
-            self._connection.get(subunit, "AVAIL")
-
-        # There is no way to get which zones are supported by the device to just try all possible.
-        # The callback will create any zone instances on success responses.
-        for zone in ALL_ZONES:
-            self._connection.get(zone, "AVAIL")
-
-        self._sys_get("VERSION")  # Use version as a "sync" command
-        if not self._initialized_event.wait(10):  # Each command is 100ms (at least) and a lot are sent.
-            logger.error("Receiver initialization phase 1 failed!")
-
-        # Initialize the zones (constructors are synchronous)
-        for zone in self._zones_to_initialize:
-            logger.info("Initializing zone {}.".format(zone))
-            self.zones[zone] = YncaZone(zone, self._connection, self.inputs)
-            self.zones[zone].initialize()
-        self._zones_to_initialize = None
-
-        logger.info("Receiver initialization done.")
-
-    def _connection_update(self, status, subunit, function_, value):
-        if status == YncaProtocolStatus.OK:
-            if subunit == "SYS":
-                if self._sys_update(function_, value):
-                    if self._on_update_callback:
-                        self._on_update_callback()
-            elif subunit in self.zones:
-                self.zones[subunit].update(function_, value)
-            elif subunit in ALL_ZONES:
-                self._zones_to_initialize.append(subunit)
-
-            elif function_ == "AVAIL":
-                if subunit in SUBUNIT_INPUT_MAPPINGS:
-                    self.inputs[SUBUNIT_INPUT_MAPPINGS[subunit]] = SUBUNIT_INPUT_MAPPINGS[subunit]
-
-    def _sys_update(self, function_, value):
-        updated = True
-        if function_ == "MODELNAME":
-            self.model_name = value
-        elif function_ == "VERSION":
-            self.firmware_version = value
-            self._initialized_event.set()
-        elif function_ == "PWR":
-            if value == "On":
-                self._power = True
-            else:
-                self._power = False
-        elif function_.startswith("INPNAME"):
-            input_id = function_[7:]
-            if input_id == 'VAUX':
-                # Input ID used to set/get INP is actually V-AUX so compensate for that
-                input_id = 'V-AUX'
-            self.inputs[input_id] = value
-        else:
-            updated = False
-
-        return updated
-
-    def _sys_put(self, function_, value):
-        self._connection.put("SYS", function_, value)
-
-    def _sys_get(self, function_):
-        self._connection.get("SYS", function_)
+        # This is the list of instantiated Subunit classes
+        self._subunits: Dict[Subunit, Type[SubunitBase]] = {}
 
     @property
-    def on(self):
-        """Get current on state"""
-        return self._power
+    def inputs(self) -> Dict[str, str]:
+        # Receiver has the main inputs as discovered by System subunit
+        # These are the externally connectable inputs like HDMI1, AV1 etc...
+        inputs = {}
 
-    @on.setter
-    def on(self, value):
-        """Turn on/off receiver"""
-        assert value in [True, False]  # Is this usefull?
-        self._sys_put("PWR", "On" if value is True else "Standby")
+        if Subunit.SYS in self._subunits:
+            inputs = cast(System, self._subunits[Subunit.SYS]).inputs
 
+        # Next to that there are internal inputs provided by subunits
+        # for example the "Tuner"input is provided by the TUN subunit
+        for subunit in self._available_subunits:
+            if subunit in SUBUNIT_INPUT_MAPPINGS.keys():
+                input_id = SUBUNIT_INPUT_MAPPINGS[subunit]
+                inputs[input_id] = input_id
+        return inputs
 
-class YncaZone:
-    def __init__(self, zone, connection, inputs):
-        self._initialized_event = threading.Event()
-        self._connection = connection
-        self._subunit = zone
-        self._inputs = inputs
-        self._initialized = False
+    def _detect_available_subunits(self):
+        logger.debug("Subunit availability check start")
+        self._initialized_event.clear()
+        self._connection.register_message_callback(self._protocol_message_received)
 
-        self._name = None
-        self._max_volume = 16.5
-        self._input = None
-        self._power = None
-        self._volume = None
-        self._mute = None
-        self._dsp_sound_program = None
-        self._straight = None
-        self._scenes = {}
+        # Figure out what subunits are available
+        num_commands_sent_start = self._connection.num_commands_sent
+        self._available_subunits = set()
+        for subunit_id in Subunit:
+            self._connection.get(subunit_id, "AVAIL")
 
-        self.on_update_callback = None
+        # Use @SYS:VERSION=? as end marker (even though this is not the SYS subunit)
+        self._connection.get(Subunit.SYS, "VERSION")
+
+        if not self._initialized_event.wait(
+            (self._connection.num_commands_sent - num_commands_sent_start) * 0.150
+        ):  # Each command is ~100ms + some margin
+            raise YncaInitializationFailedException(
+                f"Subunit availability check failed"
+            )
+
+        self._connection.unregister_message_callback(self._protocol_message_received)
+        logger.debug("Subunit availability check done")
+
+    def _get_subunit_class(self, subunit_id):
+        subunit_classes = all_subclasses(SubunitBase)
+        for subunit_class in subunit_classes:
+            if subunit_class.id == subunit_id:
+                return subunit_class
+
+    def _initialize_available_subunits(self):
+        # Every receiver has a System subunit
+        # It also does not respond to AVAIL=? so it will not end up in _available_subunits
+        system = System(self._connection)
+        system.initialize()
+        self._subunits[system.id] = system
+
+        # Initialize detected subunits
+        for subunit_id in sorted(self._available_subunits):
+            if subunit_class := self._get_subunit_class(subunit_id):
+                subunit_instance = subunit_class(self._connection)
+                subunit_instance.initialize()
+                self._subunits[subunit_instance.id] = subunit_instance
+
+    def connection_check(self) -> str:
+        """
+        Does a quick connection check by setting up a connection and requesting the modelname.
+        Connection gets closed again automatically.
+
+        This is a fast way to check the connection and if it is a YNCA device without
+        executing the timeconsuming `initialize()` method.
+        """
+        connection_check_event = threading.Event()
+        modelname = ""
+
+        def _connection_check_message_received(
+            status: YncaProtocolStatus, subunit: str, function_: str, value: str
+        ):
+            if subunit == Subunit.SYS and function_ == "MODELNAME":
+                nonlocal modelname
+                modelname = value
+                connection_check_event.set()
+
+        try:
+            connection = YncaConnection.create_from_serial_url(self._serial_url)
+            connection.connect(self._disconnect_callback)
+            connection.register_message_callback(_connection_check_message_received)
+            connection.get(Subunit.SYS, "MODELNAME")
+
+            # Give it a bit of time to receive a response
+            if not connection_check_event.wait(0.5):
+                raise YncaConnectionError(
+                    "Connectioncheck failed, no valid response in time from device"
+                )
+        finally:
+            if connection:
+                connection.unregister_message_callback(
+                    _connection_check_message_received
+                )
+                connection.close()
+        return modelname
 
     def initialize(self):
         """
-        Initialize the Zone based on capabilities of the device.
-        This is a long running function!
+        Sets up a connection to the device and initializes the Receiver.
+        This call takes several seconds.
         """
-        self._get("BASIC")  # Gets PWR, SLEEP, VOL, MUTE, INP, STRAIGHT, ENHANCER and SOUNDPRG (if applicable)
-        self._get("MAXVOL")
-        self._get("SCENENAME")
-        self._get("ZONENAME")
+        connection = YncaConnection.create_from_serial_url(self._serial_url)
+        connection.connect(self._disconnect_callback)
+        self._connection = connection
 
-        if self._initialized_event.wait(2):  # Each command takes at least 100ms + big margin
-            self._initialized = True
-        else:
-            logger.error("Zone initialization failed!")
+        self._detect_available_subunits()
+        self._initialize_available_subunits()
 
-        if self._initialized and self.on_update_callback:
-            self.on_update_callback()
+    def _protocol_message_received(
+        self, status: YncaProtocolStatus, subunit: str, function_: str, value: str
+    ):
+        if function_ == "AVAIL":
+            self._available_subunits.add(subunit)
 
-    def __str__(self):
-        output = []
-        for key in self.__dict__:
-            output.append("{key}={value}".format(key=key, value=self.__dict__[key]))
+        if subunit == Subunit.SYS and function_ == "VERSION":
+            self._initialized_event.set()
 
-        return '\n'.join(output)
+    def close(self):
+        for subunit in self._subunits.values():
+            subunit.close()
+        if self._connection:
+            self._connection.close()
 
-    def _put(self, function_, value):
-        self._connection.put(self._subunit, function_, value)
-
-    def _get(self, function_):
-        self._connection.get(self._subunit, function_)
-
-    def update(self, function_, value):
-        updated = True
-
-        handler = getattr(self, "_handle_{}".format(function_.lower()), None)
-        if handler is not None:
-            handler(value)
-        elif len(function_) == 10 and function_.startswith("SCENE") and function_.endswith("NAME"):
-            scene_id = int(function_[5:6])
-            self._scenes[scene_id] = value
-        else:
-            updated = False
-
-        if updated and self._initialized and self.on_update_callback:
-            self.on_update_callback()
-
-        return updated
-
-    def _handle_inp(self, value):
-        self._input = value
-
-    def _handle_vol(self, value):
-        self._volume = float(value)
-
-    def _handle_maxvol(self, value):
-        self._max_volume = float(value)
-
-    def _handle_mute(self, value):
-        if value == "Off":
-            self._mute = Mute.off
-        elif value == "Att -20dB":
-            self._mute = Mute.att_minus_20
-        elif value == "Att -40dB":
-            self._mute = Mute.att_minus_40
-        else:
-            self._mute = Mute.on
-
-    def _handle_pwr(self, value):
-        if value == "On":
-            self._power = True
-        else:
-            self._power = False
-
-    def _handle_zonename(self, value):
-        self._name = value
-        self._initialized_event.set()
-
-    def _handle_soundprg(self, value):
-        self._dsp_sound_program = value
-
-    def _handle_straight(self, value):
-        if value == "On":
-            self._straight = True
-        else:
-            self._straight = False
+    # Add properties for all known subunits
+    # The amount is limited as defined by the spec and it is easy to access as a user of the library
+    # Also helps with typing compared to using generic SubunitBase types
 
     @property
-    def name(self):
-        """Get zone name"""
-        return self._name
+    def SYS(self) -> System | None:
+        return cast(System, self._subunits.get(Subunit.SYS, None))
 
     @property
-    def on(self):
-        """Get current on state"""
-        return self._power
-
-    @on.setter
-    def on(self, value):
-        """Turn on/off zone"""
-        assert value in [True, False]  # Is this usefull?
-        self._put("PWR", "On" if value is True else "Standby")
+    def MAIN(self) -> Main | None:
+        return cast(Main, self._subunits.get(Subunit.MAIN, None))
 
     @property
-    def mute(self):
-        """Get current mute state"""
-        return self._mute
-
-    @mute.setter
-    def mute(self, value):
-        """Mute"""
-        assert value in Mute  # Is this usefull?
-        command_value = "On"
-        if value == Mute.off:
-            command_value = "Off"
-        elif value == Mute.att_minus_40:
-            command_value = "Att -40 dB"
-        elif value == Mute.att_minus_20:
-            command_value = "Att -20 dB"
-        self._put("MUTE", command_value)
+    def ZONE2(self) -> Zone2 | None:
+        return cast(Zone2, self._subunits.get(Subunit.ZONE2, None))
 
     @property
-    def max_volume(self):
-        """Get maximum volume in dB"""
-        return self._max_volume
+    def ZONE3(self) -> Zone3 | None:
+        return cast(Zone3, self._subunits.get(Subunit.ZONE3, None))
 
     @property
-    def min_volume(self):
-        """Get maximum volume in dB"""
-        return -80.5  # Seems to be fixed and the same for all zones
+    def ZONE4(self) -> Zone4 | None:
+        return cast(Zone4, self._subunits.get(Subunit.ZONE4, None))
 
     @property
-    def volume(self):
-        """Get current volume in dB"""
-        return self._volume
-
-    @volume.setter
-    def volume(self, value):
-        """Set volume in dB. The receiver only works with 0.5 increments. Input values will be round."""
-        self._put("VOL", number_to_string_with_stepsize(value, 1, 0.5))
-
-    def volume_up(self, step_size=0.5):
-        """
-        Increase the volume with given stepsize.
-        Supported stepsizes are: 0.5, 1, 2 and 5
-        """
-        value = "Up"
-        if step_size in [1, 2, 5]:
-            value = "Up {} dB".format(step_size)
-        self._put("VOL", value)
-
-    def volume_down(self, step_size=0.5):
-        """
-        Decrease the volume with given stepsize.
-        Supported stepsizes are: 0.5, 1, 2 and 5
-        """
-        value = "Down"
-        if step_size in [1, 2, 5]:
-            value = "Down {} dB".format(step_size)
-        self._put("VOL", value)
+    def PC(self) -> Pc | None:
+        return cast(Pc, self._subunits.get(Subunit.PC, None))
 
     @property
-    def input(self):
-        """Get current input"""
-        return self._input
-
-    @input.setter
-    def input(self, value):
-        """Set input"""
-        self._put("INP", value)
+    def NETRADIO(self) -> NetRadio | None:
+        return cast(NetRadio, self._subunits.get(Subunit.NETRADIO, None))
 
     @property
-    def inputs(self):
-        """Get full list of inputs, some may not be applicable to this zone."""
-        # TODO filter inputs based on availability in this zone.
-        return self._inputs
+    def USB(self) -> Usb | None:
+        return cast(Usb, self._subunits.get(Subunit.USB, None))
 
     @property
-    def dsp_sound_program(self):
-        """Get the current DSP sound program"""
-        return self._dsp_sound_program
-
-    @dsp_sound_program.setter
-    def dsp_sound_program(self, value):
-        """Set the DSP sound program"""
-        if value in DSP_SOUND_PROGRAMS:
-            self._put("SOUNDPRG", value)
-        else:
-            raise ValueError("Soundprogram not in DspSoundPrograms")
+    def TUN(self) -> Tun | None:
+        return cast(Tun, self._subunits.get(Subunit.TUN, None))
 
     @property
-    def straight(self):
-        """Get the current Straight value"""
-        return self._straight
+    def SIRIUS(self) -> Sirius | None:
+        return cast(Sirius, self._subunits.get(Subunit.SIRIUS, None))
 
-    @straight.setter
-    def straight(self, value):
-        """Set the Straight value"""
-        assert value in [True, False]  # Is this usefull?
-        self._put("STRAIGHT", "On" if value is True else "Off")
+    @property
+    def SIRIUSIR(self) -> SiriusIr | None:
+        return cast(SiriusIr, self._subunits.get(Subunit.SIRIUSIR, None))
 
+    @property
+    def IPOD(self) -> Ipod | None:
+        return cast(Ipod, self._subunits.get(Subunit.IPOD, None))
 
-    def activate_scene(self, scene_id):
-        """Activate a scene"""
-        if len(self._scenes) == 0:
-            raise ValueError("Zone does not support scenes")
-        elif scene_id not in [1, 2, 3, 4]:
-            raise ValueError("Invalid scene ID, should et 1, 2, 3 or 4")
-        else:
-            self._put("SCENE=Scene {}", scene_id)
+    @property
+    def IPODUSB(self) -> IpodUsb | None:
+        return cast(IpodUsb, self._subunits.get(Subunit.IPODUSB, None))
 
+    @property
+    def BT(self) -> Bt | None:
+        return cast(Bt, self._subunits.get(Subunit.BT, None))
+
+    @property
+    def RHAP(self) -> Rhap | None:
+        return cast(Rhap, self._subunits.get(Subunit.RHAP, None))
+
+    @property
+    def PANDORA(self) -> Pandora | None:
+        return cast(Pandora, self._subunits.get(Subunit.PANDORA, None))
+
+    @property
+    def UAW(self) -> Uaw | None:
+        return cast(Uaw, self._subunits.get(Subunit.UAW, None))
+
+    @property
+    def NAPSTER(self) -> Napster | None:
+        return cast(Napster, self._subunits.get(Subunit.NAPSTER, None))
+
+    @property
+    def SPOTIFY(self) -> Spotify | None:
+        return cast(Spotify, self._subunits.get(Subunit.SPOTIFY, None))
+
+    @property
+    def SERVER(self) -> Server | None:
+        return cast(Server, self._subunits.get(Subunit.SERVER, None))
+
+    @property
+    def SIRIUSXM(self) -> SiriusXm | None:
+        return cast(SiriusXm, self._subunits.get(Subunit.SIRIUSXM, None))
+
+    @property
+    def AIRPLAY(self) -> Airplay | None:
+        return cast(Airplay, self._subunits.get(Subunit.AIRPLAY, None))
