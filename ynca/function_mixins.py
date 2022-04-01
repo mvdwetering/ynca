@@ -134,4 +134,4 @@ class PowerFunctionMixin(FunctionMixinBase):
     @pwr.setter
     def pwr(self, value: bool):
         """Turn on/off subunit"""
-        self._put("PWR", "On" if value is True else "Standby") # type: ignore
+        self._put("PWR", "On" if value is True else "Standby")  # type: ignore
