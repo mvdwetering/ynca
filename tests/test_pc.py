@@ -1,6 +1,4 @@
-"""Test Pc subunit"""
-
-from ynca.constants import PlaybackInfo, Repeat
+from ynca.constants import Playback, PlaybackInfo, Repeat
 from ynca.pc import Pc
 
 SYS = "SYS"
@@ -69,3 +67,5 @@ def test_initialize(connection, update_callback):
     connection.put.assert_called_with(SUBUNIT, "REPEAT", "All")
     pc.shuffle = False
     connection.put.assert_called_with(SUBUNIT, "SHUFFLE", "Off")
+    pc.playback(Playback.PLAY)
+    connection.put.assert_called_with(SUBUNIT, "PLAYBACK", "Play")

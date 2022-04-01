@@ -1,5 +1,3 @@
-"""Test Function mixins"""
-
 from unittest import mock
 from ynca.constants import Playback, PlaybackInfo
 

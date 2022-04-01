@@ -1,5 +1,3 @@
-"""Test Usb subunit"""
-
 from ynca.constants import Band
 from ynca.tun import Tun
 

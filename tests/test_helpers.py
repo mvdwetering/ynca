@@ -1,5 +1,3 @@
-"""Test helper functions"""
-
 from ynca.helpers import number_to_string_with_stepsize
 
 

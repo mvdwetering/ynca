@@ -1,5 +1,3 @@
-"""Test NetRadio subunit"""
-
 from ynca.constants import Playback, PlaybackInfo
 from ynca.netradio import NetRadio
 

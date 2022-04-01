@@ -1,5 +1,3 @@
-"""Test SYS subunit"""
-
 from unittest import mock
 import pytest
 

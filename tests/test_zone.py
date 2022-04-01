@@ -1,5 +1,3 @@
-"""Test Zone subunit"""
-
 from typing import Callable
 from unittest import mock
 import pytest
