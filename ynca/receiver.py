@@ -4,15 +4,19 @@ import logging
 import threading
 from typing import Callable, Dict, Optional, Set, Type, cast
 
+from .bt import Bt
 from .connection import YncaConnection, YncaProtocolStatus
 from .constants import Subunit
 from .errors import YncaConnectionError, YncaInitializationFailedException
 from .helpers import all_subclasses
+from .mediaplayback_subunits import Ipod, Pc, Rhap, Usb
 from .netradio import NetRadio
-from .pc import Pc
+from .pandora import Pandora
+from .sirius import Sirius, SiriusIr
 from .subunit import SubunitBase
 from .system import System
-from .usb import Usb
+from .tun import Tun
+from .uaw import Uaw
 from .zone import Main, Zone2, Zone3, Zone4
 
 logger = logging.getLogger(__name__)
@@ -94,7 +98,6 @@ class Receiver:
         for subunit_class in subunit_classes:
             if subunit_class.id == subunit_id:
                 return subunit_class
-        return None
 
     def _initialize_available_subunits(self):
         # Every receiver has a System subunit
@@ -104,7 +107,7 @@ class Receiver:
         self._subunits[system.id] = system
 
         # Initialize detected subunits
-        for subunit_id in self._available_subunits:
+        for subunit_id in sorted(self._available_subunits):
             if subunit_class := self._get_subunit_class(subunit_id):
                 subunit_instance = subunit_class(self._connection)
                 subunit_instance.initialize()
@@ -210,5 +213,37 @@ class Receiver:
     @property
     def USB(self) -> Usb | None:
         return cast(Usb, self._subunits.get(Subunit.USB, None))
+
+    @property
+    def TUN(self) -> Tun | None:
+        return cast(Tun, self._subunits.get(Subunit.TUN, None))
+
+    @property
+    def SIRIUS(self) -> Sirius | None:
+        return cast(Sirius, self._subunits.get(Subunit.SIRIUS, None))
+
+    @property
+    def SIRIUSIR(self) -> SiriusIr | None:
+        return cast(SiriusIr, self._subunits.get(Subunit.SIRIUSIR, None))
+
+    @property
+    def IPOD(self) -> Ipod | None:
+        return cast(Ipod, self._subunits.get(Subunit.IPOD, None))
+
+    @property
+    def BT(self) -> Bt | None:
+        return cast(Bt, self._subunits.get(Subunit.BT, None))
+
+    @property
+    def RHAP(self) -> Rhap | None:
+        return cast(Rhap, self._subunits.get(Subunit.RHAP, None))
+
+    @property
+    def PANDORA(self) -> Pandora | None:
+        return cast(Pandora, self._subunits.get(Subunit.PANDORA, None))
+
+    @property
+    def UAW(self) -> Uaw | None:
+        return cast(Uaw, self._subunits.get(Subunit.UAW, None))
 
     # TODO: Add more subunits

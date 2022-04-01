@@ -1,8 +1,8 @@
 from ynca.constants import Playback, PlaybackInfo, Repeat
-from ynca.rhap import Rhap
+from ynca.mediaplayback_subunits import MediaPlaybackSubunitBase
 
 SYS = "SYS"
-SUBUNIT = "RHAP"
+SUBUNIT = "SUBUNIT"
 
 INITIALIZE_FULL_RESPONSES = [
     (
@@ -46,26 +46,30 @@ INITIALIZE_FULL_RESPONSES = [
 ]
 
 
+class DummyMediaPlaybackSubunit(MediaPlaybackSubunitBase):
+    id = "SUBUNIT"
+
+
 def test_initialize(connection, update_callback):
 
     connection.get_response_list = INITIALIZE_FULL_RESPONSES
 
-    rhap = Rhap(connection)
-    rhap.register_update_callback(update_callback)
+    dmps = DummyMediaPlaybackSubunit(connection)
+    dmps.register_update_callback(update_callback)
 
-    rhap.initialize()
+    dmps.initialize()
 
     assert update_callback.call_count == 1
-    assert rhap.repeat is Repeat.SINGLE
-    assert rhap.shuffle is True
-    assert rhap.album == "Album"
-    assert rhap.artist == "Artist"
-    assert rhap.song == "Song"
-    assert rhap.playbackinfo is PlaybackInfo.PAUSE
+    assert dmps.repeat is Repeat.SINGLE
+    assert dmps.shuffle is True
+    assert dmps.album == "Album"
+    assert dmps.artist == "Artist"
+    assert dmps.song == "Song"
+    assert dmps.playbackinfo is PlaybackInfo.PAUSE
 
-    rhap.repeat = Repeat.ALL
+    dmps.repeat = Repeat.ALL
     connection.put.assert_called_with(SUBUNIT, "REPEAT", "All")
-    rhap.shuffle = False
+    dmps.shuffle = False
     connection.put.assert_called_with(SUBUNIT, "SHUFFLE", "Off")
-    rhap.playback(Playback.PLAY)
+    dmps.playback(Playback.PLAY)
     connection.put.assert_called_with(SUBUNIT, "PLAYBACK", "Play")

@@ -2,6 +2,7 @@ from unittest import mock
 
 import pytest
 import ynca
+from ynca.bt import Bt
 from ynca.errors import YncaConnectionError, YncaInitializationFailedException
 from ynca.system import System
 from ynca.zone import Main
@@ -42,6 +43,12 @@ INITIALIZE_MINIMAL_RESPONSES = [
 
 INITIALIZE_FULL_RESPONSES = [
     (
+        (SYS, "AVAIL"),
+        [
+            (RESTRICTED, None, None),
+        ],
+    ),
+    (
         (MAIN, "AVAIL"),
         [
             (MAIN, "AVAIL", "Not Ready"),
@@ -64,6 +71,13 @@ INITIALIZE_FULL_RESPONSES = [
         (SYS, "VERSION"),
         [
             (SYS, "VERSION", "Version"),
+        ],
+    ),
+    # SYS Subunit init start
+    (
+        (SYS, "AVAIL"),
+        [
+            (RESTRICTED, None, None),
         ],
     ),
     (
@@ -90,6 +104,27 @@ INITIALIZE_FULL_RESPONSES = [
         (SYS, "VERSION"),
         [
             (SYS, "VERSION", "Version"),
+        ],
+    ),
+    # BT Subunit init start
+    (
+        (BT, "AVAIL"),
+        [
+            (BT, "AVAIL", "Not Connected"),
+        ],
+    ),
+    # BT Subunit iniatilize sync
+    (
+        (SYS, "VERSION"),
+        [
+            (SYS, "VERSION", "Version"),
+        ],
+    ),
+    # MAIN Subunit init start
+    (
+        (MAIN, "AVAIL"),
+        [
+            (MAIN, "AVAIL", "Not Ready"),
         ],
     ),
     (
@@ -244,7 +279,7 @@ def test_initialize_full(connection):
         assert r.inputs["TWO"] == "InputTwo"
         assert r.inputs["Bluetooth"] == "Bluetooth"
 
-        assert len(r._subunits.keys()) == 2
+        assert len(r._subunits.keys()) == 3
 
         assert isinstance(r.SYS, System)
         assert r.SYS.modelname == "ModelName"
@@ -252,11 +287,20 @@ def test_initialize_full(connection):
 
         assert isinstance(r.MAIN, Main)
         assert r.MAIN.name == "MainZoneName"
+        assert isinstance(r.BT, Bt)
         assert r.ZONE2 is None
         assert r.ZONE3 is None
         assert r.ZONE4 is None
-        assert r.PC is None
-        assert r.USB is None
+
+        assert r.IPOD is None
         assert r.NETRADIO is None
+        assert r.PANDORA is None
+        assert r.PC is None
+        assert r.RHAP is None
+        assert r.SIRIUS is None
+        assert r.SIRIUSIR is None
+        assert r.TUN is None
+        assert r.UAW is None
+        assert r.USB is None
 
         r.close()

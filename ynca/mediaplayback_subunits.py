@@ -14,11 +14,33 @@ from .subunit import SubunitBase
 logger = logging.getLogger(__name__)
 
 
-class Usb(
+# A number of subunits have the same featureset
+# so make a common base that only needs to be tested once
+class MediaPlaybackSubunitBase(
     PlaybackFunctionMixin,
     PlaybackInfoFunctionMixin,
     MetainfoFunctionMixin,
     RepeatShuffleFunctionMixin,
     SubunitBase,
 ):
+    pass
+
+
+class Rhap(MediaPlaybackSubunitBase):
+    id = Subunit.RHAP
+
+
+class Usb(MediaPlaybackSubunitBase):
     id = Subunit.USB
+
+
+class Pc(MediaPlaybackSubunitBase):
+    id = Subunit.PC
+
+
+class Ipod(MediaPlaybackSubunitBase):
+    id = Subunit.IPOD
+
+
+class Pandora(MediaPlaybackSubunitBase):
+    id = Subunit.PANDORA
