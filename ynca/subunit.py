@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 class SubunitBase:
 
     # To be set in subclasses
-    id: str | None = None
+    id: str = ""
 
     def __init__(self, connection: YncaConnection):
         """
