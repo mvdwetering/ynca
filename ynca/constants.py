@@ -89,7 +89,3 @@ class Playback(str, Enum):
 class Band(str, Enum):
     AM = "AM"
     FM = "FM"
-
-
-"""Subunits that are zones """
-ZONE_SUBUNIT_IDS = [Subunit.MAIN, Subunit.ZONE2, Subunit.ZONE3, Subunit.ZONE4]

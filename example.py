@@ -5,7 +5,10 @@ import sys
 import time
 import logging
 
-from ynca import Receiver, Mute, ZONE_SUBUNIT_IDS, Subunit
+from ynca import Receiver, Mute, Subunit
+
+ZONE_SUBUNIT_IDS = [Subunit.MAIN, Subunit.ZONE2, Subunit.ZONE3, Subunit.ZONE4]
+
 
 if __name__ == "__main__":
 
