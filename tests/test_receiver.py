@@ -166,8 +166,8 @@ def test_check_connection_check_success(connection):
         modelname = r.connection_check()
         assert modelname == "ModelName"
         assert r.is_initialized is False
-        r.close()
 
+        connection.close.assert_called_once()
         disconnect_callback.assert_not_called()
 
 
@@ -185,6 +185,7 @@ def test_check_connection_check_fail_connect(connection):
         with pytest.raises(YncaConnectionError):
             r.connection_check()
 
+        connection.close.assert_called_once()
         disconnect_callback.assert_not_called()
 
 
@@ -201,6 +202,7 @@ def test_check_connection_check_fail_no_response(connection):
         with pytest.raises(YncaConnectionError):
             r.connection_check()
 
+        connection.close.assert_called_once()
         disconnect_callback.assert_not_called()
 
 
@@ -225,6 +227,7 @@ def test_initialize_minimal(connection):
 
         r.close()
 
+        connection.close.assert_called_once()
         disconnect_callback.assert_not_called()
 
 
@@ -243,6 +246,7 @@ def test_initialize_fail(connection):
             r.initialize()
 
         assert r.is_initialized is False
+        connection.close.assert_called_once()
         disconnect_callback.assert_not_called()
 
 

@@ -163,6 +163,9 @@ class Receiver:
         """
         Sets up a connection to the device and initializes the Receiver.
         This call takes several seconds.
+
+        If initialize was successful the client should call the `close()`
+        method when done with the Receiver object to cleanup.
         """
         self._is_initialized = False
 
@@ -170,10 +173,13 @@ class Receiver:
         connection.connect(self._disconnect_callback)
         self._connection = connection
 
-        self._detect_available_subunits()
-        self._initialize_available_subunits()
-
-        self._is_initialized = True
+        try:
+            self._detect_available_subunits()
+            self._initialize_available_subunits()
+            self._is_initialized = True
+        finally:
+            if not self._is_initialized:
+                self.close()
 
     @property
     def is_initialized(self) -> bool:
