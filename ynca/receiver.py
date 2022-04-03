@@ -89,10 +89,12 @@ class Receiver:
         # Use @SYS:VERSION=? as end marker (even though this is not the SYS subunit)
         self._connection.get(Subunit.SYS, "VERSION")
 
+        # Take command spacing into account and apply large margin
+        # Large margin is needed in practice on slower/busier systems
+        num_commands_sent = self._connection.num_commands_sent - num_commands_sent_start
         if not self._initialized_event.wait(
-            (self._connection.num_commands_sent - num_commands_sent_start)
-            * (YncaProtocol.COMMAND_SPACING * 3)
-        ):  # Take command spacing into account and apply large margin
+            2 + (num_commands_sent * (YncaProtocol.COMMAND_SPACING * 5))
+        ):
             raise YncaInitializationFailedException(
                 f"Subunit availability check failed"
             )

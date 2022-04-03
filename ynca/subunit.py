@@ -77,11 +77,12 @@ class SubunitBase:
         # and has a guarenteed response
         self._connection.get(Subunit.SYS, "VERSION")
 
+        # Take command spacing into account and apply large margin
+        # Large margin is needed in practice on slower/busier systems
         num_commands_sent = self._connection.num_commands_sent - num_commands_sent_start
-
         if self._initialized_event.wait(
-            num_commands_sent * (YncaProtocol.COMMAND_SPACING * 3)
-        ):  # Take command spacing into account and apply large margin
+            2 + num_commands_sent * (YncaProtocol.COMMAND_SPACING * 5)
+        ):
             self._initialized = True
         else:
             raise YncaInitializationFailedException(
