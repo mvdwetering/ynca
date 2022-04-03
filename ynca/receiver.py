@@ -54,7 +54,6 @@ class Receiver:
         self._available_subunits: Set = set()
         self._initialized_event = threading.Event()
         self._disconnect_callback = disconnect_callback
-        self._is_initialized = False
 
         # This is the list of instantiated Subunit classes
         self._subunits: Dict[Subunit, Type[SubunitBase]] = {}
@@ -167,7 +166,7 @@ class Receiver:
         If initialize was successful the client should call the `close()`
         method when done with the Receiver object to cleanup.
         """
-        self._is_initialized = False
+        is_initialized = False
 
         connection = YncaConnection.create_from_serial_url(self._serial_url)
         connection.connect(self._disconnect_callback)
@@ -176,14 +175,10 @@ class Receiver:
         try:
             self._detect_available_subunits()
             self._initialize_available_subunits()
-            self._is_initialized = True
+            is_initialized = True
         finally:
-            if not self._is_initialized:
+            if not is_initialized:
                 self.close()
-
-    @property
-    def is_initialized(self) -> bool:
-        return self._is_initialized
 
     def _protocol_message_received(
         self, status: YncaProtocolStatus, subunit: str, function_: str, value: str
