@@ -147,11 +147,12 @@ def test_construct():
 
     r = ynca.Receiver("serial_url")
     assert len(r.inputs.keys()) == 0
+    assert r.is_initialized is False
 
     r.close()
 
 
-def test_check_connection_success(connection):
+def test_check_connection_check_success(connection):
 
     with mock.patch.object(
         ynca.receiver.YncaConnection, "create_from_serial_url"
@@ -164,12 +165,13 @@ def test_check_connection_success(connection):
         r = ynca.Receiver("serial_url", disconnect_callback)
         modelname = r.connection_check()
         assert modelname == "ModelName"
+        assert r.is_initialized is False
         r.close()
 
         disconnect_callback.assert_not_called()
 
 
-def test_check_connection_fail_connect(connection):
+def test_check_connection_check_fail_connect(connection):
 
     with mock.patch.object(
         ynca.receiver.YncaConnection, "create_from_serial_url"
@@ -186,7 +188,7 @@ def test_check_connection_fail_connect(connection):
         disconnect_callback.assert_not_called()
 
 
-def test_check_connection_fail_no_response(connection):
+def test_check_connection_check_fail_no_response(connection):
 
     with mock.patch.object(
         ynca.receiver.YncaConnection, "create_from_serial_url"
@@ -215,6 +217,7 @@ def test_initialize_minimal(connection):
         r = ynca.Receiver("serial_url", disconnect_callback)
         r.initialize()
 
+        assert r.is_initialized is True
         assert len(r.inputs.keys()) == 0
 
         assert isinstance(r.SYS, System)
@@ -239,6 +242,7 @@ def test_initialize_fail(connection):
         with pytest.raises(YncaInitializationFailedException):
             r.initialize()
 
+        assert r.is_initialized is False
         disconnect_callback.assert_not_called()
 
 

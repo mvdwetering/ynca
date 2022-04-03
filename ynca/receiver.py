@@ -54,6 +54,7 @@ class Receiver:
         self._available_subunits: Set = set()
         self._initialized_event = threading.Event()
         self._disconnect_callback = disconnect_callback
+        self._is_initialized = False
 
         # This is the list of instantiated Subunit classes
         self._subunits: Dict[Subunit, Type[SubunitBase]] = {}
@@ -162,12 +163,20 @@ class Receiver:
         Sets up a connection to the device and initializes the Receiver.
         This call takes several seconds.
         """
+        self._is_initialized = False
+
         connection = YncaConnection.create_from_serial_url(self._serial_url)
         connection.connect(self._disconnect_callback)
         self._connection = connection
 
         self._detect_available_subunits()
         self._initialize_available_subunits()
+
+        self._is_initialized = True
+
+    @property
+    def is_initialized(self) -> bool:
+        return self._is_initialized
 
     def _protocol_message_received(
         self, status: YncaProtocolStatus, subunit: str, function_: str, value: str
