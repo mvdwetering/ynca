@@ -190,10 +190,19 @@ class Receiver:
             self._initialized_event.set()
 
     def close(self):
-        for subunit in self._subunits.values():
+        """
+        Cleanup the internal resources.
+        Safe to be called at any time.
+
+        Receiver object should _not_ be reused after being closed!
+        """
+        # Convert to list to avoid issues when deleting while iterating
+        for id in list(self._subunits.keys()):
+            subunit = self._subunits.pop(id, None)
             subunit.close()
         if self._connection:
             self._connection.close()
+            self._connection = None
 
     # Add properties for all known subunits
     # The amount is limited as defined by the spec and it is easy to access as a user of the library

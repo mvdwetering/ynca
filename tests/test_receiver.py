@@ -228,6 +228,26 @@ def test_initialize_minimal(connection):
         disconnect_callback.assert_not_called()
 
 
+def test_close(connection):
+
+    with mock.patch.object(
+        ynca.receiver.YncaConnection, "create_from_serial_url"
+    ) as create_from_serial_url:
+        create_from_serial_url.return_value = connection
+        connection.get_response_list = INITIALIZE_MINIMAL_RESPONSES
+
+        r = ynca.Receiver("serial_url")
+        r.close()
+        r.initialize()
+
+        r.close()
+        connection.close.assert_called_once()
+
+        # Should be safe to call multiple times
+        r.close()
+        connection.close.assert_called_once()
+
+
 def test_initialize_fail(connection):
 
     with mock.patch.object(

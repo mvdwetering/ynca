@@ -70,6 +70,16 @@ def test_initialize(connection, update_callback):
     assert sui.avail == Avail.READY
 
 
+def test_close(connection, initialized_SubunitBase):
+
+    initialized_SubunitBase.close()
+    connection.unregister_message_callback.assert_called_once()
+
+    # Should be safe to call multiple times
+    initialized_SubunitBase.close()
+    connection.unregister_message_callback.assert_called_once()
+
+
 def test_unknown_functions_ignored(
     connection, initialized_SubunitBase, update_callback
 ):

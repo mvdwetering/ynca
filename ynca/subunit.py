@@ -99,9 +99,12 @@ class SubunitBase:
         pass
 
     def close(self):
-        self._connection.unregister_message_callback(self._protocol_message_received)
-        self._connection = None
-        self._update_callbacks = set()
+        if self._connection:
+            self._connection.unregister_message_callback(
+                self._protocol_message_received
+            )
+            self._connection = None
+            self._update_callbacks = set()
 
     def _subunit_message_received_without_handler(
         self, status: YncaProtocolStatus, function_: str, value: str
