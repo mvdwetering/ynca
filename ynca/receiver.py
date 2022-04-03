@@ -7,7 +7,7 @@ from xmlrpc.client import Server
 
 from .airplay import Airplay
 from .bt import Bt
-from .connection import YncaConnection, YncaProtocolStatus
+from .connection import YncaConnection, YncaProtocol, YncaProtocolStatus
 from .constants import Subunit
 from .errors import YncaConnectionError, YncaInitializationFailedException
 from .helpers import all_subclasses
@@ -91,8 +91,9 @@ class Receiver:
         self._connection.get(Subunit.SYS, "VERSION")
 
         if not self._initialized_event.wait(
-            (self._connection.num_commands_sent - num_commands_sent_start) * 0.150
-        ):  # Each command is ~100ms + some margin
+            (self._connection.num_commands_sent - num_commands_sent_start)
+            * (YncaProtocol.COMMAND_SPACING * 3)
+        ):  # Take command spacing into account and apply large margin
             raise YncaInitializationFailedException(
                 f"Subunit availability check failed"
             )

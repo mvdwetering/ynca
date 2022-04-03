@@ -9,7 +9,7 @@ from ynca.function_mixins import FunctionMixinBase
 from .constants import Avail, Subunit
 from .errors import YncaInitializationFailedException
 
-from .connection import YncaConnection, YncaProtocolStatus
+from .connection import YncaConnection, YncaProtocol, YncaProtocolStatus
 
 logger = logging.getLogger(__name__)
 
@@ -80,8 +80,8 @@ class SubunitBase:
         num_commands_sent = self._connection.num_commands_sent - num_commands_sent_start
 
         if self._initialized_event.wait(
-            num_commands_sent * 0.150
-        ):  # Each command takes at least 100ms + some margin
+            num_commands_sent * (YncaProtocol.COMMAND_SPACING * 3)
+        ):  # Take command spacing into account and apply large margin
             self._initialized = True
         else:
             raise YncaInitializationFailedException(
