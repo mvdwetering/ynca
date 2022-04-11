@@ -14,7 +14,7 @@ from .connection import YncaConnection, YncaProtocol, YncaProtocolStatus
 logger = logging.getLogger(__name__)
 
 
-class SubunitBase:
+class SubunitBase(FunctionMixinBase):
 
     # To be set in subclasses
     id: str = ""
@@ -33,19 +33,7 @@ class SubunitBase:
         self._connection = connection
         self._connection.register_message_callback(self._protocol_message_received)
 
-        for function_mixin_class in self.function_mixin_classes():
-            function_mixin_class.function_mixin_initialize_attributes(self)
-
-    def function_mixin_classes(self):
-        # Go through the inheritance list and return direct descendatns of FunctionMixinBase
-        # Direct descendant derived from mro list lenght 3
-        # which is the [mixinclass, mixinfunctionbaseclass, object]
-        for function_mixin_class in self.__class__.__mro__:
-            if (
-                issubclass(function_mixin_class, FunctionMixinBase)
-                and len(function_mixin_class.__mro__) == 3
-            ):
-                yield function_mixin_class
+        self.function_mixin_initialize_function_attributes()
 
     def initialize(self):
         """
@@ -62,9 +50,7 @@ class SubunitBase:
 
         # Build list of YNCA functions to request
         functions = ["AVAIL"]
-
-        for function_mixin_class in self.function_mixin_classes():
-            functions.extend(function_mixin_class.FUNCTION_MIXIN_FUNCTIONS)
+        functions.extend(self.function_mixin_functions())
 
         # Request YNCA functions
         for function in functions:

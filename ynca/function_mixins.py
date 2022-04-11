@@ -13,7 +13,7 @@ class FunctionMixinBase:
     Using subclasses should make it easy to share function implementations between Subunits.
 
     This base is needed to find them in the inheritance tree.
-    It does not really feel in the spiriti of Mixins, but it gets the job done.
+    It does not really feel in the spirit of Mixins, but it gets the job done.
     Using prefixes on everything to keep chance on collisions low.
 
     Note that FunctionMixins are intended to be used with Subunits.
@@ -24,9 +24,31 @@ class FunctionMixinBase:
     # Functions to request on initialization of the subunit
     FUNCTION_MIXIN_FUNCTIONS: List[str] = []
 
-    def function_mixin_initialize_attributes(self):
+    def function_mixin_on_initialize_attributes(self):
         # Initialize attributes managed by this mixin
+        # To be implemented in subclasses
         pass
+
+    def function_mixin_functions(self):
+        functions = []
+        for function_mixin_class in self._function_mixin_classes():
+            functions.extend(function_mixin_class.FUNCTION_MIXIN_FUNCTIONS)
+        return functions
+
+    def function_mixin_initialize_function_attributes(self):
+        for function_mixin_class in self._function_mixin_classes():
+            function_mixin_class.function_mixin_on_initialize_attributes(self)
+
+    def _function_mixin_classes(self):
+        # Go through the inheritance list and return direct descendants of FunctionMixinBase
+        # Direct descendant derived from mro list has length 3
+        # which is the [mixinclass, mixinfunctionbaseclass, object]
+        for function_mixin_class in self.__class__.__mro__:
+            if (
+                issubclass(function_mixin_class, FunctionMixinBase)
+                and len(function_mixin_class.__mro__) == 3
+            ):
+                yield function_mixin_class
 
 
 class PlaybackFunctionMixin(FunctionMixinBase):
@@ -39,7 +61,7 @@ class PlaybackInfoFunctionMixin(FunctionMixinBase):
 
     FUNCTION_MIXIN_FUNCTIONS = ["PLAYBACKINFO"]
 
-    def function_mixin_initialize_attributes(self):
+    def function_mixin_on_initialize_attributes(self):
         self._attr_playbackinfo: str | None = None
 
     @property
@@ -56,7 +78,7 @@ class MetainfoFunctionMixin(FunctionMixinBase):
     # METAINFO gets ARTIST, ALBUM and SONG
     FUNCTION_MIXIN_FUNCTIONS = ["METAINFO"]
 
-    def function_mixin_initialize_attributes(self):
+    def function_mixin_on_initialize_attributes(self):
         self._attr_artist: str | None = None
         self._attr_album: str | None = None
         self._attr_song: str | None = None
@@ -81,7 +103,7 @@ class StationFunctionMixin(FunctionMixinBase):
 
     FUNCTION_MIXIN_FUNCTIONS = ["STATION"]
 
-    def function_mixin_initialize_attributes(self):
+    def function_mixin_on_initialize_attributes(self):
         self._attr_station: str | None = None
 
     @property
@@ -94,7 +116,7 @@ class RepeatShuffleFunctionMixin(FunctionMixinBase):
 
     FUNCTION_MIXIN_FUNCTIONS = ["REPEAT", "SHUFFLE"]
 
-    def function_mixin_initialize_attributes(self):
+    def function_mixin_on_initialize_attributes(self):
         self._attr_repeat: str | None = None
         self._attr_shuffle: str | None = None
 
@@ -123,7 +145,7 @@ class PowerFunctionMixin(FunctionMixinBase):
 
     FUNCTION_MIXIN_FUNCTIONS = ["PWR"]
 
-    def function_mixin_initialize_attributes(self):
+    def function_mixin_on_initialize_attributes(self):
         self._attr_pwr: str | None = None
 
     @property

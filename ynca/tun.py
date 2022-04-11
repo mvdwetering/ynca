@@ -15,7 +15,7 @@ class TunerFunctionMixin(FunctionMixinBase):
 
     FUNCTION_MIXIN_FUNCTIONS = ["BAND", "AMFREQ", "FMFREQ"]
 
-    def function_mixin_initialize_attributes(self):
+    def function_mixin_on_initialize_attributes(self):
         self._attr_band: str | None = None
         self._attr_amfreq: str | None = None
         self._attr_fmfreq: str | None = None

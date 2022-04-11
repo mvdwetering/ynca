@@ -19,7 +19,7 @@ class ChannelnameFunctionMixin(FunctionMixinBase):
 
     FUNCTION_MIXIN_FUNCTIONS = ["CHNAME"]
 
-    def function_mixin_initialize_attributes(self):
+    def function_mixin_on_initialize_attributes(self):
         self._attr_chname: str | None = None
 
     @property
