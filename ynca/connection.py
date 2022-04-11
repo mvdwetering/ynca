@@ -227,7 +227,7 @@ class YncaConnection:
         return self._protocol.num_commands_sent
 
 
-def ynca_console(serial_port: str):
+def ynca_console(serial_url: str):
     """
     With the YNCA console you can manually send YNCA commands to a receiver.
     This is useful to figure out what a command does.
@@ -247,7 +247,7 @@ def ynca_console(serial_port: str):
 
     print(ynca_console.__doc__)
 
-    connection = YncaConnection(serial_port)
+    connection = YncaConnection(serial_url)
     connection.register_message_callback(output_response)
     connection.connect(disconnected_callback)
     quit_ = False
