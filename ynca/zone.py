@@ -155,7 +155,7 @@ class ZoneBase(PowerFunctionMixin, PlaybackFunctionMixin, SubunitBase):
     @property
     def scenes(self) -> Dict[str, str]:
         """Get the dictionary with scenes where key, value = id, name"""
-        return self._scenes
+        return dict(self._scenes)
 
     def activate_scene(self, scene_id: str):
         """Activate a scene"""
@@ -167,6 +167,7 @@ class ZoneBase(PowerFunctionMixin, PlaybackFunctionMixin, SubunitBase):
 
 class Main(ZoneBase):
     id = Subunit.MAIN
+
 
 class Zone2(ZoneBase):
     id = Subunit.ZONE2

@@ -73,7 +73,7 @@ class Receiver:
             if subunit in SUBUNIT_INPUT_MAPPINGS.keys():
                 input_id = SUBUNIT_INPUT_MAPPINGS[subunit]
                 inputs[input_id] = input_id
-        return inputs
+        return dict(inputs)
 
     def _detect_available_subunits(self):
         logger.debug("Subunit availability check start")

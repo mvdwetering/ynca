@@ -22,7 +22,7 @@ class System(PowerFunctionMixin, SubunitBase):
 
     def _reset_internal_state(self):
         self._initialized = False
-        self.inputs: Dict[str, str] = {}
+        self._inputs: Dict[str, str] = {}
 
         self._attr_modelname = None
         self._attr_version = None
@@ -50,7 +50,7 @@ class System(PowerFunctionMixin, SubunitBase):
             if input_id == "VAUX":
                 # Input ID used to set/get INP is actually V-AUX so compensate for that mismatch on the API
                 input_id = "V-AUX"
-            self.inputs[input_id] = value
+            self._inputs[input_id] = value
         else:
             updated = False
 
@@ -65,3 +65,8 @@ class System(PowerFunctionMixin, SubunitBase):
     def version(self):
         """Get firmware version"""
         return self._attr_version
+
+    @property
+    def inputs(self) -> Dict[str, str]:
+        """Get available external inputs"""
+        return dict(self._inputs)
