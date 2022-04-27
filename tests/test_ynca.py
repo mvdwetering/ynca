@@ -144,25 +144,22 @@ INITIALIZE_FULL_RESPONSES = [
 
 
 def test_construct():
-
-    r = ynca.Receiver("serial_url")
-    assert len(r.inputs.keys()) == 0
-
-    r.close()
+    y = ynca.Ynca("serial_url")
+    y.close()
 
 
 def test_check_connection_check_success(connection):
 
     with mock.patch.object(
-        ynca.receiver.YncaConnection, "create_from_serial_url"
+        ynca.ynca.YncaConnection, "create_from_serial_url"
     ) as create_from_serial_url:
         create_from_serial_url.return_value = connection
         connection.get_response_list = CONNECTION_CHECK_RESPONSES
 
         disconnect_callback = mock.MagicMock()
 
-        r = ynca.Receiver("serial_url", disconnect_callback)
-        modelname = r.connection_check()
+        y = ynca.Ynca("serial_url", disconnect_callback)
+        modelname = y.connection_check()
         assert modelname == "ModelName"
 
         connection.close.assert_called_once()
@@ -172,16 +169,16 @@ def test_check_connection_check_success(connection):
 def test_check_connection_check_fail_connect(connection):
 
     with mock.patch.object(
-        ynca.receiver.YncaConnection, "create_from_serial_url"
+        ynca.ynca.YncaConnection, "create_from_serial_url"
     ) as create_from_serial_url:
         create_from_serial_url.return_value = connection
         connection.connect.side_effect = YncaConnectionError("something is wrong")
 
         disconnect_callback = mock.MagicMock()
 
-        r = ynca.Receiver("serial_url", disconnect_callback)
+        y = ynca.Ynca("serial_url", disconnect_callback)
         with pytest.raises(YncaConnectionError):
-            r.connection_check()
+            y.connection_check()
 
         connection.close.assert_called_once()
         disconnect_callback.assert_not_called()
@@ -190,15 +187,15 @@ def test_check_connection_check_fail_connect(connection):
 def test_check_connection_check_fail_no_response(connection):
 
     with mock.patch.object(
-        ynca.receiver.YncaConnection, "create_from_serial_url"
+        ynca.ynca.YncaConnection, "create_from_serial_url"
     ) as create_from_serial_url:
         create_from_serial_url.return_value = connection
 
         disconnect_callback = mock.MagicMock()
 
-        r = ynca.Receiver("serial_url", disconnect_callback)
+        y = ynca.Ynca("serial_url", disconnect_callback)
         with pytest.raises(YncaConnectionError):
-            r.connection_check()
+            y.connection_check()
 
         connection.close.assert_called_once()
         disconnect_callback.assert_not_called()
@@ -207,22 +204,20 @@ def test_check_connection_check_fail_no_response(connection):
 def test_initialize_minimal(connection):
 
     with mock.patch.object(
-        ynca.receiver.YncaConnection, "create_from_serial_url"
+        ynca.ynca.YncaConnection, "create_from_serial_url"
     ) as create_from_serial_url:
         create_from_serial_url.return_value = connection
         connection.get_response_list = INITIALIZE_MINIMAL_RESPONSES
 
         disconnect_callback = mock.MagicMock()
 
-        r = ynca.Receiver("serial_url", disconnect_callback)
-        r.initialize()
+        y = ynca.Ynca("serial_url", disconnect_callback)
+        y.initialize()
 
-        assert len(r.inputs.keys()) == 0
+        assert isinstance(y.SYS, System)
+        assert y.SYS.version == "Version"
 
-        assert isinstance(r.SYS, System)
-        assert r.SYS.version == "Version"
-
-        r.close()
+        y.close()
 
         connection.close.assert_called_once()
         disconnect_callback.assert_not_called()
@@ -231,36 +226,36 @@ def test_initialize_minimal(connection):
 def test_close(connection):
 
     with mock.patch.object(
-        ynca.receiver.YncaConnection, "create_from_serial_url"
+        ynca.ynca.YncaConnection, "create_from_serial_url"
     ) as create_from_serial_url:
         create_from_serial_url.return_value = connection
         connection.get_response_list = INITIALIZE_MINIMAL_RESPONSES
 
-        r = ynca.Receiver("serial_url")
-        r.close()
-        r.initialize()
+        y = ynca.Ynca("serial_url")
+        y.close()
+        y.initialize()
 
-        r.close()
+        y.close()
         connection.close.assert_called_once()
 
         # Should be safe to call multiple times
-        r.close()
+        y.close()
         connection.close.assert_called_once()
 
 
 def test_initialize_fail(connection):
 
     with mock.patch.object(
-        ynca.receiver.YncaConnection, "create_from_serial_url"
+        ynca.ynca.YncaConnection, "create_from_serial_url"
     ) as create_from_serial_url:
         create_from_serial_url.return_value = connection
         connection.get_response_list = []
 
         disconnect_callback = mock.MagicMock()
 
-        r = ynca.Receiver("serial_url", disconnect_callback)
+        y = ynca.Ynca("serial_url", disconnect_callback)
         with pytest.raises(YncaInitializationFailedException):
-            r.initialize()
+            y.initialize()
 
         connection.close.assert_called_once()
         disconnect_callback.assert_not_called()
@@ -269,68 +264,70 @@ def test_initialize_fail(connection):
 def test_disconnect_callback(connection):
 
     with mock.patch.object(
-        ynca.receiver.YncaConnection, "create_from_serial_url"
+        ynca.ynca.YncaConnection, "create_from_serial_url"
     ) as create_from_serial_url:
         create_from_serial_url.return_value = connection
         connection.get_response_list = INITIALIZE_MINIMAL_RESPONSES
 
         disconnect_callback = mock.MagicMock()
 
-        r = ynca.Receiver("serial_url", disconnect_callback)
-        r.initialize()
+        y = ynca.Ynca("serial_url", disconnect_callback)
+        y.initialize()
 
         # Report disconnect from connection by using callback registered in connect call
         connection.connect.call_args.args[0]()
         disconnect_callback.assert_called_once()
 
-        r.close()
+        y.close()
 
 
 def test_initialize_full(connection):
 
     with mock.patch.object(
-        ynca.receiver.YncaConnection, "create_from_serial_url"
+        ynca.ynca.YncaConnection, "create_from_serial_url"
     ) as create_from_serial_url:
         create_from_serial_url.return_value = connection
 
         connection.get_response_list = INITIALIZE_FULL_RESPONSES
 
-        r = ynca.Receiver("serial_url")
-        r.initialize()
+        y = ynca.Ynca("serial_url")
+        y.initialize()
 
-        assert len(r.inputs.keys()) == 3
-        assert r.inputs["ONE"] == "InputOne"
-        assert r.inputs["TWO"] == "InputTwo"
-        assert r.inputs["Bluetooth"] == "Bluetooth"
+        inputs = ynca.get_all_zone_inputs(y)
 
-        assert len(r._subunits.keys()) == 3
+        assert len(inputs.keys()) == 3
+        assert inputs["ONE"] == "InputOne"
+        assert inputs["TWO"] == "InputTwo"
+        assert inputs["Bluetooth"] == "Bluetooth"
 
-        assert isinstance(r.SYS, System)
-        assert r.SYS.modelname == "ModelName"
-        assert r.SYS.version == "Version"
+        assert len(y._subunits.keys()) == 3
 
-        assert isinstance(r.MAIN, Main)
-        assert r.MAIN.name == "MainZoneName"
-        assert isinstance(r.BT, Bt)
-        assert r.ZONE2 is None
-        assert r.ZONE3 is None
-        assert r.ZONE4 is None
+        assert isinstance(y.SYS, System)
+        assert y.SYS.modelname == "ModelName"
+        assert y.SYS.version == "Version"
 
-        assert r.AIRPLAY is None
-        assert r.IPOD is None
-        assert r.IPODUSB is None
-        assert r.NAPSTER is None
-        assert r.NETRADIO is None
-        assert r.PANDORA is None
-        assert r.PC is None
-        assert r.RHAP is None
-        assert r.SERVER is None
-        assert r.SIRIUS is None
-        assert r.SIRIUSIR is None
-        assert r.SIRIUSXM is None
-        assert r.SPOTIFY is None
-        assert r.TUN is None
-        assert r.UAW is None
-        assert r.USB is None
+        assert isinstance(y.MAIN, Main)
+        assert y.MAIN.name == "MainZoneName"
+        assert isinstance(y.BT, Bt)
+        assert y.ZONE2 is None
+        assert y.ZONE3 is None
+        assert y.ZONE4 is None
 
-        r.close()
+        assert y.AIRPLAY is None
+        assert y.IPOD is None
+        assert y.IPODUSB is None
+        assert y.NAPSTER is None
+        assert y.NETRADIO is None
+        assert y.PANDORA is None
+        assert y.PC is None
+        assert y.RHAP is None
+        assert y.SERVER is None
+        assert y.SIRIUS is None
+        assert y.SIRIUSIR is None
+        assert y.SIRIUSXM is None
+        assert y.SPOTIFY is None
+        assert y.TUN is None
+        assert y.UAW is None
+        assert y.USB is None
+
+        y.close()

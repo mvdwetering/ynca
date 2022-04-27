@@ -46,7 +46,7 @@ SUBUNIT_INPUT_MAPPINGS: Dict[Subunit, str] = {
 }
 
 
-class Receiver:
+class Ynca:
     def __init__(self, serial_url: str, disconnect_callback: Callable[[], None] = None):
         """Create a Receiver"""
         self._serial_url = serial_url
@@ -57,23 +57,6 @@ class Receiver:
 
         # This is the list of instantiated Subunit classes
         self._subunits: Dict[Subunit, Type[SubunitBase]] = {}
-
-    @property
-    def inputs(self) -> Dict[str, str]:
-        # Receiver has the main inputs as discovered by System subunit
-        # These are the externally connectable inputs like HDMI1, AV1 etc...
-        inputs = {}
-
-        if Subunit.SYS in self._subunits:
-            inputs = cast(System, self._subunits[Subunit.SYS]).inputs
-
-        # Next to that there are internal inputs provided by subunits
-        # for example the "Tuner"input is provided by the TUN subunit
-        for subunit in self._available_subunits:
-            if subunit in SUBUNIT_INPUT_MAPPINGS.keys():
-                input_id = SUBUNIT_INPUT_MAPPINGS[subunit]
-                inputs[input_id] = input_id
-        return dict(inputs)
 
     def _detect_available_subunits(self):
         logger.debug("Subunit availability check start")

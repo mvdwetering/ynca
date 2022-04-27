@@ -5,7 +5,7 @@ import sys
 import time
 import logging
 
-from ynca import Receiver, Mute, Subunit
+from ynca import Ynca, Mute, Subunit, get_all_zone_inputs
 
 ZONE_SUBUNIT_IDS = [Subunit.MAIN, Subunit.ZONE2, Subunit.ZONE3, Subunit.ZONE4]
 
@@ -25,7 +25,7 @@ if __name__ == "__main__":
     if len(sys.argv) > 1:
         port = sys.argv[1]
 
-    receiver = Receiver(port)
+    receiver = Ynca(port)
 
     print("Initialize start")
     print("This takes a while (approximately 10 seconds on a 2 zone receiver)")
@@ -50,7 +50,7 @@ if __name__ == "__main__":
             print(f"  {zone.input=}")
 
     print("Inputs:")
-    for id, name in receiver.inputs.items():
+    for id, name in get_all_zone_inputs.items():
         print(f"  {id}: {name}")
 
     main = receiver.MAIN
