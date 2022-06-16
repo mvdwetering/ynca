@@ -3,7 +3,6 @@ from __future__ import annotations
 import logging
 import threading
 from typing import Callable, Dict, Optional, Set, Type, cast
-from xmlrpc.client import Server
 
 from .airplay import Airplay
 from .bt import Bt
@@ -11,7 +10,7 @@ from .connection import YncaConnection, YncaProtocol, YncaProtocolStatus
 from .constants import Subunit
 from .errors import YncaConnectionError, YncaInitializationFailedException
 from .helpers import all_subclasses
-from .mediaplayback_subunits import Ipod, IpodUsb, Napster, Pc, Rhap, Spotify, Usb
+from .mediaplayback_subunits import Ipod, IpodUsb, Napster, Pc, Rhap, Spotify, Usb, Server
 from .netradio import NetRadio
 from .pandora import Pandora
 from .sirius import Sirius, SiriusIr, SiriusXm
