@@ -14,10 +14,12 @@ def terminal(serial_url: str):
     This is useful to figure out what a command does.
 
     Use ? as <value> to GET the value.
-    Type 'quit' to exit.
+    Type 'exit' to exit.
 
     Command format: @<subunit>:<function>=<value>
-    Example: @SYS:MODELNAME=?
+    Examples:
+      @SYS:MODELNAME=?
+      @MAIN:VOL=-24
     """
 
     def output_response(status, subunit, function, value):
@@ -35,7 +37,7 @@ def terminal(serial_url: str):
     while not quit_:
         command = input(">> ")
 
-        if command == "quit":
+        if command == "exit":
             quit_ = True
         elif command != "":
             match = re.match(
