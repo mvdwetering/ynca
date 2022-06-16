@@ -70,7 +70,7 @@ print(main.name) # Print the name of the main zone
 # and the value the friendly name (user provided one if available).
 # Note that not all inputs might be available to all zones, but
 # it is not possible to derive this from the API
-for id, name in receiver.inputs.items():
+for id, name in get_all_zone_inputs(receiver).items():
     print(f"input {id}: {name}")
 
 # To get notifications when something changes register callback with the subunit
