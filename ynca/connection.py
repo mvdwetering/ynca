@@ -82,7 +82,7 @@ class YncaProtocol(serial.threaded.LineReader):
         function = None
         value = None
 
-        logger.debug("< %s", line)
+        logger.debug("> %s", line)
 
         if line == "@UNDEFINED":
             status = YncaProtocolStatus.UNDEFINED
@@ -123,7 +123,7 @@ class YncaProtocol(serial.threaded.LineReader):
                     self._keep_alive_pending = True
 
                 if not stop:
-                    logger.debug("> %s", message)
+                    logger.debug("< %s", message)
 
                     self._last_sent_command = message
                     self.write_line(message)
