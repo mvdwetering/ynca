@@ -50,7 +50,7 @@ if __name__ == "__main__":
             print(f"  {zone.input=}")
 
     print("Inputs:")
-    for id, name in get_all_zone_inputs.items():
+    for id, name in get_all_zone_inputs(receiver).items():
         print(f"  {id}: {name}")
 
     main = receiver.MAIN
