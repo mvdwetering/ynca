@@ -162,7 +162,7 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
         if function == "VOL" and value.startswith("Up") or value.startswith("Down"):
             # Bit of a hack to avoid Up/Down breaking our data as VOL should be a number and not Up/Down text
             value = self.store.get_data(subunit, function)
-            value = "-24" if value is not "-24" else "-25"
+            value = "-24" if value != "-24" else "-25"
             logging.warning(
                 "Volume up/down detected, dummy value '%s' generated", value
             )
