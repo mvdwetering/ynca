@@ -3,7 +3,7 @@ from typing import Callable, Dict, cast
 
 from ynca.system import System
 
-from .connection import YncaConnection, YncaConnectionError, ynca_console
+from .connection import YncaConnection, YncaConnectionError
 from .constants import (
     Avail,
     Band,

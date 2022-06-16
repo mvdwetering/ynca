@@ -27,13 +27,13 @@ The Ynca class is exposing the YNCA API as defined in the specification and allo
 This helper gets a list of all the inputs available on the device from the Ynca API to be used with the inputs on the Zone subunits.
 It is provided as a convenience because it is a bit tricky to build that list.
 
-### YNCA Console
+### YNCA Terminal
 
-The YNCA console provides an interactive console for YNCA commands intended for debugging. Examples on how to start below.
+The YNCA Terminal provides an interactive terminal for YNCA commands intended for debugging. Examples on how to start below.
 
 ```
-python3 -m ynca.connection /dev/ttyUSB0
-python3 -m ynca.connection socket://192.168.178.21:50000
+python3 -m ynca.terminal /dev/ttyUSB0
+python3 -m ynca.terminal socket://192.168.178.21:50000
 ```
 
 ### YNCA Server
