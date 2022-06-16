@@ -67,17 +67,4 @@ class Receiver(Ynca):
             "This method is deprecated. Use 'get_all_zone_inputs' helper function instead."
         )
 
-        # Receiver has the main inputs as discovered by System subunit
-        # These are the externally connectable inputs like HDMI1, AV1 etc...
-        inputs = {}
-
-        if Subunit.SYS in self._subunits:
-            inputs = cast(System, self._subunits[Subunit.SYS]).inputs
-
-        # Next to that there are internal inputs provided by subunits
-        # for example the "Tuner"input is provided by the TUN subunit
-        for subunit in self._available_subunits:
-            if subunit in SUBUNIT_INPUT_MAPPINGS.keys():
-                input_id = SUBUNIT_INPUT_MAPPINGS[subunit]
-                inputs[input_id] = input_id
-        return dict(inputs)
+        return get_all_zone_inputs(self)
