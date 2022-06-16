@@ -31,7 +31,7 @@ setup(
     url="https://github.com/mvdwetering/ynca",
     # Author details
     author="Michel van de Wetering",
-    author_email="michel.van.de.wetering@gmail.com",
+    author_email="michel.van.de.wetering+ynca@gmail.com",
     # Choose your license
     license="MIT",
     # See https://pypi.python.org/pypi?%3Aaction=list_classifiers
