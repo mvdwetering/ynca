@@ -22,29 +22,6 @@ from .zone import Main, Zone2, Zone3, Zone4
 
 logger = logging.getLogger(__name__)
 
-# Map subunits to input names, this is used for discovering what inputs are available
-# Inputs missing because unknown what subunit they map to: NET
-SUBUNIT_INPUT_MAPPINGS: Dict[Subunit, str] = {
-    Subunit.TUN: "TUNER",
-    Subunit.SIRIUS: "SIRIUS",
-    Subunit.IPOD: "iPod",
-    Subunit.BT: "Bluetooth",
-    Subunit.RHAP: "Rhapsody",
-    Subunit.SIRIUSIR: "SIRIUS InternetRadio",
-    Subunit.PANDORA: "Pandora",
-    Subunit.NAPSTER: "Napster",
-    Subunit.PC: "PC",
-    Subunit.NETRADIO: "NET RADIO",
-    Subunit.USB: "USB",
-    Subunit.IPODUSB: "iPod (USB)",
-    Subunit.UAW: "UAW",
-    Subunit.SPOTIFY: "Spotify",
-    Subunit.SIRIUSXM: "SiriusXM",
-    Subunit.SERVER: "SERVER",
-    Subunit.AIRPLAY: "AirPlay",
-}
-
-
 class Ynca:
     def __init__(self, serial_url: str, disconnect_callback: Callable[[], None] = None):
         """Create a Receiver"""
