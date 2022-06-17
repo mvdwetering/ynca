@@ -177,7 +177,7 @@ class YncaConnection:
     def unregister_message_callback(
         self, callback: Callable[[YncaProtocolStatus, str, str, str], None]
     ):
-        self._message_callbacks.remove(callback)
+        self._message_callbacks.discard(callback)
 
     def _call_registered_message_callbacks(
         self, status: YncaProtocolStatus, subunit: str, function_: str, value: str
