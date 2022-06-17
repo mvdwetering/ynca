@@ -48,19 +48,19 @@ Not part of the installed package, but available in the repo there is a very bas
 # Create a Ynca class by specifying the port on your receiver.
 # Port could also be e.g. COM3 on Windows or any `serial_url` as supported by PySerial
 # Like for example `socket://192.168.1.12:50000` for IP connection
-receiver = Ynca("/dev/tty1")
+ynca_receiver = Ynca("/dev/tty1")
 
 # Initializing takes a while (multiple seconds) since it communicates
 # quite a lot with the actual device to determine its capabilities.
-# Later calls to the receiver and subunits are fast.
+# Later calls to the subunits are fast.
 # Note that attributes that are still None after initialization are not supported by the subunits
-receiver.initialize()
+ynca_receiver.initialize()
 
 # Every subunit has a dedicated attribute on the `Ynca` class.
 # The name is the subunit id as used in YNCA.
 # The returned subunit class can be used to communicate with the subunit
-sys = receiver.SYS
-main = receiver.MAIN
+sys = ynca_receiver.SYS
+main = ynca_receiver.MAIN
 
 print(sys.modelname) # Print the modelname of the system
 print(main.name) # Print the name of the main zone
@@ -70,7 +70,7 @@ print(main.name) # Print the name of the main zone
 # and the value the friendly name (user provided one if available).
 # Note that not all inputs might be available to all zones, but
 # it is not possible to derive this from the API
-for id, name in get_all_zone_inputs(receiver).items():
+for id, name in get_all_zone_inputs(ynca_receiver).items():
     print(f"input {id}: {name}")
 
 # To get notifications when something changes register callback with the subunit
@@ -88,5 +88,5 @@ main.volume = -50.5
 main.volume_up()
 
 # When done call close for proper shutdown
-receiver.close()
+ynca_receiver.close()
 ```
