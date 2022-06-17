@@ -9,7 +9,7 @@ from typing import Callable, Optional, Set
 import serial  # type: ignore
 import serial.threaded  # type: ignore
 
-from .errors import YncaConnectionError
+from .errors import YncaConnectionError, YncaConnectionFailed
 
 logger = logging.getLogger(__name__)
 
@@ -195,6 +195,8 @@ class YncaConnection:
             _, self._protocol = self._readerthread.connect()
         except serial.SerialException as e:
             raise YncaConnectionError(e)
+        except RuntimeError as e:
+            raise YncaConnectionFailed(e)
 
         if self._protocol:
             self._protocol.message_callback = self._call_registered_message_callbacks
