@@ -40,7 +40,7 @@ def initialized_SubunitBase(connection) -> DummySubunit:
 
 def test_construct(connection, update_callback):
 
-    sui = DummySubunit(connection)
+    dsu = DummySubunit(connection)
 
     assert connection.register_message_callback.call_count == 1
     assert update_callback.call_count == 0
@@ -48,11 +48,11 @@ def test_construct(connection, update_callback):
 
 def test_initialize_fail(connection, update_callback):
 
-    sui = DummySubunit(connection)
-    sui.register_update_callback(update_callback)
+    dsu = DummySubunit(connection)
+    dsu.register_update_callback(update_callback)
 
     with pytest.raises(YncaInitializationFailedException):
-        sui.initialize()
+        dsu.initialize()
 
     assert update_callback.call_count == 0
 
@@ -61,13 +61,13 @@ def test_initialize(connection, update_callback):
 
     connection.get_response_list = INITIALIZE_FULL_RESPONSES
 
-    sui = DummySubunit(connection)
-    sui.register_update_callback(update_callback)
+    dsu = DummySubunit(connection)
+    dsu.register_update_callback(update_callback)
 
-    sui.initialize()
+    dsu.initialize()
 
     assert update_callback.call_count == 1
-    assert sui.avail == Avail.READY
+    assert dsu.avail == Avail.READY
 
 
 def test_close(connection, initialized_SubunitBase):
