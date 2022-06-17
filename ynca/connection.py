@@ -205,7 +205,8 @@ class YncaConnection:
     def close(self):
         # Disconnect callback is for unexpected disconnects
         # Don't need it to be called on planned `close()`
-        self._protocol.disconnect_callback = None
+        if self._protocol:
+            self._protocol.disconnect_callback = None
 
         if self._readerthread:
             self._readerthread.close()
