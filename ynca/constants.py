@@ -8,7 +8,7 @@ class SoundPrg(str, Enum):
     CHAMBER = "Chamber"
     CELLAR_CLUB = "Cellar Club"
     THE_ROXY_THEATRE = "The Roxy Theatre"
-    THE_BOTTOM_LINE = ("The Bottom Line",)
+    THE_BOTTOM_LINE = "The Bottom Line"
     SPORTS = "Sports"
     ACTION_GAME = "Action Game"
     ROLEPLAYING_GAME = "Roleplaying Game"
