@@ -138,7 +138,7 @@ def test_initialize_minimal(connection, update_callback):
     assert z.mute is None
     assert z.straight is None
     assert z.soundprg is None
-    assert len(z.scenes.keys()) == 0
+    assert len(z.scene_names.keys()) == 0
 
 
 def test_initialize_full(connection, update_callback):
@@ -161,12 +161,12 @@ def test_initialize_full(connection, update_callback):
     assert z.soundprg == "Standard"
     assert z.name == "ZoneName"
 
-    assert len(z.scenes.keys()) == 5
-    assert z.scenes["1"] == "Scene name 1"
-    assert z.scenes["2"] == "Scene name 2"
-    assert z.scenes["3"] == "Scene name 3"
-    assert z.scenes["4"] == "Scene name 4"
-    assert z.scenes["42"] == "Scene name 42"
+    assert len(z.scene_names.keys()) == 5
+    assert z.scene_names["1"] == "Scene name 1"
+    assert z.scene_names["2"] == "Scene name 2"
+    assert z.scene_names["3"] == "Scene name 3"
+    assert z.scene_names["4"] == "Scene name 4"
+    assert z.scene_names["42"] == "Scene name 42"
 
 
 def test_mute(connection, initialized_zone):
@@ -295,7 +295,7 @@ def test_scene(connection, initialized_zone):
 
     # Updates from device
     connection.send_protocol_message(SUBUNIT, "SCENE3NAME", "New Name")
-    assert initialized_zone.scenes["3"] == "New Name"
+    assert initialized_zone.scene_names["3"] == "New Name"
 
 
 # TODO: This seems generic and probably should be moved to the subunit test

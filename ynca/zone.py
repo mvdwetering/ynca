@@ -153,9 +153,17 @@ class ZoneBase(PowerFunctionMixin, PlaybackFunctionMixin, SubunitBase):
         self._put("STRAIGHT", "On" if value is True else "Off")
 
     @property
+    def scene_names(self) -> Dict[str, str]:
+        """Get a dictionary with scene names where key, value = id, name"""
+        return dict(self._scenes)
+
+    @property
     def scenes(self) -> Dict[str, str]:
         """Get the dictionary with scenes where key, value = id, name"""
-        return dict(self._scenes)
+        logger.warning(
+            "The 'scenes' attribute is deprecated and replaced with 'scene_names' to better match the naming in the YNCA spec"
+        )
+        return self.scene_names
 
     def activate_scene(self, scene_id: str):
         """Activate a scene"""
