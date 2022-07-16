@@ -22,7 +22,8 @@ class SoundPrg(str, Enum):
     TWO_CH_STEREO = "2ch Stereo"
     SEVEN_CH_STEREO = "7ch Stereo"
     SURROUND_DECODER = "Surround Decoder"
-    NINE_CH_STEREO = "9ch Stereo"
+    NINE_CH_STEREO = "9ch Stereo"  # Available on RX-A3010 and RX-A3020
+    ALL_CH_STEREO = "All-Ch Stereo"  # Available on TRS-700
 
 
 class Mute(str, Enum):
