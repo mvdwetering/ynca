@@ -40,7 +40,7 @@ def get_all_zone_inputs(ynca: Ynca) -> Dict[str, str]:
 
     # The SYS subunit has the externally connectable inputs like HDMI1, AV1 etc...
     if ynca.SYS:
-        inputs = cast(System, ynca._subunits[Subunit.SYS]).inputs
+        inputs = cast(System, ynca._subunits[Subunit.SYS]).inp_names
 
     # Next to that there are internal inputs provided by subunits
     # for example the "Tuner"input is provided by the TUN subunit
