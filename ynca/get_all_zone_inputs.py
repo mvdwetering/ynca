@@ -25,6 +25,32 @@ SUBUNIT_INPUT_MAPPINGS: Dict[Subunit, str] = {
     Subunit.AIRPLAY: "AirPlay",
 }
 
+# This list of inputs is used in case INPNAME is not reported by the device
+# It contains all known inputs
+FALLBACK_INPUTS = {
+    "HDMI1": "HDMI1",
+    "HDMI2": "HDMI2",
+    "HDMI3": "HDMI3",
+    "HDMI4": "HDMI4",
+    "HDMI5": "HDMI5",
+    "HDMI6": "HDMI6",
+    "HDMI7": "HDMI7",
+    "AV1": "AV1",
+    "AV2": "AV2",
+    "AV3": "AV3",
+    "AV4": "AV4",
+    "AV5": "AV5",
+    "AV6": "AV6",
+    "AV7": "AV7",
+    "AUDIO1": "AUDIO1",
+    "AUDIO2": "AUDIO2",
+    "AUDIO3": "AUDIO3",
+    "AUDIO4": "AUDIO4",
+    "PHONO": "PHONO",
+    "MULTI CH": "MULTI CH",
+    "VAUX": "V-AUX",
+}
+
 
 def get_all_zone_inputs(ynca: Ynca) -> Dict[str, str]:
     """
@@ -35,18 +61,26 @@ def get_all_zone_inputs(ynca: Ynca) -> Dict[str, str]:
 
     Key is the value to use for `input`,
     Value is the user given name if available, otherwise input name.
+
+    For receivers that do _not_ respond to INPNAME a fallback list of inputs is returned containing all known options
     """
     inputs = {}
 
-    # The SYS subunit has the externally connectable inputs like HDMI1, AV1 etc...
-    if ynca.SYS:
-        inputs = cast(System, ynca._subunits[Subunit.SYS]).inp_names
-
-    # Next to that there are internal inputs provided by subunits
+    # There are internal inputs provided by subunits
     # for example the "Tuner"input is provided by the TUN subunit
     for subunit in SUBUNIT_INPUT_MAPPINGS.keys():
         if getattr(ynca, subunit, None):
             input_id = SUBUNIT_INPUT_MAPPINGS[subunit]
             inputs[input_id] = input_id
 
-    return dict(inputs)
+    # The SYS subunit has the externally connectable inputs like HDMI1, AV1 etc...
+    # try to detect which ones are available by looking at the INPNAMEs
+    # Do this after subunits because USB and DOCK can be renamed
+    if ynca.SYS:
+        inp_names = cast(System, ynca._subunits[Subunit.SYS]).inp_names
+        if len(inp_names) == 0:
+            inputs.update(FALLBACK_INPUTS)
+        else:
+            inputs.update(inp_names)
+
+    return inputs

@@ -4,6 +4,7 @@ import pytest
 import ynca
 from ynca.bt import Bt
 from ynca.errors import YncaConnectionError, YncaInitializationFailedException
+from ynca.get_all_zone_inputs import FALLBACK_INPUTS
 from ynca.system import System
 from ynca.zone import Main
 
@@ -216,6 +217,9 @@ def test_initialize_minimal(connection):
 
         assert isinstance(y.SYS, System)
         assert y.SYS.version == "Version"
+
+        inputs = ynca.get_all_zone_inputs(y)
+        assert inputs == FALLBACK_INPUTS
 
         y.close()
 
