@@ -24,7 +24,7 @@ class ZoneBase(PowerFunctionMixin, PlaybackFunctionMixin, SubunitBase):
     def _reset_internal_state(self):
         self._max_volume = 16.5  # is 16.5 for zones where it is not configurable
         self._volume = None
-        self._scenes: Dict[str, str] = {}
+        self._scenenames: Dict[str, str] = {}
 
         self._attr_inp = None
         self._attr_mute = None
@@ -48,7 +48,7 @@ class ZoneBase(PowerFunctionMixin, PlaybackFunctionMixin, SubunitBase):
 
         if matches := re.match(r"SCENE(\d+)NAME", function_):
             scene_id = matches[1]
-            self._scenes[scene_id] = value
+            self._scenenames[scene_id] = value
         else:
             updated = False
 
@@ -166,9 +166,9 @@ class ZoneBase(PowerFunctionMixin, PlaybackFunctionMixin, SubunitBase):
         self._put("STRAIGHT", "On" if value is True else "Off")
 
     @property
-    def scene_names(self) -> Dict[str, str]:
+    def scenenames(self) -> Dict[str, str]:
         """Get a dictionary with scene names where key, value = id, name"""
-        return dict(self._scenes)
+        return dict(self._scenenames)
 
     @property
     def scenes(self) -> Dict[str, str]:
@@ -180,7 +180,7 @@ class ZoneBase(PowerFunctionMixin, PlaybackFunctionMixin, SubunitBase):
 
     def activate_scene(self, scene_id: str):
         """Activate a scene"""
-        if scene_id not in self._scenes.keys():
+        if scene_id not in self._scenenames.keys():
             raise ValueError("Invalid scene ID")
         else:
             self._put("SCENE", f"Scene {scene_id}")
