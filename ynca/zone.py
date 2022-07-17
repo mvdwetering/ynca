@@ -176,7 +176,7 @@ class ZoneBase(PowerFunctionMixin, PlaybackFunctionMixin, SubunitBase):
         logger.warning(
             "The 'scenes' attribute is deprecated and replaced with 'scene_names' to better match the naming in the YNCA spec"
         )
-        return self.scene_names
+        return self.scenenames
 
     def activate_scene(self, scene_id: str):
         """Activate a scene"""
