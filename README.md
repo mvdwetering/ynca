@@ -5,7 +5,7 @@ Automation Library for Yamaha receivers that support the YNCA protocol.
 Supported receivers according to protocol documentation (not all tested) or logs found on the internet.
 There might be more receivers that support this protocol. If you find some let met know so the list can be updated.
 
-> RX-A700, RX-A710, RX-A800, RX-A810, RX-A840, RX-A850, RX-A1000, RX-A1010, RX-A1040, RX-A2000, RX-A2010, RX-A3000, RX-A3010, RX-V671, RX-V867, RX-V871, RX-V1067, RX-V2067, RX-V2600, RX-V3067
+> RX-A700, RX-A710, RX-A720, RX-A800, RX-A810, RX-A820, RX-A840, RX-A850, RX-A1000, RX-A1010, RX-A1020, RX-A1040, RX-A2000, RX-A2010, RX-A2020, RX-A3000, RX-A3010, RX-A3020, RX-V671, RX-V867, RX-V871, RX-V1067, RX-V2067, RX-V2600, RX-V3067
 
 
 ## Installation
@@ -26,6 +26,10 @@ The Ynca class is exposing the YNCA API as defined in the specification and allo
 
 This helper gets a list of all the inputs available on the device from the Ynca API to be used with the inputs on the Zone subunits.
 It is provided as a convenience because it is a bit tricky to build that list.
+
+### Get_modelinfo helper function
+
+Gets info specific to a certain model that can otherwise not be determined through YNCA (e.g. supported SoundPrg)
 
 ### YNCA Terminal
 
