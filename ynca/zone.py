@@ -5,7 +5,7 @@ import logging
 from typing import Dict
 
 from .connection import YncaConnection, YncaProtocolStatus
-from .constants import SoundPrg, Mute, Subunit
+from .constants import Mute, Subunit
 from .function_mixins import PlaybackFunctionMixin, PowerFunctionMixin
 from .helpers import number_to_string_with_stepsize
 from .subunit import SubunitBase
@@ -131,14 +131,12 @@ class ZoneBase(PowerFunctionMixin, PlaybackFunctionMixin, SubunitBase):
         self._put("INP", value)
 
     @property
-    def soundprg(self) -> SoundPrg | None:
+    def soundprg(self) -> str | None:
         """Get the current DSP sound program"""
-        return (
-            SoundPrg(self._attr_soundprg) if self._attr_soundprg is not None else None
-        )
+        return self._attr_soundprg
 
     @soundprg.setter
-    def soundprg(self, value: SoundPrg):
+    def soundprg(self, value: str):
         """Set the DSP sound program"""
         self._put("SOUNDPRG", value)
 
