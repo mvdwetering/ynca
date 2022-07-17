@@ -1,0 +1,248 @@
+2022-07-16 20:35:21 DEBUG (Thread-3) [ynca.connection] Connected
+2022-07-16 20:35:21 DEBUG (Thread-4) [ynca.connection] < @SYS:MODELNAME=?
+2022-07-16 20:35:21 DEBUG (SyncWorker_0) [ynca.ynca] Subunit availability check start
+2022-07-16 20:35:21 DEBUG (Thread-3) [ynca.connection] > @SYS:MODELNAME=RX-A810
+2022-07-16 20:35:22 DEBUG (Thread-4) [ynca.connection] < @SYS:MODELNAME=?
+2022-07-16 20:35:22 DEBUG (Thread-3) [ynca.connection] > @SYS:MODELNAME=RX-A810
+2022-07-16 20:35:22 DEBUG (Thread-4) [ynca.connection] < @SYS:AVAIL=?
+2022-07-16 20:35:22 DEBUG (Thread-3) [ynca.connection] > @UNDEFINED
+2022-07-16 20:35:22 DEBUG (Thread-4) [ynca.connection] < @MAIN:AVAIL=?
+2022-07-16 20:35:22 DEBUG (Thread-3) [ynca.connection] > @MAIN:AVAIL=Not Ready
+2022-07-16 20:35:22 DEBUG (Thread-4) [ynca.connection] < @ZONE2:AVAIL=?
+2022-07-16 20:35:22 DEBUG (Thread-3) [ynca.connection] > @ZONE2:AVAIL=Not Ready
+2022-07-16 20:35:22 DEBUG (Thread-4) [ynca.connection] < @ZONE3:AVAIL=?
+2022-07-16 20:35:22 DEBUG (Thread-3) [ynca.connection] > @RESTRICTED
+2022-07-16 20:35:22 DEBUG (Thread-4) [ynca.connection] < @ZONE4:AVAIL=?
+2022-07-16 20:35:22 DEBUG (Thread-3) [ynca.connection] > @RESTRICTED
+2022-07-16 20:35:22 DEBUG (Thread-4) [ynca.connection] < @TUN:AVAIL=?
+2022-07-16 20:35:22 DEBUG (Thread-3) [ynca.connection] > @TUN:AVAIL=Not Ready
+2022-07-16 20:35:22 DEBUG (Thread-4) [ynca.connection] < @SIRIUS:AVAIL=?
+2022-07-16 20:35:22 DEBUG (Thread-3) [ynca.connection] > @RESTRICTED
+2022-07-16 20:35:22 DEBUG (Thread-4) [ynca.connection] < @IPOD:AVAIL=?
+2022-07-16 20:35:22 DEBUG (Thread-3) [ynca.connection] > @IPOD:AVAIL=Not Connected
+2022-07-16 20:35:22 DEBUG (Thread-4) [ynca.connection] < @BT:AVAIL=?
+2022-07-16 20:35:22 DEBUG (Thread-3) [ynca.connection] > @BT:AVAIL=Not Connected
+2022-07-16 20:35:23 DEBUG (Thread-4) [ynca.connection] < @RHAP:AVAIL=?
+2022-07-16 20:35:23 DEBUG (Thread-3) [ynca.connection] > @RESTRICTED
+2022-07-16 20:35:23 DEBUG (Thread-4) [ynca.connection] < @SIRIUSIR:AVAIL=?
+2022-07-16 20:35:23 DEBUG (Thread-3) [ynca.connection] > @RESTRICTED
+2022-07-16 20:35:23 DEBUG (Thread-4) [ynca.connection] < @PANDORA:AVAIL=?
+2022-07-16 20:35:23 DEBUG (Thread-3) [ynca.connection] > @RESTRICTED
+2022-07-16 20:35:23 DEBUG (Thread-4) [ynca.connection] < @NAPSTER:AVAIL=?
+2022-07-16 20:35:23 DEBUG (Thread-3) [ynca.connection] > @NAPSTER:AVAIL=Not Ready
+2022-07-16 20:35:23 DEBUG (Thread-4) [ynca.connection] < @PC:AVAIL=?
+2022-07-16 20:35:23 DEBUG (Thread-3) [ynca.connection] > @PC:AVAIL=Not Ready
+2022-07-16 20:35:23 DEBUG (Thread-4) [ynca.connection] < @NETRADIO:AVAIL=?
+2022-07-16 20:35:23 DEBUG (Thread-3) [ynca.connection] > @NETRADIO:AVAIL=Not Ready
+2022-07-16 20:35:23 DEBUG (Thread-4) [ynca.connection] < @USB:AVAIL=?
+2022-07-16 20:35:23 DEBUG (Thread-3) [ynca.connection] > @USB:AVAIL=Not Connected
+2022-07-16 20:35:23 DEBUG (Thread-4) [ynca.connection] < @IPODUSB:AVAIL=?
+2022-07-16 20:35:23 DEBUG (Thread-3) [ynca.connection] > @IPODUSB:AVAIL=Not Connected
+2022-07-16 20:35:23 DEBUG (Thread-4) [ynca.connection] < @UAW:AVAIL=?
+2022-07-16 20:35:23 DEBUG (Thread-3) [ynca.connection] > @UAW:AVAIL=Not Connected
+2022-07-16 20:35:23 DEBUG (Thread-4) [ynca.connection] < @SIRIUSXM:AVAIL=?
+2022-07-16 20:35:23 DEBUG (Thread-3) [ynca.connection] > @UNDEFINED
+2022-07-16 20:35:24 DEBUG (Thread-4) [ynca.connection] < @SPOTIFY:AVAIL=?
+2022-07-16 20:35:24 DEBUG (Thread-3) [ynca.connection] > @UNDEFINED
+2022-07-16 20:35:24 DEBUG (Thread-4) [ynca.connection] < @SERVER:AVAIL=?
+2022-07-16 20:35:24 DEBUG (Thread-3) [ynca.connection] > @UNDEFINED
+2022-07-16 20:35:24 DEBUG (Thread-4) [ynca.connection] < @AIRPLAY:AVAIL=?
+2022-07-16 20:35:24 DEBUG (Thread-3) [ynca.connection] > @UNDEFINED
+2022-07-16 20:35:24 DEBUG (Thread-4) [ynca.connection] < @SYS:VERSION=?
+2022-07-16 20:35:24 DEBUG (Thread-3) [ynca.connection] > @SYS:VERSION=1.80/2.01
+2022-07-16 20:35:24 DEBUG (SyncWorker_0) [ynca.ynca] Subunit availability check done
+2022-07-16 20:35:24 DEBUG (SyncWorker_0) [ynca.subunit] Subunit Subunit.SYS initialization start.
+2022-07-16 20:35:24 DEBUG (Thread-4) [ynca.connection] < @SYS:AVAIL=?
+2022-07-16 20:35:24 DEBUG (Thread-3) [ynca.connection] > @UNDEFINED
+2022-07-16 20:35:24 DEBUG (Thread-4) [ynca.connection] < @SYS:PWR=?
+2022-07-16 20:35:24 DEBUG (Thread-3) [ynca.connection] > @SYS:PWR=Standby
+2022-07-16 20:35:24 DEBUG (Thread-4) [ynca.connection] < @SYS:MODELNAME=?
+2022-07-16 20:35:24 DEBUG (Thread-3) [ynca.connection] > @SYS:MODELNAME=RX-A810
+2022-07-16 20:35:24 DEBUG (Thread-4) [ynca.connection] < @SYS:INPNAME=?
+2022-07-16 20:35:24 DEBUG (Thread-3) [ynca.connection] > @SYS:INPNAMEPHONO=PHONO
+2022-07-16 20:35:24 DEBUG (Thread-3) [ynca.connection] > @SYS:INPNAMEHDMI1=Blu-ray
+2022-07-16 20:35:24 DEBUG (Thread-3) [ynca.connection] > @SYS:INPNAMEHDMI2=Shield
+2022-07-16 20:35:24 DEBUG (Thread-3) [ynca.connection] > @SYS:INPNAMEHDMI3=HTPC
+2022-07-16 20:35:24 DEBUG (Thread-3) [ynca.connection] > @SYS:INPNAMEHDMI4=HassIO
+2022-07-16 20:35:24 DEBUG (Thread-3) [ynca.connection] > @SYS:INPNAMEHDMI5=Cromecast
+2022-07-16 20:35:24 DEBUG (Thread-3) [ynca.connection] > @SYS:INPNAMEHDMI6=SteamLink
+2022-07-16 20:35:24 DEBUG (Thread-3) [ynca.connection] > @SYS:INPNAMEHDMI7=HDMI7
+2022-07-16 20:35:24 DEBUG (Thread-3) [ynca.connection] > @SYS:INPNAMEAV1=AV1
+2022-07-16 20:35:24 DEBUG (Thread-3) [ynca.connection] > @SYS:INPNAMEAV2=AV2
+2022-07-16 20:35:24 DEBUG (Thread-3) [ynca.connection] > @SYS:INPNAMEAV3=AV3
+2022-07-16 20:35:24 DEBUG (Thread-3) [ynca.connection] > @SYS:INPNAMEAV4=AV4
+2022-07-16 20:35:24 DEBUG (Thread-3) [ynca.connection] > @SYS:INPNAMEAV5=XBox
+2022-07-16 20:35:24 DEBUG (Thread-3) [ynca.connection] > @SYS:INPNAMEAV6=AV6
+2022-07-16 20:35:24 DEBUG (Thread-3) [ynca.connection] > @SYS:INPNAMEVAUX=V-AUX
+2022-07-16 20:35:24 DEBUG (Thread-3) [ynca.connection] > @SYS:INPNAMEAUDIO1=AUDIO1
+2022-07-16 20:35:24 DEBUG (Thread-3) [ynca.connection] > @SYS:INPNAMEAUDIO2=AUDIO2
+2022-07-16 20:35:24 DEBUG (Thread-3) [ynca.connection] > @SYS:INPNAMEDOCK=DOCK
+2022-07-16 20:35:24 DEBUG (Thread-3) [ynca.connection] > @SYS:INPNAMEUSB=USB
+2022-07-16 20:35:24 DEBUG (Thread-4) [ynca.connection] < @SYS:VERSION=?
+2022-07-16 20:35:24 DEBUG (Thread-3) [ynca.connection] > @SYS:VERSION=1.80/2.01
+2022-07-16 20:35:24 DEBUG (SyncWorker_0) [ynca.subunit] Subunit Subunit.SYS initialization done.
+2022-07-16 20:35:24 DEBUG (SyncWorker_0) [ynca.subunit] Subunit Subunit.BT initialization start.
+2022-07-16 20:35:24 DEBUG (Thread-4) [ynca.connection] < @BT:AVAIL=?
+2022-07-16 20:35:24 DEBUG (Thread-3) [ynca.connection] > @BT:AVAIL=Not Connected
+2022-07-16 20:35:25 DEBUG (Thread-4) [ynca.connection] < @SYS:VERSION=?
+2022-07-16 20:35:25 DEBUG (Thread-3) [ynca.connection] > @SYS:VERSION=1.80/2.01
+2022-07-16 20:35:25 DEBUG (SyncWorker_0) [ynca.subunit] Subunit Subunit.BT initialization done.
+2022-07-16 20:35:25 DEBUG (SyncWorker_0) [ynca.subunit] Subunit Subunit.IPOD initialization start.
+2022-07-16 20:35:25 DEBUG (Thread-4) [ynca.connection] < @IPOD:AVAIL=?
+2022-07-16 20:35:25 DEBUG (Thread-3) [ynca.connection] > @IPOD:AVAIL=Not Connected
+2022-07-16 20:35:25 DEBUG (Thread-4) [ynca.connection] < @IPOD:PLAYBACKINFO=?
+2022-07-16 20:35:25 DEBUG (Thread-3) [ynca.connection] > @IPOD:PLAYBACKINFO=Stop
+2022-07-16 20:35:25 DEBUG (Thread-4) [ynca.connection] < @IPOD:METAINFO=?
+2022-07-16 20:35:25 DEBUG (Thread-3) [ynca.connection] > @IPOD:ARTIST=
+2022-07-16 20:35:25 DEBUG (Thread-3) [ynca.connection] > @IPOD:ALBUM=
+2022-07-16 20:35:25 DEBUG (Thread-3) [ynca.connection] > @IPOD:SONG=
+2022-07-16 20:35:25 DEBUG (Thread-4) [ynca.connection] < @IPOD:REPEAT=?
+2022-07-16 20:35:25 DEBUG (Thread-3) [ynca.connection] > @IPOD:REPEAT=Off
+2022-07-16 20:35:25 DEBUG (Thread-4) [ynca.connection] < @IPOD:SHUFFLE=?
+2022-07-16 20:35:25 DEBUG (Thread-3) [ynca.connection] > @IPOD:SHUFFLE=Off
+2022-07-16 20:35:25 DEBUG (Thread-4) [ynca.connection] < @SYS:VERSION=?
+2022-07-16 20:35:25 DEBUG (Thread-3) [ynca.connection] > @SYS:VERSION=1.80/2.01
+2022-07-16 20:35:25 DEBUG (SyncWorker_0) [ynca.subunit] Subunit Subunit.IPOD initialization done.
+2022-07-16 20:35:25 DEBUG (SyncWorker_0) [ynca.subunit] Subunit Subunit.IPODUSB initialization start.
+2022-07-16 20:35:25 DEBUG (Thread-4) [ynca.connection] < @IPODUSB:AVAIL=?
+2022-07-16 20:35:25 DEBUG (Thread-3) [ynca.connection] > @IPODUSB:AVAIL=Not Connected
+2022-07-16 20:35:25 DEBUG (Thread-4) [ynca.connection] < @IPODUSB:PLAYBACKINFO=?
+2022-07-16 20:35:25 DEBUG (Thread-3) [ynca.connection] > @IPODUSB:PLAYBACKINFO=Stop
+2022-07-16 20:35:25 DEBUG (Thread-4) [ynca.connection] < @IPODUSB:METAINFO=?
+2022-07-16 20:35:25 DEBUG (Thread-3) [ynca.connection] > @IPODUSB:ARTIST=
+2022-07-16 20:35:25 DEBUG (Thread-3) [ynca.connection] > @IPODUSB:ALBUM=
+2022-07-16 20:35:25 DEBUG (Thread-3) [ynca.connection] > @IPODUSB:SONG=
+2022-07-16 20:35:26 DEBUG (Thread-4) [ynca.connection] < @IPODUSB:REPEAT=?
+2022-07-16 20:35:26 DEBUG (Thread-3) [ynca.connection] > @IPODUSB:REPEAT=Off
+2022-07-16 20:35:26 DEBUG (Thread-4) [ynca.connection] < @IPODUSB:SHUFFLE=?
+2022-07-16 20:35:26 DEBUG (Thread-3) [ynca.connection] > @IPODUSB:SHUFFLE=Off
+2022-07-16 20:35:26 DEBUG (Thread-4) [ynca.connection] < @SYS:VERSION=?
+2022-07-16 20:35:26 DEBUG (Thread-3) [ynca.connection] > @SYS:VERSION=1.80/2.01
+2022-07-16 20:35:26 DEBUG (SyncWorker_0) [ynca.subunit] Subunit Subunit.IPODUSB initialization done.
+2022-07-16 20:35:26 DEBUG (SyncWorker_0) [ynca.subunit] Subunit Subunit.MAIN initialization start.
+2022-07-16 20:35:26 DEBUG (Thread-4) [ynca.connection] < @MAIN:AVAIL=?
+2022-07-16 20:35:26 DEBUG (Thread-3) [ynca.connection] > @MAIN:AVAIL=Not Ready
+2022-07-16 20:35:26 DEBUG (Thread-4) [ynca.connection] < @MAIN:PWR=?
+2022-07-16 20:35:26 DEBUG (Thread-3) [ynca.connection] > @MAIN:PWR=Standby
+2022-07-16 20:35:26 DEBUG (Thread-4) [ynca.connection] < @MAIN:BASIC=?
+2022-07-16 20:35:26 DEBUG (Thread-3) [ynca.connection] > @MAIN:PWR=Standby
+2022-07-16 20:35:26 DEBUG (Thread-3) [ynca.connection] > @MAIN:SLEEP=Off
+2022-07-16 20:35:26 DEBUG (Thread-3) [ynca.connection] > @MAIN:VOL=-34.0
+2022-07-16 20:35:26 DEBUG (Thread-3) [ynca.connection] > @MAIN:MUTE=Off
+2022-07-16 20:35:26 DEBUG (Thread-3) [ynca.connection] > @MAIN:INP=HDMI2
+2022-07-16 20:35:26 DEBUG (Thread-3) [ynca.connection] > @MAIN:STRAIGHT=Off
+2022-07-16 20:35:26 DEBUG (Thread-3) [ynca.connection] > @MAIN:ENHANCER=On
+2022-07-16 20:35:26 DEBUG (Thread-3) [ynca.connection] > @MAIN:SOUNDPRG=Standard
+2022-07-16 20:35:26 DEBUG (Thread-3) [ynca.connection] > @MAIN:3DCINEMA=Auto
+2022-07-16 20:35:26 DEBUG (Thread-3) [ynca.connection] > @MAIN:PUREDIRMODE=Off
+2022-07-16 20:35:26 DEBUG (Thread-3) [ynca.connection] > @MAIN:SPBASS=0.0
+2022-07-16 20:35:26 DEBUG (Thread-3) [ynca.connection] > @MAIN:SPTREBLE=0.0
+2022-07-16 20:35:26 DEBUG (Thread-3) [ynca.connection] > @MAIN:ADAPTIVEDRC=Off
+2022-07-16 20:35:26 DEBUG (Thread-4) [ynca.connection] < @MAIN:MAXVOL=?
+2022-07-16 20:35:26 DEBUG (Thread-3) [ynca.connection] > @MAIN:MAXVOL=0.0
+2022-07-16 20:35:26 DEBUG (Thread-4) [ynca.connection] < @MAIN:SCENENAME=?
+2022-07-16 20:35:26 DEBUG (Thread-3) [ynca.connection] > @MAIN:SCENE1NAME=BD/DVD Movie Viewing
+2022-07-16 20:35:26 DEBUG (Thread-3) [ynca.connection] > @MAIN:SCENE2NAME=TV Viewing
+2022-07-16 20:35:26 DEBUG (Thread-3) [ynca.connection] > @MAIN:SCENE3NAME=Mediacenter
+2022-07-16 20:35:26 DEBUG (Thread-3) [ynca.connection] > @MAIN:SCENE4NAME=Radio Listening
+2022-07-16 20:35:26 DEBUG (Thread-4) [ynca.connection] < @MAIN:ZONENAME=?
+2022-07-16 20:35:26 DEBUG (Thread-3) [ynca.connection] > @MAIN:ZONENAME=Main
+2022-07-16 20:35:26 DEBUG (Thread-4) [ynca.connection] < @SYS:VERSION=?
+2022-07-16 20:35:26 DEBUG (Thread-3) [ynca.connection] > @SYS:VERSION=1.80/2.01
+2022-07-16 20:35:26 DEBUG (SyncWorker_0) [ynca.subunit] Subunit Subunit.MAIN initialization done.
+2022-07-16 20:35:26 DEBUG (SyncWorker_0) [ynca.subunit] Subunit Subunit.NAPSTER initialization start.
+2022-07-16 20:35:27 DEBUG (Thread-4) [ynca.connection] < @NAPSTER:AVAIL=?
+2022-07-16 20:35:27 DEBUG (Thread-3) [ynca.connection] > @NAPSTER:AVAIL=Not Ready
+2022-07-16 20:35:27 DEBUG (Thread-4) [ynca.connection] < @NAPSTER:PLAYBACKINFO=?
+2022-07-16 20:35:27 DEBUG (Thread-3) [ynca.connection] > @NAPSTER:PLAYBACKINFO=Stop
+2022-07-16 20:35:27 DEBUG (Thread-4) [ynca.connection] < @NAPSTER:METAINFO=?
+2022-07-16 20:35:27 DEBUG (Thread-3) [ynca.connection] > @NAPSTER:ARTIST=
+2022-07-16 20:35:27 DEBUG (Thread-3) [ynca.connection] > @NAPSTER:ALBUM=
+2022-07-16 20:35:27 DEBUG (Thread-3) [ynca.connection] > @NAPSTER:SONG=
+2022-07-16 20:35:27 DEBUG (Thread-4) [ynca.connection] < @NAPSTER:REPEAT=?
+2022-07-16 20:35:27 DEBUG (Thread-3) [ynca.connection] > @NAPSTER:REPEAT=Off
+2022-07-16 20:35:27 DEBUG (Thread-4) [ynca.connection] < @NAPSTER:SHUFFLE=?
+2022-07-16 20:35:27 DEBUG (Thread-3) [ynca.connection] > @NAPSTER:SHUFFLE=On
+2022-07-16 20:35:27 DEBUG (Thread-4) [ynca.connection] < @SYS:VERSION=?
+2022-07-16 20:35:27 DEBUG (Thread-3) [ynca.connection] > @SYS:VERSION=1.80/2.01
+2022-07-16 20:35:27 DEBUG (SyncWorker_0) [ynca.subunit] Subunit Subunit.NAPSTER initialization done.
+2022-07-16 20:35:27 DEBUG (SyncWorker_0) [ynca.subunit] Subunit Subunit.NETRADIO initialization start.
+2022-07-16 20:35:27 DEBUG (Thread-4) [ynca.connection] < @NETRADIO:AVAIL=?
+2022-07-16 20:35:27 DEBUG (Thread-3) [ynca.connection] > @NETRADIO:AVAIL=Not Ready
+2022-07-16 20:35:27 DEBUG (Thread-4) [ynca.connection] < @NETRADIO:PLAYBACKINFO=?
+2022-07-16 20:35:27 DEBUG (Thread-3) [ynca.connection] > @NETRADIO:PLAYBACKINFO=Stop
+2022-07-16 20:35:27 DEBUG (Thread-4) [ynca.connection] < @NETRADIO:STATION=?
+2022-07-16 20:35:27 DEBUG (Thread-3) [ynca.connection] > @NETRADIO:STATION=
+2022-07-16 20:35:27 DEBUG (Thread-4) [ynca.connection] < @SYS:VERSION=?
+2022-07-16 20:35:27 DEBUG (Thread-3) [ynca.connection] > @SYS:VERSION=1.80/2.01
+2022-07-16 20:35:27 DEBUG (SyncWorker_0) [ynca.subunit] Subunit Subunit.NETRADIO initialization done.
+2022-07-16 20:35:27 DEBUG (SyncWorker_0) [ynca.subunit] Subunit Subunit.PC initialization start.
+2022-07-16 20:35:28 DEBUG (Thread-4) [ynca.connection] < @PC:AVAIL=?
+2022-07-16 20:35:28 DEBUG (Thread-3) [ynca.connection] > @PC:AVAIL=Not Ready
+2022-07-16 20:35:28 DEBUG (Thread-4) [ynca.connection] < @PC:PLAYBACKINFO=?
+2022-07-16 20:35:28 DEBUG (Thread-3) [ynca.connection] > @PC:PLAYBACKINFO=Stop
+2022-07-16 20:35:28 DEBUG (Thread-4) [ynca.connection] < @PC:METAINFO=?
+2022-07-16 20:35:28 DEBUG (Thread-3) [ynca.connection] > @PC:ARTIST=
+2022-07-16 20:35:28 DEBUG (Thread-3) [ynca.connection] > @PC:ALBUM=
+2022-07-16 20:35:28 DEBUG (Thread-3) [ynca.connection] > @PC:SONG=
+2022-07-16 20:35:28 DEBUG (Thread-4) [ynca.connection] < @PC:REPEAT=?
+2022-07-16 20:35:28 DEBUG (Thread-3) [ynca.connection] > @PC:REPEAT=Off
+2022-07-16 20:35:28 DEBUG (Thread-4) [ynca.connection] < @PC:SHUFFLE=?
+2022-07-16 20:35:28 DEBUG (Thread-3) [ynca.connection] > @PC:SHUFFLE=On
+2022-07-16 20:35:28 DEBUG (Thread-4) [ynca.connection] < @SYS:VERSION=?
+2022-07-16 20:35:28 DEBUG (Thread-3) [ynca.connection] > @SYS:VERSION=1.80/2.01
+2022-07-16 20:35:28 DEBUG (SyncWorker_0) [ynca.subunit] Subunit Subunit.PC initialization done.
+2022-07-16 20:35:28 DEBUG (SyncWorker_0) [ynca.subunit] Subunit Subunit.TUN initialization start.
+2022-07-16 20:35:28 DEBUG (Thread-4) [ynca.connection] < @TUN:AVAIL=?
+2022-07-16 20:35:28 DEBUG (Thread-3) [ynca.connection] > @TUN:AVAIL=Not Ready
+2022-07-16 20:35:28 DEBUG (Thread-4) [ynca.connection] < @TUN:BAND=?
+2022-07-16 20:35:28 DEBUG (Thread-3) [ynca.connection] > @TUN:BAND=FM
+2022-07-16 20:35:28 DEBUG (Thread-4) [ynca.connection] < @TUN:AMFREQ=?
+2022-07-16 20:35:28 DEBUG (Thread-3) [ynca.connection] > @TUN:AMFREQ=1080
+2022-07-16 20:35:28 DEBUG (Thread-4) [ynca.connection] < @TUN:FMFREQ=?
+2022-07-16 20:35:28 DEBUG (Thread-3) [ynca.connection] > @TUN:FMFREQ=90.40
+2022-07-16 20:35:29 DEBUG (Thread-4) [ynca.connection] < @SYS:VERSION=?
+2022-07-16 20:35:29 DEBUG (Thread-3) [ynca.connection] > @SYS:VERSION=1.80/2.01
+2022-07-16 20:35:29 DEBUG (SyncWorker_0) [ynca.subunit] Subunit Subunit.TUN initialization done.
+2022-07-16 20:35:29 DEBUG (SyncWorker_0) [ynca.subunit] Subunit Subunit.UAW initialization start.
+2022-07-16 20:35:29 DEBUG (Thread-4) [ynca.connection] < @UAW:AVAIL=?
+2022-07-16 20:35:29 DEBUG (Thread-3) [ynca.connection] > @UAW:AVAIL=Not Connected
+2022-07-16 20:35:29 DEBUG (Thread-4) [ynca.connection] < @SYS:VERSION=?
+2022-07-16 20:35:29 DEBUG (Thread-3) [ynca.connection] > @SYS:VERSION=1.80/2.01
+2022-07-16 20:35:29 DEBUG (SyncWorker_0) [ynca.subunit] Subunit Subunit.UAW initialization done.
+2022-07-16 20:35:29 DEBUG (SyncWorker_0) [ynca.subunit] Subunit Subunit.USB initialization start.
+2022-07-16 20:35:29 DEBUG (Thread-4) [ynca.connection] < @USB:AVAIL=?
+2022-07-16 20:35:29 DEBUG (Thread-3) [ynca.connection] > @USB:AVAIL=Not Connected
+2022-07-16 20:35:29 DEBUG (Thread-4) [ynca.connection] < @USB:PLAYBACKINFO=?
+2022-07-16 20:35:29 DEBUG (Thread-3) [ynca.connection] > @USB:PLAYBACKINFO=Stop
+2022-07-16 20:35:29 DEBUG (Thread-4) [ynca.connection] < @USB:METAINFO=?
+2022-07-16 20:35:29 DEBUG (Thread-3) [ynca.connection] > @USB:ARTIST=
+2022-07-16 20:35:29 DEBUG (Thread-3) [ynca.connection] > @USB:ALBUM=
+2022-07-16 20:35:29 DEBUG (Thread-3) [ynca.connection] > @USB:SONG=
+2022-07-16 20:35:29 DEBUG (Thread-4) [ynca.connection] < @USB:REPEAT=?
+2022-07-16 20:35:29 DEBUG (Thread-3) [ynca.connection] > @USB:REPEAT=Off
+2022-07-16 20:35:29 DEBUG (Thread-4) [ynca.connection] < @USB:SHUFFLE=?
+2022-07-16 20:35:29 DEBUG (Thread-3) [ynca.connection] > @USB:SHUFFLE=On
+2022-07-16 20:35:29 DEBUG (Thread-4) [ynca.connection] < @SYS:VERSION=?
+2022-07-16 20:35:29 DEBUG (Thread-3) [ynca.connection] > @SYS:VERSION=1.80/2.01
+2022-07-16 20:35:29 DEBUG (SyncWorker_0) [ynca.subunit] Subunit Subunit.USB initialization done.
+2022-07-16 20:35:29 DEBUG (SyncWorker_0) [ynca.subunit] Subunit Subunit.ZONE2 initialization start.
+2022-07-16 20:35:29 DEBUG (Thread-4) [ynca.connection] < @ZONE2:AVAIL=?
+2022-07-16 20:35:29 DEBUG (Thread-3) [ynca.connection] > @ZONE2:AVAIL=Not Ready
+2022-07-16 20:35:30 DEBUG (Thread-4) [ynca.connection] < @ZONE2:PWR=?
+2022-07-16 20:35:30 DEBUG (Thread-3) [ynca.connection] > @ZONE2:PWR=Standby
+2022-07-16 20:35:30 DEBUG (Thread-4) [ynca.connection] < @ZONE2:BASIC=?
+2022-07-16 20:35:30 DEBUG (Thread-3) [ynca.connection] > @ZONE2:PWR=Standby
+2022-07-16 20:35:30 DEBUG (Thread-3) [ynca.connection] > @ZONE2:SLEEP=Off
+2022-07-16 20:35:30 DEBUG (Thread-3) [ynca.connection] > @ZONE2:VOL=2.5
+2022-07-16 20:35:30 DEBUG (Thread-3) [ynca.connection] > @ZONE2:MUTE=Off
+2022-07-16 20:35:30 DEBUG (Thread-3) [ynca.connection] > @ZONE2:INP=PC
+2022-07-16 20:35:30 DEBUG (Thread-4) [ynca.connection] < @ZONE2:MAXVOL=?
+2022-07-16 20:35:30 DEBUG (Thread-3) [ynca.connection] > @ZONE2:MAXVOL=16.5
+2022-07-16 20:35:30 DEBUG (Thread-4) [ynca.connection] < @ZONE2:SCENENAME=?
+2022-07-16 20:35:30 DEBUG (Thread-3) [ynca.connection] > @RESTRICTED
+2022-07-16 20:35:30 DEBUG (Thread-4) [ynca.connection] < @ZONE2:ZONENAME=?
+2022-07-16 20:35:30 DEBUG (Thread-3) [ynca.connection] > @ZONE2:ZONENAME=Zone2   ß
+2022-07-16 20:35:30 DEBUG (Thread-4) [ynca.connection] < @SYS:VERSION=?
+2022-07-16 20:35:30 DEBUG (Thread-3) [ynca.connection] > @SYS:VERSION=1.80/2.01
+2022-07-16 20:35:30 DEBUG (SyncWorker_0) [ynca.subunit] Subunit Subunit.ZONE2 initialization done.

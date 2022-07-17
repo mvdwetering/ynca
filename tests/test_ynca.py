@@ -4,6 +4,7 @@ import pytest
 import ynca
 from ynca.bt import Bt
 from ynca.errors import YncaConnectionError, YncaInitializationFailedException
+from ynca.get_all_zone_inputs import FALLBACK_INPUTS
 from ynca.system import System
 from ynca.zone import Main
 
@@ -217,6 +218,9 @@ def test_initialize_minimal(connection):
         assert isinstance(y.SYS, System)
         assert y.SYS.version == "Version"
 
+        inputs = ynca.get_all_zone_inputs(y)
+        assert inputs == FALLBACK_INPUTS
+
         y.close()
 
         connection.close.assert_called_once()
@@ -307,7 +311,7 @@ def test_initialize_full(connection):
         assert y.SYS.version == "Version"
 
         assert isinstance(y.MAIN, Main)
-        assert y.MAIN.name == "MainZoneName"
+        assert y.MAIN.zonename == "MainZoneName"
         assert isinstance(y.BT, Bt)
         assert y.ZONE2 is None
         assert y.ZONE3 is None
@@ -359,7 +363,7 @@ def test_initialize_full_deprecated_receiver(connection):
         assert y.SYS.version == "Version"
 
         assert isinstance(y.MAIN, Main)
-        assert y.MAIN.name == "MainZoneName"
+        assert y.MAIN.zonename == "MainZoneName"
         assert isinstance(y.BT, Bt)
         assert y.ZONE2 is None
         assert y.ZONE3 is None

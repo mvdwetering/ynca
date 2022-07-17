@@ -5,7 +5,7 @@ import logging
 from typing import Dict
 
 from .connection import YncaConnection, YncaProtocolStatus
-from .constants import SoundPrg, Mute, Subunit
+from .constants import Mute, Subunit
 from .function_mixins import PlaybackFunctionMixin, PowerFunctionMixin
 from .helpers import number_to_string_with_stepsize
 from .subunit import SubunitBase
@@ -24,7 +24,7 @@ class ZoneBase(PowerFunctionMixin, PlaybackFunctionMixin, SubunitBase):
     def _reset_internal_state(self):
         self._max_volume = 16.5  # is 16.5 for zones where it is not configurable
         self._volume = None
-        self._scenes: Dict[str, str] = {}
+        self._scenenames: Dict[str, str] = {}
 
         self._attr_inp = None
         self._attr_mute = None
@@ -48,7 +48,7 @@ class ZoneBase(PowerFunctionMixin, PlaybackFunctionMixin, SubunitBase):
 
         if matches := re.match(r"SCENE(\d+)NAME", function_):
             scene_id = matches[1]
-            self._scenes[scene_id] = value
+            self._scenenames[scene_id] = value
         else:
             updated = False
 
@@ -63,7 +63,22 @@ class ZoneBase(PowerFunctionMixin, PlaybackFunctionMixin, SubunitBase):
     @property
     def name(self) -> str | None:
         """Get zone name"""
+        logger.warning(
+            "The 'name' attribute is deprecated and replaced with 'zonename' to better match the naming in the YNCA spec"
+        )
+        return self.zonename
+
+    @property
+    def zonename(self) -> str | None:
+        """Get zone name"""
         return self._attr_zonename
+
+    @zonename.setter
+    def zonename(self, zonename: str):
+        """Set zone name (0-9 characters)"""
+        if len(zonename) > 9:
+            raise ValueError("The provided name is too long, should be <= 9 characters")
+        self._put("ZONENAME", zonename)
 
     @property
     def mute(self) -> Mute | None:
@@ -131,14 +146,12 @@ class ZoneBase(PowerFunctionMixin, PlaybackFunctionMixin, SubunitBase):
         self._put("INP", value)
 
     @property
-    def soundprg(self) -> SoundPrg | None:
+    def soundprg(self) -> str | None:
         """Get the current DSP sound program"""
-        return (
-            SoundPrg(self._attr_soundprg) if self._attr_soundprg is not None else None
-        )
+        return self._attr_soundprg
 
     @soundprg.setter
-    def soundprg(self, value: SoundPrg):
+    def soundprg(self, value: str):
         """Set the DSP sound program"""
         self._put("SOUNDPRG", value)
 
@@ -153,13 +166,21 @@ class ZoneBase(PowerFunctionMixin, PlaybackFunctionMixin, SubunitBase):
         self._put("STRAIGHT", "On" if value is True else "Off")
 
     @property
+    def scenenames(self) -> Dict[str, str]:
+        """Get a dictionary with scene names where key, value = id, name"""
+        return dict(self._scenenames)
+
+    @property
     def scenes(self) -> Dict[str, str]:
         """Get the dictionary with scenes where key, value = id, name"""
-        return dict(self._scenes)
+        logger.warning(
+            "The 'scenes' attribute is deprecated and replaced with 'scene_names' to better match the naming in the YNCA spec"
+        )
+        return self.scenenames
 
     def activate_scene(self, scene_id: str):
         """Activate a scene"""
-        if scene_id not in self._scenes.keys():
+        if scene_id not in self._scenenames.keys():
             raise ValueError("Invalid scene ID")
         else:
             self._put("SCENE", f"Scene {scene_id}")

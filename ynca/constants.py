@@ -5,7 +5,12 @@ from enum import Enum
 class SoundPrg(str, Enum):
     HALL_IN_MUNICH = "Hall in Munich"
     HALL_IN_VIENNA = "Hall in Vienna"
+    HALL_IN_AMSTERDAM = "Hall in Amsterdam"
+    CHURCH_IN_FREIBURG = "Church in Freiburg"
+    CHURCH_IN_ROYAUMONT = "Church in Royaumont"
     CHAMBER = "Chamber"
+    VILLAGE_VANGUARD = "Village Vanguard"
+    WAREHOUSE_LOFT = "Warehouse Loft"
     CELLAR_CLUB = "Cellar Club"
     THE_ROXY_THEATRE = "The Roxy Theatre"
     THE_BOTTOM_LINE = "The Bottom Line"
@@ -13,6 +18,7 @@ class SoundPrg(str, Enum):
     ACTION_GAME = "Action Game"
     ROLEPLAYING_GAME = "Roleplaying Game"
     MUSIC_VIDEO = "Music Video"
+    RECITAL_OPERA = "Recital/Opera"
     STANDARD = "Standard"
     SPECTACLE = "Spectacle"
     SCI_FI = "Sci-Fi"
@@ -21,8 +27,9 @@ class SoundPrg(str, Enum):
     MONO_MOVIE = "Mono Movie"
     TWO_CH_STEREO = "2ch Stereo"
     SEVEN_CH_STEREO = "7ch Stereo"
-    SURROUND_DECODER = "Surround Decoder"
     NINE_CH_STEREO = "9ch Stereo"
+    SURROUND_DECODER = "Surround Decoder"
+    ALL_CH_STEREO = "All-Ch Stereo"  # Available on TSR-700
 
 
 class Mute(str, Enum):

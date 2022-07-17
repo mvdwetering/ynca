@@ -86,7 +86,7 @@ def test_initialize_minimal(connection, update_callback):
     assert s.version == "Version"
     assert s.pwr is None
     assert s.modelname is None
-    assert len(s.inputs.keys()) == 0
+    assert len(s.inp_names.keys()) == 0
 
 
 def test_initialize_full(connection, update_callback):
@@ -103,26 +103,26 @@ def test_initialize_full(connection, update_callback):
     assert s.modelname == "ModelName"
     assert s.pwr is False
 
-    assert len(s.inputs.keys()) == 19
-    assert s.inputs["PHONO"] == "InputPhono"
-    assert s.inputs["HDMI1"] == "InputHdmi1"
-    assert s.inputs["HDMI2"] == "InputHdmi2"
-    assert s.inputs["HDMI3"] == "InputHdmi3"
-    assert s.inputs["HDMI4"] == "InputHdmi4"
-    assert s.inputs["HDMI5"] == "InputHdmi5"
-    assert s.inputs["HDMI6"] == "InputHdmi6"
-    assert s.inputs["HDMI7"] == "InputHdmi7"
-    assert s.inputs["AV1"] == "InputAv1"
-    assert s.inputs["AV2"] == "InputAv2"
-    assert s.inputs["AV3"] == "InputAv3"
-    assert s.inputs["AV4"] == "InputAv4"
-    assert s.inputs["AV5"] == "InputAv5"
-    assert s.inputs["AV6"] == "InputAv6"
-    assert s.inputs["V-AUX"] == "InputVAux"
-    assert s.inputs["AUDIO1"] == "InputAudio1"
-    assert s.inputs["AUDIO2"] == "InputAudio2"
-    assert s.inputs["DOCK"] == "InputDock"
-    assert s.inputs["USB"] == "InputUsb"
+    assert len(s.inp_names.keys()) == 19
+    assert s.inp_names["PHONO"] == "InputPhono"
+    assert s.inp_names["HDMI1"] == "InputHdmi1"
+    assert s.inp_names["HDMI2"] == "InputHdmi2"
+    assert s.inp_names["HDMI3"] == "InputHdmi3"
+    assert s.inp_names["HDMI4"] == "InputHdmi4"
+    assert s.inp_names["HDMI5"] == "InputHdmi5"
+    assert s.inp_names["HDMI6"] == "InputHdmi6"
+    assert s.inp_names["HDMI7"] == "InputHdmi7"
+    assert s.inp_names["AV1"] == "InputAv1"
+    assert s.inp_names["AV2"] == "InputAv2"
+    assert s.inp_names["AV3"] == "InputAv3"
+    assert s.inp_names["AV4"] == "InputAv4"
+    assert s.inp_names["AV5"] == "InputAv5"
+    assert s.inp_names["AV6"] == "InputAv6"
+    assert s.inp_names["V-AUX"] == "InputVAux"
+    assert s.inp_names["AUDIO1"] == "InputAudio1"
+    assert s.inp_names["AUDIO2"] == "InputAudio2"
+    assert s.inp_names["DOCK"] == "InputDock"
+    assert s.inp_names["USB"] == "InputUsb"
 
 
 def test_registration(connection, initialized_system):

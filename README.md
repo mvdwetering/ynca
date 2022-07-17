@@ -63,7 +63,7 @@ sys = ynca_receiver.SYS
 main = ynca_receiver.MAIN
 
 print(sys.modelname) # Print the modelname of the system
-print(main.name) # Print the name of the main zone
+print(main.zonename) # Print the name of the main zone
 
 # The `get_all_zone_inputs` helper returns a dictionary of available inputs
 # with the key being the ID to be used for setting the input on a Zone subunit
