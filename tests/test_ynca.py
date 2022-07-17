@@ -307,7 +307,7 @@ def test_initialize_full(connection):
         assert y.SYS.version == "Version"
 
         assert isinstance(y.MAIN, Main)
-        assert y.MAIN.name == "MainZoneName"
+        assert y.MAIN.zonename == "MainZoneName"
         assert isinstance(y.BT, Bt)
         assert y.ZONE2 is None
         assert y.ZONE3 is None
@@ -359,7 +359,7 @@ def test_initialize_full_deprecated_receiver(connection):
         assert y.SYS.version == "Version"
 
         assert isinstance(y.MAIN, Main)
-        assert y.MAIN.name == "MainZoneName"
+        assert y.MAIN.zonename == "MainZoneName"
         assert isinstance(y.BT, Bt)
         assert y.ZONE2 is None
         assert y.ZONE3 is None

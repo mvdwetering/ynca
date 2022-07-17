@@ -129,7 +129,7 @@ def test_initialize_minimal(connection, update_callback):
     z.initialize()
 
     assert update_callback.call_count == 0
-    assert z.name == "ZoneName"
+    assert z.zonename == "ZoneName"
     assert z.pwr is None
     assert z.input is None
     assert z.volume is None
@@ -159,7 +159,7 @@ def test_initialize_full(connection, update_callback):
     assert z.mute is Mute.off
     assert z.straight is False
     assert z.soundprg == "Standard"
-    assert z.name == "ZoneName"
+    assert z.zonename == "ZoneName"
 
     assert len(z.scene_names.keys()) == 5
     assert z.scene_names["1"] == "Scene name 1"
@@ -296,6 +296,18 @@ def test_scene(connection, initialized_zone):
     # Updates from device
     connection.send_protocol_message(SUBUNIT, "SCENE3NAME", "New Name")
     assert initialized_zone.scene_names["3"] == "New Name"
+
+
+def test_zonename(connection, initialized_zone):
+    # Writing to device
+    initialized_zone.zonename = "new name"
+    connection.put.assert_called_with(SUBUNIT, "ZONENAME", "new name")
+    with pytest.raises(ValueError):
+        initialized_zone.zonename = "new name is too long"
+
+    # Updates from device
+    connection.send_protocol_message(SUBUNIT, "ZONENAME", "updated")
+    assert initialized_zone.zonename == "updated"
 
 
 # TODO: This seems generic and probably should be moved to the subunit test

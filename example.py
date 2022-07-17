@@ -58,7 +58,7 @@ if __name__ == "__main__":
     for subunit_id in ZONE_SUBUNIT_IDS:
         if zone := getattr(ynca_receiver, subunit_id, None):
             print("  --- {} ---".format(zone.id))
-            print(f"  {zone.name=}")
+            print(f"  {zone.zonename=}")
             print(f"  {zone.volume=}")
             print(f"  {zone.input=}")
 

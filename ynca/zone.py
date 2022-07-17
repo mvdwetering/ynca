@@ -63,7 +63,22 @@ class ZoneBase(PowerFunctionMixin, PlaybackFunctionMixin, SubunitBase):
     @property
     def name(self) -> str | None:
         """Get zone name"""
+        logger.warning(
+            "The 'name' attribute is deprecated and replaced with 'zonename' to better match the naming in the YNCA spec"
+        )
+        return self.zonename
+
+    @property
+    def zonename(self) -> str | None:
+        """Get zone name"""
         return self._attr_zonename
+
+    @zonename.setter
+    def zonename(self, zonename: str):
+        """Set zone name (0-9 characters)"""
+        if len(zonename) > 9:
+            raise ValueError("The provided name is too long, should be <= 9 characters")
+        self._put("ZONENAME", zonename)
 
     @property
     def mute(self) -> Mute | None:
