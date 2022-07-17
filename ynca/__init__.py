@@ -22,4 +22,6 @@ from .ynca import (
 )
 from .receiver_deprecated import Receiver
 
+from .modelinfo import get_modelinfo
+
 logging.getLogger(__name__).addHandler(logging.NullHandler())
