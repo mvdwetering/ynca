@@ -59,7 +59,7 @@ class YncaProtocol(serial.threaded.LineReader):
     def connection_lost(self, exc):
         self.connected = False
 
-        logger.debug("Connection closed/lost")
+        logger.debug("Connection closed/lost %s" % exc)
 
         # There seems to be no way to clear a queue so just read all and add the _EXIT command
         try:
@@ -68,9 +68,6 @@ class YncaProtocol(serial.threaded.LineReader):
         except queue.Empty:
             self._send_queue.put("_EXIT")
         self._send_thread.join(2)
-
-        if exc:
-            logger.error(exc)
 
         if self.disconnect_callback:
             self.disconnect_callback()
