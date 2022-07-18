@@ -127,13 +127,26 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
                 "STRAIGHT",
                 "ENHANCER",
                 "SOUNDPRG",
+                "TONEBASS",
+                "TONETREBLE",
                 "3DCINEMA",
                 "PUREDIRMODE",
                 "SPBASS",
                 "SPTREBLE",
+                "EXBASS",
                 "ADAPTIVEDRC",
+                "DIALOGUELVL",
+                "DTSDIALOGUECONTROL",
             ]:
                 self.handle_get(subunit, basic_function, skip_error_response=True)
+            return
+        elif function == "METAINFO":
+            for metainfo_function in [
+                "ARTIST",
+                "ALBUM",
+                "SONG",
+            ]:
+                self.handle_get(subunit, metainfo_function, skip_error_response=True)
             return
         elif function == "SCENENAME":
             response_sent = False
@@ -147,7 +160,7 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
                     self.handle_get(subunit, key)
                     response_sent = True
             if not response_sent:
-                self.write_line(RESTRICTED)
+                self.write_line(UNDEFINED)
             return
 
         # Standard handling
@@ -258,9 +271,9 @@ class YncaServer(socketserver.TCPServer):
             self.store.add_data("SYS", "VERSION", "Version")
             self.store.add_data("MAIN", "AVAIL", "Not ready")
             self.store.add_data("MAIN", "VOL", "0.0")
-            self.store.add_data("MAIN", "ZONENAME", "ZoneName")
+            self.store.add_data("MAIN", "ZONENAME", "MainZone")
             self.store.add_data("ZONE2", "AVAIL", "Not ready")
-            self.store.add_data("ZONE2", "ZONENAME", "ZoneName")
+            self.store.add_data("ZONE2", "ZONENAME", "Zone2Name")
 
 
 def main(args):
