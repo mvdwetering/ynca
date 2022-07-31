@@ -10,7 +10,16 @@ from .connection import YncaConnection, YncaProtocol, YncaProtocolStatus
 from .constants import Subunit
 from .errors import YncaConnectionError, YncaInitializationFailedException
 from .helpers import all_subclasses
-from .mediaplayback_subunits import Ipod, IpodUsb, Napster, Pc, Rhap, Spotify, Usb, Server
+from .mediaplayback_subunits import (
+    Ipod,
+    IpodUsb,
+    Napster,
+    Pc,
+    Rhap,
+    Spotify,
+    Usb,
+    Server,
+)
 from .netradio import NetRadio
 from .pandora import Pandora
 from .sirius import Sirius, SiriusIr, SiriusXm
@@ -21,6 +30,7 @@ from .uaw import Uaw
 from .zone import Main, Zone2, Zone3, Zone4
 
 logger = logging.getLogger(__name__)
+
 
 class Ynca:
     def __init__(self, serial_url: str, disconnect_callback: Callable[[], None] = None):
@@ -121,12 +131,14 @@ class Ynca:
 
     def initialize(self):
         """
-        Sets up a connection to the device and initializes the Receiver.
+        Sets up a connection to the device and initializes the Ynca API.
         This call takes several seconds.
 
         If initialize was successful the client should call the `close()`
-        method when done with the Receiver object to cleanup.
+        method when done with the Ynca API object to cleanup.
         """
+        assert self._connection == None, "Can only initialize once!"
+
         is_initialized = False
 
         connection = YncaConnection.create_from_serial_url(self._serial_url)
@@ -155,7 +167,7 @@ class Ynca:
         Cleanup the internal resources.
         Safe to be called at any time.
 
-        Receiver object should _not_ be reused after being closed!
+        Ynca object should _not_ be reused after being closed!
         """
         # Convert to list to avoid issues when deleting while iterating
         for id in list(self._subunits.keys()):
