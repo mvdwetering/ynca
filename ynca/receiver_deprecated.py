@@ -11,7 +11,7 @@ class Receiver(Ynca):
     """
     Receiver class has been deprecated and replaced by the Ynca class.
     The Ynca class is basically a renamed Receiver without the "inputs" method which does not exist in the YNCA API.
-    The inputs method on the Receiver class has been replaced by the "get_all_zone_inputs" helper function.
+    The inputs method on the Receiver class has been replaced by the "get_inputinfo_list" helper function.
     """
 
     def __init__(self, serial_url: str, disconnect_callback: Callable[[], None] = None):
@@ -21,7 +21,7 @@ class Receiver(Ynca):
     @property
     def inputs(self) -> Dict[str, str]:
         logging.warning(
-            "This method is deprecated. Use 'get_all_zone_inputs' helper function instead."
+            "This method is deprecated. Use 'get_inputinfo_list' helper function instead."
         )
 
         return get_all_zone_inputs(self)

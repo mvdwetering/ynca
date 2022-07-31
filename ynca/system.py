@@ -68,7 +68,7 @@ class System(PowerFunctionMixin, SubunitBase):
 
     @property
     def inp_names(self) -> Dict[str, str]:
-        """Get input names"""
+        """Get input names, dictionary of INP-id,INPNAME"""
         return dict(self._inp_names)
 
     @property

@@ -10,7 +10,7 @@ from ynca import (
     Mute,
     Subunit,
     YncaException,
-    get_all_zone_inputs,
+    get_inputinfo_list,
 )
 
 ZONE_SUBUNIT_IDS = [Subunit.MAIN, Subunit.ZONE2, Subunit.ZONE3, Subunit.ZONE4]
@@ -63,8 +63,10 @@ if __name__ == "__main__":
             print(f"  {zone.input=}")
 
     print("Inputs:")
-    for id, name in get_all_zone_inputs(ynca_receiver).items():
-        print(f"  {id}: {name}")
+    print("  subunit: inp / name")
+    print("  -------------------")
+    for inputinfo in get_inputinfo_list(ynca_receiver):
+        print(f"  {inputinfo.subunit}: {inputinfo.input} / {inputinfo.name}")
 
     # Set loglevel to debug so you can see the commands
     # sent because of the statements below

@@ -16,7 +16,7 @@ from .errors import (
     YncaConnectionFailed,
     YncaInitializationFailedException,
 )
-from .get_all_zone_inputs import get_all_zone_inputs
+from .get_all_zone_inputs import get_all_zone_inputs, get_inputinfo_list
 from .ynca import (
     Ynca,
 )

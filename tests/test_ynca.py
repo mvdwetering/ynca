@@ -218,8 +218,9 @@ def test_initialize_minimal(connection):
         assert isinstance(y.SYS, System)
         assert y.SYS.version == "Version"
 
-        inputs = ynca.get_all_zone_inputs(y)
-        assert inputs == FALLBACK_INPUTS
+        inputs = ynca.get_inputinfo_list(y)
+        assert sorted([inp.input for inp in inputs]) == sorted(FALLBACK_INPUTS.keys())
+        assert sorted([inp.name for inp in inputs]) == sorted(FALLBACK_INPUTS.values())
 
         y.close()
 
@@ -297,12 +298,14 @@ def test_initialize_full(connection):
         y = ynca.Ynca("serial_url")
         y.initialize()
 
-        inputs = ynca.get_all_zone_inputs(y)
+        inputs = ynca.get_inputinfo_list(y)
 
-        assert len(inputs.keys()) == 3
-        assert inputs["ONE"] == "InputOne"
-        assert inputs["TWO"] == "InputTwo"
-        assert inputs["Bluetooth"] == "Bluetooth"
+        assert len(inputs) == 3
+        assert [inp for inp in inputs if inp.input == "ONE"][0].name == "InputOne"
+        assert [inp for inp in inputs if inp.input == "TWO"][0].name == "InputTwo"
+        assert [inp for inp in inputs if inp.input == "Bluetooth"][
+            0
+        ].name == "Bluetooth"
 
         assert len(y._subunits.keys()) == 3
 

@@ -22,7 +22,7 @@ This package contains:
 
 The Ynca class is exposing the YNCA API as defined in the specification and allows to connect to devices supporting that API.
 
-### Get_all_zone_inputs helper function
+### get_inputinfo_list _list helper function
 
 This helper gets a list of all the inputs available on the device from the Ynca API to be used with the inputs on the Zone subunits.
 It is provided as a convenience because it is a bit tricky to build that list.
@@ -69,13 +69,15 @@ main = ynca_receiver.MAIN
 print(sys.modelname) # Print the modelname of the system
 print(main.zonename) # Print the name of the main zone
 
-# The `get_all_zone_inputs` helper returns a dictionary of available inputs
-# with the key being the ID to be used for setting the input on a Zone subunit
-# and the value the friendly name (user provided one if available).
-# Note that not all inputs might be available to all zones, but
+# The `get_inputinfo_list` helper returns a list of available inputs.
+# It has the `input` to be used with the INP function in YNCA,
+# `subunit` if the input is associated with a subunit, e.g. Tuner/TUN
+# and `name ` with user provided name if available, otherwise `input`.
+#
+# Note that not all inputs will be available to all zones, but
 # it is not possible to derive this from the API
-for id, name in get_all_zone_inputs(ynca_receiver).items():
-    print(f"input {id}: {name}")
+for input_info in get_inputinfo_list(ynca_receiver).items():
+    print(f"{input_info.subunit=}, {input_info.input=}, {input_info.name=}")
 
 # To get notifications when something changes register callback with the subunit
 # Note that callbacks are called from a different thread and also should not block for too long.

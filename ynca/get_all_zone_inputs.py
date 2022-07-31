@@ -1,7 +1,11 @@
-from typing import Dict, cast
+from dataclasses import dataclass
+from typing import Dict, List, Optional, cast
+import logging
 from .subunit import Subunit
 from .system import System
 from .ynca import Ynca
+
+logger = logging.getLogger(__name__)
 
 # Map subunits to input names, this is used for discovering what inputs are available
 # Inputs missing because unknown what subunit they map to: NET
@@ -48,12 +52,55 @@ FALLBACK_INPUTS = {
     "AUDIO4": "AUDIO4",
     "PHONO": "PHONO",
     "MULTI CH": "MULTI CH",
-    "VAUX": "V-AUX",
+    "V-AUX": "V-AUX",
 }
+
+
+@dataclass
+class InputInfo:
+    subunit: Optional[Subunit] = None
+    input: str = ""
+    name: str = ""
+
+
+def get_inputinfo_list(ynca: Ynca) -> List[InputInfo]:
+    """
+    Returns a list of all available inputs that can be used as input on the Zone subunits.
+    Note that this does not mean that every zone can/will support all of the inputs.
+    Typically the MAIN will support all inputs, the other zones less.
+    It is not possible to determine that mapping from the API.
+
+    Key is the value to use for `input`,
+    Value is the user given name if available, otherwise input name.
+
+    For receivers that do _not_ respond to INPNAME a fallback list of inputs is returned containing all known options
+    """
+    inputs: List[InputInfo] = []
+
+    # There are internal inputs provided by subunits
+    # for example the "Tuner" input is provided by the TUN subunit
+    for subunit in SUBUNIT_INPUT_MAPPINGS.keys():
+        if getattr(ynca, subunit, None):
+            input_id = SUBUNIT_INPUT_MAPPINGS[subunit]
+            inputs.append(InputInfo(subunit, input_id, input_id))
+
+    # The SYS subunit has the externally connectable inputs like HDMI1, AV1 etc...
+    # try to detect which ones are available by looking at the INPNAMEs
+    # Do this after subunits because USB and DOCK can be renamed
+    if ynca.SYS:
+        inp_names = cast(System, ynca._subunits[Subunit.SYS]).inp_names
+        if len(inp_names) == 0:
+            inp_names = FALLBACK_INPUTS
+        for input_id, input_name in inp_names.items():
+            inputs.append(InputInfo(None, input_id, input_name))
+
+    return inputs
 
 
 def get_all_zone_inputs(ynca: Ynca) -> Dict[str, str]:
     """
+    This method is deprecated, use get_inputinfo_list instead
+
     Returns a dictionary of all available inputs that can be used as
     input on the Zone subunits. Note that this does not mean that every zone
     can/will support all of the inputs. Typically the MAIN will support all
@@ -64,6 +111,7 @@ def get_all_zone_inputs(ynca: Ynca) -> Dict[str, str]:
 
     For receivers that do _not_ respond to INPNAME a fallback list of inputs is returned containing all known options
     """
+    logger.warning("get_all_zone_inputs is deprecated, use get_inputinfo_list instead")
     inputs = {}
 
     # There are internal inputs provided by subunits
