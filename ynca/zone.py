@@ -138,11 +138,23 @@ class ZoneBase(PowerFunctionMixin, PlaybackFunctionMixin, SubunitBase):
     @property
     def input(self) -> str:
         """Get current input"""
+        logger.warning("zone.input is deprecated, use zone.inp instead")
         return self._attr_inp
 
     @input.setter
     def input(self, value: str):
         """Set input"""
+        logger.warning("zone.input is deprecated, use zone.inp instead")
+        self._put("INP", value)
+
+    @property
+    def inp(self) -> str:
+        """Get current inp"""
+        return self._attr_inp
+
+    @inp.setter
+    def inp(self, value: str):
+        """Set inp"""
         self._put("INP", value)
 
     @property

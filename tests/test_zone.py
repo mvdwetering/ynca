@@ -253,12 +253,12 @@ def test_volume(connection, initialized_zone):
 
 def test_input(connection, initialized_zone):
     # Writing to device
-    initialized_zone.input = "Input"
+    initialized_zone.inp = "Input"
     connection.put.assert_called_with(SUBUNIT, "INP", "Input")
 
     # Updates from device
     connection.send_protocol_message(SUBUNIT, "INP", "NewInput")
-    assert initialized_zone.input == "NewInput"
+    assert initialized_zone.inp == "NewInput"
 
 
 def test_soundprg(connection, initialized_zone):

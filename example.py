@@ -60,7 +60,7 @@ if __name__ == "__main__":
             print("  --- {} ---".format(zone.id))
             print(f"  {zone.zonename=}")
             print(f"  {zone.volume=}")
-            print(f"  {zone.input=}")
+            print(f"  {zone.inp=}")
 
     print("Inputs:")
     print("  subunit: inp / name")
