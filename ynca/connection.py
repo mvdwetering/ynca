@@ -1,10 +1,13 @@
+from __future__ import annotations
+
+import collections
 import logging
 import queue
 import re
 import threading
 import time
 from enum import Enum
-from typing import Callable, Optional, Set
+from typing import Callable, List, Optional, Set
 
 import serial  # type: ignore
 import serial.threaded  # type: ignore
@@ -12,6 +15,17 @@ import serial.threaded  # type: ignore
 from .errors import YncaConnectionError, YncaConnectionFailed
 
 logger = logging.getLogger(__name__)
+
+
+class RingBuffer:
+    def __init__(self, size):
+        self._buffer = collections.deque(maxlen=size)
+
+    def add(self, item: str):
+        self._buffer.append(item)
+
+    def get_buffer(self) -> List[str]:
+        return list(self._buffer)
 
 
 class YncaProtocolStatus(Enum):
@@ -37,6 +51,7 @@ class YncaProtocol(serial.threaded.LineReader):
         self._last_sent_command = None
         self.connected = False
         self._keep_alive_pending = False
+        self._communication_log_buffer: RingBuffer = RingBuffer(0)
         self.num_commands_sent = 0
 
     def connection_made(self, transport):
@@ -88,6 +103,7 @@ class YncaProtocol(serial.threaded.LineReader):
 
         match = re.match(r"@(?P<subunit>.+?):(?P<function>.+?)=(?P<value>.*)", line)
         if match is not None:
+            self._communication_log_buffer.add(f"Received: {line}")
             subunit = match.group("subunit")
             function = match.group("function")
             value = match.group("value")
@@ -121,6 +137,7 @@ class YncaProtocol(serial.threaded.LineReader):
 
                 if not stop:
                     logger.debug("< %s", message)
+                    self._communication_log_buffer.add(f"Send: {message}")
 
                     self._last_sent_command = message
                     self.write_line(message)
@@ -138,24 +155,35 @@ class YncaProtocol(serial.threaded.LineReader):
     def get(self, subunit, funcname):
         self.put(subunit, funcname, "?")
 
+    def set_communication_log_size(self, size: int):
+        """
+        Set the amount of items to track in the communication log buffer.
+        Setting a new size will discard existing items.
+        """
+        self._communication_log_buffer = RingBuffer(size)
+
+    def get_communication_log_items(self) -> List[str]:
+        """
+        Get a list of logged communication items.
+        """
+        return self._communication_log_buffer.get_buffer()
+
 
 class YncaConnection:
     @classmethod
-    def create_from_serial_url(cls, serial_url):
+    def create_from_serial_url(cls, serial_url: str):
         return cls(serial_url)
 
-    def __init__(
-        self,
-        serial_url: str,
-    ):
+    def __init__(self, serial_url: str):
         """Instantiate a YncaConnection
 
-        serial_url -- Can be a devicename (e.g. /dev/ttyUSB0 or COM3),
-                      but also any of supported url handlers by pyserial
-                      https://pyserial.readthedocs.io/en/latest/url_handlers.html
-                      This allows to setup IP connections with socket://ip:50000
-                      or select a specific usb-2-serial with hwgrep:// which is
-                      useful when the links to ttyUSB# change randomly.
+        serial_url:
+            Can be a devicename (e.g. /dev/ttyUSB0 or COM3),
+            but also any of supported url handlers by pyserial
+            https://pyserial.readthedocs.io/en/latest/url_handlers.html
+            This allows to setup IP connections with socket://ip:50000
+            or select a specific usb-2-serial with hwgrep:// which is
+            useful when the links to ttyUSB# change randomly.
         """
         self._port = serial_url
         self._serial = None
@@ -182,7 +210,11 @@ class YncaConnection:
         for callback in self._message_callbacks:
             callback(status, subunit, function_, value)
 
-    def connect(self, disconnect_callback: Callable[[], None] = None):
+    def connect(
+        self,
+        disconnect_callback: Callable[[], None] = None,
+        communication_log_size: int = 0,
+    ):
         try:
             self._serial = serial.serial_for_url(self._port)
             self._readerthread = serial.threaded.ReaderThread(
@@ -198,6 +230,7 @@ class YncaConnection:
         if self._protocol:
             self._protocol.message_callback = self._call_registered_message_callbacks
             self._protocol.disconnect_callback = disconnect_callback
+            self._protocol.set_communication_log_size(communication_log_size)
 
     def close(self):
         # Disconnect callback is for unexpected disconnects
@@ -223,3 +256,7 @@ class YncaConnection:
     @property
     def num_commands_sent(self):
         return self._protocol.num_commands_sent
+
+    def get_communication_log_items(self) -> List[str]:
+        """Get a list of logged communication items."""
+        return self._protocol.get_communication_log_items() if self._protocol else []

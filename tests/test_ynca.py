@@ -159,7 +159,7 @@ def test_check_connection_check_success(connection):
 
         disconnect_callback = mock.MagicMock()
 
-        y = ynca.Ynca("serial_url", disconnect_callback)
+        y = ynca.Ynca("serial_url", disconnect_callback, 123)
         modelname = y.connection_check()
         assert modelname == "ModelName"
 

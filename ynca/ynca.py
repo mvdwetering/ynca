@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import logging
 import threading
-from typing import Callable, Dict, Optional, Set, Type, cast
+from typing import Callable, Dict, List, Optional, Set, Type, cast
 
 from .airplay import Airplay
 from .bt import Bt
@@ -33,13 +33,36 @@ logger = logging.getLogger(__name__)
 
 
 class Ynca:
-    def __init__(self, serial_url: str, disconnect_callback: Callable[[], None] = None):
-        """Create a Receiver"""
+    def __init__(
+        self,
+        serial_url: str,
+        disconnect_callback: Callable[[], None] = None,
+        communication_log_size: int = 0,
+    ):
+        """
+        Create a YNCA API instance
+
+        serial_url:
+            Can be a devicename (e.g. /dev/ttyUSB0 or COM3),
+            but also any of supported url handlers by pyserial
+            https://pyserial.readthedocs.io/en/latest/url_handlers.html
+            This allows to setup IP connections with socket://ip:50000
+            or select a specific usb-2-serial with hwgrep:// which is
+            useful when the links to ttyUSB# change randomly.
+
+        disconnect_callback:
+            Callable that gets called when the connection gets disconnected.
+
+        communication_log_size:
+            Amount of communication items to log. Useful for debugging.
+            Get the logged items with the `get_communication_log_items` method
+        """
         self._serial_url = serial_url
         self._connection: Optional[YncaConnection] = None
         self._available_subunits: Set = set()
         self._initialized_event = threading.Event()
         self._disconnect_callback = disconnect_callback
+        self._communication_log_size = communication_log_size
 
         # This is the list of instantiated Subunit classes
         self._subunits: Dict[Subunit, Type[SubunitBase]] = {}
@@ -112,7 +135,7 @@ class Ynca:
 
         try:
             connection = YncaConnection.create_from_serial_url(self._serial_url)
-            connection.connect(self._disconnect_callback)
+            connection.connect(self._disconnect_callback, self._communication_log_size)
             connection.register_message_callback(_connection_check_message_received)
             connection.get(Subunit.SYS, "MODELNAME")
 
@@ -132,7 +155,7 @@ class Ynca:
     def initialize(self):
         """
         Sets up a connection to the device and initializes the Ynca API.
-        This call takes several seconds.
+        This call takes quite a while (~10 seocnds on a simple 2 zone receiver).
 
         If initialize was successful the client should call the `close()`
         method when done with the Ynca API object to cleanup.
@@ -142,7 +165,7 @@ class Ynca:
         is_initialized = False
 
         connection = YncaConnection.create_from_serial_url(self._serial_url)
-        connection.connect(self._disconnect_callback)
+        connection.connect(self._disconnect_callback, self._communication_log_size)
         self._connection = connection
 
         try:
@@ -161,6 +184,12 @@ class Ynca:
 
         if subunit == Subunit.SYS and function_ == "VERSION":
             self._initialized_event.set()
+
+    def get_communication_log_items(self) -> List[str]:
+        """Get a list of logged communication items."""
+        return (
+            self._connection.get_communication_log_items() if self._connection else []
+        )
 
     def close(self):
         """
