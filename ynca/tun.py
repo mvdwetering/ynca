@@ -8,8 +8,6 @@ from .function_mixins import FunctionMixinBase
 from .helpers import number_to_string_with_stepsize
 from .subunit import SubunitBase
 
-logger = logging.getLogger(__name__)
-
 
 class TunerFunctionMixin(FunctionMixinBase):
 

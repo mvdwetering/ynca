@@ -4,8 +4,6 @@ from typing import Optional, List
 
 from .constants import Repeat, Playback, PlaybackInfo
 
-logger = logging.getLogger(__name__)
-
 
 class FunctionMixinBase:
     """

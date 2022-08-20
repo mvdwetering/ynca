@@ -5,8 +5,6 @@ import sys
 
 from .connection import YncaConnection
 
-logger = logging.getLogger(__name__)
-
 
 def terminal(serial_url: str):
     """

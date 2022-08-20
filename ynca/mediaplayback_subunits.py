@@ -11,8 +11,6 @@ from .function_mixins import (
 )
 from .subunit import SubunitBase
 
-logger = logging.getLogger(__name__)
-
 
 # A number of subunits have the same featureset
 # so make a common base that only needs to be tested once

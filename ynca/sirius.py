@@ -12,8 +12,6 @@ from .function_mixins import (
 )
 from .subunit import SubunitBase
 
-logger = logging.getLogger(__name__)
-
 
 class ChannelnameFunctionMixin(FunctionMixinBase):
 
