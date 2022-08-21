@@ -1,6 +1,8 @@
 """Misc constants"""
 from enum import Enum
 
+MIN_VOLUME = -80.5  # Minimum volume value for receivers
+
 
 class SoundPrg(str, Enum):
     HALL_IN_MUNICH = "Hall in Munich"

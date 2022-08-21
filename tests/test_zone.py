@@ -132,9 +132,8 @@ def test_initialize_minimal(connection, update_callback):
     assert z.zonename == "ZoneName"
     assert z.pwr is None
     assert z.input is None
-    assert z.volume is None
-    assert z.max_volume == 16.5
-    assert z.min_volume == -80.5
+    assert z.vol is None
+    assert z.maxvol == 16.5
     assert z.mute is None
     assert z.straight is None
     assert z.soundprg is None
@@ -153,9 +152,8 @@ def test_initialize_full(connection, update_callback):
     assert update_callback.call_count == 1
     assert z.pwr is False
     assert z.input == "HDMI1"
-    assert z.volume == -30.0
-    assert z.max_volume == 1.2
-    assert z.min_volume == -80.5
+    assert z.vol == -30.0
+    assert z.maxvol == 1.2
     assert z.mute is Mute.off
     assert z.straight is False
     assert z.soundprg == "Standard"
@@ -195,60 +193,58 @@ def test_volume(connection, initialized_zone):
     # Writing to device
 
     # Positive with step rounding
-    initialized_zone.volume = 0
+    initialized_zone.vol = 0
     connection.put.assert_called_with(SUBUNIT, "VOL", "0.0")
-    initialized_zone.volume = 0.1
+    initialized_zone.vol = 0.1
     connection.put.assert_called_with(SUBUNIT, "VOL", "0.0")
-    initialized_zone.volume = 0.4
+    initialized_zone.vol = 0.4
     connection.put.assert_called_with(SUBUNIT, "VOL", "0.5")
 
     # Negative with step rounding
-    initialized_zone.volume = -5
+    initialized_zone.vol = -5
     connection.put.assert_called_with(SUBUNIT, "VOL", "-5.0")
-    initialized_zone.volume = -0.5
+    initialized_zone.vol = -0.5
     connection.put.assert_called_with(SUBUNIT, "VOL", "-0.5")
-    initialized_zone.volume = -0.4
+    initialized_zone.vol = -0.4
     connection.put.assert_called_with(SUBUNIT, "VOL", "-0.5")
-    initialized_zone.volume = -0.1
+    initialized_zone.vol = -0.1
     connection.put.assert_called_with(SUBUNIT, "VOL", "0.0")
 
     # Out of range
     with pytest.raises(ValueError):
-        initialized_zone.volume = initialized_zone.min_volume - 1
-    with pytest.raises(ValueError):
-        initialized_zone.volume = initialized_zone.max_volume + 1
+        initialized_zone.vol = initialized_zone.maxvol + 1
 
     # Up
-    initialized_zone.volume_up()
+    initialized_zone.vol_up()
     connection.put.assert_called_with(SUBUNIT, "VOL", "Up")
-    initialized_zone.volume_up(1)
+    initialized_zone.vol_up(1)
     connection.put.assert_called_with(SUBUNIT, "VOL", "Up 1 dB")
-    initialized_zone.volume_up(2)
+    initialized_zone.vol_up(2)
     connection.put.assert_called_with(SUBUNIT, "VOL", "Up 2 dB")
-    initialized_zone.volume_up(5)
+    initialized_zone.vol_up(5)
     connection.put.assert_called_with(SUBUNIT, "VOL", "Up 5 dB")
-    initialized_zone.volume_up(50)
+    initialized_zone.vol_up(50)
     connection.put.assert_called_with(SUBUNIT, "VOL", "Up")
 
     # Down
-    initialized_zone.volume_down()
+    initialized_zone.vol_down()
     connection.put.assert_called_with(SUBUNIT, "VOL", "Down")
-    initialized_zone.volume_down(1)
+    initialized_zone.vol_down(1)
     connection.put.assert_called_with(SUBUNIT, "VOL", "Down 1 dB")
-    initialized_zone.volume_down(2)
+    initialized_zone.vol_down(2)
     connection.put.assert_called_with(SUBUNIT, "VOL", "Down 2 dB")
-    initialized_zone.volume_down(5)
+    initialized_zone.vol_down(5)
     connection.put.assert_called_with(SUBUNIT, "VOL", "Down 5 dB")
-    initialized_zone.volume_down(50)
+    initialized_zone.vol_down(50)
     connection.put.assert_called_with(SUBUNIT, "VOL", "Down")
 
     # Updates from device
     connection.send_protocol_message(SUBUNIT, "VOL", "0.0")
-    assert initialized_zone.volume == 0
+    assert initialized_zone.vol == 0
     connection.send_protocol_message(SUBUNIT, "VOL", "10.0")
-    assert initialized_zone.volume == 10
+    assert initialized_zone.vol == 10
     connection.send_protocol_message(SUBUNIT, "VOL", "-10.0")
-    assert initialized_zone.volume == -10
+    assert initialized_zone.vol == -10
 
 
 def test_input(connection, initialized_zone):

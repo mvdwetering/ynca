@@ -5,7 +5,7 @@ import logging
 from typing import Dict
 
 from .connection import YncaConnection, YncaProtocolStatus
-from .constants import Mute, Subunit
+from .constants import Mute, Subunit, MIN_VOLUME
 from .function_mixins import PlaybackFunctionMixin, PowerFunctionMixin
 from .helpers import number_to_string_with_stepsize
 from .subunit import SubunitBase
@@ -22,8 +22,8 @@ class ZoneBase(PowerFunctionMixin, PlaybackFunctionMixin, SubunitBase):
         self._reset_internal_state()
 
     def _reset_internal_state(self):
-        self._max_volume = 16.5  # is 16.5 for zones where it is not configurable
-        self._volume = None
+        self._maxvol = 16.5  # is 16.5 for zones where it is not configurable
+        self._vol = None
         self._scenenames: Dict[str, str] = {}
 
         self._attr_inp = None
@@ -55,16 +55,16 @@ class ZoneBase(PowerFunctionMixin, PlaybackFunctionMixin, SubunitBase):
         return updated
 
     def _handle_vol(self, value: str):
-        self._volume = float(value)
+        self._vol = float(value)
 
     def _handle_maxvol(self, value: str):
-        self._max_volume = float(value)
+        self._maxvol = float(value)
 
     @property
     def name(self) -> str | None:
         """Get zone name"""
         logger.warning(
-            "The 'name' attribute is deprecated and replaced with 'zonename' to better match the naming in the YNCA spec"
+            "The 'name' attribute is deprecated and replaced with 'zonename' to match the naming in the YNCA spec"
         )
         return self.zonename
 
@@ -92,30 +92,65 @@ class ZoneBase(PowerFunctionMixin, PlaybackFunctionMixin, SubunitBase):
 
     @property
     def max_volume(self) -> float | None:
-        """Get maximum volume in dB"""
-        return self._max_volume
+        logger.warning(
+            "max_volume has been deprecated and replaced with maxvol to match the YNCA API naming"
+        )
+        return self.maxvol
+
+    @property
+    def maxvol(self) -> float | None:
+        """
+        Get maximum volume supported in dB
+
+        Note that the API provides no way to retrieve MinVol
+        this seems to be -80.5 for all zones
+        """
+        return self._maxvol
 
     @property
     def min_volume(self) -> float:
         """Get minimum volume in dB"""
-        return -80.5  # Seems to be fixed and the same for all zones
+        logger.warning(
+            "min_volume is deprecated and will be removed in the next major release. Hardcode it as -80.5"
+        )
+        return MIN_VOLUME
 
     @property
     def volume(self) -> float:
-        """Get current volume in dB"""
-        return self._volume
+        logger.warning(
+            "volume is deprecated and replaced with 'vol' to match naming of the YNCA API"
+        )
+        return self.vol
 
     @volume.setter
     def volume(self, value: float):
+        logger.warning(
+            "volume is deprecated and replaced with 'vol' to match naming of the YNCA API"
+        )
+        self.vol(value)
+
+    @property
+    def vol(self) -> float:
+        """Get current volume in dB"""
+        return self._vol
+
+    @vol.setter
+    def vol(self, value: float):
         """Set volume in dB. The receiver only works with 0.5 increments. Input values will be rounded to nearest 0.5 step."""
-        if self.min_volume <= value <= self._max_volume:
+        if MIN_VOLUME <= value <= self._maxvol:
             self._put("VOL", number_to_string_with_stepsize(value, 1, 0.5))
         else:
             raise ValueError(
-                "Volume out of range, must be between min_volume and max_volume"
+                f"Volume out of range, must be between {MIN_VOLUME} and maxvol ({self._maxvol})"
             )
 
     def volume_up(self, step_size: float = 0.5):
+        logger.warning(
+            "volume_up is deprecated and replaced by vol_up to match naming on YNCA API"
+        )
+        return self.vol_up(step_size)
+
+    def vol_up(self, step_size: float = 0.5):
         """
         Increase the volume with given stepsize.
         Supported stepsizes are: 0.5, 1, 2 and 5
@@ -126,6 +161,12 @@ class ZoneBase(PowerFunctionMixin, PlaybackFunctionMixin, SubunitBase):
         self._put("VOL", value)
 
     def volume_down(self, step_size: float = 0.5):
+        logger.warning(
+            "volume_down is deprecated and replaced by vol_down to match naming on YNCA API"
+        )
+        return self.vol_downup(step_size)
+
+    def vol_down(self, step_size: float = 0.5):
         """
         Decrease the volume with given stepsize.
         Supported stepsizes are: 0.5, 1, 2 and 5
@@ -186,7 +227,7 @@ class ZoneBase(PowerFunctionMixin, PlaybackFunctionMixin, SubunitBase):
     def scenes(self) -> Dict[str, str]:
         """Get the dictionary with scenes where key, value = id, name"""
         logger.warning(
-            "The 'scenes' attribute is deprecated and replaced with 'scene_names' to better match the naming in the YNCA spec"
+            "The 'scenes' attribute is deprecated and replaced with 'scene_names' to match the naming in the YNCA spec"
         )
         return self.scenenames
 

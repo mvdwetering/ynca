@@ -89,9 +89,9 @@ main.register_update_callback(update_callback)
 # Examples to control a zone
 main.pwr = True
 main.mute = Mute.off
-main.input = "HDMI3"
-main.volume = -50.5
-main.volume_up()
+main.inp = "HDMI3"
+main.vol = -50.5
+main.vol_up()
 
 # When done call close for proper shutdown
 ynca_receiver.close()

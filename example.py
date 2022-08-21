@@ -59,7 +59,7 @@ if __name__ == "__main__":
         if zone := getattr(ynca_receiver, subunit_id, None):
             print("  --- {} ---".format(zone.id))
             print(f"  {zone.zonename=}")
-            print(f"  {zone.volume=}")
+            print(f"  {zone.vol=}")
             print(f"  {zone.inp=}")
 
     print("Inputs:")
@@ -74,13 +74,13 @@ if __name__ == "__main__":
 
     main = ynca_receiver.MAIN
     main.pwr = True
-    current_volume = main.volume  # Save so we can restore it
-    main.volume = -50
-    main.volume = -50.5
+    current_volume = main.vol  # Save so we can restore it
+    main.vol = -50
+    main.vol = -50.5
     main.volume_up()
     main.mute = Mute.off
     main.mute = Mute.on
-    main.volume = current_volume
+    main.vol = current_volume
 
     print(
         "Wait a bit to see updates coming in as it takes the receiver a while to get it all processed."
