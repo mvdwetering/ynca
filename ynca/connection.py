@@ -81,6 +81,8 @@ class YncaProtocol(serial.threaded.LineReader):
             while self._send_queue.get(False):
                 pass
         except queue.Empty:
+            pass
+        finally:
             self._send_queue.put("_EXIT")
         self._send_thread.join(2)
 
