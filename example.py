@@ -77,7 +77,7 @@ if __name__ == "__main__":
     current_volume = main.vol  # Save so we can restore it
     main.vol = -50
     main.vol = -50.5
-    main.volume_up()
+    main.vol_up()
     main.mute = Mute.off
     main.mute = Mute.on
     main.vol = current_volume
