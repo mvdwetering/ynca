@@ -97,6 +97,7 @@ class YncaProtocol(serial.threaded.LineReader):
         value = None
 
         logger.debug("> %s", line)
+        self._communication_log_buffer.add(f"Received: {line}")
 
         if line == "@UNDEFINED":
             status = YncaProtocolStatus.UNDEFINED
@@ -105,7 +106,6 @@ class YncaProtocol(serial.threaded.LineReader):
 
         match = re.match(r"@(?P<subunit>.+?):(?P<function>.+?)=(?P<value>.*)", line)
         if match is not None:
-            self._communication_log_buffer.add(f"Received: {line}")
             subunit = match.group("subunit")
             function = match.group("function")
             value = match.group("value")
