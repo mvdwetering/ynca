@@ -2,7 +2,7 @@ from __future__ import annotations
 import re
 import logging
 
-from typing import Dict
+from typing import Dict, Optional
 
 from .connection import YncaConnection, YncaProtocolStatus
 from .constants import Mute, Subunit, MIN_VOLUME
@@ -61,7 +61,7 @@ class ZoneBase(PowerFunctionMixin, PlaybackFunctionMixin, SubunitBase):
         self._maxvol = float(value)
 
     @property
-    def name(self) -> str | None:
+    def name(self) -> Optional[str]:
         """Get zone name"""
         logger.warning(
             "The 'name' attribute is deprecated and replaced with 'zonename' to match the naming in the YNCA spec"
@@ -69,7 +69,7 @@ class ZoneBase(PowerFunctionMixin, PlaybackFunctionMixin, SubunitBase):
         return self.zonename
 
     @property
-    def zonename(self) -> str | None:
+    def zonename(self) -> Optional[str]:
         """Get zone name"""
         return self._attr_zonename
 
@@ -81,7 +81,7 @@ class ZoneBase(PowerFunctionMixin, PlaybackFunctionMixin, SubunitBase):
         self._put("ZONENAME", zonename)
 
     @property
-    def mute(self) -> Mute | None:
+    def mute(self) -> Optional[Mute]:
         """Get current mute state"""
         return Mute(self._attr_mute) if self._attr_mute is not None else None
 
@@ -91,14 +91,14 @@ class ZoneBase(PowerFunctionMixin, PlaybackFunctionMixin, SubunitBase):
         self._put("MUTE", value)
 
     @property
-    def max_volume(self) -> float | None:
+    def max_volume(self) -> Optional[float]:
         logger.warning(
             "max_volume has been deprecated and replaced with maxvol to match the YNCA API naming"
         )
         return self.maxvol
 
     @property
-    def maxvol(self) -> float | None:
+    def maxvol(self) -> Optional[float]:
         """
         Get maximum volume supported in dB
 
@@ -127,7 +127,7 @@ class ZoneBase(PowerFunctionMixin, PlaybackFunctionMixin, SubunitBase):
         logger.warning(
             "volume is deprecated and replaced with 'vol' to match naming of the YNCA API"
         )
-        self.vol(value)
+        self.vol = value
 
     @property
     def vol(self) -> float:
@@ -164,7 +164,7 @@ class ZoneBase(PowerFunctionMixin, PlaybackFunctionMixin, SubunitBase):
         logger.warning(
             "volume_down is deprecated and replaced by vol_down to match naming on YNCA API"
         )
-        return self.vol_downup(step_size)
+        return self.vol_down(step_size)
 
     def vol_down(self, step_size: float = 0.5):
         """
@@ -199,7 +199,7 @@ class ZoneBase(PowerFunctionMixin, PlaybackFunctionMixin, SubunitBase):
         self._put("INP", value)
 
     @property
-    def soundprg(self) -> str | None:
+    def soundprg(self) -> Optional[str]:
         """Get the current DSP sound program"""
         return self._attr_soundprg
 
@@ -209,7 +209,7 @@ class ZoneBase(PowerFunctionMixin, PlaybackFunctionMixin, SubunitBase):
         self._put("SOUNDPRG", value)
 
     @property
-    def straight(self) -> bool | None:
+    def straight(self) -> Optional[bool]:
         """Get the current Straight value"""
         return self._attr_straight == "On" if self._attr_straight is not None else None
 

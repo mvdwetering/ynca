@@ -219,89 +219,89 @@ class Ynca:
     # Also helps with typing compared to using generic SubunitBase types
 
     @property
-    def SYS(self) -> System | None:
+    def SYS(self) -> Optional[System]:
         return cast(System, self._subunits.get(Subunit.SYS, None))
 
     @property
-    def MAIN(self) -> Main | None:
+    def MAIN(self) -> Optional[Main]:
         return cast(Main, self._subunits.get(Subunit.MAIN, None))
 
     @property
-    def ZONE2(self) -> Zone2 | None:
+    def ZONE2(self) -> Optional[Zone2]:
         return cast(Zone2, self._subunits.get(Subunit.ZONE2, None))
 
     @property
-    def ZONE3(self) -> Zone3 | None:
+    def ZONE3(self) -> Optional[Zone3]:
         return cast(Zone3, self._subunits.get(Subunit.ZONE3, None))
 
     @property
-    def ZONE4(self) -> Zone4 | None:
+    def ZONE4(self) -> Optional[Zone4]:
         return cast(Zone4, self._subunits.get(Subunit.ZONE4, None))
 
     @property
-    def PC(self) -> Pc | None:
+    def PC(self) -> Optional[Pc]:
         return cast(Pc, self._subunits.get(Subunit.PC, None))
 
     @property
-    def NETRADIO(self) -> NetRadio | None:
+    def NETRADIO(self) -> Optional[NetRadio]:
         return cast(NetRadio, self._subunits.get(Subunit.NETRADIO, None))
 
     @property
-    def USB(self) -> Usb | None:
+    def USB(self) -> Optional[Usb]:
         return cast(Usb, self._subunits.get(Subunit.USB, None))
 
     @property
-    def TUN(self) -> Tun | None:
+    def TUN(self) -> Optional[Tun]:
         return cast(Tun, self._subunits.get(Subunit.TUN, None))
 
     @property
-    def SIRIUS(self) -> Sirius | None:
+    def SIRIUS(self) -> Optional[Sirius]:
         return cast(Sirius, self._subunits.get(Subunit.SIRIUS, None))
 
     @property
-    def SIRIUSIR(self) -> SiriusIr | None:
+    def SIRIUSIR(self) -> Optional[SiriusIr]:
         return cast(SiriusIr, self._subunits.get(Subunit.SIRIUSIR, None))
 
     @property
-    def IPOD(self) -> Ipod | None:
+    def IPOD(self) -> Optional[Ipod]:
         return cast(Ipod, self._subunits.get(Subunit.IPOD, None))
 
     @property
-    def IPODUSB(self) -> IpodUsb | None:
+    def IPODUSB(self) -> Optional[IpodUsb]:
         return cast(IpodUsb, self._subunits.get(Subunit.IPODUSB, None))
 
     @property
-    def BT(self) -> Bt | None:
+    def BT(self) -> Optional[Bt]:
         return cast(Bt, self._subunits.get(Subunit.BT, None))
 
     @property
-    def RHAP(self) -> Rhap | None:
+    def RHAP(self) -> Optional[Rhap]:
         return cast(Rhap, self._subunits.get(Subunit.RHAP, None))
 
     @property
-    def PANDORA(self) -> Pandora | None:
+    def PANDORA(self) -> Optional[Pandora]:
         return cast(Pandora, self._subunits.get(Subunit.PANDORA, None))
 
     @property
-    def UAW(self) -> Uaw | None:
+    def UAW(self) -> Optional[Uaw]:
         return cast(Uaw, self._subunits.get(Subunit.UAW, None))
 
     @property
-    def NAPSTER(self) -> Napster | None:
+    def NAPSTER(self) -> Optional[Napster]:
         return cast(Napster, self._subunits.get(Subunit.NAPSTER, None))
 
     @property
-    def SPOTIFY(self) -> Spotify | None:
+    def SPOTIFY(self) -> Optional[Spotify]:
         return cast(Spotify, self._subunits.get(Subunit.SPOTIFY, None))
 
     @property
-    def SERVER(self) -> Server | None:
+    def SERVER(self) -> Optional[Server]:
         return cast(Server, self._subunits.get(Subunit.SERVER, None))
 
     @property
-    def SIRIUSXM(self) -> SiriusXm | None:
+    def SIRIUSXM(self) -> Optional[SiriusXm]:
         return cast(SiriusXm, self._subunits.get(Subunit.SIRIUSXM, None))
 
     @property
-    def AIRPLAY(self) -> Airplay | None:
+    def AIRPLAY(self) -> Optional[Airplay]:
         return cast(Airplay, self._subunits.get(Subunit.AIRPLAY, None))

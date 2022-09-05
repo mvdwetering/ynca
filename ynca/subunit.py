@@ -25,7 +25,7 @@ class SubunitBase(FunctionMixinBase):
         """
         self._update_callbacks: Set[Callable[[], None]] = set()
 
-        self._attr_avail: Avail | None = None
+        self._attr_avail: Optional[Avail] = None
 
         self._initialized = False
         self._initialized_event = threading.Event()
