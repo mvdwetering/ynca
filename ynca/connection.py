@@ -150,11 +150,15 @@ class YncaProtocol(serial.threaded.LineReader):
                 # To avoid random message being eaten because device goes to sleep, keep it alive
                 self._send_keepalive()
 
-    def put(self, subunit, funcname, parameter):
+    def raw(self, raw_data: str):
+        self._send_queue.put(raw_data)
+        self.num_commands_sent += 1
+
+    def put(self, subunit: str, funcname: str, parameter: str):
         self._send_queue.put(f"@{subunit}:{funcname}={parameter}")
         self.num_commands_sent += 1
 
-    def get(self, subunit, funcname):
+    def get(self, subunit: str, funcname: str):
         self.put(subunit, funcname, "?")
 
     def set_communication_log_size(self, size: int):
@@ -242,6 +246,10 @@ class YncaConnection:
 
         if self._readerthread:
             self._readerthread.close()
+
+    def raw(self, raw_data: str):
+        if self._protocol:
+            self._protocol.raw(raw_data)
 
     def put(self, subunit: str, funcname: str, parameter: str):
         if self._protocol:

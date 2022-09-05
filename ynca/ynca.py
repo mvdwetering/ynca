@@ -191,6 +191,14 @@ class Ynca:
             self._connection.get_communication_log_items() if self._connection else []
         )
 
+    def send_raw(self, raw_ynca_data: str):
+        """
+        Send raw YNCA data
+        Intended for debugging only
+        """
+        if self._connection:
+            self._connection.raw(raw_ynca_data)
+
     def close(self):
         """
         Cleanup the internal resources.

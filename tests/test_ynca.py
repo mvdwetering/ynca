@@ -286,6 +286,44 @@ def test_disconnect_callback(connection):
         y.close()
 
 
+def test_get_communication_log_items(connection):
+
+    with mock.patch.object(
+        ynca.ynca.YncaConnection, "create_from_serial_url"
+    ) as create_from_serial_url:
+        create_from_serial_url.return_value = connection
+        connection.get_response_list = INITIALIZE_MINIMAL_RESPONSES
+
+        y = ynca.Ynca("serial_url")
+        assert y.get_communication_log_items() == []
+        y.initialize()
+
+        connection.get_communication_log_items.return_value = [
+            "communication log items"
+        ]
+        assert y.get_communication_log_items() == ["communication log items"]
+
+        y.close()
+
+
+def test_send_raw(connection):
+
+    with mock.patch.object(
+        ynca.ynca.YncaConnection, "create_from_serial_url"
+    ) as create_from_serial_url:
+        create_from_serial_url.return_value = connection
+        connection.get_response_list = INITIALIZE_MINIMAL_RESPONSES
+
+        y = ynca.Ynca("serial_url")
+        y.send_raw("not initialized, silently ignored")
+        y.initialize()
+
+        y.send_raw("raw data")
+        connection.raw.assert_called_with("raw data")
+
+        y.close()
+
+
 def test_initialize_full(connection):
 
     with mock.patch.object(
