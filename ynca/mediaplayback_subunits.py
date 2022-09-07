@@ -12,7 +12,7 @@ from .function_mixins import (
 from .subunit import SubunitBase
 
 
-# A number of subunits have the same featureset
+# A number of subunits have the same/similar featureset
 # so make a common base that only needs to be tested once
 class MediaPlaybackSubunitBase(
     PlaybackFunctionMixin,
@@ -48,9 +48,6 @@ class IpodUsb(MediaPlaybackSubunitBase):
     id = Subunit.IPODUSB
 
 
-# These are assumed capabilities
-# Could not really get it correctly from the logs
-# But this is what I would expect.
 class Spotify(MediaPlaybackSubunitBase):
     id = Subunit.SPOTIFY
 
