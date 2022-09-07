@@ -28,6 +28,7 @@ class SoundPrg(str, Enum):
     DRAMA = "Drama"
     MONO_MOVIE = "Mono Movie"
     TWO_CH_STEREO = "2ch Stereo"
+    FIVE_CH_STEREO = "5ch Stereo"
     SEVEN_CH_STEREO = "7ch Stereo"
     NINE_CH_STEREO = "9ch Stereo"
     SURROUND_DECODER = "Surround Decoder"
