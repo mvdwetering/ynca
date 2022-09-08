@@ -42,6 +42,10 @@ class YncaDataStore:
         with open(filename) as file:
             for line in file:
                 line = line.strip()
+                line = line.rstrip(
+                    '",'
+                )  # Strip to be able to use diagnotics output directly
+                print(line)
                 # Error values are stored based on command sent on previous line
                 if RESTRICTED in line or UNDEFINED in line:
                     # Only set RESTRICTED or UNDEFINED for non existing entries
