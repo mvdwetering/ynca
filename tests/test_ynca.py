@@ -5,6 +5,7 @@ import ynca
 from ynca.bt import Bt
 from ynca.errors import YncaConnectionError, YncaInitializationFailedException
 from ynca.get_all_zone_inputs import FALLBACK_INPUTS
+from ynca.mediaplayback_subunits import Usb
 from ynca.system import System
 from ynca.zone import Main
 
@@ -12,6 +13,7 @@ SYS = "SYS"
 MAIN = "MAIN"
 ZONE4 = "ZONE4"
 BT = "BT"
+USB = "USB"
 
 RESTRICTED = "@RESTRICTED"
 
@@ -67,6 +69,12 @@ INITIALIZE_FULL_RESPONSES = [
             (BT, "AVAIL", "Not Connected"),
         ],
     ),
+    (
+        (USB, "AVAIL"),
+        [
+            (USB, "AVAIL", "Not Connected"),
+        ],
+    ),
     # Receiver detect subunits sync
     (
         (SYS, "VERSION"),
@@ -98,6 +106,7 @@ INITIALIZE_FULL_RESPONSES = [
         [
             (SYS, "INPNAMEONE", "InputOne"),
             (SYS, "INPNAMETWO", "InputTwo"),
+            (SYS, "INPNAMEUSB", "InputUsb"),
         ],
     ),
     # SYS Subunit iniatilize sync
@@ -135,6 +144,20 @@ INITIALIZE_FULL_RESPONSES = [
         ],
     ),
     # MAIN Subunit iniatilize sync
+    (
+        (SYS, "VERSION"),
+        [
+            (SYS, "VERSION", "Version"),
+        ],
+    ),
+    # USB Subunit init start
+    (
+        (USB, "AVAIL"),
+        [
+            (USB, "AVAIL", "Not Connected"),
+        ],
+    ),
+    # USB Subunit iniatilize sync
     (
         (SYS, "VERSION"),
         [
@@ -338,14 +361,17 @@ def test_initialize_full(connection):
 
         inputs = ynca.get_inputinfo_list(y)
 
-        assert len(inputs) == 3
+        assert len(inputs) == 4
         assert [inp for inp in inputs if inp.input == "ONE"][0].name == "InputOne"
         assert [inp for inp in inputs if inp.input == "TWO"][0].name == "InputTwo"
+        assert [inp for inp in inputs if inp.input == "USB"][
+            0
+        ].name == "InputUsb"  # Make sure renamed value is returned
         assert [inp for inp in inputs if inp.input == "Bluetooth"][
             0
         ].name == "Bluetooth"
 
-        assert len(y._subunits.keys()) == 3
+        assert len(y._subunits.keys()) == 4
 
         assert isinstance(y.SYS, System)
         assert y.SYS.modelname == "ModelName"
@@ -354,6 +380,7 @@ def test_initialize_full(connection):
         assert isinstance(y.MAIN, Main)
         assert y.MAIN.zonename == "MainZoneName"
         assert isinstance(y.BT, Bt)
+        assert isinstance(y.USB, Usb)
         assert y.ZONE2 is None
         assert y.ZONE3 is None
         assert y.ZONE4 is None
@@ -373,7 +400,6 @@ def test_initialize_full(connection):
         assert y.SPOTIFY is None
         assert y.TUN is None
         assert y.UAW is None
-        assert y.USB is None
 
         y.close()
 
@@ -392,12 +418,13 @@ def test_initialize_full_deprecated_receiver(connection):
 
         inputs = y.inputs
 
-        assert len(inputs.keys()) == 3
+        assert len(inputs.keys()) == 4
         assert inputs["ONE"] == "InputOne"
         assert inputs["TWO"] == "InputTwo"
+        assert inputs["USB"] == "InputUsb"
         assert inputs["Bluetooth"] == "Bluetooth"
 
-        assert len(y._subunits.keys()) == 3
+        assert len(y._subunits.keys()) == 4
 
         assert isinstance(y.SYS, System)
         assert y.SYS.modelname == "ModelName"
@@ -406,6 +433,7 @@ def test_initialize_full_deprecated_receiver(connection):
         assert isinstance(y.MAIN, Main)
         assert y.MAIN.zonename == "MainZoneName"
         assert isinstance(y.BT, Bt)
+        assert isinstance(y.USB, Usb)
         assert y.ZONE2 is None
         assert y.ZONE3 is None
         assert y.ZONE4 is None
@@ -425,6 +453,5 @@ def test_initialize_full_deprecated_receiver(connection):
         assert y.SPOTIFY is None
         assert y.TUN is None
         assert y.UAW is None
-        assert y.USB is None
 
         y.close()

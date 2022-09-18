@@ -66,7 +66,7 @@ class InputInfo:
 def get_inputinfo_list(ynca: Ynca) -> List[InputInfo]:
     """
     Returns a list of all available inputs that can be used as input on the Zone subunits.
-    Note that this does not mean that every zone can/will support all of the inputs.
+    Note that this does _not_ mean that every zone can/will support all of the inputs.
     Typically the MAIN will support all inputs, the other zones less.
     It is not possible to determine that mapping from the API.
 
@@ -92,7 +92,15 @@ def get_inputinfo_list(ynca: Ynca) -> List[InputInfo]:
         if len(inp_names) == 0:
             inp_names = FALLBACK_INPUTS
         for input_id, input_name in inp_names.items():
-            inputs.append(InputInfo(None, input_id, input_name))
+            # USB input is from a SubUnit, but can also be renamed by INPNAMEUSB,
+            # use the renamed name in generic way in case other inputs are same.
+            for input in inputs:
+                if input.input == input_id:
+                    input.name = input_name
+                    break
+            else:
+                # This gets called when there was no break
+                inputs.append(InputInfo(None, input_id, input_name))
 
     return inputs
 
