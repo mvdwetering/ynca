@@ -76,7 +76,7 @@ print(main.zonename) # Print the name of the main zone
 #
 # Note that not all inputs will be available to all zones, but
 # it is not possible to derive this from the API
-for input_info in get_inputinfo_list(ynca_receiver).items():
+for input_info in get_inputinfo_list(ynca_receiver):
     print(f"{input_info.subunit=}, {input_info.input=}, {input_info.name=}")
 
 # To get notifications when something changes register callback with the subunit
