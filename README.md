@@ -7,6 +7,9 @@ There might be more receivers that support this protocol. If you find some let m
 
 > RX-A700, RX-A710, RX-A720, RX-A800, RX-A810, RX-A820, RX-A840, RX-A850, RX-A1000, RX-A1010, RX-A1020, RX-A1040, RX-A2000, RX-A2010, RX-A2020, RX-A3000, RX-A3010, RX-A3020, RX-V475, RX-V671, RX-V673, RX-V867, RX-V871, RX-V1067, RX-V2067, RX-V3067, TSR-700
 
+Note that there is a restriction that only 1 YNCA connection to a receiver can be made at the time (restriction on the receiver side, not this library).
+Usually not a problem as the Yamaha AV Control App uses a different protocol which can be used at the same time, but something to be aware of when testing the library.
+
 
 ## Installation
 
@@ -21,6 +24,7 @@ This package contains:
 ### Ynca class
 
 The Ynca class is exposing the YNCA API as defined in the specification and allows to connect to devices supporting that API.
+It keeps a cache of last received values so reading is instant as it does not need to query the receiver.
 
 ### get_inputinfo_list _list helper function
 
@@ -61,7 +65,7 @@ ynca_receiver = Ynca("/dev/tty1")
 ynca_receiver.initialize()
 
 # Every subunit has a dedicated attribute on the `Ynca` class.
-# The name is the subunit id as used in YNCA.
+# The name of the attribute is the subunit id as used in YNCA.
 # The returned subunit class can be used to communicate with the subunit
 sys = ynca_receiver.SYS
 main = ynca_receiver.MAIN
@@ -80,7 +84,7 @@ for input_info in get_inputinfo_list(ynca_receiver):
     print(f"{input_info.subunit=}, {input_info.input=}, {input_info.name=}")
 
 # To get notifications when something changes register callback with the subunit
-# Note that callbacks are called from a different thread and also should not block for too long.
+# Note that callbacks are called from a different thread and also should not block.
 def update_callback():
     print("Something was updated on the MAIN subunit")
 
