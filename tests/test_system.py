@@ -43,6 +43,12 @@ INITIALIZE_FULL_RESPONSES = [
         ],
     ),
     (
+        (SYS, "PARTY"),
+        [
+            (SYS, "PARTY", "On"),
+        ],
+    ),
+    (
         (SYS, "VERSION"),
         [
             (SYS, "VERSION", "Version"),
@@ -84,8 +90,9 @@ def test_initialize_minimal(connection, update_callback):
 
     assert update_callback.call_count == 1
     assert s.version == "Version"
-    assert s.pwr is None
     assert s.modelname is None
+    assert s.pwr is None
+    assert s.party is None
     assert len(s.inp_names.keys()) == 0
 
 
@@ -102,6 +109,7 @@ def test_initialize_full(connection, update_callback):
     assert s.version == "Version"
     assert s.modelname == "ModelName"
     assert s.pwr is False
+    assert s.party is True
 
     assert len(s.inp_names.keys()) == 19
     assert s.inp_names["PHONO"] == "InputPhono"
@@ -148,6 +156,30 @@ def test_registration(connection, initialized_system):
     connection.send_protocol_message(SYS, "PWR", "On")
     assert update_callback_1.call_count == 3
     assert update_callback_2.call_count == 2
+
+
+def test_party(connection, initialized_system):
+    # Writing to device
+    initialized_system.party = True
+    connection.put.assert_called_with(SYS, "PARTY", "On")
+    initialized_system.party = False
+    connection.put.assert_called_with(SYS, "PARTY", "Off")
+
+
+def test_partymute(connection, initialized_system):
+    # Writing to device
+    initialized_system.partymute = True
+    connection.put.assert_called_with(SYS, "PARTYMUTE", "On")
+    initialized_system.partymute = False
+    connection.put.assert_called_with(SYS, "PARTYMUTE", "Off")
+
+
+def test_partyvol(connection, initialized_system):
+    # Writing to device
+    initialized_system.partyvol_up()
+    connection.put.assert_called_with(SYS, "PARTYVOL", "Up")
+    initialized_system.partyvol_down()
+    connection.put.assert_called_with(SYS, "PARTYVOL", "Down")
 
 
 def test_unhandled_function(connection, initialized_system):

@@ -1,6 +1,6 @@
 import logging
 
-from typing import Dict
+from typing import Dict, Optional
 
 from .connection import YncaConnection, YncaProtocolStatus
 from .constants import Subunit
@@ -27,6 +27,8 @@ class System(PowerFunctionMixin, SubunitBase):
         self._attr_modelname = None
         self._attr_version = None
 
+        self._attr_party = None
+
     def on_initialize(self):
         self._reset_internal_state()
 
@@ -35,6 +37,9 @@ class System(PowerFunctionMixin, SubunitBase):
         # Get user-friendly names for inputs (also allows detection of a number of available inputs)
         # Note that these are not all inputs, just the external ones it seems.
         self._get("INPNAME")
+
+        # Can only get PARTY mode status, PARTYVOL adn PARTYMUTE can only be set
+        self._get("PARTY")
 
         # Version is also used behind the scenes as a sync for initialization
         # So we should not send it here else it might mess up the synchronization
@@ -77,3 +82,33 @@ class System(PowerFunctionMixin, SubunitBase):
             "The 'inputs' attribute is deprecated and replaced with 'inp_names' to better match naming of the YNCA spec"
         )
         return self.inp_names
+
+    @property
+    def party(self) -> Optional[bool]:
+        """Get party state"""
+        return self._attr_party == "On" if self._attr_pwr is not None else None
+
+    @party.setter
+    def party(self, value: bool):
+        """Turn on/off party mode"""
+        self._put("PARTY", "On" if value is True else "Off")  # type: ignore
+
+    def _partymute(self, value: bool):
+        """Turn on/off party mode"""
+        self._put("PARTYMUTE", "On" if value is True else "Off")  # type: ignore
+
+    # Setter decorator can only be used when there is an @property decorator
+    # so build the setter property manually
+    partymute = property(None, _partymute)
+
+    def partyvol_up(self):
+        """
+        Increase the party volume with one step.
+        """
+        self._put("PARTYVOL", "Up")
+
+    def partyvol_down(self):
+        """
+        Decrease the party volume with one step.
+        """
+        self._put("PARTYVOL", "Down")
