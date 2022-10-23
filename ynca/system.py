@@ -112,3 +112,7 @@ class System(PowerFunctionMixin, SubunitBase):
         Decrease the party volume with one step.
         """
         self._put("PARTYVOL", "Down")
+
+    def send_remotecode(self, code: str):
+        """Send remote code. These codes are 8 characters long."""
+        self._put("REMOTECODE", code)

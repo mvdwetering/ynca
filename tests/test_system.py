@@ -182,6 +182,12 @@ def test_partyvol(connection, initialized_system):
     connection.put.assert_called_with(SYS, "PARTYVOL", "Down")
 
 
+def test_send_remotecode(connection, initialized_system):
+    # Writing to device
+    initialized_system.send_remotecode("code1234")
+    connection.put.assert_called_with(SYS, "REMOTECODE", "code1234")
+
+
 def test_unhandled_function(connection, initialized_system):
 
     # Updates from device
