@@ -2,7 +2,7 @@ from typing import Callable
 from unittest import mock
 import pytest
 
-from ynca.constants import Mute, Subunit, SoundPrg
+from ynca.constants import Mute, Subunit, SoundPrg, TwoChDecoder
 from ynca.zone import ZoneBase, Main, Zone2, Zone3, Zone4
 
 from .mock_yncaconnection import YncaConnectionMock
@@ -49,6 +49,12 @@ INITIALIZE_FULL_RESPONSES = [
         (SUBUNIT, "ZONENAME"),
         [
             (SUBUNIT, "ZONENAME", "ZoneName"),
+        ],
+    ),
+    (
+        (SUBUNIT, "2CHDECODER"),
+        [
+            (SUBUNIT, "2CHDECODER", "Dolby PLIIx Movie"),
         ],
     ),
     (
@@ -137,6 +143,7 @@ def test_initialize_minimal(connection, update_callback):
     assert z.mute is None
     assert z.straight is None
     assert z.soundprg is None
+    assert z.twochdecoder is None
     assert len(z.scenenames.keys()) == 0
 
 
@@ -158,6 +165,7 @@ def test_initialize_full(connection, update_callback):
     assert z.straight is False
     assert z.soundprg == "Standard"
     assert z.zonename == "ZoneName"
+    assert z.twochdecoder is TwoChDecoder.DolbyPl2xMovie
 
     assert len(z.scenenames.keys()) == 5
     assert z.scenenames["1"] == "Scene name 1"
@@ -304,6 +312,16 @@ def test_zonename(connection, initialized_zone):
     # Updates from device
     connection.send_protocol_message(SUBUNIT, "ZONENAME", "updated")
     assert initialized_zone.zonename == "updated"
+
+
+def test_twochdecoder(connection, initialized_zone):
+    # Writing to device
+    initialized_zone.twochdecoder = TwoChDecoder.DolbyPl
+    connection.put.assert_called_with(SUBUNIT, "2CHDECODER", "Dolby PL")
+
+    # Updates from device
+    connection.send_protocol_message(SUBUNIT, "2CHDECODER", "DTS NEO:6 Cinema")
+    assert initialized_zone.twochdecoder is TwoChDecoder.DtsNeo6Cinema
 
 
 # TODO: This seems generic and probably should be moved to the subunit test

@@ -5,7 +5,7 @@ import logging
 from typing import Dict, Optional
 
 from .connection import YncaConnection, YncaProtocolStatus
-from .constants import Mute, Subunit, MIN_VOLUME
+from .constants import Mute, Subunit, MIN_VOLUME, TwoChDecoder
 from .function_mixins import PlaybackFunctionMixin, PowerFunctionMixin
 from .helpers import number_to_string_with_stepsize
 from .subunit import SubunitBase
@@ -31,6 +31,7 @@ class ZoneBase(PowerFunctionMixin, PlaybackFunctionMixin, SubunitBase):
         self._attr_soundprg = None
         self._attr_straight = None
         self._attr_zonename = None
+        self._attr_twochdecoder = None
 
     def on_initialize(self):
         self._reset_internal_state()
@@ -40,6 +41,7 @@ class ZoneBase(PowerFunctionMixin, PlaybackFunctionMixin, SubunitBase):
         self._get("MAXVOL")
         self._get("SCENENAME")
         self._get("ZONENAME")
+        self._get("2CHDECODER")
 
     def _subunit_message_received_without_handler(
         self, status: YncaProtocolStatus, function_: str, value: str
@@ -237,6 +239,23 @@ class ZoneBase(PowerFunctionMixin, PlaybackFunctionMixin, SubunitBase):
             raise ValueError("Invalid scene ID")
         else:
             self._put("SCENE", f"Scene {scene_id}")
+
+    @property
+    def twochdecoder(self) -> Optional[TwoChDecoder]:
+        """Get 2ch decoder state"""
+        return (
+            TwoChDecoder(self._attr_twochdecoder)
+            if self._attr_twochdecoder is not None
+            else None
+        )
+
+    @twochdecoder.setter
+    def twochdecoder(self, value: TwoChDecoder):
+        """Set 2ch decoder value"""
+        self._put("2CHDECODER", value.value)
+
+    def _handle_2chdecoder(self, value: str):
+        self._attr_twochdecoder = value
 
 
 class Main(ZoneBase):

@@ -100,3 +100,15 @@ class Playback(str, Enum):
 class Band(str, Enum):
     AM = "AM"
     FM = "FM"
+
+class TwoChDecoder(str, Enum):
+    DolbyPl = "Dolby PL"
+    DolbyPl2Movie = "Dolby PLII Movie"
+    DolbyPl2Music = "Dolby PLII Music"
+    DolbyPl2Game = "Dolby PLII Game"
+    DolbyPl2xMovie = "Dolby PLIIx Movie"
+    DolbyPl2xMusic = "Dolby PLIIx Music"
+    DolbyPl2xGame = "Dolby PLIIx Game"
+    DtsNeo6Cinema = "DTS NEO:6 Cinema"
+    DtsNeo6Music = "DTS NEO:6 Music"
+
