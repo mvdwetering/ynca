@@ -58,6 +58,12 @@ INITIALIZE_FULL_RESPONSES = [
         ],
     ),
     (
+        (SUBUNIT, "PUREDIRMODE"),
+        [
+            (SUBUNIT, "PUREDIRMODE", "On"),
+        ],
+    ),
+    (
         (SYS, "VERSION"),
         [
             (SYS, "VERSION", "Version"),
@@ -144,6 +150,7 @@ def test_initialize_minimal(connection, update_callback):
     assert z.straight is None
     assert z.soundprg is None
     assert z.twochdecoder is None
+    assert z.puredirmode is None
     assert len(z.scenenames.keys()) == 0
 
 
@@ -166,6 +173,7 @@ def test_initialize_full(connection, update_callback):
     assert z.soundprg == "Standard"
     assert z.zonename == "ZoneName"
     assert z.twochdecoder is TwoChDecoder.DolbyPl2xMovie
+    assert z.puredirmode is True
 
     assert len(z.scenenames.keys()) == 5
     assert z.scenenames["1"] == "Scene name 1"
@@ -175,7 +183,7 @@ def test_initialize_full(connection, update_callback):
     assert z.scenenames["42"] == "Scene name 42"
 
 
-def test_mute(connection, initialized_zone):
+def test_mute(connection, initialized_zone: ZoneBase):
     # Writing to device
     initialized_zone.mute = Mute.on
     connection.put.assert_called_with(SUBUNIT, "MUTE", "On")
@@ -197,7 +205,7 @@ def test_mute(connection, initialized_zone):
     assert initialized_zone.mute is Mute.off
 
 
-def test_volume(connection, initialized_zone):
+def test_volume(connection, initialized_zone: ZoneBase):
     # Writing to device
 
     # Positive with step rounding
@@ -255,7 +263,7 @@ def test_volume(connection, initialized_zone):
     assert initialized_zone.vol == -10
 
 
-def test_input(connection, initialized_zone):
+def test_input(connection, initialized_zone: ZoneBase):
     # Writing to device
     initialized_zone.inp = "Input"
     connection.put.assert_called_with(SUBUNIT, "INP", "Input")
@@ -265,7 +273,7 @@ def test_input(connection, initialized_zone):
     assert initialized_zone.inp == "NewInput"
 
 
-def test_soundprg(connection, initialized_zone):
+def test_soundprg(connection, initialized_zone: ZoneBase):
     # Writing to device
     initialized_zone.soundprg = SoundPrg.THE_ROXY_THEATRE
     connection.put.assert_called_with(SUBUNIT, "SOUNDPRG", "The Roxy Theatre")
@@ -275,7 +283,7 @@ def test_soundprg(connection, initialized_zone):
     assert initialized_zone.soundprg == SoundPrg.SCI_FI
 
 
-def test_straight(connection, initialized_zone):
+def test_straight(connection, initialized_zone: ZoneBase):
     # Writing to device
     initialized_zone.straight = True
     connection.put.assert_called_with(SUBUNIT, "STRAIGHT", "On")
@@ -289,7 +297,7 @@ def test_straight(connection, initialized_zone):
     assert initialized_zone.straight == False
 
 
-def test_scene(connection, initialized_zone):
+def test_scene(connection, initialized_zone: ZoneBase):
     # Writing to device
     with pytest.raises(ValueError):
         initialized_zone.activate_scene("Invalid")
@@ -302,7 +310,7 @@ def test_scene(connection, initialized_zone):
     assert initialized_zone.scenenames["3"] == "New Name"
 
 
-def test_zonename(connection, initialized_zone):
+def test_zonename(connection, initialized_zone: ZoneBase):
     # Writing to device
     initialized_zone.zonename = "new name"
     connection.put.assert_called_with(SUBUNIT, "ZONENAME", "new name")
@@ -314,7 +322,7 @@ def test_zonename(connection, initialized_zone):
     assert initialized_zone.zonename == "updated"
 
 
-def test_twochdecoder(connection, initialized_zone):
+def test_twochdecoder(connection, initialized_zone: ZoneBase):
     # Writing to device
     initialized_zone.twochdecoder = TwoChDecoder.DolbyPl
     connection.put.assert_called_with(SUBUNIT, "2CHDECODER", "Dolby PL")
@@ -324,8 +332,22 @@ def test_twochdecoder(connection, initialized_zone):
     assert initialized_zone.twochdecoder is TwoChDecoder.DtsNeo6Cinema
 
 
+def test_puredirmode(connection, initialized_zone: ZoneBase):
+    # Writing to device
+    initialized_zone.puredirmode = True
+    connection.put.assert_called_with(SUBUNIT, "PUREDIRMODE", "On")
+    initialized_zone.puredirmode = False
+    connection.put.assert_called_with(SUBUNIT, "PUREDIRMODE", "Off")
+
+    # Updates from device
+    connection.send_protocol_message(SUBUNIT, "PUREDIRMODE", "On")
+    assert initialized_zone.puredirmode == True
+    connection.send_protocol_message(SUBUNIT, "PUREDIRMODE", "Off")
+    assert initialized_zone.puredirmode == False
+
+
 # TODO: This seems generic and probably should be moved to the subunit test
-def test_callbacks(connection, initialized_zone, update_callback):
+def test_callbacks(connection, initialized_zone: ZoneBase, update_callback):
     update_callback_2 = mock.MagicMock()
 
     # Register multiple callbacks, both get called

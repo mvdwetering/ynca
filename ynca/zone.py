@@ -32,6 +32,7 @@ class ZoneBase(PowerFunctionMixin, PlaybackFunctionMixin, SubunitBase):
         self._attr_straight = None
         self._attr_zonename = None
         self._attr_twochdecoder = None
+        self._attr_puredirmode = None
 
     def on_initialize(self):
         self._reset_internal_state()
@@ -42,6 +43,7 @@ class ZoneBase(PowerFunctionMixin, PlaybackFunctionMixin, SubunitBase):
         self._get("SCENENAME")
         self._get("ZONENAME")
         self._get("2CHDECODER")
+        self._get("PUREDIRMODE")
 
     def _subunit_message_received_without_handler(
         self, status: YncaProtocolStatus, function_: str, value: str
@@ -256,6 +258,20 @@ class ZoneBase(PowerFunctionMixin, PlaybackFunctionMixin, SubunitBase):
 
     def _handle_2chdecoder(self, value: str):
         self._attr_twochdecoder = value
+
+    @property
+    def puredirmode(self) -> Optional[bool]:
+        """Get the current Straight value"""
+        return (
+            self._attr_puredirmode == "On"
+            if self._attr_puredirmode is not None
+            else None
+        )
+
+    @puredirmode.setter
+    def puredirmode(self, value: bool):
+        """Set the Pure Direct Mode value"""
+        self._put("PUREDIRMODE", "On" if value is True else "Off")
 
 
 class Main(ZoneBase):
