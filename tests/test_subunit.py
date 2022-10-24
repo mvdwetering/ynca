@@ -70,7 +70,7 @@ def test_initialize(connection, update_callback):
     assert dsu.avail == Avail.READY
 
 
-def test_close(connection, initialized_SubunitBase):
+def test_close(connection, initialized_SubunitBase: SubunitBase):
 
     initialized_SubunitBase.close()
     connection.unregister_message_callback.assert_called_once()
@@ -81,14 +81,16 @@ def test_close(connection, initialized_SubunitBase):
 
 
 def test_unknown_functions_ignored(
-    connection, initialized_SubunitBase, update_callback
+    connection, initialized_SubunitBase: SubunitBase, update_callback
 ):
     initialized_SubunitBase.register_update_callback(update_callback)
     connection.send_protocol_message(SUBUNIT, "UnknownFunction", "Value")
     assert update_callback.call_count == 0
 
 
-def test_status_not_ok_ignored(connection, initialized_SubunitBase, update_callback):
+def test_status_not_ok_ignored(
+    connection, initialized_SubunitBase: SubunitBase, update_callback
+):
     initialized_SubunitBase.register_update_callback(update_callback)
     connection.send_protocol_error("@UNDEFINED")
     assert update_callback.call_count == 0

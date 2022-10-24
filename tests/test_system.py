@@ -133,7 +133,7 @@ def test_initialize_full(connection, update_callback):
     assert s.inp_names["USB"] == "InputUsb"
 
 
-def test_registration(connection, initialized_system):
+def test_registration(connection, initialized_system: System):
 
     update_callback_1 = mock.MagicMock()
     update_callback_2 = mock.MagicMock()
@@ -158,7 +158,7 @@ def test_registration(connection, initialized_system):
     assert update_callback_2.call_count == 2
 
 
-def test_party(connection, initialized_system):
+def test_party(connection, initialized_system: System):
     # Writing to device
     initialized_system.party = True
     connection.put.assert_called_with(SYS, "PARTY", "On")
@@ -166,7 +166,7 @@ def test_party(connection, initialized_system):
     connection.put.assert_called_with(SYS, "PARTY", "Off")
 
 
-def test_partymute(connection, initialized_system):
+def test_partymute(connection, initialized_system: System):
     # Writing to device
     initialized_system.partymute = True
     connection.put.assert_called_with(SYS, "PARTYMUTE", "On")
@@ -174,7 +174,7 @@ def test_partymute(connection, initialized_system):
     connection.put.assert_called_with(SYS, "PARTYMUTE", "Off")
 
 
-def test_partyvol(connection, initialized_system):
+def test_partyvol(connection, initialized_system: System):
     # Writing to device
     initialized_system.partyvol_up()
     connection.put.assert_called_with(SYS, "PARTYVOL", "Up")
@@ -182,13 +182,13 @@ def test_partyvol(connection, initialized_system):
     connection.put.assert_called_with(SYS, "PARTYVOL", "Down")
 
 
-def test_send_remotecode(connection, initialized_system):
+def test_send_remotecode(connection, initialized_system: System):
     # Writing to device
     initialized_system.send_remotecode("code1234")
     connection.put.assert_called_with(SYS, "REMOTECODE", "code1234")
 
 
-def test_unhandled_function(connection, initialized_system):
+def test_unhandled_function(connection, initialized_system: System):
 
     # Updates from device
     update_callback_1 = mock.MagicMock()
