@@ -62,6 +62,7 @@ def test_initialize(connection, update_callback):
     connection.get_response_list = INITIALIZE_FULL_RESPONSES
 
     dsu = DummySubunit(connection)
+    print(dsu.function_handlers)
     dsu.register_update_callback(update_callback)
 
     dsu.initialize()

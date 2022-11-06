@@ -1,23 +1,108 @@
 from __future__ import annotations
+
+from enum import Enum, Flag, auto
+import inspect
 import logging
 import threading
-
-from typing import Callable, Optional, Set
-
-from ynca.function_mixins import FunctionMixinBase
+from typing import Any, Callable, Dict, Set, Type, TypeVar, Generic
 
 from .constants import Avail, Subunit
 from .errors import YncaInitializationFailedException
-
 from .connection import YncaConnection, YncaProtocol, YncaProtocolStatus
 
 logger = logging.getLogger(__name__)
 
 
-class SubunitBase(FunctionMixinBase):
+class CommandType(Flag):
+    GET = auto()
+    PUT = auto()
+
+
+T = TypeVar("T")
+
+
+class YncaFunction(Generic[T]):
+    """
+    Provides an easy way to specify all properties needed to handle a YNCA function.
+    The resulting descriptor makes it easy to just read/write to the attributes and
+    values will be read from cache or converted and sent to the device.
+    """
+
+    def __init__(
+        self,
+        function_name: str,
+        datatype: Type | None = None,
+        command_type: CommandType = CommandType.GET | CommandType.PUT,
+        value_converter: Callable[[str], T] | None = None,
+        str_converter: Callable[[T], str] | None = None,
+    ):
+        self.function_name = function_name
+        self.datatype = datatype
+        self.command_type = command_type
+        self.value_converter = value_converter
+        self._str_converter = str_converter
+
+    def __get__(self, instance: SubunitBase, owner) -> T | None:
+        if instance is None:
+            return self
+
+        if CommandType.GET not in self.command_type:
+            raise AttributeError(
+                f"Function {self.function_name} does not support GET command"
+            )
+
+        if handler := instance.function_handlers.get(self.function_name, None):
+            return handler.value
+        return None
+
+    def __set__(self, instance, value: T):
+        if CommandType.PUT not in self.command_type:
+            raise AttributeError(
+                f"Function {self.function_name} does not support PUT command"
+            )
+        instance._put(self.function_name, self._value_to_str(value))
+
+    def __delete__(self, instance: SubunitBase):
+        # Not entirely sure if this is correct :/
+        instance.function_handlers[self.function_name] = None
+
+    def _value_to_str(self, value: T) -> str:
+        if self._str_converter:
+            return self._str_converter(value)
+        if issubclass(self.datatype, Enum):
+            return value.value
+        return str(value)
+
+
+class YncaFunctionHandler:
+    """
+    Keeps a value of a Function and handles conversions form str on updating.
+    Note that it is not possible to store the value in the YncaFunction since it
+    is a class instance which is shared by all instances.
+    """
+
+    def __init__(
+        self,
+        datatype: Type,
+        value_converter: Callable[[str], Any],
+    ) -> None:
+        self.value = None
+        self.datatype = datatype
+        self.value_converter = value_converter
+
+    def update(self, value_str: str):
+        if self.value_converter:
+            self.value = self.value_converter(value_str)
+        else:
+            self.value = self.datatype(value_str)
+
+
+class SubunitBase:
 
     # To be set in subclasses
     id: str = ""
+
+    avail = YncaFunction[Avail]("AVAIL", Avail)
 
     def __init__(self, connection: YncaConnection):
         """
@@ -25,7 +110,18 @@ class SubunitBase(FunctionMixinBase):
         """
         self._update_callbacks: Set[Callable[[], None]] = set()
 
-        self._attr_avail: Optional[Avail] = None
+        self.function_handlers: Dict[str, YncaFunctionHandler] = {}
+
+        # Note that we need to iterate over the _class_
+        # otherwise the YncaFunction descriptors get/set functions would trigger.
+        # Sort the list to have a deterministic/understandable order for easier testing
+        for name in sorted(dir(self.__class__)):
+            value = getattr(self.__class__, name)
+
+            if isinstance(value, YncaFunction):
+                self.function_handlers[value.function_name] = YncaFunctionHandler(
+                    value.datatype, value.value_converter
+                )
 
         self._initialized = False
         self._initialized_event = threading.Event()
@@ -33,7 +129,7 @@ class SubunitBase(FunctionMixinBase):
         self._connection = connection
         self._connection.register_message_callback(self._protocol_message_received)
 
-        self.function_mixin_initialize_function_attributes()
+        # self.function_mixin_initialize_function_attributes()
 
     def initialize(self):
         """
@@ -41,20 +137,16 @@ class SubunitBase(FunctionMixinBase):
         This call can take a long time
         """
 
-        logger.debug("Subunit %s initialization start.", self.id)
+        logger.info("Subunit %s initialization start.", self.id)
 
         self._initialized_event.clear()
         self._initialized = False
 
         num_commands_sent_start = self._connection.num_commands_sent
 
-        # Build list of YNCA functions to request
-        functions = ["AVAIL"]
-        functions.extend(self.function_mixin_functions())
-
         # Request YNCA functions
-        for function in functions:
-            self._connection.get(self.id, function)
+        for function_name in self.function_handlers.keys():
+            self._get(function_name)
 
         # Invoke subunit specific initialization implemented in the derived classes
         self.on_initialize()
@@ -93,12 +185,12 @@ class SubunitBase(FunctionMixinBase):
             self._connection = None
             self._update_callbacks = set()
 
-    def _subunit_message_received_without_handler(
+    def on_message_received_without_handler(
         self, status: YncaProtocolStatus, function_: str, value: str
     ) -> bool:
         """
         Called when a message for this subunit was received with no handler
-        Implement in subclasses for cases where a simple handler is not enough.
+        Implement in subclasses for cases where the standard handler is not enough.
 
         Return True if state was updated because of the message.
         """
@@ -120,16 +212,10 @@ class SubunitBase(FunctionMixinBase):
 
         updated = False
 
-        if hasattr(self, f"_attr_{function_.lower()}"):
-            setattr(self, f"_attr_{function_.lower()}", value)
-            updated = True
-        elif handler := getattr(self, f"_handle_{function_.lower()}", None):
-            handler(value)
-            updated = True
+        if handler := self.function_handlers.get(function_, None):
+            handler.update(value)
         else:
-            updated = self._subunit_message_received_without_handler(
-                status, function_, value
-            )
+            updated = self.on_message_received_without_handler(status, function_, value)
 
         if updated:
             self._call_registered_update_callbacks()
@@ -150,8 +236,3 @@ class SubunitBase(FunctionMixinBase):
         if self._initialized:
             for callback in self._update_callbacks:
                 callback()
-
-    @property
-    def avail(self) -> Optional[Avail]:
-        """Get avail status"""
-        return self._attr_avail

@@ -49,7 +49,7 @@ class FunctionMixinBase:
                 yield function_mixin_class
 
 
-class PlaybackFunctionMixin(FunctionMixinBase):
+class PlaybackFunctionMixin:
     def playback(self, parameter: Playback):
         """Change playback state"""
         self._put("PLAYBACK", parameter)  # type: ignore
