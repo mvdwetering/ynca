@@ -1,10 +1,9 @@
 from __future__ import annotations
 
 from enum import Enum, Flag, auto
-import inspect
 import logging
 import threading
-from typing import Any, Callable, Dict, Set, Type, TypeVar, Generic
+from typing import Any, Callable, Dict, Set, Type, TypeVar, Generic, cast
 
 from .constants import Avail, Subunit
 from .errors import YncaInitializationFailedException
@@ -31,11 +30,11 @@ class YncaFunction(Generic[T]):
     def __init__(
         self,
         function_name: str,
-        datatype: Type | None = None,
+        datatype: Type,
         command_type: CommandType = CommandType.GET | CommandType.PUT,
         value_converter: Callable[[str], T] | None = None,
         str_converter: Callable[[T], str] | None = None,
-    ):
+    ) -> None:
         self.function_name = function_name
         self.datatype = datatype
         self.command_type = command_type
@@ -63,20 +62,22 @@ class YncaFunction(Generic[T]):
         instance._put(self.function_name, self._value_to_str(value))
 
     def __delete__(self, instance: SubunitBase):
-        # Not entirely sure if this is correct :/
-        instance.function_handlers[self.function_name] = None
+        # Don't think I have use for this
+        pass
 
     def _value_to_str(self, value: T) -> str:
         if self._str_converter:
             return self._str_converter(value)
         if issubclass(self.datatype, Enum):
-            return value.value
+            # str(Enum) gives "Enum.VALUE" instead of value
+            # so do manual conversion
+            return cast(Enum, value).value
         return str(value)
 
 
 class YncaFunctionHandler:
     """
-    Keeps a value of a Function and handles conversions form str on updating.
+    Keeps a value of a Function and handles conversions from str on updating.
     Note that it is not possible to store the value in the YncaFunction since it
     is a class instance which is shared by all instances.
     """
@@ -84,7 +85,7 @@ class YncaFunctionHandler:
     def __init__(
         self,
         datatype: Type,
-        value_converter: Callable[[str], Any],
+        value_converter: Callable[[str], Any] | None,
     ) -> None:
         self.value = None
         self.datatype = datatype
@@ -104,7 +105,7 @@ class SubunitBase:
 
     avail = YncaFunction[Avail]("AVAIL", Avail)
 
-    def __init__(self, connection: YncaConnection):
+    def __init__(self, connection: YncaConnection) -> None:
         """
         Baseclass for Subunits, should be subclassed do not instantiate manually.
         """

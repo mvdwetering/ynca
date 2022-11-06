@@ -9,6 +9,7 @@ class Tun(SubunitBase):
     id = Subunit.TUN
 
     band = YncaFunction[Band]("BAND", Band)
+
     amfreq = YncaFunction[int](
         "AMFREQ",
         int,
