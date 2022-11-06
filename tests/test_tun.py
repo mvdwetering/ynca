@@ -7,6 +7,12 @@ SUBUNIT = "TUN"
 
 INITIALIZE_FULL_RESPONSES = [
     (
+        (SUBUNIT, "AMFREQ"),
+        [
+            (SUBUNIT, "AMFREQ", "1080"),
+        ],
+    ),
+    (
         (SUBUNIT, "AVAIL"),
         [
             (SUBUNIT, "AVAIL", "Ready"),
@@ -16,12 +22,6 @@ INITIALIZE_FULL_RESPONSES = [
         (SUBUNIT, "BAND"),
         [
             (SUBUNIT, "BAND", "FM"),
-        ],
-    ),
-    (
-        (SUBUNIT, "AMFREQ"),
-        [
-            (SUBUNIT, "AMFREQ", "1080"),
         ],
     ),
     (
@@ -55,7 +55,11 @@ def test_initialize(connection, update_callback):
 
     tun.band = Band.AM
     connection.put.assert_called_with(SUBUNIT, "BAND", "AM")
+
+    # Set value and test stepsize handling (which is why it becomes 1000)
     tun.amfreq = 999
     connection.put.assert_called_with(SUBUNIT, "AMFREQ", "1000")
+
+    # Set value and test stepsize handling (which is why it becomes 100.00)
     tun.fmfreq = 100.05
     connection.put.assert_called_with(SUBUNIT, "FMFREQ", "100.00")
