@@ -34,12 +34,14 @@ class YncaFunction(Generic[T]):
         command_type: CommandType = CommandType.GET | CommandType.PUT,
         value_converter: Callable[[str], T] | None = None,
         str_converter: Callable[[T], str] | None = None,
+        no_initialize: bool = False,
     ) -> None:
         self.function_name = function_name
         self.datatype = datatype
         self.command_type = command_type
         self.value_converter = value_converter
         self._str_converter = str_converter
+        self.no_initialize = no_initialize
 
     def __get__(self, instance: SubunitBase, owner) -> T | None:
         if instance is None:
@@ -75,6 +77,13 @@ class YncaFunction(Generic[T]):
         return str(value)
 
 
+class YncaFunctionReadOnly(YncaFunction, Generic[T]):
+    def __init__(self, *args, **kwargs) -> None:
+        if "command_type" in kwargs.keys():
+            raise (ValueError("Can not override command_type. Is fixed to GET."))
+        super().__init__(*args, **kwargs, command_type=CommandType.GET)
+
+
 class YncaFunctionHandler:
     """
     Keeps a value of a Function and handles conversions from str on updating.
@@ -86,10 +95,12 @@ class YncaFunctionHandler:
         self,
         datatype: Type,
         value_converter: Callable[[str], Any] | None,
+        no_initialize: bool,
     ) -> None:
         self.value = None
         self.datatype = datatype
         self.value_converter = value_converter
+        self.no_initialize = no_initialize
 
     def update(self, value_str: str):
         if self.value_converter:
@@ -121,7 +132,7 @@ class SubunitBase:
 
             if isinstance(value, YncaFunction):
                 self.function_handlers[value.function_name] = YncaFunctionHandler(
-                    value.datatype, value.value_converter
+                    value.datatype, value.value_converter, value.no_initialize
                 )
 
         self._initialized = False
@@ -146,8 +157,9 @@ class SubunitBase:
         num_commands_sent_start = self._connection.num_commands_sent
 
         # Request YNCA functions
-        for function_name in self.function_handlers.keys():
-            self._get(function_name)
+        for function_name, handler in self.function_handlers.items():
+            if not handler.no_initialize:
+                self._get(function_name)
 
         # Invoke subunit specific initialization implemented in the derived classes
         self.on_initialize()
@@ -215,6 +227,7 @@ class SubunitBase:
 
         if handler := self.function_handlers.get(function_, None):
             handler.update(value)
+            updated = True
         else:
             updated = self.on_message_received_without_handler(status, function_, value)
 

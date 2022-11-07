@@ -1,51 +1,54 @@
+from enum import Enum
 import logging
 
-from typing import Dict, Optional
+from typing import Dict
 
 from .connection import YncaConnection, YncaProtocolStatus
 from .constants import Subunit
-from .function_mixins import PowerFunctionMixin
-from .subunit import SubunitBase
+from .subunit import CommandType, SubunitBase, YncaFunction, YncaFunctionReadOnly
 
 logger = logging.getLogger(__name__)
 
 
-class System(PowerFunctionMixin, SubunitBase):
+class Pwr(Enum):
+    ON = "On"
+    STANDBY = "Standby"
+
+
+class Party(Enum):
+    ON = "On"
+    OFF = "Off"
+
+
+class PartyMute(Enum):
+    ON = "On"
+    OFF = "Off"
+
+
+class System(SubunitBase):
     id = Subunit.SYS
 
-    def __init__(self, connection: YncaConnection):
-        """
-        Constructor for a Receiver object.
-        """
+    def __init__(self, connection: YncaConnection) -> None:
         super().__init__(connection)
         self._reset_internal_state()
 
     def _reset_internal_state(self):
         self._initialized = False
         self._inp_names: Dict[str, str] = {}
-
-        self._attr_modelname = None
         self._attr_version = None
-
-        self._attr_party = None
 
     def on_initialize(self):
         self._reset_internal_state()
-
-        self._get("MODELNAME")
 
         # Get user-friendly names for inputs (also allows detection of a number of available inputs)
         # Note that these are not all inputs, just the external ones it seems.
         self._get("INPNAME")
 
-        # Can only get PARTY mode status, PARTYVOL adn PARTYMUTE can only be set
-        self._get("PARTY")
-
         # Version is also used behind the scenes as a sync for initialization
         # So we should not send it here else it might mess up the synchronization
         # self._get("VERSION")
 
-    def _subunit_message_received_without_handler(
+    def on_message_received_without_handler(
         self, status: YncaProtocolStatus, function_: str, value: str
     ) -> bool:
         updated = True
@@ -61,15 +64,16 @@ class System(PowerFunctionMixin, SubunitBase):
 
         return updated
 
-    @property
-    def modelname(self):
-        """Get model name"""
-        return self._attr_modelname
+    modelname = YncaFunction[str]("MODELNAME", str)
+    party = YncaFunction[Party]("PARTY", Party)
+    partymute = YncaFunction[PartyMute](
+        "PARTYMUTE", PartyMute, command_type=CommandType.PUT
+    )
+    pwr = YncaFunction[Pwr]("PWR", Pwr)
 
-    @property
-    def version(self):
-        """Get firmware version"""
-        return self._attr_version
+    # No initialize VERSION to avoid it being sent during initialization
+    # because it is also used behind the scenes for syncing
+    version = YncaFunctionReadOnly[str]("VERSION", str, no_initialize=True)
 
     @property
     def inp_names(self) -> Dict[str, str]:
@@ -82,24 +86,6 @@ class System(PowerFunctionMixin, SubunitBase):
             "The 'inputs' attribute is deprecated and replaced with 'inp_names' to better match naming of the YNCA spec"
         )
         return self.inp_names
-
-    @property
-    def party(self) -> Optional[bool]:
-        """Get party state"""
-        return self._attr_party == "On" if self._attr_pwr is not None else None
-
-    @party.setter
-    def party(self, value: bool):
-        """Turn on/off party mode"""
-        self._put("PARTY", "On" if value is True else "Off")  # type: ignore
-
-    def _partymute(self, value: bool):
-        """Turn on/off party mode"""
-        self._put("PARTYMUTE", "On" if value is True else "Off")  # type: ignore
-
-    # Setter decorator can only be used when there is an @property decorator
-    # so build the setter property manually
-    partymute = property(None, _partymute)
 
     def partyvol_up(self):
         """

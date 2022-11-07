@@ -1,21 +1,33 @@
 from unittest import mock
 import pytest
 
-from ynca.system import System
+from ynca.system import Party, PartyMute, Pwr, System
 
 SYS = "SYS"
 
 INITIALIZE_FULL_RESPONSES = [
     (
-        (SYS, "PWR"),
+        (SYS, "AVAIL"),
         [
-            (SYS, "PWR", "Standby"),
+            (SYS, "AVAIL", "Ready"),
         ],
     ),
     (
         (SYS, "MODELNAME"),
         [
             (SYS, "MODELNAME", "ModelName"),
+        ],
+    ),
+    (
+        (SYS, "PARTY"),
+        [
+            (SYS, "PARTY", "On"),
+        ],
+    ),
+    (
+        (SYS, "PWR"),
+        [
+            (SYS, "PWR", "Standby"),
         ],
     ),
     (
@@ -40,12 +52,6 @@ INITIALIZE_FULL_RESPONSES = [
             (SYS, "INPNAMEAUDIO2", "InputAudio2"),
             (SYS, "INPNAMEDOCK", "InputDock"),
             (SYS, "INPNAMEUSB", "InputUsb"),
-        ],
-    ),
-    (
-        (SYS, "PARTY"),
-        [
-            (SYS, "PARTY", "On"),
         ],
     ),
     (
@@ -75,6 +81,12 @@ def test_construct(connection, update_callback):
 
 def test_initialize_minimal(connection, update_callback):
     connection.get_response_list = [
+        (
+            (SYS, "AVAIL"),
+            [
+                (SYS, "AVAIL", "Ready"),
+            ],
+        ),
         (
             (SYS, "VERSION"),
             [
@@ -108,8 +120,8 @@ def test_initialize_full(connection, update_callback):
     assert update_callback.call_count == 1
     assert s.version == "Version"
     assert s.modelname == "ModelName"
-    assert s.pwr is False
-    assert s.party is True
+    assert s.pwr == Pwr.STANDBY
+    assert s.party == Party.ON
 
     assert len(s.inp_names.keys()) == 19
     assert s.inp_names["PHONO"] == "InputPhono"
@@ -160,17 +172,17 @@ def test_registration(connection, initialized_system: System):
 
 def test_party(connection, initialized_system: System):
     # Writing to device
-    initialized_system.party = True
+    initialized_system.party = Party.ON
     connection.put.assert_called_with(SYS, "PARTY", "On")
-    initialized_system.party = False
+    initialized_system.party = Party.OFF
     connection.put.assert_called_with(SYS, "PARTY", "Off")
 
 
 def test_partymute(connection, initialized_system: System):
     # Writing to device
-    initialized_system.partymute = True
+    initialized_system.partymute = PartyMute.ON
     connection.put.assert_called_with(SYS, "PARTYMUTE", "On")
-    initialized_system.partymute = False
+    initialized_system.partymute = PartyMute.OFF
     connection.put.assert_called_with(SYS, "PARTYMUTE", "Off")
 
 
