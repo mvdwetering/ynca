@@ -78,19 +78,41 @@ class YncaFunction(Generic[T]):
 
 
 class YncaFunctionReadOnly(YncaFunction, Generic[T]):
-    def __init__(self, *args, **kwargs) -> None:
-        if "command_type" in kwargs.keys():
-            raise (ValueError("Can not override command_type. Is fixed to GET."))
-        kwargs["command_type"] = CommandType.GET
-        super().__init__(*args, **kwargs)
+    def __init__(
+        self,
+        function_name: str,
+        datatype: Type,
+        value_converter: Callable[[str], T] | None = None,
+        str_converter: Callable[[T], str] | None = None,
+        no_initialize: bool = False,
+    ) -> None:
+        super().__init__(
+            function_name,
+            datatype,
+            command_type=CommandType.GET,
+            value_converter=value_converter,
+            str_converter=str_converter,
+            no_initialize=no_initialize,
+        )
 
 
 class YncaFunctionWriteOnly(YncaFunction, Generic[T]):
-    def __init__(self, *args, **kwargs) -> None:
-        if "command_type" in kwargs.keys():
-            raise (ValueError("Can not override command_type. Is fixed to PUT."))
-        kwargs["command_type"] = CommandType.PUT
-        super().__init__(*args, **kwargs)
+    def __init__(
+        self,
+        function_name: str,
+        datatype: Type,
+        value_converter: Callable[[str], T] | None = None,
+        str_converter: Callable[[T], str] | None = None,
+        no_initialize: bool = False,
+    ) -> None:
+        super().__init__(
+            function_name,
+            datatype,
+            command_type=CommandType.PUT,
+            value_converter=value_converter,
+            str_converter=str_converter,
+            no_initialize=no_initialize,
+        )
 
 
 class YncaFunctionHandler:
