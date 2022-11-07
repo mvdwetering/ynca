@@ -31,8 +31,46 @@ class PartyMute(Enum):
     OFF = "Off"
 
 
+class PartyVol(Enum):
+    UP = "Up"
+    DOWN = "Down"
+
+
+def raise_(ex):
+    raise ex
+
+
 class System(SubunitBase):
     id = Subunit.SYS
+
+    modelname = YncaFunction[str]("MODELNAME", str)
+    party = YncaFunction[Party]("PARTY", Party)
+    partymute = YncaFunctionWriteOnly[PartyMute]("PARTYMUTE", PartyMute)
+    partyvol = YncaFunctionWriteOnly[PartyVol]("PARTYVOL", PartyVol)
+    pwr = YncaFunction[Pwr]("PWR", Pwr)
+    remotecode = YncaFunctionWriteOnly[str](
+        "REMOTECODE",
+        str,
+        str_converter=lambda v: v
+        if len(v) == 8
+        else raise_(ValueError("Remotecode must have a length of 8")),
+    )
+
+    # No initialize VERSION to avoid it being sent during initialization
+    # because it is also used behind the scenes for syncing
+    version = YncaFunctionReadOnly[str]("VERSION", str, no_initialize=True)
+
+    def partyvol_up(self):
+        """
+        Increase the party volume with one step.
+        """
+        self._put("PARTYVOL", "Up")
+
+    def partyvol_down(self):
+        """
+        Decrease the party volume with one step.
+        """
+        self._put("PARTYVOL", "Down")
 
     def __init__(self, connection: YncaConnection) -> None:
         super().__init__(connection)
@@ -50,10 +88,6 @@ class System(SubunitBase):
         # Note that these are not all inputs, just the external ones it seems.
         self._get("INPNAME")
 
-        # Version is also used behind the scenes as a sync for initialization
-        # So we should not send it here else it might mess up the synchronization
-        # self._get("VERSION")
-
     def on_message_received_without_handler(
         self, status: YncaProtocolStatus, function_: str, value: str
     ) -> bool:
@@ -70,39 +104,7 @@ class System(SubunitBase):
 
         return updated
 
-    modelname = YncaFunction[str]("MODELNAME", str)
-    party = YncaFunction[Party]("PARTY", Party)
-    partymute = YncaFunctionWriteOnly[PartyMute]("PARTYMUTE", PartyMute)
-    pwr = YncaFunction[Pwr]("PWR", Pwr)
-
-    # No initialize VERSION to avoid it being sent during initialization
-    # because it is also used behind the scenes for syncing
-    version = YncaFunctionReadOnly[str]("VERSION", str, no_initialize=True)
-
     @property
     def inp_names(self) -> Dict[str, str]:
         """Get input names, dictionary of INP-id,INPNAME"""
         return dict(self._inp_names)
-
-    @property
-    def inputs(self) -> Dict[str, str]:
-        logger.warning(
-            "The 'inputs' attribute is deprecated and replaced with 'inp_names' to better match naming of the YNCA spec"
-        )
-        return self.inp_names
-
-    def partyvol_up(self):
-        """
-        Increase the party volume with one step.
-        """
-        self._put("PARTYVOL", "Up")
-
-    def partyvol_down(self):
-        """
-        Decrease the party volume with one step.
-        """
-        self._put("PARTYVOL", "Down")
-
-    def send_remotecode(self, code: str):
-        """Send remote code. These codes are 8 characters long."""
-        self._put("REMOTECODE", code)

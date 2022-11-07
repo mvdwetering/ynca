@@ -1,7 +1,7 @@
 from unittest import mock
 import pytest
 
-from ynca.system import Party, PartyMute, Pwr, System
+from ynca.system import Party, PartyMute, PartyVol, Pwr, System
 
 SYS = "SYS"
 
@@ -162,16 +162,28 @@ def test_partymute(connection, initialized_system: System):
 
 def test_partyvol(connection, initialized_system: System):
     # Writing to device
+    initialized_system.partyvol = PartyVol.UP
+    connection.put.assert_called_with(SYS, "PARTYVOL", "Up")
+    initialized_system.partyvol = PartyVol.DOWN
+    connection.put.assert_called_with(SYS, "PARTYVOL", "Down")
+
+
+def test_partyvol_method(connection, initialized_system: System):
+    # Writing to device
     initialized_system.partyvol_up()
     connection.put.assert_called_with(SYS, "PARTYVOL", "Up")
     initialized_system.partyvol_down()
     connection.put.assert_called_with(SYS, "PARTYVOL", "Down")
 
 
-def test_send_remotecode(connection, initialized_system: System):
-    # Writing to device
-    initialized_system.send_remotecode("code1234")
+def test_remotecode(connection, initialized_system: System):
+    initialized_system.remotecode = "code1234"
     connection.put.assert_called_with(SYS, "REMOTECODE", "code1234")
+
+
+def test_remotecode_wrong_length(connection, initialized_system: System):
+    with pytest.raises(ValueError):
+        initialized_system.remotecode = "wrong length"
 
 
 def test_unhandled_function(connection, initialized_system: System):
