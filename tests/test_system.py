@@ -100,7 +100,6 @@ def test_initialize_minimal(connection, update_callback):
 
     s.initialize()
 
-    assert update_callback.call_count == 1
     assert s.version == "Version"
     assert s.modelname is None
     assert s.pwr is None
@@ -117,7 +116,7 @@ def test_initialize_full(connection, update_callback):
 
     s.initialize()
 
-    assert update_callback.call_count == 1
+    assert update_callback.call_count == 0
     assert s.version == "Version"
     assert s.modelname == "ModelName"
     assert s.pwr == Pwr.STANDBY
@@ -143,31 +142,6 @@ def test_initialize_full(connection, update_callback):
     assert s.inp_names["AUDIO2"] == "InputAudio2"
     assert s.inp_names["DOCK"] == "InputDock"
     assert s.inp_names["USB"] == "InputUsb"
-
-
-def test_registration(connection, initialized_system: System):
-
-    update_callback_1 = mock.MagicMock()
-    update_callback_2 = mock.MagicMock()
-
-    # Register multiple callbacks, both get called
-    initialized_system.register_update_callback(update_callback_1)
-    initialized_system.register_update_callback(update_callback_2)
-    connection.send_protocol_message(SYS, "PWR", "On")
-    assert update_callback_1.call_count == 1
-    assert update_callback_2.call_count == 1
-
-    # Double registration (second gets ignored)
-    initialized_system.register_update_callback(update_callback_2)
-    connection.send_protocol_message(SYS, "PWR", "On")
-    assert update_callback_1.call_count == 2
-    assert update_callback_2.call_count == 2
-
-    # Unregistration
-    initialized_system.unregister_update_callback(update_callback_2)
-    connection.send_protocol_message(SYS, "PWR", "On")
-    assert update_callback_1.call_count == 3
-    assert update_callback_2.call_count == 2
 
 
 def test_party(connection, initialized_system: System):

@@ -29,7 +29,5 @@ def test_initialize(connection, update_callback):
 
     bt.initialize()
 
-    assert update_callback.call_count == 1
-
     bt.playback(Playback.PLAY)
     connection.put.assert_called_with(SUBUNIT, "PLAYBACK", "Play")

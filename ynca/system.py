@@ -5,7 +5,13 @@ from typing import Dict
 
 from .connection import YncaConnection, YncaProtocolStatus
 from .constants import Subunit
-from .subunit import CommandType, SubunitBase, YncaFunction, YncaFunctionReadOnly
+from .subunit import (
+    CommandType,
+    SubunitBase,
+    YncaFunction,
+    YncaFunctionReadOnly,
+    YncaFunctionWriteOnly,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -66,9 +72,7 @@ class System(SubunitBase):
 
     modelname = YncaFunction[str]("MODELNAME", str)
     party = YncaFunction[Party]("PARTY", Party)
-    partymute = YncaFunction[PartyMute](
-        "PARTYMUTE", PartyMute, command_type=CommandType.PUT
-    )
+    partymute = YncaFunctionWriteOnly[PartyMute]("PARTYMUTE", PartyMute)
     pwr = YncaFunction[Pwr]("PWR", Pwr)
 
     # No initialize VERSION to avoid it being sent during initialization

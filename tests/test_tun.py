@@ -48,7 +48,6 @@ def test_initialize(connection, update_callback):
 
     tun.initialize()
 
-    assert update_callback.call_count == 1
     assert tun.band is Band.FM
     assert tun.amfreq == 1080
     assert tun.fmfreq == 101.60

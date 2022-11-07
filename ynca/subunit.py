@@ -81,7 +81,16 @@ class YncaFunctionReadOnly(YncaFunction, Generic[T]):
     def __init__(self, *args, **kwargs) -> None:
         if "command_type" in kwargs.keys():
             raise (ValueError("Can not override command_type. Is fixed to GET."))
-        super().__init__(*args, **kwargs, command_type=CommandType.GET)
+        kwargs["command_type"] = CommandType.GET
+        super().__init__(*args, **kwargs)
+
+
+class YncaFunctionWriteOnly(YncaFunction, Generic[T]):
+    def __init__(self, *args, **kwargs) -> None:
+        if "command_type" in kwargs.keys():
+            raise (ValueError("Can not override command_type. Is fixed to PUT."))
+        kwargs["command_type"] = CommandType.PUT
+        super().__init__(*args, **kwargs)
 
 
 class YncaFunctionHandler:
@@ -109,6 +118,7 @@ class YncaFunctionHandler:
             self.value = self.datatype(value_str)
 
 
+# TODO: Look at ABC (AbstractBaseClass)
 class SubunitBase:
 
     # To be set in subclasses
@@ -120,7 +130,7 @@ class SubunitBase:
         """
         Baseclass for Subunits, should be subclassed do not instantiate manually.
         """
-        self._update_callbacks: Set[Callable[[], None]] = set()
+        self._update_callbacks: Set[Callable[[str, str], None]] = set()
 
         self.function_handlers: Dict[str, YncaFunctionHandler] = {}
 
@@ -181,7 +191,6 @@ class SubunitBase:
             )
 
         logger.debug("Subunit %s initialization done.", self.id)
-        self._call_registered_update_callbacks()
 
     def on_initialize(self):
         """
@@ -199,7 +208,7 @@ class SubunitBase:
             self._update_callbacks = set()
 
     def on_message_received_without_handler(
-        self, status: YncaProtocolStatus, function_: str, value: str
+        self, status: YncaProtocolStatus, function_name: str, value: str
     ) -> bool:
         """
         Called when a message for this subunit was received with no handler
@@ -210,14 +219,18 @@ class SubunitBase:
         return False
 
     def _protocol_message_received(
-        self, status: YncaProtocolStatus, subunit: str, function_: str, value: str
+        self, status: YncaProtocolStatus, subunit: str, function_name: str, value: str
     ):
         if status is not YncaProtocolStatus.OK:
             # Can't really handle errors since at this point we can't see to what command it belonged
             return
 
         # During initialization SYS:VERSION is used to signal that initialization is done
-        if not self._initialized and subunit == Subunit.SYS and function_ == "VERSION":
+        if (
+            not self._initialized
+            and subunit == Subunit.SYS
+            and function_name == "VERSION"
+        ):
             self._initialized_event.set()
 
         if self.id != subunit:
@@ -225,28 +238,30 @@ class SubunitBase:
 
         updated = False
 
-        if handler := self.function_handlers.get(function_, None):
+        if handler := self.function_handlers.get(function_name, None):
             handler.update(value)
             updated = True
         else:
-            updated = self.on_message_received_without_handler(status, function_, value)
+            updated = self.on_message_received_without_handler(
+                status, function_name, value
+            )
 
         if updated:
-            self._call_registered_update_callbacks()
+            self._call_registered_update_callbacks(function_name, value)
 
-    def _put(self, function_: str, value: str):
-        self._connection.put(self.id, function_, value)
+    def _put(self, function_name: str, value: str):
+        self._connection.put(self.id, function_name, value)
 
-    def _get(self, function_: str):
-        self._connection.get(self.id, function_)
+    def _get(self, function_name: str):
+        self._connection.get(self.id, function_name)
 
-    def register_update_callback(self, callback: Callable[[], None]):
+    def register_update_callback(self, callback: Callable[[str, str], None]):
         self._update_callbacks.add(callback)
 
-    def unregister_update_callback(self, callback: Callable[[], None]):
+    def unregister_update_callback(self, callback: Callable[[str, str], None]):
         self._update_callbacks.remove(callback)
 
-    def _call_registered_update_callbacks(self):
+    def _call_registered_update_callbacks(self, function_name: str, value: str):
         if self._initialized:
             for callback in self._update_callbacks:
-                callback()
+                callback(function_name, value)

@@ -15,5 +15,5 @@ def connection():
 
 
 @pytest.fixture
-def update_callback() -> Callable[[], None]:
+def update_callback() -> Callable[[str, str], None]:
     return mock.MagicMock()
