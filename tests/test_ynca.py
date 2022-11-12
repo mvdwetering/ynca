@@ -90,15 +90,15 @@ INITIALIZE_FULL_RESPONSES = [
         ],
     ),
     (
-        (SYS, "PWR"),
-        [
-            (SYS, "PWR", "Standby"),
-        ],
-    ),
-    (
         (SYS, "MODELNAME"),
         [
             (SYS, "MODELNAME", "ModelName"),
+        ],
+    ),
+    (
+        (SYS, "PWR"),
+        [
+            (SYS, "PWR", "Standby"),
         ],
     ),
     (
@@ -109,7 +109,7 @@ INITIALIZE_FULL_RESPONSES = [
             (SYS, "INPNAMEUSB", "InputUsb"),
         ],
     ),
-    # SYS Subunit iniatilize sync
+    # SYS Subunit initialize sync
     (
         (SYS, "VERSION"),
         [

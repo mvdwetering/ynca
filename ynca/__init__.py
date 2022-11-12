@@ -16,10 +16,11 @@ from .errors import (
     YncaConnectionFailed,
     YncaInitializationFailedException,
 )
-from .get_all_zone_inputs import get_all_zone_inputs, get_inputinfo_list, InputInfo
+from .get_all_zone_inputs import get_inputinfo_list, InputInfo
 from .ynca import (
     Ynca,
 )
+from .function_mixins import Pwr
 
 from .modelinfo import get_modelinfo
 

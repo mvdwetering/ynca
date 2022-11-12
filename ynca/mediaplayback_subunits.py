@@ -4,10 +4,13 @@ import logging
 
 from .constants import Subunit
 from .function_mixins import (
-    MetainfoFunctionMixin,
+    AlbumFunctionMixin,
+    ArtistFunctionMixin,
     PlaybackFunctionMixin,
     PlaybackInfoFunctionMixin,
-    RepeatShuffleFunctionMixin,
+    RepeatFunctionMixin,
+    ShuffleFunctionMixin,
+    SongFunctionMixin,
 )
 from .subunit import SubunitBase
 
@@ -17,8 +20,11 @@ from .subunit import SubunitBase
 class MediaPlaybackSubunitBase(
     PlaybackFunctionMixin,
     PlaybackInfoFunctionMixin,
-    MetainfoFunctionMixin,
-    RepeatShuffleFunctionMixin,
+    RepeatFunctionMixin,
+    ShuffleFunctionMixin,
+    ArtistFunctionMixin,
+    AlbumFunctionMixin,
+    SongFunctionMixin,
     SubunitBase,
 ):
     pass

@@ -41,7 +41,6 @@ def test_initialize(connection, update_callback):
 
     netradio.initialize()
 
-    assert update_callback.call_count == 1
     assert netradio.station == "Station"
     assert netradio.playbackinfo is PlaybackInfo.PLAY
 

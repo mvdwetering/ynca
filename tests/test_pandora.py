@@ -6,6 +6,14 @@ SUBUNIT = "PANDORA"
 
 INITIALIZE_FULL_RESPONSES = [
     (
+        (SUBUNIT, "METAINFO"),
+        [
+            (SUBUNIT, "ALBUM", "Album"),
+            (SUBUNIT, "ARTIST", "Artist"),
+            (SUBUNIT, "SONG", "Song"),
+        ],
+    ),
+    (
         (SUBUNIT, "AVAIL"),
         [
             (SUBUNIT, "AVAIL", "Ready"),
@@ -15,14 +23,6 @@ INITIALIZE_FULL_RESPONSES = [
         (SUBUNIT, "PLAYBACKINFO"),
         [
             (SUBUNIT, "PLAYBACKINFO", "Pause"),
-        ],
-    ),
-    (
-        (SUBUNIT, "METAINFO"),
-        [
-            (SUBUNIT, "ALBUM", "Album"),
-            (SUBUNIT, "ARTIST", "Artist"),
-            (SUBUNIT, "SONG", "Song"),
         ],
     ),
     (
@@ -49,7 +49,6 @@ def test_initialize(connection, update_callback):
 
     pandora.initialize()
 
-    assert update_callback.call_count == 1
     assert pandora.album == "Album"
     assert pandora.artist == "Artist"
     assert pandora.song == "Song"

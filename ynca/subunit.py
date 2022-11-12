@@ -97,12 +97,26 @@ class YncaFunctionBase(ABC, Generic[T]):
         function_name: str,
         converter: ConverterBase,
         command_type: CommandType = CommandType.GET | CommandType.PUT,
+        initialize_function_name: str | None = None,
         no_initialize: bool = False,
     ) -> None:
+        """
+        function_name:
+            Name of the function
+        converter:
+            Converter to use for value to/from str conversions
+        command_type:
+            Operations the command supports. PUT and/or GET
+        initialize_function_name:
+            Set this if the name to initialize this function is different from the function name itself. E.g. METAINFO for artist, album and song to reduce amount of commands needed
+        no_initialize:
+            Do not initialize this function, very specific usecase, do _not_ use unless you know what you are doing
+        """
         self.function_name = function_name
         self.command_type = command_type
         self.converter = converter
         self.no_initialize = no_initialize
+        self.initialize_function_name = initialize_function_name
 
     def __get__(self, instance: SubunitBase, owner) -> T | None:
         if instance is None:
@@ -134,12 +148,14 @@ class YncaFunctionEnum(YncaFunctionBase, Generic[E]):
         datatype: Type[E],
         command_type: CommandType = CommandType.GET | CommandType.PUT,
         no_initialize: bool = False,
+        initialize_function_name=None,
     ) -> None:
         super().__init__(
             function_name,
             command_type=command_type,
             converter=EnumConverter[E](datatype),
             no_initialize=no_initialize,
+            initialize_function_name=initialize_function_name,
         )
 
 
@@ -150,12 +166,14 @@ class YncaFunctionStr(YncaFunctionBase):
         command_type: CommandType = CommandType.GET | CommandType.PUT,
         converter: StrConverter = StrConverter(),
         no_initialize: bool = False,
+        initialize_function_name=None,
     ) -> None:
         super().__init__(
             function_name,
             command_type=command_type,
             converter=converter,
             no_initialize=no_initialize,
+            initialize_function_name=initialize_function_name,
         )
 
 
@@ -166,12 +184,14 @@ class YncaFunctionInt(YncaFunctionBase):
         command_type: CommandType = CommandType.GET | CommandType.PUT,
         converter: ConverterBase = IntConverter(),
         no_initialize: bool = False,
+        initialize_function_name=None,
     ) -> None:
         super().__init__(
             function_name,
             command_type=command_type,
             converter=converter,
             no_initialize=no_initialize,
+            initialize_function_name=initialize_function_name,
         )
 
 
@@ -182,12 +202,14 @@ class YncaFunctionFloat(YncaFunctionBase):
         command_type: CommandType = CommandType.GET | CommandType.PUT,
         converter: ConverterBase = FloatConverter(),
         no_initialize: bool = False,
+        initialize_function_name=None,
     ) -> None:
         super().__init__(
             function_name,
             command_type=command_type,
             converter=converter,
             no_initialize=no_initialize,
+            initialize_function_name=initialize_function_name,
         )
 
 
@@ -229,7 +251,6 @@ class SubunitBase(ABC):
         # Sort the list to have a deterministic/understandable order for easier testing
         for attribute_name in sorted(dir(self.__class__)):
             attribute = getattr(self.__class__, attribute_name)
-
             if isinstance(attribute, YncaFunctionBase):
                 self.function_handlers[attribute.function_name] = YncaFunctionHandler(
                     attribute
@@ -257,9 +278,17 @@ class SubunitBase(ABC):
         num_commands_sent_start = self._connection.num_commands_sent
 
         # Request YNCA functions
+        initialized_function_names = []
         for function_name, handler in self.function_handlers.items():
             if not handler.function.no_initialize:
-                self._get(function_name)
+                function_name = (
+                    handler.function.initialize_function_name
+                    if handler.function.initialize_function_name is not None
+                    else function_name
+                )
+                if function_name not in initialized_function_names:
+                    self._get(function_name)
+                    initialized_function_names.append(function_name)
 
         # Invoke subunit specific initialization implemented in the derived classes
         self.on_initialize()

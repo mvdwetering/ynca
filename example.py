@@ -5,13 +5,7 @@ import sys
 import time
 import logging
 
-from ynca import (
-    Ynca,
-    Mute,
-    Subunit,
-    YncaException,
-    get_inputinfo_list,
-)
+from ynca import Ynca, Mute, Subunit, YncaException, get_inputinfo_list, Pwr
 
 ZONE_SUBUNIT_IDS = [Subunit.MAIN, Subunit.ZONE2, Subunit.ZONE3, Subunit.ZONE4]
 
@@ -73,13 +67,13 @@ if __name__ == "__main__":
     logger.setLevel(logging.DEBUG)
 
     main = ynca_receiver.MAIN
-    main.pwr = True
+    main.pwr = Pwr.ON
     current_volume = main.vol  # Save so we can restore it
     main.vol = -50
     main.vol = -50.5
     main.vol_up()
-    main.mute = Mute.off
-    main.mute = Mute.on
+    main.mute = Mute.OFF
+    main.mute = Mute.ON
     main.vol = current_volume
 
     print(

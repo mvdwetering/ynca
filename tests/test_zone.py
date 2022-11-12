@@ -3,7 +3,8 @@ from unittest import mock
 import pytest
 
 from ynca.constants import Mute, Subunit, SoundPrg, TwoChDecoder
-from ynca.zone import ZoneBase, Main, Zone2, Zone3, Zone4
+from ynca.function_mixins import Pwr
+from ynca.zone import PureDirMode, Straight, ZoneBase, Main, Zone2, Zone3, Zone4
 
 from .mock_yncaconnection import YncaConnectionMock
 
@@ -11,6 +12,12 @@ SYS = "SYS"
 SUBUNIT = "TESTZONE"
 
 INITIALIZE_FULL_RESPONSES = [
+    (
+        (SUBUNIT, "AVAIL"),
+        [
+            (SUBUNIT, "AVAIL", "Ready"),
+        ],
+    ),
     (
         (SUBUNIT, "BASIC"),
         [
@@ -24,8 +31,8 @@ INITIALIZE_FULL_RESPONSES = [
             (SUBUNIT, "SOUNDPRG", "Standard"),
             (SUBUNIT, "3DCINEMA", "Auto"),
             (SUBUNIT, "PUREDIRMODE", "Off"),
-            (SUBUNIT, "SPBASS", "Scene name 4"),
-            (SUBUNIT, "SPTREBLE", "Scene name 4"),
+            (SUBUNIT, "SPBASS", "4"),
+            (SUBUNIT, "SPTREBLE", "-4"),
             (SUBUNIT, "ADAPTIVEDRC", "Off"),
         ],
     ),
@@ -36,13 +43,9 @@ INITIALIZE_FULL_RESPONSES = [
         ],
     ),
     (
-        (SUBUNIT, "SCENENAME"),
+        (SUBUNIT, "2CHDECODER"),
         [
-            (SUBUNIT, "SCENE1NAME", "Scene name 1"),
-            (SUBUNIT, "SCENE2NAME", "Scene name 2"),
-            (SUBUNIT, "SCENE3NAME", "Scene name 3"),
-            (SUBUNIT, "SCENE4NAME", "Scene name 4"),
-            (SUBUNIT, "SCENE42NAME", "Scene name 42"),
+            (SUBUNIT, "2CHDECODER", "Dolby PLIIx Movie"),
         ],
     ),
     (
@@ -52,15 +55,13 @@ INITIALIZE_FULL_RESPONSES = [
         ],
     ),
     (
-        (SUBUNIT, "2CHDECODER"),
+        (SUBUNIT, "SCENENAME"),
         [
-            (SUBUNIT, "2CHDECODER", "Dolby PLIIx Movie"),
-        ],
-    ),
-    (
-        (SUBUNIT, "PUREDIRMODE"),
-        [
-            (SUBUNIT, "PUREDIRMODE", "On"),
+            (SUBUNIT, "SCENE1NAME", "Scene name 1"),
+            (SUBUNIT, "SCENE2NAME", "Scene name 2"),
+            (SUBUNIT, "SCENE3NAME", "Scene name 3"),
+            (SUBUNIT, "SCENE4NAME", "Scene name 4"),
+            (SUBUNIT, "SCENE42NAME", "Scene name 42"),
         ],
     ),
     (
@@ -143,9 +144,9 @@ def test_initialize_minimal(connection, update_callback):
     assert update_callback.call_count == 0
     assert z.zonename == "ZoneName"
     assert z.pwr is None
-    assert z.input is None
+    assert z.inp is None
     assert z.vol is None
-    assert z.maxvol == 16.5
+    assert z.maxvol is None
     assert z.mute is None
     assert z.straight is None
     assert z.soundprg is None
@@ -163,17 +164,16 @@ def test_initialize_full(connection, update_callback):
 
     z.initialize()
 
-    assert update_callback.call_count == 1
-    assert z.pwr is False
-    assert z.input == "HDMI1"
+    assert z.pwr is Pwr.STANDBY
+    assert z.inp == "HDMI1"
     assert z.vol == -30.0
     assert z.maxvol == 1.2
-    assert z.mute is Mute.off
-    assert z.straight is False
-    assert z.soundprg == "Standard"
+    assert z.mute is Mute.OFF
+    assert z.straight is Straight.OFF
+    assert z.soundprg is SoundPrg.STANDARD
     assert z.zonename == "ZoneName"
     assert z.twochdecoder is TwoChDecoder.DolbyPl2xMovie
-    assert z.puredirmode is True
+    assert z.puredirmode is PureDirMode.OFF
 
     assert len(z.scenenames.keys()) == 5
     assert z.scenenames["1"] == "Scene name 1"
@@ -185,24 +185,24 @@ def test_initialize_full(connection, update_callback):
 
 def test_mute(connection, initialized_zone: ZoneBase):
     # Writing to device
-    initialized_zone.mute = Mute.on
+    initialized_zone.mute = Mute.ON
     connection.put.assert_called_with(SUBUNIT, "MUTE", "On")
-    initialized_zone.mute = Mute.att_minus_20
+    initialized_zone.mute = Mute.ATT_MINUS_20
     connection.put.assert_called_with(SUBUNIT, "MUTE", "Att -20 dB")
-    initialized_zone.mute = Mute.att_minus_40
+    initialized_zone.mute = Mute.ATT_MINUS_40
     connection.put.assert_called_with(SUBUNIT, "MUTE", "Att -40 dB")
-    initialized_zone.mute = Mute.off
+    initialized_zone.mute = Mute.OFF
     connection.put.assert_called_with(SUBUNIT, "MUTE", "Off")
 
     # Updates from device
     connection.send_protocol_message(SUBUNIT, "MUTE", "On")
-    assert initialized_zone.mute is Mute.on
+    assert initialized_zone.mute is Mute.ON
     connection.send_protocol_message(SUBUNIT, "MUTE", "Att -20 dB")
-    assert initialized_zone.mute is Mute.att_minus_20
+    assert initialized_zone.mute is Mute.ATT_MINUS_20
     connection.send_protocol_message(SUBUNIT, "MUTE", "Att -40 dB")
-    assert initialized_zone.mute is Mute.att_minus_40
+    assert initialized_zone.mute is Mute.ATT_MINUS_40
     connection.send_protocol_message(SUBUNIT, "MUTE", "Off")
-    assert initialized_zone.mute is Mute.off
+    assert initialized_zone.mute is Mute.OFF
 
 
 def test_volume(connection, initialized_zone: ZoneBase):
@@ -225,10 +225,6 @@ def test_volume(connection, initialized_zone: ZoneBase):
     connection.put.assert_called_with(SUBUNIT, "VOL", "-0.5")
     initialized_zone.vol = -0.1
     connection.put.assert_called_with(SUBUNIT, "VOL", "0.0")
-
-    # Out of range
-    with pytest.raises(ValueError):
-        initialized_zone.vol = initialized_zone.maxvol + 1
 
     # Up
     initialized_zone.vol_up()
@@ -285,24 +281,24 @@ def test_soundprg(connection, initialized_zone: ZoneBase):
 
 def test_straight(connection, initialized_zone: ZoneBase):
     # Writing to device
-    initialized_zone.straight = True
+    initialized_zone.straight = Straight.ON
     connection.put.assert_called_with(SUBUNIT, "STRAIGHT", "On")
-    initialized_zone.straight = False
+    initialized_zone.straight = Straight.OFF
     connection.put.assert_called_with(SUBUNIT, "STRAIGHT", "Off")
 
     # Updates from device
     connection.send_protocol_message(SUBUNIT, "STRAIGHT", "On")
-    assert initialized_zone.straight == True
+    assert initialized_zone.straight == Straight.ON
     connection.send_protocol_message(SUBUNIT, "STRAIGHT", "Off")
-    assert initialized_zone.straight == False
+    assert initialized_zone.straight == Straight.OFF
 
 
 def test_scene(connection, initialized_zone: ZoneBase):
     # Writing to device
     with pytest.raises(ValueError):
-        initialized_zone.activate_scene("Invalid")
+        initialized_zone.scene_activate("Invalid")
 
-    initialized_zone.activate_scene("42")
+    initialized_zone.scene_activate("42")
     connection.put.assert_called_with(SUBUNIT, "SCENE", "Scene 42")
 
     # Updates from device
@@ -334,16 +330,16 @@ def test_twochdecoder(connection, initialized_zone: ZoneBase):
 
 def test_puredirmode(connection, initialized_zone: ZoneBase):
     # Writing to device
-    initialized_zone.puredirmode = True
+    initialized_zone.puredirmode = PureDirMode.ON
     connection.put.assert_called_with(SUBUNIT, "PUREDIRMODE", "On")
-    initialized_zone.puredirmode = False
+    initialized_zone.puredirmode = PureDirMode.OFF
     connection.put.assert_called_with(SUBUNIT, "PUREDIRMODE", "Off")
 
     # Updates from device
     connection.send_protocol_message(SUBUNIT, "PUREDIRMODE", "On")
-    assert initialized_zone.puredirmode == True
+    assert initialized_zone.puredirmode == PureDirMode.ON
     connection.send_protocol_message(SUBUNIT, "PUREDIRMODE", "Off")
-    assert initialized_zone.puredirmode == False
+    assert initialized_zone.puredirmode == PureDirMode.OFF
 
 
 # TODO: This seems generic and probably should be moved to the subunit test

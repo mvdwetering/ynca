@@ -4,9 +4,11 @@ import logging
 
 from .constants import Subunit
 from .function_mixins import (
-    MetainfoFunctionMixin,
+    AlbumFunctionMixin,
+    ArtistFunctionMixin,
     PlaybackFunctionMixin,
     PlaybackInfoFunctionMixin,
+    SongFunctionMixin,
     StationFunctionMixin,
 )
 from .subunit import SubunitBase
@@ -15,7 +17,9 @@ from .subunit import SubunitBase
 class Pandora(
     PlaybackFunctionMixin,
     PlaybackInfoFunctionMixin,
-    MetainfoFunctionMixin,
+    ArtistFunctionMixin,
+    AlbumFunctionMixin,
+    SongFunctionMixin,
     StationFunctionMixin,
     SubunitBase,
 ):

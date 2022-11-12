@@ -6,9 +6,5 @@ from .function_mixins import PlaybackFunctionMixin
 from .subunit import SubunitBase
 
 
-class Bt(
-    SubunitBase,
-):
+class Bt(SubunitBase, PlaybackFunctionMixin):
     id = Subunit.BT
-
-    playback = PlaybackFunctionMixin.playback

@@ -3,8 +3,10 @@ import logging
 
 from typing import Dict
 
+
 from .connection import YncaConnection, YncaProtocolStatus
 from .constants import Subunit
+from .function_mixins import Pwr
 from .subunit import (
     CommandType,
     StrConverter,
@@ -16,11 +18,6 @@ from .subunit import (
 logger = logging.getLogger(__name__)
 
 
-class Pwr(Enum):
-    ON = "On"
-    STANDBY = "Standby"
-
-
 class Party(Enum):
     ON = "On"
     OFF = "Off"
@@ -29,15 +26,6 @@ class Party(Enum):
 class PartyMute(Enum):
     ON = "On"
     OFF = "Off"
-
-
-class PartyVol(Enum):
-    UP = "Up"
-    DOWN = "Down"
-
-
-def raise_(ex):
-    raise ex
 
 
 class System(SubunitBase):

@@ -32,14 +32,19 @@ class SoundPrg(str, Enum):
     SEVEN_CH_STEREO = "7ch Stereo"
     NINE_CH_STEREO = "9ch Stereo"
     SURROUND_DECODER = "Surround Decoder"
-    ALL_CH_STEREO = "All-Ch Stereo"  # Available on TSR-700
+    ALL_CH_STEREO = "All-Ch Stereo"
+    UNKNOWN = "Unknown"
+
+    @classmethod
+    def _missing_(cls, value):
+        return SoundPrg.UNKNOWN
 
 
 class Mute(str, Enum):
-    on = "On"
-    att_minus_20 = "Att -20 dB"
-    att_minus_40 = "Att -40 dB"
-    off = "Off"
+    ON = "On"
+    ATT_MINUS_20 = "Att -20 dB"
+    ATT_MINUS_40 = "Att -40 dB"
+    OFF = "Off"
 
 
 class Subunit(str, Enum):
@@ -50,25 +55,23 @@ class Subunit(str, Enum):
     ZONE2 = "ZONE2"
     ZONE3 = "ZONE3"
     ZONE4 = "ZONE4"
-    TUN = "TUN"
-    SIRIUS = "SIRIUS"
-    IPOD = "IPOD"
-    BT = "BT"
-    RHAP = "RHAP"
-    SIRIUSIR = "SIRIUSIR"
-    PANDORA = "PANDORA"
-    NAPSTER = "NAPSTER"
-    PC = "PC"
-    NETRADIO = "NETRADIO"
-    USB = "USB"
-    IPODUSB = "IPODUSB"
-    UAW = "UAW"
-    # These are from a log found on the internet
-    # http://www.remotecentral.com/cgi-bin/mboard/rs232-ip/thread.cgi?694
-    SIRIUSXM = "SIRIUSXM"
-    SPOTIFY = "SPOTIFY"
-    SERVER = "SERVER"
     AIRPLAY = "AIRPLAY"
+    BT = "BT"
+    IPOD = "IPOD"
+    IPODUSB = "IPODUSB"
+    NAPSTER = "NAPSTER"
+    NETRADIO = "NETRADIO"
+    PANDORA = "PANDORA"
+    PC = "PC"
+    RHAP = "RHAP"
+    SIRIUS = "SIRIUS"
+    SIRIUSIR = "SIRIUSIR"
+    SIRIUSXM = "SIRIUSXM"
+    SERVER = "SERVER"
+    SPOTIFY = "SPOTIFY"
+    TUN = "TUN"
+    UAW = "UAW"
+    USB = "USB"
 
 
 class Avail(str, Enum):
@@ -101,6 +104,7 @@ class Band(str, Enum):
     AM = "AM"
     FM = "FM"
 
+
 class TwoChDecoder(str, Enum):
     DolbyPl = "Dolby PL"
     DolbyPl2Movie = "Dolby PLII Movie"
@@ -111,4 +115,3 @@ class TwoChDecoder(str, Enum):
     DolbyPl2xGame = "Dolby PLIIx Game"
     DtsNeo6Cinema = "DTS NEO:6 Cinema"
     DtsNeo6Music = "DTS NEO:6 Music"
-

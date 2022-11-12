@@ -27,5 +27,3 @@ def test_initialize(connection, update_callback):
     uaw.register_update_callback(update_callback)
 
     uaw.initialize()
-
-    assert update_callback.call_count == 1

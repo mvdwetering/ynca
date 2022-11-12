@@ -6,12 +6,6 @@ SUBUNIT = "SIRIUSIR"
 
 INITIALIZE_FULL_RESPONSES = [
     (
-        (SUBUNIT, "AVAIL"),
-        [
-            (SUBUNIT, "AVAIL", "Ready"),
-        ],
-    ),
-    (
         (SUBUNIT, "METAINFO"),
         [
             (SUBUNIT, "CATNAME", "CatName"),
@@ -23,9 +17,9 @@ INITIALIZE_FULL_RESPONSES = [
         ],
     ),
     (
-        (SUBUNIT, "CHNAME"),
+        (SUBUNIT, "AVAIL"),
         [
-            (SUBUNIT, "CHNAME", "ChName"),
+            (SUBUNIT, "AVAIL", "Ready"),
         ],
     ),
     (
@@ -52,8 +46,6 @@ def test_initialize(connection, update_callback):
 
     siriusir.initialize()
 
-    assert update_callback.call_count == 1
-    assert siriusir.album is None
     assert siriusir.artist == "Artist"
     assert siriusir.song == "Song"
     assert siriusir.chname == "ChName"
