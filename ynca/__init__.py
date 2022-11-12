@@ -20,7 +20,6 @@ from .get_all_zone_inputs import get_all_zone_inputs, get_inputinfo_list, InputI
 from .ynca import (
     Ynca,
 )
-from .receiver_deprecated import Receiver
 
 from .modelinfo import get_modelinfo
 

@@ -65,14 +65,6 @@ class ZoneBase(PowerFunctionMixin, PlaybackFunctionMixin, SubunitBase):
         self._maxvol = float(value)
 
     @property
-    def name(self) -> Optional[str]:
-        """Get zone name"""
-        logger.warning(
-            "The 'name' attribute is deprecated and replaced with 'zonename' to match the naming in the YNCA spec"
-        )
-        return self.zonename
-
-    @property
     def zonename(self) -> Optional[str]:
         """Get zone name"""
         return self._attr_zonename
@@ -95,13 +87,6 @@ class ZoneBase(PowerFunctionMixin, PlaybackFunctionMixin, SubunitBase):
         self._put("MUTE", value)
 
     @property
-    def max_volume(self) -> Optional[float]:
-        logger.warning(
-            "max_volume has been deprecated and replaced with maxvol to match the YNCA API naming"
-        )
-        return self.maxvol
-
-    @property
     def maxvol(self) -> Optional[float]:
         """
         Get maximum volume supported in dB
@@ -110,28 +95,6 @@ class ZoneBase(PowerFunctionMixin, PlaybackFunctionMixin, SubunitBase):
         this seems to be -80.5 for all zones
         """
         return self._maxvol
-
-    @property
-    def min_volume(self) -> float:
-        """Get minimum volume in dB"""
-        logger.warning(
-            "min_volume is deprecated and will be removed in the next major release. Hardcode it as -80.5"
-        )
-        return MIN_VOLUME
-
-    @property
-    def volume(self) -> float:
-        logger.warning(
-            "volume is deprecated and replaced with 'vol' to match naming of the YNCA API"
-        )
-        return self.vol
-
-    @volume.setter
-    def volume(self, value: float):
-        logger.warning(
-            "volume is deprecated and replaced with 'vol' to match naming of the YNCA API"
-        )
-        self.vol = value
 
     @property
     def vol(self) -> float:
@@ -148,12 +111,6 @@ class ZoneBase(PowerFunctionMixin, PlaybackFunctionMixin, SubunitBase):
                 f"Volume out of range, must be between {MIN_VOLUME} and maxvol ({self._maxvol})"
             )
 
-    def volume_up(self, step_size: float = 0.5):
-        logger.warning(
-            "volume_up is deprecated and replaced by vol_up to match naming on YNCA API"
-        )
-        return self.vol_up(step_size)
-
     def vol_up(self, step_size: float = 0.5):
         """
         Increase the volume with given stepsize.
@@ -164,12 +121,6 @@ class ZoneBase(PowerFunctionMixin, PlaybackFunctionMixin, SubunitBase):
             value = "Up {} dB".format(step_size)
         self._put("VOL", value)
 
-    def volume_down(self, step_size: float = 0.5):
-        logger.warning(
-            "volume_down is deprecated and replaced by vol_down to match naming on YNCA API"
-        )
-        return self.vol_down(step_size)
-
     def vol_down(self, step_size: float = 0.5):
         """
         Decrease the volume with given stepsize.
@@ -179,18 +130,6 @@ class ZoneBase(PowerFunctionMixin, PlaybackFunctionMixin, SubunitBase):
         if step_size in [1, 2, 5]:
             value = "Down {} dB".format(step_size)
         self._put("VOL", value)
-
-    @property
-    def input(self) -> str:
-        """Get current input"""
-        logger.warning("zone.input is deprecated, use zone.inp instead")
-        return self._attr_inp
-
-    @input.setter
-    def input(self, value: str):
-        """Set input"""
-        logger.warning("zone.input is deprecated, use zone.inp instead")
-        self._put("INP", value)
 
     @property
     def inp(self) -> str:
@@ -226,14 +165,6 @@ class ZoneBase(PowerFunctionMixin, PlaybackFunctionMixin, SubunitBase):
     def scenenames(self) -> Dict[str, str]:
         """Get a dictionary with scene names where key, value = id, name"""
         return dict(self._scenenames)
-
-    @property
-    def scenes(self) -> Dict[str, str]:
-        """Get the dictionary with scenes where key, value = id, name"""
-        logger.warning(
-            "The 'scenes' attribute is deprecated and replaced with 'scene_names' to match the naming in the YNCA spec"
-        )
-        return self.scenenames
 
     def activate_scene(self, scene_id: str):
         """Activate a scene"""
