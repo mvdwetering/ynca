@@ -5,7 +5,7 @@ import pytest
 
 from ynca.constants import Avail
 from ynca.subunit import SubunitBase
-from ynca.ynca_function import YncaFunctionStr
+from ynca.ynca_function import YncaFunctionInt
 from ynca.errors import YncaInitializationFailedException
 
 
@@ -22,7 +22,7 @@ INITIALIZE_FULL_RESPONSES = [
     (
         (SUBUNIT, "DUMMY_FUNCTION"),
         [
-            (SUBUNIT, "DUMMY_FUNCTION", "DUMMY_VALUE"),
+            (SUBUNIT, "DUMMY_FUNCTION", "1"),
         ],
     ),
     (
@@ -37,7 +37,7 @@ INITIALIZE_FULL_RESPONSES = [
 class DummySubunit(SubunitBase):
     id = SUBUNIT
 
-    dummy = YncaFunctionStr("DUMMY_FUNCTION")
+    dummy = YncaFunctionInt("DUMMY_FUNCTION")
 
 
 @pytest.fixture
@@ -88,25 +88,25 @@ def test_registration(connection, initialized_dummysubunit: SubunitBase):
     # Register multiple callbacks, both get called
     initialized_dummysubunit.register_update_callback(update_callback_1)
     initialized_dummysubunit.register_update_callback(update_callback_2)
-    connection.send_protocol_message(SUBUNIT, "DUMMY_FUNCTION", "DUMMY_VALUE")
+    connection.send_protocol_message(SUBUNIT, "DUMMY_FUNCTION", "2")
     assert update_callback_1.call_count == 1
-    update_callback_1.assert_called_with("DUMMY_FUNCTION", "DUMMY_VALUE")
+    update_callback_1.assert_called_with("DUMMY_FUNCTION", 2)
     assert update_callback_2.call_count == 1
-    update_callback_2.assert_called_with("DUMMY_FUNCTION", "DUMMY_VALUE")
+    update_callback_2.assert_called_with("DUMMY_FUNCTION", 2)
 
     # Double registration (second gets ignored)
     initialized_dummysubunit.register_update_callback(update_callback_2)
-    connection.send_protocol_message(SUBUNIT, "DUMMY_FUNCTION", "DUMMY_VALUE_2")
+    connection.send_protocol_message(SUBUNIT, "DUMMY_FUNCTION", "3")
     assert update_callback_1.call_count == 2
-    update_callback_1.assert_called_with("DUMMY_FUNCTION", "DUMMY_VALUE_2")
+    update_callback_1.assert_called_with("DUMMY_FUNCTION", 3)
     assert update_callback_2.call_count == 2
-    update_callback_2.assert_called_with("DUMMY_FUNCTION", "DUMMY_VALUE_2")
+    update_callback_2.assert_called_with("DUMMY_FUNCTION", 3)
 
     # Unregistration
     initialized_dummysubunit.unregister_update_callback(update_callback_2)
-    connection.send_protocol_message(SUBUNIT, "DUMMY_FUNCTION", "DUMMY_VALUE_3")
+    connection.send_protocol_message(SUBUNIT, "DUMMY_FUNCTION", "4")
     assert update_callback_1.call_count == 3
-    update_callback_1.assert_called_with("DUMMY_FUNCTION", "DUMMY_VALUE_3")
+    update_callback_1.assert_called_with("DUMMY_FUNCTION", 4)
     assert update_callback_2.call_count == 2
 
 
