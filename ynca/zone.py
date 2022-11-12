@@ -45,7 +45,7 @@ class ZoneBase(PowerFunctionMixin, PlaybackFunctionMixin, SubunitBase):
         self._get("2CHDECODER")
         self._get("PUREDIRMODE")
 
-    def _subunit_message_received_without_handler(
+    def on_message_received_without_handler(
         self, status: YncaProtocolStatus, function_: str, value: str
     ) -> bool:
         updated = True
