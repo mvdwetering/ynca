@@ -1,17 +1,10 @@
 from __future__ import annotations
 
 from .constants import Band, Subunit
+from .converters import FloatConverter, IntConverter
 from .helpers import number_to_string_with_stepsize
-from .converters import (
-    FloatConverter,
-    IntConverter,
-)
-from .ynca_function import (
-    YncaFunctionEnum,
-    YncaFunctionFloat,
-    YncaFunctionInt,
-)
 from .subunit import SubunitBase
+from .ynca_function import YncaFunctionEnum, YncaFunctionFloat, YncaFunctionInt
 
 
 class Tun(SubunitBase):

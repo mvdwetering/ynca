@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import logging
-
 from .constants import Subunit
 from .function_mixins import (
     ArtistFunctionMixin,
@@ -9,8 +7,8 @@ from .function_mixins import (
     PlaybackInfoFunctionMixin,
     SongFunctionMixin,
 )
-from .ynca_function import CommandType, YncaFunctionStr
 from .subunit import SubunitBase
+from .ynca_function import CommandType, YncaFunctionStr
 
 
 class ChannelnameFunctionMixin:

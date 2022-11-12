@@ -1,10 +1,9 @@
 from __future__ import annotations
-from abc import ABC, abstractmethod
 
-from enum import Enum
 import logging
-from typing import Callable, Type, TypeVar, Generic, cast
-
+from abc import ABC, abstractmethod
+from enum import Enum
+from typing import Callable, Generic, Type, TypeVar, cast
 
 logger = logging.getLogger(__name__)
 

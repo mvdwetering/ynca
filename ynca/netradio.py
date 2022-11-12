@@ -1,13 +1,8 @@
 from __future__ import annotations
 
-import logging
-
 from .constants import Subunit
-from .function_mixins import (
-    StationFunctionMixin,
-    PlaybackFunctionMixin,
-    PlaybackInfoFunctionMixin,
-)
+from .function_mixins import (PlaybackFunctionMixin, PlaybackInfoFunctionMixin,
+                              StationFunctionMixin)
 from .subunit import SubunitBase
 
 

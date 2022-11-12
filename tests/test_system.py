@@ -182,7 +182,7 @@ def test_remotecode(connection, initialized_system: System):
     connection.put.assert_called_with(SYS, "REMOTECODE", "code1234")
 
 
-def test_remotecode_wrong_length(connection, initialized_system: System):
+def test_remotecode_wrong_length(initialized_system: System):
     with pytest.raises(ValueError):
         initialized_system.remotecode_send("7777777")
     with pytest.raises(ValueError):

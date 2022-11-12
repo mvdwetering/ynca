@@ -1,6 +1,7 @@
+import logging
 from dataclasses import dataclass
 from typing import Dict, List, Optional, cast
-import logging
+
 from .subunit import Subunit
 from .system import System
 from .ynca import Ynca

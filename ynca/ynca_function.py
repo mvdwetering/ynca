@@ -8,13 +8,8 @@ from typing import TYPE_CHECKING, Generic, Type, TypeVar
 if TYPE_CHECKING:  # pragma: no cover
     from .subunit import SubunitBase
 
-from .converters import (
-    ConverterBase,
-    EnumConverter,
-    FloatConverter,
-    IntConverter,
-    StrConverter,
-)
+from .converters import (ConverterBase, EnumConverter, FloatConverter,
+                         IntConverter, StrConverter)
 
 logger = logging.getLogger(__name__)
 

@@ -16,9 +16,9 @@ from .mediaplayback_subunits import (
     Napster,
     Pc,
     Rhap,
+    Server,
     Spotify,
     Usb,
-    Server,
 )
 from .netradio import NetRadio
 from .pandora import Pandora

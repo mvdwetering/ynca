@@ -1,10 +1,9 @@
 from __future__ import annotations
+
 from enum import Enum
-import logging
 
+from .constants import Playback, PlaybackInfo, Repeat
 from .ynca_function import CommandType, YncaFunctionEnum, YncaFunctionStr
-
-from .constants import Repeat, Playback, PlaybackInfo
 
 
 class PlaybackFunctionMixin:

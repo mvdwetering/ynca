@@ -1,17 +1,16 @@
 from __future__ import annotations
-from abc import ABC, abstractmethod
 
-from enum import Enum, Flag, auto
 import logging
 import threading
+from abc import ABC, abstractmethod
+from enum import Enum, Flag, auto
 from typing import Any, Callable, Dict, Set, TypeVar
 
 from ynca.ynca_function import YncaFunctionBase, YncaFunctionEnum
 
-
+from .connection import YncaConnection, YncaProtocol, YncaProtocolStatus
 from .constants import Avail, Subunit
 from .errors import YncaInitializationFailedException
-from .connection import YncaConnection, YncaProtocol, YncaProtocolStatus
 
 logger = logging.getLogger(__name__)
 
