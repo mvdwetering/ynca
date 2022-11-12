@@ -220,7 +220,7 @@ class SubunitBase(ABC):
         """
         Baseclass for Subunits, should be subclassed do not instantiate manually.
         """
-        self._update_callbacks: Set[Callable[[str, str], None]] = set()
+        self._update_callbacks: Set[Callable[[str, Any], None]] = set()
 
         self.function_handlers: Dict[str, YncaFunctionHandler] = {}
 
@@ -334,14 +334,16 @@ class SubunitBase(ABC):
 
         if handler := self.function_handlers.get(function_name, None):
             handler.update(value_str)
-            updated = True
+            self._call_registered_update_callbacks(function_name, handler.value)
         else:
-            updated = self.on_message_received_without_handler(
-                status, function_name, value_str
-            )
+            self.on_message_received_without_handler(status, function_name, value_str)
+            logger.warning("Update callback _not_ called for '%s'" % function_name)
+            # TODO: Can probably get rid of the "without" handler after completing rework
 
-        if updated:
-            self._call_registered_update_callbacks(function_name, value_str)
+        # if updated:
+        #     self._call_registered_update_callbacks(
+        #         function_name, value_str
+        #     )
 
     def _put(self, function_name: str, value: str):
         self._connection.put(self.id, function_name, value)
@@ -349,13 +351,13 @@ class SubunitBase(ABC):
     def _get(self, function_name: str):
         self._connection.get(self.id, function_name)
 
-    def register_update_callback(self, callback: Callable[[str, str], None]):
+    def register_update_callback(self, callback: Callable[[str, Any], None]):
         self._update_callbacks.add(callback)
 
-    def unregister_update_callback(self, callback: Callable[[str, str], None]):
+    def unregister_update_callback(self, callback: Callable[[str, Any], None]):
         self._update_callbacks.remove(callback)
 
-    def _call_registered_update_callbacks(self, function_name: str, value: str):
+    def _call_registered_update_callbacks(self, function_name: str, value: Any):
         if self._initialized:
             for callback in self._update_callbacks:
                 callback(function_name, value)
