@@ -3,7 +3,7 @@ from __future__ import annotations
 import logging
 from abc import ABC
 from enum import Enum, Flag, auto
-from typing import TYPE_CHECKING, Generic, Type, TypeVar
+from typing import TYPE_CHECKING, Generic, TypeVar
 
 if TYPE_CHECKING:  # pragma: no cover
     from .subunit import SubunitBase

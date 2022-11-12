@@ -291,6 +291,9 @@ def test_soundprg(connection, initialized_zone: ZoneBase):
     connection.send_protocol_message(SUBUNIT, "SOUNDPRG", "Sci-Fi")
     assert initialized_zone.soundprg == SoundPrg.SCI_FI
 
+    connection.send_protocol_message(SUBUNIT, "SOUNDPRG", "Unmapped soundprg")
+    assert initialized_zone.soundprg == SoundPrg.UNKNOWN
+
 
 def test_straight(connection, initialized_zone: ZoneBase):
     # Writing to device
