@@ -119,10 +119,8 @@ def test_initialize_full(connection, update_callback):
     assert update_callback.call_count == 0
     assert s.version == "Version"
     assert s.modelname == "ModelName"
-    assert s.pwr == False
-    assert s.party == True
-    # assert s.pwr == Pwr.STANDBY
-    # assert s.party == Party.ON
+    assert s.pwr == Pwr.STANDBY
+    assert s.party == Party.ON
 
     assert len(s.inp_names.keys()) == 19
     assert s.inp_names["PHONO"] == "InputPhono"
@@ -148,9 +146,9 @@ def test_initialize_full(connection, update_callback):
 
 def test_party(connection, initialized_system: System):
     # Writing to device
-    initialized_system.party = True  # Party.ON
+    initialized_system.party = Party.ON
     connection.put.assert_called_with(SYS, "PARTY", "On")
-    initialized_system.party = False  # = Party.OFF
+    initialized_system.party = Party.OFF
     connection.put.assert_called_with(SYS, "PARTY", "Off")
 
 

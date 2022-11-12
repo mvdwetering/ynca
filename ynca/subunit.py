@@ -1,5 +1,5 @@
 from __future__ import annotations
-from abc import ABC
+from abc import ABC, abstractmethod
 
 from enum import Enum, Flag, auto
 import logging
@@ -22,15 +22,17 @@ T = TypeVar("T")
 E = TypeVar("E", bound=Enum)
 
 
-class Converter(ABC, Generic[T]):
+class ConverterBase(ABC, Generic[T]):
+    @abstractmethod
     def to_value(self, value_string: str) -> T:
         raise NotImplementedError("Implement in derived class")
 
+    @abstractmethod
     def to_str(self, value: T) -> str:
         raise NotImplementedError("Implement in derived class")
 
 
-class EnumConverter(Converter, Generic[E]):
+class EnumConverter(ConverterBase, Generic[E]):
     def __init__(self, datatype: Type[E]) -> None:
         self.datatype = datatype
 
@@ -41,19 +43,7 @@ class EnumConverter(Converter, Generic[E]):
         return cast(Enum, value).value
 
 
-class BoolConverter(Converter):
-    def __init__(self, true: str, false: str) -> None:
-        self._true_string = true
-        self._false_string = false
-
-    def to_value(self, value_string: str) -> bool:
-        return True if value_string == self._true_string else False
-
-    def to_str(self, value: bool) -> str:
-        return self._true_string if value else self._false_string
-
-
-class IntConverter(Converter):
+class IntConverter(ConverterBase):
     def __init__(self, to_str: Callable[[int], str] | None = None) -> None:
         self._to_str = to_str
 
@@ -66,7 +56,7 @@ class IntConverter(Converter):
         return str(value)
 
 
-class FloatConverter(Converter):
+class FloatConverter(ConverterBase):
     def __init__(self, to_str: Callable[[float], str] | None = None) -> None:
         self._to_str = to_str
 
@@ -79,7 +69,7 @@ class FloatConverter(Converter):
         return str(value)
 
 
-class StrConverter(Converter):
+class StrConverter(ConverterBase):
     def __init__(self, min_len: int | None = None, max_len: int | None = None) -> None:
         self._min_len = min_len
         self._max_len = max_len
@@ -105,7 +95,7 @@ class YncaFunctionBase(ABC, Generic[T]):
     def __init__(
         self,
         function_name: str,
-        converter: Converter,
+        converter: ConverterBase,
         command_type: CommandType = CommandType.GET | CommandType.PUT,
         no_initialize: bool = False,
     ) -> None:
@@ -176,7 +166,7 @@ class YncaFunctionInt(YncaFunctionBase):
         self,
         function_name: str,
         command_type: CommandType = CommandType.GET | CommandType.PUT,
-        converter: Converter = IntConverter(),
+        converter: ConverterBase = IntConverter(),
         no_initialize: bool = False,
     ) -> None:
         super().__init__(
@@ -192,30 +182,13 @@ class YncaFunctionFloat(YncaFunctionBase):
         self,
         function_name: str,
         command_type: CommandType = CommandType.GET | CommandType.PUT,
-        converter: Converter = FloatConverter(),
+        converter: ConverterBase = FloatConverter(),
         no_initialize: bool = False,
     ) -> None:
         super().__init__(
             function_name,
             command_type=command_type,
             converter=converter,
-            no_initialize=no_initialize,
-        )
-
-
-class YncaFunctionBool(YncaFunctionBase):
-    def __init__(
-        self,
-        function_name: str,
-        true: str,
-        false: str,
-        command_type=CommandType.GET | CommandType.PUT,
-        no_initialize: bool = False,
-    ) -> None:
-        super().__init__(
-            function_name,
-            command_type=command_type,
-            converter=BoolConverter(true, false),
             no_initialize=no_initialize,
         )
 
@@ -229,7 +202,7 @@ class YncaFunctionHandler:
 
     def __init__(
         self,
-        converter: Converter,
+        converter: ConverterBase,
         no_initialize: bool,
     ) -> None:
         self.value = None
@@ -240,8 +213,7 @@ class YncaFunctionHandler:
         self.value = self.converter.to_value(value_str)
 
 
-# TODO: Look at ABC (AbstractBaseClass)
-class SubunitBase:
+class SubunitBase(ABC):
 
     # To be set in subclasses
     id: str = ""

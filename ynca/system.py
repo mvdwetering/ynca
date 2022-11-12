@@ -45,7 +45,7 @@ class System(SubunitBase):
     id = Subunit.SYS
 
     modelname = YncaFunctionStr("MODELNAME")
-    party = YncaFunctionBool("PARTY", "On", "Off")
+    party = YncaFunctionEnum[Party]("PARTY", Party)
     partymute = YncaFunctionEnum[PartyMute](
         "PARTYMUTE", PartyMute, command_type=CommandType.PUT
     )
@@ -53,7 +53,7 @@ class System(SubunitBase):
         "PARTYVOL", PartyVol, command_type=CommandType.PUT
     )
 
-    pwr = YncaFunctionBool("PWR", "On", "Off")
+    pwr = YncaFunctionEnum[Pwr]("PWR", Pwr)
     remotecode = YncaFunctionStr(
         "REMOTECODE",
         command_type=CommandType.PUT,
