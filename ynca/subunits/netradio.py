@@ -1,18 +1,18 @@
 from __future__ import annotations
 
 from ..constants import Subunit
-from .function_mixins import (
-    PlaybackFunctionMixin,
-    PlaybackInfoFunctionMixin,
-    StationFunctionMixin,
+from .functions import (
+    PlaybackFunction,
+    PlaybackInfoFunction,
+    StationFunction,
 )
 from ..subunit import SubunitBase
 
 
 class NetRadio(
-    PlaybackFunctionMixin,
-    PlaybackInfoFunctionMixin,
-    StationFunctionMixin,
+    PlaybackFunction,
+    PlaybackInfoFunction,
+    StationFunction,
     SubunitBase,
 ):
     id = Subunit.NETRADIO

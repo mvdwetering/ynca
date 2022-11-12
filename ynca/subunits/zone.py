@@ -8,10 +8,10 @@ from typing import Dict
 from ..connection import YncaConnection, YncaProtocolStatus
 from ..constants import Mute, SoundPrg, Subunit, TwoChDecoder
 from ..converters import FloatConverter, StrConverter
-from .function_mixins import PlaybackFunctionMixin, Pwr
+from .functions import PlaybackFunction, Pwr
 from ..helpers import number_to_string_with_stepsize
 from ..subunit import SubunitBase
-from ..ynca_function import (
+from ..function import (
     Cmd,
     EnumFunction,
     FloatFunction,
@@ -31,7 +31,7 @@ class PureDirMode(Enum):
     OFF = "Off"
 
 
-class ZoneBase(PlaybackFunctionMixin, SubunitBase):
+class ZoneBase(PlaybackFunction, SubunitBase):
 
     # BASIC gets a lot of attribute like PWR, SLEEP, VOL, MUTE, INP, STRAIGHT, ENHANCER, SOUNDPRG and more
     # Use it to significantly reduce the amount of commands to send
@@ -61,7 +61,7 @@ class ZoneBase(PlaybackFunctionMixin, SubunitBase):
         converter=FloatConverter(
             to_str=lambda v: number_to_string_with_stepsize(v, 1, 0.5)
         ),
-        initializer="BASIC",
+        init="BASIC",
     )
     zonename = StrFunction("ZONENAME", converter=StrConverter(min_len=0, max_len=9))
 

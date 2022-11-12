@@ -2,7 +2,7 @@ from unittest import mock
 import pytest
 
 from ynca.subunits.system import Party, PartyMute, System
-from ynca.subunits.function_mixins import Pwr
+from ynca.subunits.functions import Pwr
 
 SYS = "SYS"
 

@@ -3,7 +3,7 @@ from unittest import mock
 import pytest
 
 from ynca.constants import Mute, Subunit, SoundPrg, TwoChDecoder
-from ynca.subunits.function_mixins import Pwr
+from ynca.subunits.functions import Pwr
 from ynca.subunits.zone import (
     PureDirMode,
     Straight,

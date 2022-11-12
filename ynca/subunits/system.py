@@ -5,13 +5,13 @@ from typing import Dict
 from ..constants import Subunit
 from ..converters import StrConverter
 from ..subunit import SubunitBase
-from ..ynca_function import (
+from ..function import (
     Cmd,
     FunctionBase,
     EnumFunction,
     StrFunction,
 )
-from .function_mixins import Pwr
+from .functions import Pwr
 
 logger = logging.getLogger(__name__)
 

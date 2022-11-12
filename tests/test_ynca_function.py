@@ -1,15 +1,10 @@
 """Test Zone subunit"""
 
-from enum import Enum
-from unittest import mock
 
 import pytest
 
-from ynca.ynca_function import (
+from ynca.function import (
     Cmd,
-    EnumFunction,
-    FloatFunction,
-    IntFunction,
     StrFunction,
 )
 from ynca.subunit import SubunitBase
@@ -22,7 +17,6 @@ class DummySubunit(SubunitBase):
 
     function_put = StrFunction("FUNCTION_PUT", cmd=Cmd.PUT)
     function_get = StrFunction("FUNCTION_GET", cmd=Cmd.GET)
-    # band = YncaFunctionEnum[Band]("BAND", Band)
 
 
 def test_yncafunctionstr(connection):

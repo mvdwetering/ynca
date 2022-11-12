@@ -6,7 +6,7 @@ from abc import ABC, abstractmethod
 from enum import Enum, Flag, auto
 from typing import Any, Callable, Dict, Set, TypeVar
 
-from ynca.ynca_function import FunctionBase, EnumFunction
+from ynca.function import FunctionBase, EnumFunction
 
 from .connection import YncaConnection, YncaProtocol, YncaProtocolStatus
 from .constants import Avail, Subunit

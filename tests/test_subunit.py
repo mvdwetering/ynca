@@ -5,7 +5,7 @@ import pytest
 
 from ynca.constants import Avail
 from ynca.subunit import SubunitBase
-from ynca.ynca_function import IntFunction
+from ynca.function import IntFunction
 from ynca.errors import YncaInitializationFailedException
 
 

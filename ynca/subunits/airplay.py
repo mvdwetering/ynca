@@ -1,12 +1,12 @@
 from __future__ import annotations
 
 from ..constants import Subunit
-from .function_mixins import PlaybackFunctionMixin
+from .functions import PlaybackFunction
 from ..subunit import SubunitBase
 
 
 class Airplay(
-    PlaybackFunctionMixin,
+    PlaybackFunction,
     SubunitBase,
 ):
     id = Subunit.AIRPLAY

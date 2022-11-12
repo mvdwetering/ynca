@@ -1,16 +1,16 @@
 from unittest import mock
 from ynca.constants import Playback
 
-from ynca.subunits.function_mixins import (
-    PlaybackFunctionMixin,
+from ynca.subunits.functions import (
+    PlaybackFunction,
 )
 
 
 def test_playback():
-    class PlaybackFunction(PlaybackFunctionMixin, mock.Mock):
+    class WithPlaybackFunction(PlaybackFunction, mock.Mock):
         pass
 
-    pf = PlaybackFunction()
+    pf = WithPlaybackFunction()
 
     pf.playback(Playback.PLAY)
     pf._put.assert_called_with("PLAYBACK", "Play")

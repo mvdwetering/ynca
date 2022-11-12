@@ -1,42 +1,42 @@
 from __future__ import annotations
 
 from ..constants import Subunit
-from .function_mixins import (
-    ArtistFunctionMixin,
-    PlaybackFunctionMixin,
-    PlaybackInfoFunctionMixin,
-    SongFunctionMixin,
+from .functions import (
+    ArtistFunction,
+    PlaybackFunction,
+    PlaybackInfoFunction,
+    SongFunction,
 )
 from ..subunit import SubunitBase
-from ..ynca_function import Cmd, StrFunction
+from ..function import Cmd, StrFunction
 
 
-class ChannelnameFunctionMixin:
+class ChannelnameFunction:
     chname = StrFunction("CHNAME", cmd=Cmd.GET, init="METAINFO")
 
 
 class Sirius(
-    ArtistFunctionMixin,
-    SongFunctionMixin,
-    ChannelnameFunctionMixin,
+    ArtistFunction,
+    SongFunction,
+    ChannelnameFunction,
     SubunitBase,
 ):
     id = Subunit.SIRIUS
 
 
 class SiriusIr(
-    ArtistFunctionMixin,
-    SongFunctionMixin,
-    ChannelnameFunctionMixin,
-    PlaybackFunctionMixin,
-    PlaybackInfoFunctionMixin,
+    ArtistFunction,
+    SongFunction,
+    ChannelnameFunction,
+    PlaybackFunction,
+    PlaybackInfoFunction,
     SubunitBase,
 ):
     id = Subunit.SIRIUSIR
 
 
 class SiriusXm(
-    PlaybackFunctionMixin,
+    PlaybackFunction,
     SubunitBase,
 ):
     id = Subunit.SIRIUSXM

@@ -1,14 +1,14 @@
 from __future__ import annotations
 
 from ..constants import Subunit
-from .function_mixins import (
-    AlbumFunctionMixin,
-    ArtistFunctionMixin,
-    PlaybackFunctionMixin,
-    PlaybackInfoFunctionMixin,
-    RepeatFunctionMixin,
-    ShuffleFunctionMixin,
-    SongFunctionMixin,
+from .functions import (
+    AlbumFunction,
+    ArtistFunction,
+    PlaybackFunction,
+    PlaybackInfoFunction,
+    RepeatFunction,
+    ShuffleFunction,
+    SongFunction,
 )
 from ..subunit import SubunitBase
 
@@ -16,13 +16,13 @@ from ..subunit import SubunitBase
 # A number of subunits have the same/similar featureset
 # so make a common base that only needs to be tested once
 class MediaPlaybackSubunitBase(
-    PlaybackFunctionMixin,
-    PlaybackInfoFunctionMixin,
-    RepeatFunctionMixin,
-    ShuffleFunctionMixin,
-    ArtistFunctionMixin,
-    AlbumFunctionMixin,
-    SongFunctionMixin,
+    PlaybackFunction,
+    PlaybackInfoFunction,
+    RepeatFunction,
+    ShuffleFunction,
+    ArtistFunction,
+    AlbumFunction,
+    SongFunction,
     SubunitBase,
 ):
     pass

@@ -3,36 +3,36 @@ from __future__ import annotations
 from enum import Enum
 
 from ..constants import Playback, PlaybackInfo, Repeat
-from ..ynca_function import Cmd, EnumFunction, StrFunction
+from ..function import Cmd, EnumFunction, StrFunction
 
 
-class PlaybackFunctionMixin:
+class PlaybackFunction:
     def playback(self, parameter: Playback):
         """Change playback state"""
         self._put("PLAYBACK", parameter)  # type: ignore
 
 
-class PlaybackInfoFunctionMixin:
+class PlaybackInfoFunction:
     playbackinfo = EnumFunction[PlaybackInfo]("PLAYBACKINFO", PlaybackInfo, cmd=Cmd.GET)
 
 
-class ArtistFunctionMixin:
+class ArtistFunction:
     artist = StrFunction("ARTIST", cmd=Cmd.GET, init="METAINFO")
 
 
-class AlbumFunctionMixin:
+class AlbumFunction:
     album = StrFunction("ALBUM", cmd=Cmd.GET, init="METAINFO")
 
 
-class SongFunctionMixin:
+class SongFunction:
     song = StrFunction("SONG", cmd=Cmd.GET, init="METAINFO")
 
 
-class StationFunctionMixin:
+class StationFunction:
     station = StrFunction("STATION", cmd=Cmd.GET)
 
 
-class RepeatFunctionMixin:
+class RepeatFunction:
     repeat = EnumFunction[Repeat]("REPEAT", Repeat)
 
 
@@ -41,7 +41,7 @@ class Shuffle(Enum):
     OFF = "Off"
 
 
-class ShuffleFunctionMixin:
+class ShuffleFunction:
     shuffle = EnumFunction[Shuffle]("SHUFFLE", Shuffle)
 
 
