@@ -119,8 +119,8 @@ class YncaApi:
         Does a quick connection check by setting up a connection and requesting the modelname.
         Connection gets closed again automatically.
 
-        This is a fast way to check the connection and if it is a YNCA device without
-        executing the timeconsuming `initialize()` method.
+        This is a fast way to check the connection and if it is a YNCA device
+        without executing the timeconsuming `initialize()` method.
         """
         connection_check_event = threading.Event()
         modelname = ""
@@ -219,89 +219,89 @@ class YncaApi:
     # Also helps with typing compared to using generic SubunitBase types
 
     @property
-    def SYS(self) -> Optional[System]:
+    def sys(self) -> Optional[System]:
         return cast(System, self._subunits.get(Subunit.SYS, None))
 
     @property
-    def MAIN(self) -> Optional[Main]:
+    def main(self) -> Optional[Main]:
         return cast(Main, self._subunits.get(Subunit.MAIN, None))
 
     @property
-    def ZONE2(self) -> Optional[Zone2]:
+    def zone2(self) -> Optional[Zone2]:
         return cast(Zone2, self._subunits.get(Subunit.ZONE2, None))
 
     @property
-    def ZONE3(self) -> Optional[Zone3]:
+    def zone3(self) -> Optional[Zone3]:
         return cast(Zone3, self._subunits.get(Subunit.ZONE3, None))
 
     @property
-    def ZONE4(self) -> Optional[Zone4]:
+    def zone4(self) -> Optional[Zone4]:
         return cast(Zone4, self._subunits.get(Subunit.ZONE4, None))
 
     @property
-    def PC(self) -> Optional[Pc]:
+    def pc(self) -> Optional[Pc]:
         return cast(Pc, self._subunits.get(Subunit.PC, None))
 
     @property
-    def NETRADIO(self) -> Optional[NetRadio]:
+    def netradio(self) -> Optional[NetRadio]:
         return cast(NetRadio, self._subunits.get(Subunit.NETRADIO, None))
 
     @property
-    def USB(self) -> Optional[Usb]:
+    def usb(self) -> Optional[Usb]:
         return cast(Usb, self._subunits.get(Subunit.USB, None))
 
     @property
-    def TUN(self) -> Optional[Tun]:
+    def tun(self) -> Optional[Tun]:
         return cast(Tun, self._subunits.get(Subunit.TUN, None))
 
     @property
-    def SIRIUS(self) -> Optional[Sirius]:
+    def sirius(self) -> Optional[Sirius]:
         return cast(Sirius, self._subunits.get(Subunit.SIRIUS, None))
 
     @property
-    def SIRIUSIR(self) -> Optional[SiriusIr]:
+    def siriusir(self) -> Optional[SiriusIr]:
         return cast(SiriusIr, self._subunits.get(Subunit.SIRIUSIR, None))
 
     @property
-    def IPOD(self) -> Optional[Ipod]:
+    def ipod(self) -> Optional[Ipod]:
         return cast(Ipod, self._subunits.get(Subunit.IPOD, None))
 
     @property
-    def IPODUSB(self) -> Optional[IpodUsb]:
+    def ipodusb(self) -> Optional[IpodUsb]:
         return cast(IpodUsb, self._subunits.get(Subunit.IPODUSB, None))
 
     @property
-    def BT(self) -> Optional[Bt]:
+    def bt(self) -> Optional[Bt]:
         return cast(Bt, self._subunits.get(Subunit.BT, None))
 
     @property
-    def RHAP(self) -> Optional[Rhap]:
+    def rhap(self) -> Optional[Rhap]:
         return cast(Rhap, self._subunits.get(Subunit.RHAP, None))
 
     @property
-    def PANDORA(self) -> Optional[Pandora]:
+    def pandora(self) -> Optional[Pandora]:
         return cast(Pandora, self._subunits.get(Subunit.PANDORA, None))
 
     @property
-    def UAW(self) -> Optional[Uaw]:
+    def uaw(self) -> Optional[Uaw]:
         return cast(Uaw, self._subunits.get(Subunit.UAW, None))
 
     @property
-    def NAPSTER(self) -> Optional[Napster]:
+    def napster(self) -> Optional[Napster]:
         return cast(Napster, self._subunits.get(Subunit.NAPSTER, None))
 
     @property
-    def SPOTIFY(self) -> Optional[Spotify]:
+    def spotify(self) -> Optional[Spotify]:
         return cast(Spotify, self._subunits.get(Subunit.SPOTIFY, None))
 
     @property
-    def SERVER(self) -> Optional[Server]:
+    def server(self) -> Optional[Server]:
         return cast(Server, self._subunits.get(Subunit.SERVER, None))
 
     @property
-    def SIRIUSXM(self) -> Optional[SiriusXm]:
+    def siriusxm(self) -> Optional[SiriusXm]:
         return cast(SiriusXm, self._subunits.get(Subunit.SIRIUSXM, None))
 
     @property
-    def AIRPLAY(self) -> Optional[Airplay]:
+    def airplay(self) -> Optional[Airplay]:
         return cast(Airplay, self._subunits.get(Subunit.AIRPLAY, None))

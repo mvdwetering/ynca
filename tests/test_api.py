@@ -237,8 +237,8 @@ def test_initialize_minimal(connection):
         y = ynca.YncaApi("serial_url", disconnect_callback)
         y.initialize()
 
-        assert isinstance(y.SYS, System)
-        assert y.SYS.version == "Version"
+        assert isinstance(y.sys, System)
+        assert y.sys.version == "Version"
 
         y.close()
 
@@ -356,33 +356,33 @@ def test_initialize_full(connection):
 
         assert len(y._subunits.keys()) == 4
 
-        assert isinstance(y.SYS, System)
-        assert y.SYS.modelname == "ModelName"
-        assert y.SYS.version == "Version"
-        assert y.SYS.inpnameusb == "InputUsb"
+        assert isinstance(y.sys, System)
+        assert y.sys.modelname == "ModelName"
+        assert y.sys.version == "Version"
+        assert y.sys.inpnameusb == "InputUsb"
 
-        assert isinstance(y.MAIN, Main)
-        assert y.MAIN.zonename == "MainZoneName"
-        assert isinstance(y.BT, Bt)
-        assert isinstance(y.USB, Usb)
-        assert y.ZONE2 is None
-        assert y.ZONE3 is None
-        assert y.ZONE4 is None
+        assert isinstance(y.main, Main)
+        assert y.main.zonename == "MainZoneName"
+        assert isinstance(y.bt, Bt)
+        assert isinstance(y.usb, Usb)
+        assert y.zone2 is None
+        assert y.zone3 is None
+        assert y.zone4 is None
 
-        assert y.AIRPLAY is None
-        assert y.IPOD is None
-        assert y.IPODUSB is None
-        assert y.NAPSTER is None
-        assert y.NETRADIO is None
-        assert y.PANDORA is None
-        assert y.PC is None
-        assert y.RHAP is None
-        assert y.SERVER is None
-        assert y.SIRIUS is None
-        assert y.SIRIUSIR is None
-        assert y.SIRIUSXM is None
-        assert y.SPOTIFY is None
-        assert y.TUN is None
-        assert y.UAW is None
+        assert y.airplay is None
+        assert y.ipod is None
+        assert y.ipodusb is None
+        assert y.napster is None
+        assert y.netradio is None
+        assert y.pandora is None
+        assert y.pc is None
+        assert y.rhap is None
+        assert y.server is None
+        assert y.sirius is None
+        assert y.siriusir is None
+        assert y.siriusxm is None
+        assert y.spotify is None
+        assert y.tun is None
+        assert y.uaw is None
 
         y.close()
