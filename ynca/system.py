@@ -9,7 +9,6 @@ from .subunit import (
     CommandType,
     StrConverter,
     SubunitBase,
-    YncaFunctionBool,
     YncaFunctionEnum,
     YncaFunctionStr,
 )
