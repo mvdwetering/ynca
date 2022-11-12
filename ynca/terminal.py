@@ -6,7 +6,7 @@ import sys
 from .connection import YncaConnection
 
 
-def terminal(serial_url: str):
+def YncaTerminal(serial_url: str):
     """
     With the YNCA terminal you can manually send YNCA commands to a receiver.
     This is useful to figure out what a command does.
@@ -26,7 +26,7 @@ def terminal(serial_url: str):
     def disconnected_callback():
         print("\n *** Connection lost, will attempt to reconnect on next command ***")
 
-    print(terminal.__doc__)
+    print(YncaTerminal.__doc__)
 
     connection = YncaConnection(serial_url)
     connection.register_message_callback(output_response)
@@ -63,6 +63,6 @@ if __name__ == "__main__":
     if len(sys.argv) > 1:
         port = sys.argv[1]
 
-    terminal(port)
+    YncaTerminal(port)
 
     print("Done")
