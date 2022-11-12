@@ -2,7 +2,7 @@ from __future__ import annotations
 from enum import Enum
 import logging
 
-from .subunit import CommandType, YncaFunctionEnum, YncaFunctionStr
+from .ynca_function import CommandType, YncaFunctionEnum, YncaFunctionStr
 
 from .constants import Repeat, Playback, PlaybackInfo
 

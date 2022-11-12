@@ -6,12 +6,12 @@ from .converters import (
     FloatConverter,
     IntConverter,
 )
-from .subunit import (
-    SubunitBase,
+from .ynca_function import (
     YncaFunctionEnum,
     YncaFunctionFloat,
     YncaFunctionInt,
 )
+from .subunit import SubunitBase
 
 
 class Tun(SubunitBase):

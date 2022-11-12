@@ -7,13 +7,14 @@ from typing import Dict
 from .connection import YncaConnection, YncaProtocolStatus
 from .constants import Subunit
 from .function_mixins import Pwr
-from .subunit import (
+from .ynca_function import (
     CommandType,
     StrConverter,
-    SubunitBase,
     YncaFunctionEnum,
     YncaFunctionStr,
 )
+from .subunit import SubunitBase
+
 
 logger = logging.getLogger(__name__)
 
@@ -37,11 +38,6 @@ class System(SubunitBase):
         "PARTYMUTE", PartyMute, command_type=CommandType.PUT
     )
     pwr = YncaFunctionEnum[Pwr]("PWR", Pwr)
-    remotecode = YncaFunctionStr(
-        "REMOTECODE",
-        command_type=CommandType.PUT,
-        converter=StrConverter(min_len=8, max_len=8),
-    )
 
     # No_initialize VERSION to avoid it being sent during initialization
     # It is also used behind the scenes for syncing and would interfere
@@ -60,6 +56,13 @@ class System(SubunitBase):
         Decrease the party volume with one step.
         """
         self._put("PARTYVOL", "Down")
+
+    def remotecode_send(self, value):
+        if len(value) != 8:
+            raise ValueError(
+                f"REMOTECODE value must be of length 8, but was {len(value)} for {value}"
+            )
+        self._put("REMOTECODE", value)
 
     def __init__(self, connection: YncaConnection) -> None:
         super().__init__(connection)

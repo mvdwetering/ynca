@@ -9,7 +9,8 @@ from .function_mixins import (
     PlaybackInfoFunctionMixin,
     SongFunctionMixin,
 )
-from .subunit import CommandType, SubunitBase, YncaFunctionStr
+from .ynca_function import CommandType, YncaFunctionStr
+from .subunit import SubunitBase
 
 
 class ChannelnameFunctionMixin:

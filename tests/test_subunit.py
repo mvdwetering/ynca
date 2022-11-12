@@ -4,7 +4,8 @@ from unittest import mock
 import pytest
 
 from ynca.constants import Avail
-from ynca.subunit import SubunitBase, YncaFunctionStr
+from ynca.subunit import SubunitBase
+from ynca.ynca_function import YncaFunctionStr
 from ynca.errors import YncaInitializationFailedException
 
 

@@ -13,13 +13,13 @@ from .converters import (
     FloatConverter,
     StrConverter,
 )
-from .subunit import (
+from .ynca_function import (
     CommandType,
-    SubunitBase,
     YncaFunctionEnum,
     YncaFunctionFloat,
     YncaFunctionStr,
 )
+from .subunit import SubunitBase
 
 logger = logging.getLogger(__name__)
 
