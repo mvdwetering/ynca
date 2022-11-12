@@ -26,19 +26,6 @@ This package contains:
 The Ynca class is exposing the YNCA API as defined in the specification and allows to connect to devices supporting that API.
 It keeps a cache of last received values so reading is instant as it does not need to query the receiver.
 
-Some general guidelines:
-
-* YNCA functions supporting GET are modelled as attributes
-* YNCA functions that _only_ support PUT are modelled as methods
-* YNCA functions that support
-* While all values on YNCA are transmitted as strings these are converted to Python types
-    * Strings stay strings
-    * Numbers become integers or floats
-    * Binary options are mapped to booleans where suitable. If the YNCA name is too confusing it can be mapped to an Enum
-    * Multiple options are mapped to Enums
-    * Exceptions can be made. For example VOL supports PUT/GET and is therefore an attribute, however it also supports special values for Up or Down possibly with a stepsize. Up and Down are modeled seperate as method as Up and Down are actions.
-
-
 ### get_inputinfo_list _list helper function
 
 This helper gets a list of all the inputs available on the device from the Ynca API to be used with the inputs on the Zone subunits.

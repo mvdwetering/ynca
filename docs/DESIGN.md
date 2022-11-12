@@ -4,17 +4,34 @@ This file contains some design decisions. Mainly intended for future me.
 
 ## Scope
 
-The library is intended for automation applications, so focused on control, not configuration.
+The library was initially intended for automation applications, so focused on control, not configuration.
+The scope changed to providing an interface that allows to set/get data using familiar YNCA vocabulary.
 
-This means that things like setting/reading volume, mute inputs are in.
-Things like configuring the name, speaker delays etc... are out for now.
+However, since the amount of supported functions impacts the `initialize`time functions will only be added when
+someone has a usecase for it and not just all off them.
 
-Controlling the subunits like Tuner and other Mediaplayer-like components would be nice, but also out of scope for now.
+
+## API guidelines
+
+Some guidelines I try to follow when adding functions to the API.
+
+* YNCA functions supporting GET are modelled as attributes
+    * If the function also support PUT of the value the attribute will be writable
+* YNCA functions that perform actions or _only_ support PUT are modelled as methods
+    * While it is possible to create write only attributes they felt weird to use. MIght change my mind on it one day...
+* Attribute names on the API follow naming (but in lowercase) as used in YNCA except where not possible due to Python limitations. E.g. "2chdecoder" becomes "twochdecoder"
+* Method names on the API follow naming (but in lowercase) as used on YNCA with the "action" postfixed. E.g. "vol_up()" or "remote_send()"
+* While all values on YNCA are transmitted as strings these are converted to Python types
+    * Strings stay strings
+    * Numbers become integers or floats
+    * Multiple options are mapped to Enums
+    * These are guidelines, exceptions can be made.
 
 
 ## Input detection
 
 There is no explicit way to check which inputs are supported on the unit or per subunit.
+However it can be derived with some logic.
 
 
 ### Detection of inputs on the unit
@@ -51,9 +68,3 @@ To avoid this keep the connection alive by sending a dummy command when the conn
 
 The YNCA spec recommends using the `@SYS:MODELNAME=?` command.
 
-
-## Update callback
-
-The current update callback does not indicate what changed.
-I currently have no need to know what changed, this can always be implemented later.
-A nice way would be to allow subscriptions on attributes, but there seems no standard way in Python to do that.
