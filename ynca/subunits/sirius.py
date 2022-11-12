@@ -8,13 +8,11 @@ from .function_mixins import (
     SongFunctionMixin,
 )
 from ..subunit import SubunitBase
-from ..ynca_function import CommandType, YncaFunctionStr
+from ..ynca_function import Cmd, StrFunction
 
 
 class ChannelnameFunctionMixin:
-    chname = YncaFunctionStr(
-        "CHNAME", command_type=CommandType.GET, initialize_function_name="METAINFO"
-    )
+    chname = StrFunction("CHNAME", cmd=Cmd.GET, init="METAINFO")
 
 
 class Sirius(

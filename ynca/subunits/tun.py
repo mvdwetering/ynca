@@ -4,15 +4,15 @@ from ..constants import Band, Subunit
 from ..converters import FloatConverter, IntConverter
 from ..helpers import number_to_string_with_stepsize
 from ..subunit import SubunitBase
-from ..ynca_function import YncaFunctionEnum, YncaFunctionFloat, YncaFunctionInt
+from ..ynca_function import EnumFunction, FloatFunction, IntFunction
 
 
 class Tun(SubunitBase):
     id = Subunit.TUN
 
-    band = YncaFunctionEnum[Band]("BAND", Band)
+    band = EnumFunction[Band]("BAND", Band)
 
-    amfreq = YncaFunctionInt(
+    amfreq = IntFunction(
         "AMFREQ",
         converter=IntConverter(
             to_str=lambda v: number_to_string_with_stepsize(v, 0, 10)
@@ -20,7 +20,7 @@ class Tun(SubunitBase):
     )
     """Read/write AM frequency. Values will be aligned to a valid stepsize."""
 
-    fmfreq = YncaFunctionFloat(
+    fmfreq = FloatFunction(
         "FMFREQ",
         converter=FloatConverter(
             to_str=lambda v: number_to_string_with_stepsize(v, 2, 0.2)

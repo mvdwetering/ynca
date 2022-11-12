@@ -12,10 +12,10 @@ from .function_mixins import PlaybackFunctionMixin, Pwr
 from ..helpers import number_to_string_with_stepsize
 from ..subunit import SubunitBase
 from ..ynca_function import (
-    CommandType,
-    YncaFunctionEnum,
-    YncaFunctionFloat,
-    YncaFunctionStr,
+    Cmd,
+    EnumFunction,
+    FloatFunction,
+    StrFunction,
 )
 
 logger = logging.getLogger(__name__)
@@ -36,70 +36,34 @@ class ZoneBase(PlaybackFunctionMixin, SubunitBase):
     # BASIC gets a lot of attribute like PWR, SLEEP, VOL, MUTE, INP, STRAIGHT, ENHANCER, SOUNDPRG and more
     # Use it to significantly reduce the amount of commands to send
 
-    inp = YncaFunctionStr("INP", initialize_function_name="BASIC")
-    maxvol = YncaFunctionFloat("MAXVOL", command_type=CommandType.GET)
-    mute = YncaFunctionEnum[Mute]("MUTE", Mute, initialize_function_name="BASIC")
-    puredirmode = YncaFunctionEnum[PureDirMode](
-        "PUREDIRMODE", PureDirMode, initialize_function_name="BASIC"
-    )
-    pwr = YncaFunctionEnum[Pwr]("PWR", Pwr, initialize_function_name="BASIC")
-    scene1name = YncaFunctionStr(
-        "SCENE1NAME", command_type=CommandType.GET, initialize_function_name="SCENENAME"
-    )
-    scene2name = YncaFunctionStr(
-        "SCENE2NAME", command_type=CommandType.GET, initialize_function_name="SCENENAME"
-    )
-    scene3name = YncaFunctionStr(
-        "SCENE3NAME", command_type=CommandType.GET, initialize_function_name="SCENENAME"
-    )
-    scene4name = YncaFunctionStr(
-        "SCENE4NAME", command_type=CommandType.GET, initialize_function_name="SCENENAME"
-    )
-    scene5name = YncaFunctionStr(
-        "SCENE5NAME", command_type=CommandType.GET, initialize_function_name="SCENENAME"
-    )
-    scene6name = YncaFunctionStr(
-        "SCENE6NAME", command_type=CommandType.GET, initialize_function_name="SCENENAME"
-    )
-    scene7name = YncaFunctionStr(
-        "SCENE7NAME", command_type=CommandType.GET, initialize_function_name="SCENENAME"
-    )
-    scene8name = YncaFunctionStr(
-        "SCENE8NAME", command_type=CommandType.GET, initialize_function_name="SCENENAME"
-    )
-    scene9name = YncaFunctionStr(
-        "SCENE9NAME", command_type=CommandType.GET, initialize_function_name="SCENENAME"
-    )
-    scene10name = YncaFunctionStr(
-        "SCENE10NAME",
-        command_type=CommandType.GET,
-        initialize_function_name="SCENENAME",
-    )
-    scene11name = YncaFunctionStr(
-        "SCENE11NAME",
-        command_type=CommandType.GET,
-        initialize_function_name="SCENENAME",
-    )
-    scene12name = YncaFunctionStr(
-        "SCENE12NAME",
-        command_type=CommandType.GET,
-        initialize_function_name="SCENENAME",
-    )
-    soundprg = YncaFunctionEnum[SoundPrg](
-        "SOUNDPRG", SoundPrg, initialize_function_name="BASIC"
-    )
-    straight = YncaFunctionEnum[Straight](
-        "STRAIGHT", Straight, initialize_function_name="BASIC"
-    )
-    twochdecoder = YncaFunctionEnum[TwoChDecoder]("2CHDECODER", TwoChDecoder)
-    vol = YncaFunctionFloat(
+    inp = StrFunction("INP", init="BASIC")
+    maxvol = FloatFunction("MAXVOL", command_type=Cmd.GET)
+    mute = EnumFunction[Mute]("MUTE", Mute, init="BASIC")
+    puredirmode = EnumFunction[PureDirMode]("PUREDIRMODE", PureDirMode, init="BASIC")
+    pwr = EnumFunction[Pwr]("PWR", Pwr, init="BASIC")
+    scene1name = StrFunction("SCENE1NAME", cmd=Cmd.GET, init="SCENENAME")
+    scene2name = StrFunction("SCENE2NAME", cmd=Cmd.GET, init="SCENENAME")
+    scene3name = StrFunction("SCENE3NAME", cmd=Cmd.GET, init="SCENENAME")
+    scene4name = StrFunction("SCENE4NAME", cmd=Cmd.GET, init="SCENENAME")
+    scene5name = StrFunction("SCENE5NAME", cmd=Cmd.GET, init="SCENENAME")
+    scene6name = StrFunction("SCENE6NAME", cmd=Cmd.GET, init="SCENENAME")
+    scene7name = StrFunction("SCENE7NAME", cmd=Cmd.GET, init="SCENENAME")
+    scene8name = StrFunction("SCENE8NAME", cmd=Cmd.GET, init="SCENENAME")
+    scene9name = StrFunction("SCENE9NAME", cmd=Cmd.GET, init="SCENENAME")
+    scene10name = StrFunction("SCENE10NAME", cmd=Cmd.GET, init="SCENENAME")
+    scene11name = StrFunction("SCENE11NAME", cmd=Cmd.GET, init="SCENENAME")
+    scene12name = StrFunction("SCENE12NAME", cmd=Cmd.GET, init="SCENENAME")
+    soundprg = EnumFunction[SoundPrg]("SOUNDPRG", SoundPrg, init="BASIC")
+    straight = EnumFunction[Straight]("STRAIGHT", Straight, init="BASIC")
+    twochdecoder = EnumFunction[TwoChDecoder]("2CHDECODER", TwoChDecoder)
+    vol = FloatFunction(
         "VOL",
         converter=FloatConverter(
             to_str=lambda v: number_to_string_with_stepsize(v, 1, 0.5)
         ),
-        initialize_function_name="BASIC",
+        initializer="BASIC",
     )
-    zonename = YncaFunctionStr("ZONENAME", converter=StrConverter(min_len=0, max_len=9))
+    zonename = StrFunction("ZONENAME", converter=StrConverter(min_len=0, max_len=9))
 
     def scene_recall(self, scene_id: int):
         """Recall a scene"""

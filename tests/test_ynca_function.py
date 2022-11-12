@@ -6,11 +6,11 @@ from unittest import mock
 import pytest
 
 from ynca.ynca_function import (
-    CommandType,
-    YncaFunctionEnum,
-    YncaFunctionFloat,
-    YncaFunctionInt,
-    YncaFunctionStr,
+    Cmd,
+    EnumFunction,
+    FloatFunction,
+    IntFunction,
+    StrFunction,
 )
 from ynca.subunit import SubunitBase
 
@@ -20,8 +20,8 @@ SUBUNIT = "TESTSUBUNIT"
 class DummySubunit(SubunitBase):
     id = SUBUNIT
 
-    function_put = YncaFunctionStr("FUNCTION_PUT", command_type=CommandType.PUT)
-    function_get = YncaFunctionStr("FUNCTION_GET", command_type=CommandType.GET)
+    function_put = StrFunction("FUNCTION_PUT", cmd=Cmd.PUT)
+    function_get = StrFunction("FUNCTION_GET", cmd=Cmd.GET)
     # band = YncaFunctionEnum[Band]("BAND", Band)
 
 

@@ -3,7 +3,7 @@ from __future__ import annotations
 from enum import Enum
 
 from ..constants import Playback, PlaybackInfo, Repeat
-from ..ynca_function import CommandType, YncaFunctionEnum, YncaFunctionStr
+from ..ynca_function import Cmd, EnumFunction, StrFunction
 
 
 class PlaybackFunctionMixin:
@@ -13,35 +13,27 @@ class PlaybackFunctionMixin:
 
 
 class PlaybackInfoFunctionMixin:
-    playbackinfo = YncaFunctionEnum[PlaybackInfo](
-        "PLAYBACKINFO", PlaybackInfo, command_type=CommandType.GET
-    )
+    playbackinfo = EnumFunction[PlaybackInfo]("PLAYBACKINFO", PlaybackInfo, cmd=Cmd.GET)
 
 
 class ArtistFunctionMixin:
-    artist = YncaFunctionStr(
-        "ARTIST", command_type=CommandType.GET, initialize_function_name="METAINFO"
-    )
+    artist = StrFunction("ARTIST", cmd=Cmd.GET, init="METAINFO")
 
 
 class AlbumFunctionMixin:
-    album = YncaFunctionStr(
-        "ALBUM", command_type=CommandType.GET, initialize_function_name="METAINFO"
-    )
+    album = StrFunction("ALBUM", cmd=Cmd.GET, init="METAINFO")
 
 
 class SongFunctionMixin:
-    song = YncaFunctionStr(
-        "SONG", command_type=CommandType.GET, initialize_function_name="METAINFO"
-    )
+    song = StrFunction("SONG", cmd=Cmd.GET, init="METAINFO")
 
 
 class StationFunctionMixin:
-    station = YncaFunctionStr("STATION", command_type=CommandType.GET)
+    station = StrFunction("STATION", cmd=Cmd.GET)
 
 
 class RepeatFunctionMixin:
-    repeat = YncaFunctionEnum[Repeat]("REPEAT", Repeat)
+    repeat = EnumFunction[Repeat]("REPEAT", Repeat)
 
 
 class Shuffle(Enum):
@@ -50,7 +42,7 @@ class Shuffle(Enum):
 
 
 class ShuffleFunctionMixin:
-    shuffle = YncaFunctionEnum[Shuffle]("SHUFFLE", Shuffle)
+    shuffle = EnumFunction[Shuffle]("SHUFFLE", Shuffle)
 
 
 class Pwr(Enum):

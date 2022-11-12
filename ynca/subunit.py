@@ -6,7 +6,7 @@ from abc import ABC, abstractmethod
 from enum import Enum, Flag, auto
 from typing import Any, Callable, Dict, Set, TypeVar
 
-from ynca.ynca_function import YncaFunctionBase, YncaFunctionEnum
+from ynca.ynca_function import FunctionBase, EnumFunction
 
 from .connection import YncaConnection, YncaProtocol, YncaProtocolStatus
 from .constants import Avail, Subunit
@@ -33,7 +33,7 @@ class YncaFunctionHandler:
 
     def __init__(
         self,
-        function: YncaFunctionBase,
+        function: FunctionBase,
     ) -> None:
         self.value = None
         self.function = function
@@ -47,7 +47,7 @@ class SubunitBase(ABC):
     Baseclass for Subunits, should be subclassed do not instantiate manually.
     """
 
-    avail = YncaFunctionEnum[Avail]("AVAIL", Avail)
+    avail = EnumFunction[Avail]("AVAIL", Avail)
 
     @property
     @abstractmethod
@@ -65,10 +65,8 @@ class SubunitBase(ABC):
         # Sort the list to have a deterministic/understandable order for easier testing
         for attribute_name in sorted(dir(self.__class__)):
             attribute = getattr(self.__class__, attribute_name)
-            if isinstance(attribute, YncaFunctionBase):
-                self.function_handlers[attribute.function_name] = YncaFunctionHandler(
-                    attribute
-                )
+            if isinstance(attribute, FunctionBase):
+                self.function_handlers[attribute.name] = YncaFunctionHandler(attribute)
 
         self._initialized = False
         self._initialized_event = threading.Event()
@@ -94,8 +92,8 @@ class SubunitBase(ABC):
         for function_name, handler in self.function_handlers.items():
             if not handler.function.no_initialize:
                 function_name = (
-                    handler.function.initialize_function_name
-                    if handler.function.initialize_function_name is not None
+                    handler.function.initializer
+                    if handler.function.initializer is not None
                     else function_name
                 )
                 if function_name not in initialized_function_names:

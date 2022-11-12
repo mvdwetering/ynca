@@ -5,7 +5,7 @@ import pytest
 
 from ynca.constants import Avail
 from ynca.subunit import SubunitBase
-from ynca.ynca_function import YncaFunctionInt
+from ynca.ynca_function import IntFunction
 from ynca.errors import YncaInitializationFailedException
 
 
@@ -37,7 +37,7 @@ INITIALIZE_FULL_RESPONSES = [
 class DummySubunit(SubunitBase):
     id = SUBUNIT
 
-    dummy = YncaFunctionInt("DUMMY_FUNCTION")
+    dummy = IntFunction("DUMMY_FUNCTION")
 
 
 @pytest.fixture

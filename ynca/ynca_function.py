@@ -19,7 +19,7 @@ from .converters import (
 logger = logging.getLogger(__name__)
 
 
-class CommandType(Flag):
+class Cmd(Flag):
     GET = auto()
     PUT = auto()
 
@@ -28,7 +28,7 @@ T = TypeVar("T")
 E = TypeVar("E", bound=Enum)
 
 
-class YncaFunctionBase(ABC, Generic[T]):
+class FunctionBase(ABC, Generic[T]):
     """
     Provides an easy way to specify all properties needed to handle a YNCA function.
     The resulting descriptor makes it easy to just read/write to the attributes and
@@ -37,112 +37,108 @@ class YncaFunctionBase(ABC, Generic[T]):
 
     def __init__(
         self,
-        function_name: str,
+        name: str,
         converter: ConverterBase,
-        command_type: CommandType = CommandType.GET | CommandType.PUT,
-        initialize_function_name: str | None = None,
+        cmd: Cmd = Cmd.GET | Cmd.PUT,
+        init: str | None = None,
         no_initialize: bool = False,
     ) -> None:
         """
-        function_name:
+        name:
             Name of the function
         converter:
             Converter to use for value to/from str conversions
-        command_type:
+        cmd:
             Operations the command supports. PUT and/or GET
-        initialize_function_name:
-            Set this if the name to initialize this function is different from the function name itself. E.g. METAINFO for artist, album and song to reduce amount of commands needed
+        init:
+            Name of function to use for initialize. Only needed if the function name to initialize is different from the function name itself. E.g. METAINFO for ARTIST, ALBUM and SONG to reduce amount of commands needed
         no_initialize:
             Do not initialize this function, very specific usecase, do _not_ use unless you know what you are doing!
         """
-        self.function_name = function_name
-        self.command_type = command_type
+        self.name = name
+        self.cmd = cmd
         self.converter = converter
         self.no_initialize = no_initialize
-        self.initialize_function_name = initialize_function_name
+        self.initializer = init
 
-    def __get__(self, instance: SubunitBase, owner) -> T | None | YncaFunctionBase[T]:
+    def __get__(self, instance: SubunitBase, owner) -> T | None | FunctionBase[T]:
         if instance is None:
             return self
 
-        if CommandType.GET not in self.command_type:
-            raise AttributeError(
-                f"Function {self.function_name} does not support GET command"
-            )
+        if Cmd.GET not in self.cmd:
+            raise AttributeError(f"Function {self.name} does not support GET command")
 
-        return instance.function_handlers[self.function_name].value
+        return instance.function_handlers[self.name].value
 
     def __set__(self, instance, value: T):
-        if CommandType.PUT not in self.command_type:
-            raise AttributeError(
-                f"Function {self.function_name} does not support PUT command"
-            )
-        instance._put(self.function_name, self.converter.to_str(value))
+        if Cmd.PUT not in self.cmd:
+            raise AttributeError(f"Function {self.name} does not support PUT command")
+        instance._put(self.name, self.converter.to_str(value))
 
     def __delete__(self, instance: SubunitBase):  # pragma: no cover
         # Don't think I have use for this
         pass
 
 
-class YncaFunctionEnum(YncaFunctionBase, Generic[E]):
+class EnumFunction(FunctionBase, Generic[E]):
     def __init__(
         self,
-        function_name: str,
-        datatype: Type[E],
-        command_type: CommandType = CommandType.GET | CommandType.PUT,
-        initialize_function_name=None,
+        name: str,
+        datatype: Cmd[E],
+        cmd: Cmd = Cmd.GET | Cmd.PUT,
+        init=None,
     ) -> None:
         super().__init__(
-            function_name,
-            command_type=command_type,
+            name,
+            cmd=cmd,
             converter=EnumConverter[E](datatype),
-            initialize_function_name=initialize_function_name,
+            init=init,
         )
 
 
-class YncaFunctionStr(YncaFunctionBase):
+class StrFunction(FunctionBase):
     def __init__(
         self,
-        function_name: str,
-        command_type: CommandType = CommandType.GET | CommandType.PUT,
+        name: str,
+        cmd: Cmd = Cmd.GET | Cmd.PUT,
         converter: ConverterBase = StrConverter(),
-        initialize_function_name=None,
+        init=None,
     ) -> None:
         super().__init__(
-            function_name,
-            command_type=command_type,
+            name,
+            cmd=cmd,
             converter=converter,
-            initialize_function_name=initialize_function_name,
+            init=init,
         )
 
 
-class YncaFunctionInt(YncaFunctionBase):
+class IntFunction(FunctionBase):
     def __init__(
         self,
-        function_name: str,
-        command_type: CommandType = CommandType.GET | CommandType.PUT,
+        name: str,
+        command_type: Cmd = Cmd.GET | Cmd.PUT,
         converter: ConverterBase = IntConverter(),
-        initialize_function_name=None,
+        init=None,
     ) -> None:
         super().__init__(
-            function_name,
-            command_type=command_type,
+            name,
+            cmd=command_type,
             converter=converter,
-            initialize_function_name=initialize_function_name,
+            init=init,
         )
 
 
-class YncaFunctionFloat(YncaFunctionBase):
+class FloatFunction(FunctionBase):
     def __init__(
         self,
-        function_name: str,
-        command_type: CommandType = CommandType.GET | CommandType.PUT,
+        name: str,
+        command_type: Cmd = Cmd.GET | Cmd.PUT,
         converter: ConverterBase = FloatConverter(),
-        initialize_function_name=None,
+        init=None,
     ) -> None:
         super().__init__(
-            function_name,
-            command_type=command_type,
+            name,
+            cmd=command_type,
             converter=converter,
-            initialize_function_name=initialize_function_name,
+            init=init,
         )
