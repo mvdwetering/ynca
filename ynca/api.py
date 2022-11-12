@@ -32,7 +32,7 @@ from .subunits.zone import Main, Zone2, Zone3, Zone4
 logger = logging.getLogger(__name__)
 
 
-class Ynca:
+class YncaApi:
     def __init__(
         self,
         serial_url: str,

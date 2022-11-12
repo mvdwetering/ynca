@@ -4,7 +4,6 @@ import pytest
 import ynca
 from ynca.subunits.bt import Bt
 from ynca.errors import YncaConnectionError, YncaInitializationFailedException
-from ynca.get_all_zone_inputs import FALLBACK_INPUTS
 from ynca.subunits.mediaplayback_subunits import Usb
 from ynca.subunits.system import System
 from ynca.subunits.zone import Main
@@ -168,21 +167,21 @@ INITIALIZE_FULL_RESPONSES = [
 
 
 def test_construct():
-    y = ynca.Ynca("serial_url")
+    y = ynca.YncaApi("serial_url")
     y.close()
 
 
 def test_check_connection_check_success(connection):
 
     with mock.patch.object(
-        ynca.ynca.YncaConnection, "create_from_serial_url"
+        ynca.api.YncaConnection, "create_from_serial_url"
     ) as create_from_serial_url:
         create_from_serial_url.return_value = connection
         connection.get_response_list = CONNECTION_CHECK_RESPONSES
 
         disconnect_callback = mock.MagicMock()
 
-        y = ynca.Ynca("serial_url", disconnect_callback, 123)
+        y = ynca.YncaApi("serial_url", disconnect_callback, 123)
         modelname = y.connection_check()
         assert modelname == "ModelName"
 
@@ -193,14 +192,14 @@ def test_check_connection_check_success(connection):
 def test_check_connection_check_fail_connect(connection):
 
     with mock.patch.object(
-        ynca.ynca.YncaConnection, "create_from_serial_url"
+        ynca.api.YncaConnection, "create_from_serial_url"
     ) as create_from_serial_url:
         create_from_serial_url.return_value = connection
         connection.connect.side_effect = YncaConnectionError("something is wrong")
 
         disconnect_callback = mock.MagicMock()
 
-        y = ynca.Ynca("serial_url", disconnect_callback)
+        y = ynca.YncaApi("serial_url", disconnect_callback)
         with pytest.raises(YncaConnectionError):
             y.connection_check()
 
@@ -211,13 +210,13 @@ def test_check_connection_check_fail_connect(connection):
 def test_check_connection_check_fail_no_response(connection):
 
     with mock.patch.object(
-        ynca.ynca.YncaConnection, "create_from_serial_url"
+        ynca.api.YncaConnection, "create_from_serial_url"
     ) as create_from_serial_url:
         create_from_serial_url.return_value = connection
 
         disconnect_callback = mock.MagicMock()
 
-        y = ynca.Ynca("serial_url", disconnect_callback)
+        y = ynca.YncaApi("serial_url", disconnect_callback)
         with pytest.raises(YncaConnectionError):
             y.connection_check()
 
@@ -228,14 +227,14 @@ def test_check_connection_check_fail_no_response(connection):
 def test_initialize_minimal(connection):
 
     with mock.patch.object(
-        ynca.ynca.YncaConnection, "create_from_serial_url"
+        ynca.api.YncaConnection, "create_from_serial_url"
     ) as create_from_serial_url:
         create_from_serial_url.return_value = connection
         connection.get_response_list = INITIALIZE_MINIMAL_RESPONSES
 
         disconnect_callback = mock.MagicMock()
 
-        y = ynca.Ynca("serial_url", disconnect_callback)
+        y = ynca.YncaApi("serial_url", disconnect_callback)
         y.initialize()
 
         assert isinstance(y.SYS, System)
@@ -250,12 +249,12 @@ def test_initialize_minimal(connection):
 def test_close(connection):
 
     with mock.patch.object(
-        ynca.ynca.YncaConnection, "create_from_serial_url"
+        ynca.api.YncaConnection, "create_from_serial_url"
     ) as create_from_serial_url:
         create_from_serial_url.return_value = connection
         connection.get_response_list = INITIALIZE_MINIMAL_RESPONSES
 
-        y = ynca.Ynca("serial_url")
+        y = ynca.YncaApi("serial_url")
         y.close()
         y.initialize()
 
@@ -270,14 +269,14 @@ def test_close(connection):
 def test_initialize_fail(connection):
 
     with mock.patch.object(
-        ynca.ynca.YncaConnection, "create_from_serial_url"
+        ynca.api.YncaConnection, "create_from_serial_url"
     ) as create_from_serial_url:
         create_from_serial_url.return_value = connection
         connection.get_response_list = []
 
         disconnect_callback = mock.MagicMock()
 
-        y = ynca.Ynca("serial_url", disconnect_callback)
+        y = ynca.YncaApi("serial_url", disconnect_callback)
         with pytest.raises(YncaInitializationFailedException):
             y.initialize()
 
@@ -288,14 +287,14 @@ def test_initialize_fail(connection):
 def test_disconnect_callback(connection):
 
     with mock.patch.object(
-        ynca.ynca.YncaConnection, "create_from_serial_url"
+        ynca.api.YncaConnection, "create_from_serial_url"
     ) as create_from_serial_url:
         create_from_serial_url.return_value = connection
         connection.get_response_list = INITIALIZE_MINIMAL_RESPONSES
 
         disconnect_callback = mock.MagicMock()
 
-        y = ynca.Ynca("serial_url", disconnect_callback)
+        y = ynca.YncaApi("serial_url", disconnect_callback)
         y.initialize()
 
         # Report disconnect from connection by using callback registered in connect call
@@ -308,12 +307,12 @@ def test_disconnect_callback(connection):
 def test_get_communication_log_items(connection):
 
     with mock.patch.object(
-        ynca.ynca.YncaConnection, "create_from_serial_url"
+        ynca.api.YncaConnection, "create_from_serial_url"
     ) as create_from_serial_url:
         create_from_serial_url.return_value = connection
         connection.get_response_list = INITIALIZE_MINIMAL_RESPONSES
 
-        y = ynca.Ynca("serial_url")
+        y = ynca.YncaApi("serial_url")
         assert y.get_communication_log_items() == []
         y.initialize()
 
@@ -328,12 +327,12 @@ def test_get_communication_log_items(connection):
 def test_send_raw(connection):
 
     with mock.patch.object(
-        ynca.ynca.YncaConnection, "create_from_serial_url"
+        ynca.api.YncaConnection, "create_from_serial_url"
     ) as create_from_serial_url:
         create_from_serial_url.return_value = connection
         connection.get_response_list = INITIALIZE_MINIMAL_RESPONSES
 
-        y = ynca.Ynca("serial_url")
+        y = ynca.YncaApi("serial_url")
         y.send_raw("not initialized, silently ignored")
         y.initialize()
 
@@ -346,13 +345,13 @@ def test_send_raw(connection):
 def test_initialize_full(connection):
 
     with mock.patch.object(
-        ynca.ynca.YncaConnection, "create_from_serial_url"
+        ynca.api.YncaConnection, "create_from_serial_url"
     ) as create_from_serial_url:
         create_from_serial_url.return_value = connection
 
         connection.get_response_list = INITIALIZE_FULL_RESPONSES
 
-        y = ynca.Ynca("serial_url")
+        y = ynca.YncaApi("serial_url")
         y.initialize()
 
         assert len(y._subunits.keys()) == 4
