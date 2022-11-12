@@ -2,11 +2,16 @@ import logging
 from enum import Enum
 from typing import Dict
 
-from ..connection import YncaConnection, YncaProtocolStatus
 from ..constants import Subunit
-from .function_mixins import Pwr
+from ..converters import StrConverter
 from ..subunit import SubunitBase
-from ..ynca_function import CommandType, YncaFunctionEnum, YncaFunctionStr
+from ..ynca_function import (
+    CommandType,
+    YncaFunctionBase,
+    YncaFunctionEnum,
+    YncaFunctionStr,
+)
+from .function_mixins import Pwr
 
 logger = logging.getLogger(__name__)
 
@@ -116,8 +121,11 @@ class System(SubunitBase):
 
     # No_initialize VERSION to avoid it being sent during initialization
     # It is also used behind the scenes for syncing and would interfere
-    version = YncaFunctionStr(
-        "VERSION", command_type=CommandType.GET, no_initialize=True
+    version = YncaFunctionBase(
+        "VERSION",
+        converter=StrConverter(),
+        command_type=CommandType.GET,
+        no_initialize=True,
     )
 
     def partyvol_up(self):

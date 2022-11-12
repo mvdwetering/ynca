@@ -8,8 +8,13 @@ from typing import TYPE_CHECKING, Generic, Type, TypeVar
 if TYPE_CHECKING:  # pragma: no cover
     from .subunit import SubunitBase
 
-from .converters import (ConverterBase, EnumConverter, FloatConverter,
-                         IntConverter, StrConverter)
+from .converters import (
+    ConverterBase,
+    EnumConverter,
+    FloatConverter,
+    IntConverter,
+    StrConverter,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -48,7 +53,7 @@ class YncaFunctionBase(ABC, Generic[T]):
         initialize_function_name:
             Set this if the name to initialize this function is different from the function name itself. E.g. METAINFO for artist, album and song to reduce amount of commands needed
         no_initialize:
-            Do not initialize this function, very specific usecase, do _not_ use unless you know what you are doing
+            Do not initialize this function, very specific usecase, do _not_ use unless you know what you are doing!
         """
         self.function_name = function_name
         self.command_type = command_type
@@ -85,14 +90,12 @@ class YncaFunctionEnum(YncaFunctionBase, Generic[E]):
         function_name: str,
         datatype: Type[E],
         command_type: CommandType = CommandType.GET | CommandType.PUT,
-        no_initialize: bool = False,
         initialize_function_name=None,
     ) -> None:
         super().__init__(
             function_name,
             command_type=command_type,
             converter=EnumConverter[E](datatype),
-            no_initialize=no_initialize,
             initialize_function_name=initialize_function_name,
         )
 
@@ -103,14 +106,12 @@ class YncaFunctionStr(YncaFunctionBase):
         function_name: str,
         command_type: CommandType = CommandType.GET | CommandType.PUT,
         converter: ConverterBase = StrConverter(),
-        no_initialize: bool = False,
         initialize_function_name=None,
     ) -> None:
         super().__init__(
             function_name,
             command_type=command_type,
             converter=converter,
-            no_initialize=no_initialize,
             initialize_function_name=initialize_function_name,
         )
 
@@ -121,14 +122,12 @@ class YncaFunctionInt(YncaFunctionBase):
         function_name: str,
         command_type: CommandType = CommandType.GET | CommandType.PUT,
         converter: ConverterBase = IntConverter(),
-        no_initialize: bool = False,
         initialize_function_name=None,
     ) -> None:
         super().__init__(
             function_name,
             command_type=command_type,
             converter=converter,
-            no_initialize=no_initialize,
             initialize_function_name=initialize_function_name,
         )
 
@@ -139,13 +138,11 @@ class YncaFunctionFloat(YncaFunctionBase):
         function_name: str,
         command_type: CommandType = CommandType.GET | CommandType.PUT,
         converter: ConverterBase = FloatConverter(),
-        no_initialize: bool = False,
         initialize_function_name=None,
     ) -> None:
         super().__init__(
             function_name,
             command_type=command_type,
             converter=converter,
-            no_initialize=no_initialize,
             initialize_function_name=initialize_function_name,
         )
