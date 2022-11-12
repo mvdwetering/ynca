@@ -113,9 +113,7 @@ class YncaFunctionBase(ABC, Generic[T]):
                 f"Function {self.function_name} does not support GET command"
             )
 
-        if handler := instance.function_handlers.get(self.function_name, None):
-            return handler.value
-        return None
+        return instance.function_handlers[self.function_name].value
 
     def __set__(self, instance, value: T):
         if CommandType.PUT not in self.command_type:
@@ -202,15 +200,13 @@ class YncaFunctionHandler:
 
     def __init__(
         self,
-        converter: ConverterBase,
-        no_initialize: bool,
+        function: YncaFunctionBase,
     ) -> None:
         self.value = None
-        self.converter = converter
-        self.no_initialize = no_initialize
+        self.function = function
 
     def update(self, value_str: str):
-        self.value = self.converter.to_value(value_str)
+        self.value = self.function.converter.to_value(value_str)
 
 
 class SubunitBase(ABC):
@@ -231,12 +227,12 @@ class SubunitBase(ABC):
         # Note that we need to iterate over the _class_
         # otherwise the YncaFunction descriptors get/set functions would trigger.
         # Sort the list to have a deterministic/understandable order for easier testing
-        for name in sorted(dir(self.__class__)):
-            value = getattr(self.__class__, name)
+        for attribute_name in sorted(dir(self.__class__)):
+            attribute = getattr(self.__class__, attribute_name)
 
-            if isinstance(value, YncaFunctionBase):
-                self.function_handlers[value.function_name] = YncaFunctionHandler(
-                    value.converter, value.no_initialize
+            if isinstance(attribute, YncaFunctionBase):
+                self.function_handlers[attribute.function_name] = YncaFunctionHandler(
+                    attribute
                 )
 
         self._initialized = False
@@ -262,7 +258,7 @@ class SubunitBase(ABC):
 
         # Request YNCA functions
         for function_name, handler in self.function_handlers.items():
-            if not handler.no_initialize:
+            if not handler.function.no_initialize:
                 self._get(function_name)
 
         # Invoke subunit specific initialization implemented in the derived classes
@@ -313,7 +309,11 @@ class SubunitBase(ABC):
         return False
 
     def _protocol_message_received(
-        self, status: YncaProtocolStatus, subunit: str, function_name: str, value: str
+        self,
+        status: YncaProtocolStatus,
+        subunit: str,
+        function_name: str,
+        value_str: str,
     ):
         if status is not YncaProtocolStatus.OK:
             # Can't really handle errors since at this point we can't see to what command it belonged
@@ -333,15 +333,15 @@ class SubunitBase(ABC):
         updated = False
 
         if handler := self.function_handlers.get(function_name, None):
-            handler.update(value)
+            handler.update(value_str)
             updated = True
         else:
             updated = self.on_message_received_without_handler(
-                status, function_name, value
+                status, function_name, value_str
             )
 
         if updated:
-            self._call_registered_update_callbacks(function_name, value)
+            self._call_registered_update_callbacks(function_name, value_str)
 
     def _put(self, function_name: str, value: str):
         self._connection.put(self.id, function_name, value)
