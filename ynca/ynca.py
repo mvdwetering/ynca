@@ -155,7 +155,7 @@ class Ynca:
     def initialize(self):
         """
         Sets up a connection to the device and initializes the Ynca API.
-        This call takes quite a while (~10 seocnds on a simple 2 zone receiver).
+        This call takes quite a while (~10 seconds on a simple 2 zone receiver).
 
         If initialize was successful the client should call the `close()`
         method when done with the Ynca API object to cleanup.
