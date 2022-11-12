@@ -162,9 +162,9 @@ def test_partymute(connection, initialized_system: System):
 
 def test_partyvol(connection, initialized_system: System):
     # Writing to device
-    initialized_system.partyvol = PartyVol.UP
+    initialized_system.partyvol_up()
     connection.put.assert_called_with(SYS, "PARTYVOL", "Up")
-    initialized_system.partyvol = PartyVol.DOWN
+    initialized_system.partyvol_down()
     connection.put.assert_called_with(SYS, "PARTYVOL", "Down")
 
 

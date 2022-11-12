@@ -49,10 +49,6 @@ class System(SubunitBase):
     partymute = YncaFunctionEnum[PartyMute](
         "PARTYMUTE", PartyMute, command_type=CommandType.PUT
     )
-    partyvol = YncaFunctionEnum[PartyVol](
-        "PARTYVOL", PartyVol, command_type=CommandType.PUT
-    )
-
     pwr = YncaFunctionEnum[Pwr]("PWR", Pwr)
     remotecode = YncaFunctionStr(
         "REMOTECODE",
