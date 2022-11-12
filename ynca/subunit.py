@@ -1,4 +1,5 @@
 from __future__ import annotations
+from abc import ABC
 
 from enum import Enum, Flag, auto
 import logging
@@ -18,9 +19,83 @@ class CommandType(Flag):
 
 
 T = TypeVar("T")
+E = TypeVar("E", bound=Enum)
 
 
-class YncaFunction(Generic[T]):
+class Converter(ABC, Generic[T]):
+    def to_value(self, value_string: str) -> T:
+        raise NotImplementedError("Implement in derived class")
+
+    def to_str(self, value: T) -> str:
+        raise NotImplementedError("Implement in derived class")
+
+
+class EnumConverter(Converter, Generic[E]):
+    def __init__(self, datatype: Type[E]) -> None:
+        self.datatype = datatype
+
+    def to_value(self, value_string: str) -> E:
+        return self.datatype(value_string)
+
+    def to_str(self, value: E) -> str:
+        return cast(Enum, value).value
+
+
+class BoolConverter(Converter):
+    def __init__(self, true: str, false: str) -> None:
+        self._true_string = true
+        self._false_string = false
+
+    def to_value(self, value_string: str) -> bool:
+        return True if value_string == self._true_string else False
+
+    def to_str(self, value: bool) -> str:
+        return self._true_string if value else self._false_string
+
+
+class IntConverter(Converter):
+    def __init__(self, to_str: Callable[[int], str] | None = None) -> None:
+        self._to_str = to_str
+
+    def to_value(self, value_string: str) -> int:
+        return int(value_string)
+
+    def to_str(self, value: int) -> str:
+        if self._to_str:
+            return self._to_str(value)
+        return str(value)
+
+
+class FloatConverter(Converter):
+    def __init__(self, to_str: Callable[[float], str] | None = None) -> None:
+        self._to_str = to_str
+
+    def to_value(self, value_string: str) -> float:
+        return float(value_string)
+
+    def to_str(self, value: float) -> str:
+        if self._to_str:
+            return self._to_str(value)
+        return str(value)
+
+
+class StrConverter(Converter):
+    def __init__(self, min_len: int | None = None, max_len: int | None = None) -> None:
+        self._min_len = min_len
+        self._max_len = max_len
+
+    def to_value(self, value_string: str) -> str:
+        return value_string
+
+    def to_str(self, value: str) -> str:
+        if self._min_len and len(value) < self._min_len:
+            raise ValueError(f"{value} has a minimum length of {self._min_len}")
+        if self._max_len and len(value) > self._max_len:
+            raise ValueError(f"{value} has a maxmimum length of {self._max_len}")
+        return value
+
+
+class YncaFunctionBase(ABC, Generic[T]):
     """
     Provides an easy way to specify all properties needed to handle a YNCA function.
     The resulting descriptor makes it easy to just read/write to the attributes and
@@ -30,17 +105,13 @@ class YncaFunction(Generic[T]):
     def __init__(
         self,
         function_name: str,
-        datatype: Type,
+        converter: Converter,
         command_type: CommandType = CommandType.GET | CommandType.PUT,
-        value_converter: Callable[[str], T] | None = None,
-        str_converter: Callable[[T], str] | None = None,
         no_initialize: bool = False,
     ) -> None:
         self.function_name = function_name
-        self.datatype = datatype
         self.command_type = command_type
-        self.value_converter = value_converter
-        self._str_converter = str_converter
+        self.converter = converter
         self.no_initialize = no_initialize
 
     def __get__(self, instance: SubunitBase, owner) -> T | None:
@@ -61,56 +132,90 @@ class YncaFunction(Generic[T]):
             raise AttributeError(
                 f"Function {self.function_name} does not support PUT command"
             )
-        instance._put(self.function_name, self._value_to_str(value))
+        instance._put(self.function_name, self.converter.to_str(value))
 
     def __delete__(self, instance: SubunitBase):
         # Don't think I have use for this
         pass
 
-    def _value_to_str(self, value: T) -> str:
-        if self._str_converter:
-            return self._str_converter(value)
-        if issubclass(self.datatype, Enum):
-            # str(Enum) gives "Enum.VALUE" instead of value
-            # so do manual conversion
-            return cast(Enum, value).value
-        return str(value)
 
-
-class YncaFunctionReadOnly(YncaFunction, Generic[T]):
+class YncaFunctionEnum(YncaFunctionBase, Generic[E]):
     def __init__(
         self,
         function_name: str,
-        datatype: Type,
-        value_converter: Callable[[str], T] | None = None,
-        str_converter: Callable[[T], str] | None = None,
+        datatype: Type[E],
+        command_type: CommandType = CommandType.GET | CommandType.PUT,
         no_initialize: bool = False,
     ) -> None:
         super().__init__(
             function_name,
-            datatype,
-            command_type=CommandType.GET,
-            value_converter=value_converter,
-            str_converter=str_converter,
+            command_type=command_type,
+            converter=EnumConverter[E](datatype),
             no_initialize=no_initialize,
         )
 
 
-class YncaFunctionWriteOnly(YncaFunction, Generic[T]):
+class YncaFunctionStr(YncaFunctionBase):
     def __init__(
         self,
         function_name: str,
-        datatype: Type,
-        value_converter: Callable[[str], T] | None = None,
-        str_converter: Callable[[T], str] | None = None,
+        command_type: CommandType = CommandType.GET | CommandType.PUT,
+        converter: StrConverter = StrConverter(),
         no_initialize: bool = False,
     ) -> None:
         super().__init__(
             function_name,
-            datatype,
-            command_type=CommandType.PUT,
-            value_converter=value_converter,
-            str_converter=str_converter,
+            command_type=command_type,
+            converter=converter,
+            no_initialize=no_initialize,
+        )
+
+
+class YncaFunctionInt(YncaFunctionBase):
+    def __init__(
+        self,
+        function_name: str,
+        command_type: CommandType = CommandType.GET | CommandType.PUT,
+        converter: Converter = IntConverter(),
+        no_initialize: bool = False,
+    ) -> None:
+        super().__init__(
+            function_name,
+            command_type=command_type,
+            converter=converter,
+            no_initialize=no_initialize,
+        )
+
+
+class YncaFunctionFloat(YncaFunctionBase):
+    def __init__(
+        self,
+        function_name: str,
+        command_type: CommandType = CommandType.GET | CommandType.PUT,
+        converter: Converter = FloatConverter(),
+        no_initialize: bool = False,
+    ) -> None:
+        super().__init__(
+            function_name,
+            command_type=command_type,
+            converter=converter,
+            no_initialize=no_initialize,
+        )
+
+
+class YncaFunctionBool(YncaFunctionBase):
+    def __init__(
+        self,
+        function_name: str,
+        true: str,
+        false: str,
+        command_type=CommandType.GET | CommandType.PUT,
+        no_initialize: bool = False,
+    ) -> None:
+        super().__init__(
+            function_name,
+            command_type=command_type,
+            converter=BoolConverter(true, false),
             no_initialize=no_initialize,
         )
 
@@ -124,20 +229,15 @@ class YncaFunctionHandler:
 
     def __init__(
         self,
-        datatype: Type,
-        value_converter: Callable[[str], Any] | None,
+        converter: Converter,
         no_initialize: bool,
     ) -> None:
         self.value = None
-        self.datatype = datatype
-        self.value_converter = value_converter
+        self.converter = converter
         self.no_initialize = no_initialize
 
     def update(self, value_str: str):
-        if self.value_converter:
-            self.value = self.value_converter(value_str)
-        else:
-            self.value = self.datatype(value_str)
+        self.value = self.converter.to_value(value_str)
 
 
 # TODO: Look at ABC (AbstractBaseClass)
@@ -146,7 +246,7 @@ class SubunitBase:
     # To be set in subclasses
     id: str = ""
 
-    avail = YncaFunction[Avail]("AVAIL", Avail)
+    avail = YncaFunctionEnum[Avail]("AVAIL", Avail)
 
     def __init__(self, connection: YncaConnection) -> None:
         """
@@ -162,9 +262,9 @@ class SubunitBase:
         for name in sorted(dir(self.__class__)):
             value = getattr(self.__class__, name)
 
-            if isinstance(value, YncaFunction):
+            if isinstance(value, YncaFunctionBase):
                 self.function_handlers[value.function_name] = YncaFunctionHandler(
-                    value.datatype, value.value_converter, value.no_initialize
+                    value.converter, value.no_initialize
                 )
 
         self._initialized = False

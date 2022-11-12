@@ -2,24 +2,33 @@ from __future__ import annotations
 
 from .constants import Band, Subunit
 from .helpers import number_to_string_with_stepsize
-from .subunit import SubunitBase, YncaFunction
+from .subunit import (
+    FloatConverter,
+    IntConverter,
+    SubunitBase,
+    YncaFunctionEnum,
+    YncaFunctionFloat,
+    YncaFunctionInt,
+)
 
 
 class Tun(SubunitBase):
     id = Subunit.TUN
 
-    band = YncaFunction[Band]("BAND", Band)
+    band = YncaFunctionEnum[Band]("BAND", Band)
 
-    amfreq = YncaFunction[int](
+    amfreq = YncaFunctionInt(
         "AMFREQ",
-        int,
-        str_converter=lambda v: number_to_string_with_stepsize(v, 0, 10),
+        converter=IntConverter(
+            to_str=lambda v: number_to_string_with_stepsize(v, 0, 10)
+        ),
     )
-    """Read/write AM frequency. When writing the values will be aligned to a valid stepsize."""
+    """Read/write AM frequency. Values will be aligned to a valid stepsize."""
 
-    fmfreq = YncaFunction[float](
+    fmfreq = YncaFunctionFloat(
         "FMFREQ",
-        float,
-        str_converter=lambda v: number_to_string_with_stepsize(v, 2, 0.2),
+        converter=FloatConverter(
+            to_str=lambda v: number_to_string_with_stepsize(v, 2, 0.2)
+        ),
     )
-    """Read/write FM frequency. When writing the values will be aligned to a valid stepsize."""
+    """Read/write FM frequency. Values will be aligned to a valid stepsize."""

@@ -119,8 +119,10 @@ def test_initialize_full(connection, update_callback):
     assert update_callback.call_count == 0
     assert s.version == "Version"
     assert s.modelname == "ModelName"
-    assert s.pwr == Pwr.STANDBY
-    assert s.party == Party.ON
+    assert s.pwr == False
+    assert s.party == True
+    # assert s.pwr == Pwr.STANDBY
+    # assert s.party == Party.ON
 
     assert len(s.inp_names.keys()) == 19
     assert s.inp_names["PHONO"] == "InputPhono"
@@ -146,9 +148,9 @@ def test_initialize_full(connection, update_callback):
 
 def test_party(connection, initialized_system: System):
     # Writing to device
-    initialized_system.party = Party.ON
+    initialized_system.party = True  # Party.ON
     connection.put.assert_called_with(SYS, "PARTY", "On")
-    initialized_system.party = Party.OFF
+    initialized_system.party = False  # = Party.OFF
     connection.put.assert_called_with(SYS, "PARTY", "Off")
 
 
@@ -183,7 +185,9 @@ def test_remotecode(connection, initialized_system: System):
 
 def test_remotecode_wrong_length(connection, initialized_system: System):
     with pytest.raises(ValueError):
-        initialized_system.remotecode = "wrong length"
+        initialized_system.remotecode = "7777777"
+    with pytest.raises(ValueError):
+        initialized_system.remotecode = "999999999"
 
 
 def test_unhandled_function(connection, initialized_system: System):

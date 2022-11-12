@@ -7,10 +7,11 @@ from .connection import YncaConnection, YncaProtocolStatus
 from .constants import Subunit
 from .subunit import (
     CommandType,
+    StrConverter,
     SubunitBase,
-    YncaFunction,
-    YncaFunctionReadOnly,
-    YncaFunctionWriteOnly,
+    YncaFunctionBool,
+    YncaFunctionEnum,
+    YncaFunctionStr,
 )
 
 logger = logging.getLogger(__name__)
@@ -43,22 +44,27 @@ def raise_(ex):
 class System(SubunitBase):
     id = Subunit.SYS
 
-    modelname = YncaFunction[str]("MODELNAME", str)
-    party = YncaFunction[Party]("PARTY", Party)
-    partymute = YncaFunctionWriteOnly[PartyMute]("PARTYMUTE", PartyMute)
-    partyvol = YncaFunctionWriteOnly[PartyVol]("PARTYVOL", PartyVol)
-    pwr = YncaFunction[Pwr]("PWR", Pwr)
-    remotecode = YncaFunctionWriteOnly[str](
-        "REMOTECODE",
-        str,
-        str_converter=lambda v: v
-        if len(v) == 8
-        else raise_(ValueError("Remotecode must have a length of 8")),
+    modelname = YncaFunctionStr("MODELNAME")
+    party = YncaFunctionBool("PARTY", "On", "Off")
+    partymute = YncaFunctionEnum[PartyMute](
+        "PARTYMUTE", PartyMute, command_type=CommandType.PUT
+    )
+    partyvol = YncaFunctionEnum[PartyVol](
+        "PARTYVOL", PartyVol, command_type=CommandType.PUT
     )
 
-    # No initialize VERSION to avoid it being sent during initialization
-    # because it is also used behind the scenes for syncing
-    version = YncaFunctionReadOnly[str]("VERSION", str, no_initialize=True)
+    pwr = YncaFunctionBool("PWR", "On", "Off")
+    remotecode = YncaFunctionStr(
+        "REMOTECODE",
+        command_type=CommandType.PUT,
+        converter=StrConverter(min_len=8, max_len=8),
+    )
+
+    # No_initialize VERSION to avoid it being sent during initialization
+    # It is also used behind the scenes for syncing and would interfere
+    version = YncaFunctionStr(
+        "VERSION", command_type=CommandType.GET, no_initialize=True
+    )
 
     def partyvol_up(self):
         """
@@ -79,7 +85,6 @@ class System(SubunitBase):
     def _reset_internal_state(self):
         self._initialized = False
         self._inp_names: Dict[str, str] = {}
-        self._attr_version = None
 
     def on_initialize(self):
         self._reset_internal_state()
