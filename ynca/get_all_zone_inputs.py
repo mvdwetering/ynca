@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from typing import Dict, List, Optional, cast
 
 from .subunit import Subunit
-from .system import System
+from .subunits.system import System
 from .ynca import Ynca
 
 logger = logging.getLogger(__name__)

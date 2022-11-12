@@ -1,14 +1,14 @@
 from __future__ import annotations
 
-from .constants import Subunit
+from ..constants import Subunit
 from .function_mixins import (
     ArtistFunctionMixin,
     PlaybackFunctionMixin,
     PlaybackInfoFunctionMixin,
     SongFunctionMixin,
 )
-from .subunit import SubunitBase
-from .ynca_function import CommandType, YncaFunctionStr
+from ..subunit import SubunitBase
+from ..ynca_function import CommandType, YncaFunctionStr
 
 
 class ChannelnameFunctionMixin:

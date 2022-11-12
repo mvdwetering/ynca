@@ -1,24 +1,18 @@
 from __future__ import annotations
 
-from .constants import Subunit
+from ..constants import Subunit
 from .function_mixins import (
-    AlbumFunctionMixin,
-    ArtistFunctionMixin,
     PlaybackFunctionMixin,
     PlaybackInfoFunctionMixin,
-    SongFunctionMixin,
     StationFunctionMixin,
 )
-from .subunit import SubunitBase
+from ..subunit import SubunitBase
 
 
-class Pandora(
+class NetRadio(
     PlaybackFunctionMixin,
     PlaybackInfoFunctionMixin,
-    ArtistFunctionMixin,
-    AlbumFunctionMixin,
-    SongFunctionMixin,
     StationFunctionMixin,
     SubunitBase,
 ):
-    id = Subunit.PANDORA
+    id = Subunit.NETRADIO

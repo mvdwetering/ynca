@@ -1,4 +1,4 @@
-from ynca.uaw import Uaw
+from ynca.subunits.uaw import Uaw
 
 SYS = "SYS"
 SUBUNIT = "UAW"

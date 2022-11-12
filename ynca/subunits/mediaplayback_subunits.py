@@ -1,11 +1,16 @@
 from __future__ import annotations
 
-from .constants import Subunit
-from .function_mixins import (AlbumFunctionMixin, ArtistFunctionMixin,
-                              PlaybackFunctionMixin, PlaybackInfoFunctionMixin,
-                              RepeatFunctionMixin, ShuffleFunctionMixin,
-                              SongFunctionMixin)
-from .subunit import SubunitBase
+from ..constants import Subunit
+from .function_mixins import (
+    AlbumFunctionMixin,
+    ArtistFunctionMixin,
+    PlaybackFunctionMixin,
+    PlaybackInfoFunctionMixin,
+    RepeatFunctionMixin,
+    ShuffleFunctionMixin,
+    SongFunctionMixin,
+)
+from ..subunit import SubunitBase
 
 
 # A number of subunits have the same/similar featureset

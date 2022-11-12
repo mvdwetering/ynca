@@ -1,5 +1,5 @@
 from ynca.constants import Playback, PlaybackInfo
-from ynca.netradio import NetRadio
+from ynca.subunits.netradio import NetRadio
 
 SYS = "SYS"
 SUBUNIT = "NETRADIO"

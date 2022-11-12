@@ -2,11 +2,11 @@ import logging
 from enum import Enum
 from typing import Dict
 
-from .connection import YncaConnection, YncaProtocolStatus
-from .constants import Subunit
+from ..connection import YncaConnection, YncaProtocolStatus
+from ..constants import Subunit
 from .function_mixins import Pwr
-from .subunit import SubunitBase
-from .ynca_function import CommandType, YncaFunctionEnum, YncaFunctionStr
+from ..subunit import SubunitBase
+from ..ynca_function import CommandType, YncaFunctionEnum, YncaFunctionStr
 
 logger = logging.getLogger(__name__)
 

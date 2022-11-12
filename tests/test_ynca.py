@@ -2,12 +2,12 @@ from unittest import mock
 
 import pytest
 import ynca
-from ynca.bt import Bt
+from ynca.subunits.bt import Bt
 from ynca.errors import YncaConnectionError, YncaInitializationFailedException
 from ynca.get_all_zone_inputs import FALLBACK_INPUTS
-from ynca.mediaplayback_subunits import Usb
-from ynca.system import System
-from ynca.zone import Main
+from ynca.subunits.mediaplayback_subunits import Usb
+from ynca.subunits.system import System
+from ynca.subunits.zone import Main
 
 SYS = "SYS"
 MAIN = "MAIN"

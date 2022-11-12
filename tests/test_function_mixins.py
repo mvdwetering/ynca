@@ -1,7 +1,7 @@
 from unittest import mock
 from ynca.constants import Playback
 
-from ynca.function_mixins import (
+from ynca.subunits.function_mixins import (
     PlaybackFunctionMixin,
 )
 

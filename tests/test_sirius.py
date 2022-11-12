@@ -1,4 +1,4 @@
-from ynca.sirius import Sirius
+from ynca.subunits.sirius import Sirius
 
 SYS = "SYS"
 SUBUNIT = "SIRIUS"

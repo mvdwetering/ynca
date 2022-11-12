@@ -1,5 +1,5 @@
 from ynca.constants import Playback, PlaybackInfo
-from ynca.pandora import Pandora
+from ynca.subunits.pandora import Pandora
 
 SYS = "SYS"
 SUBUNIT = "PANDORA"

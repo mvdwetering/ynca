@@ -1,5 +1,5 @@
 from ynca.constants import PlaybackInfo, Playback
-from ynca.sirius import SiriusIr
+from ynca.subunits.sirius import SiriusIr
 
 SYS = "SYS"
 SUBUNIT = "SIRIUSIR"

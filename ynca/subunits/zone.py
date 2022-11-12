@@ -5,13 +5,13 @@ import re
 from enum import Enum
 from typing import Dict
 
-from .connection import YncaConnection, YncaProtocolStatus
-from .constants import Mute, SoundPrg, Subunit, TwoChDecoder
-from .converters import FloatConverter, StrConverter
+from ..connection import YncaConnection, YncaProtocolStatus
+from ..constants import Mute, SoundPrg, Subunit, TwoChDecoder
+from ..converters import FloatConverter, StrConverter
 from .function_mixins import PlaybackFunctionMixin, Pwr
-from .helpers import number_to_string_with_stepsize
-from .subunit import SubunitBase
-from .ynca_function import (
+from ..helpers import number_to_string_with_stepsize
+from ..subunit import SubunitBase
+from ..ynca_function import (
     CommandType,
     YncaFunctionEnum,
     YncaFunctionFloat,

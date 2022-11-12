@@ -4,13 +4,14 @@ import logging
 import threading
 from typing import Callable, Dict, List, Optional, Set, Type, cast
 
-from .airplay import Airplay
-from .bt import Bt
 from .connection import YncaConnection, YncaProtocol, YncaProtocolStatus
 from .constants import Subunit
 from .errors import YncaConnectionError, YncaInitializationFailedException
 from .helpers import all_subclasses
-from .mediaplayback_subunits import (
+from .subunit import SubunitBase
+from .subunits.airplay import Airplay
+from .subunits.bt import Bt
+from .subunits.mediaplayback_subunits import (
     Ipod,
     IpodUsb,
     Napster,
@@ -20,14 +21,13 @@ from .mediaplayback_subunits import (
     Spotify,
     Usb,
 )
-from .netradio import NetRadio
-from .pandora import Pandora
-from .sirius import Sirius, SiriusIr, SiriusXm
-from .subunit import SubunitBase
-from .system import System
-from .tun import Tun
-from .uaw import Uaw
-from .zone import Main, Zone2, Zone3, Zone4
+from .subunits.netradio import NetRadio
+from .subunits.pandora import Pandora
+from .subunits.sirius import Sirius, SiriusIr, SiriusXm
+from .subunits.system import System
+from .subunits.tun import Tun
+from .subunits.uaw import Uaw
+from .subunits.zone import Main, Zone2, Zone3, Zone4
 
 logger = logging.getLogger(__name__)
 

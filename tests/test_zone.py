@@ -3,8 +3,16 @@ from unittest import mock
 import pytest
 
 from ynca.constants import Mute, Subunit, SoundPrg, TwoChDecoder
-from ynca.function_mixins import Pwr
-from ynca.zone import PureDirMode, Straight, ZoneBase, Main, Zone2, Zone3, Zone4
+from ynca.subunits.function_mixins import Pwr
+from ynca.subunits.zone import (
+    PureDirMode,
+    Straight,
+    ZoneBase,
+    Main,
+    Zone2,
+    Zone3,
+    Zone4,
+)
 
 from .mock_yncaconnection import YncaConnectionMock
 

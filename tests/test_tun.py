@@ -1,5 +1,5 @@
 from ynca.constants import Band
-from ynca.tun import Tun
+from ynca.subunits.tun import Tun
 
 
 SYS = "SYS"
