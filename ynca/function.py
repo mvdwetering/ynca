@@ -3,7 +3,7 @@ from __future__ import annotations
 import logging
 from abc import ABC
 from enum import Enum, Flag, auto
-from typing import TYPE_CHECKING, Generic, TypeVar
+from typing import TYPE_CHECKING, Generic, Type, TypeVar
 
 if TYPE_CHECKING:  # pragma: no cover
     from .subunit import SubunitBase
@@ -84,7 +84,7 @@ class EnumFunction(FunctionBase, Generic[E]):
     def __init__(
         self,
         name: str,
-        datatype: Cmd[E],
+        datatype: Type[E],
         cmd: Cmd = Cmd.GET | Cmd.PUT,
         init=None,
     ) -> None:

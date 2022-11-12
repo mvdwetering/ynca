@@ -59,7 +59,7 @@ class System(SubunitBase):
 
     # No_initialize VERSION to avoid it being sent during initialization
     # It is also used behind the scenes for syncing and would interfere
-    version = FunctionBase(
+    version = FunctionBase[str](
         "VERSION", converter=StrConverter(), cmd=Cmd.GET, no_initialize=True
     )
 
