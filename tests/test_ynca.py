@@ -90,6 +90,14 @@ INITIALIZE_FULL_RESPONSES = [
         ],
     ),
     (
+        (SYS, "INPNAME"),
+        [
+            (SYS, "INPNAMEHDMI1", "InputHdmi1One"),
+            (SYS, "INPNAMEUSB", "InputUsb"),
+            (SYS, "INPNAMEUNKNOWN", "InputUnknown"),
+        ],
+    ),
+    (
         (SYS, "MODELNAME"),
         [
             (SYS, "MODELNAME", "ModelName"),
@@ -99,14 +107,6 @@ INITIALIZE_FULL_RESPONSES = [
         (SYS, "PWR"),
         [
             (SYS, "PWR", "Standby"),
-        ],
-    ),
-    (
-        (SYS, "INPNAME"),
-        [
-            (SYS, "INPNAMEONE", "InputOne"),
-            (SYS, "INPNAMETWO", "InputTwo"),
-            (SYS, "INPNAMEUSB", "InputUsb"),
         ],
     ),
     # SYS Subunit initialize sync
@@ -241,10 +241,6 @@ def test_initialize_minimal(connection):
         assert isinstance(y.SYS, System)
         assert y.SYS.version == "Version"
 
-        inputs = ynca.get_inputinfo_list(y)
-        assert sorted([inp.input for inp in inputs]) == sorted(FALLBACK_INPUTS.keys())
-        assert sorted([inp.name for inp in inputs]) == sorted(FALLBACK_INPUTS.values())
-
         y.close()
 
         connection.close.assert_called_once()
@@ -359,23 +355,12 @@ def test_initialize_full(connection):
         y = ynca.Ynca("serial_url")
         y.initialize()
 
-        inputs = ynca.get_inputinfo_list(y)
-
-        assert len(inputs) == 4
-        assert [inp for inp in inputs if inp.input == "ONE"][0].name == "InputOne"
-        assert [inp for inp in inputs if inp.input == "TWO"][0].name == "InputTwo"
-        assert [inp for inp in inputs if inp.input == "USB"][
-            0
-        ].name == "InputUsb"  # Make sure renamed value is returned
-        assert [inp for inp in inputs if inp.input == "Bluetooth"][
-            0
-        ].name == "Bluetooth"
-
         assert len(y._subunits.keys()) == 4
 
         assert isinstance(y.SYS, System)
         assert y.SYS.modelname == "ModelName"
         assert y.SYS.version == "Version"
+        assert y.SYS.inpnameusb == "InputUsb"
 
         assert isinstance(y.MAIN, Main)
         assert y.MAIN.zonename == "MainZoneName"

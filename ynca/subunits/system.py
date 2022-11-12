@@ -24,6 +24,89 @@ class PartyMute(Enum):
 class System(SubunitBase):
     id = Subunit.SYS
 
+    inpnameaudio1 = YncaFunctionStr(
+        "INPNAMEAUDIO1",
+        command_type=CommandType.GET,
+        initialize_function_name="INPNAME",
+    )
+    inpnameaudio2 = YncaFunctionStr(
+        "INPNAMEAUDIO2",
+        command_type=CommandType.GET,
+        initialize_function_name="INPNAME",
+    )
+    inpnameaudio3 = YncaFunctionStr(
+        "INPNAMEAUDIO3",
+        command_type=CommandType.GET,
+        initialize_function_name="INPNAME",
+    )
+    inpnameaudio4 = YncaFunctionStr(
+        "INPNAMEAUDIO4",
+        command_type=CommandType.GET,
+        initialize_function_name="INPNAME",
+    )
+    inpnameav1 = YncaFunctionStr(
+        "INPNAMEAV1", command_type=CommandType.GET, initialize_function_name="INPNAME"
+    )
+    inpnameav2 = YncaFunctionStr(
+        "INPNAMEAV2", command_type=CommandType.GET, initialize_function_name="INPNAME"
+    )
+    inpnameav3 = YncaFunctionStr(
+        "INPNAMEAV3", command_type=CommandType.GET, initialize_function_name="INPNAME"
+    )
+    inpnameav4 = YncaFunctionStr(
+        "INPNAMEAV4", command_type=CommandType.GET, initialize_function_name="INPNAME"
+    )
+    inpnameav5 = YncaFunctionStr(
+        "INPNAMEAV5", command_type=CommandType.GET, initialize_function_name="INPNAME"
+    )
+    inpnameav6 = YncaFunctionStr(
+        "INPNAMEAV6", command_type=CommandType.GET, initialize_function_name="INPNAME"
+    )
+    inpnameav7 = YncaFunctionStr(
+        "INPNAMEAV7", command_type=CommandType.GET, initialize_function_name="INPNAME"
+    )
+    inpnamedock = YncaFunctionStr(
+        "INPNAMEDOCK", command_type=CommandType.GET, initialize_function_name="INPNAME"
+    )
+    inpnamehdmi1 = YncaFunctionStr(
+        "INPNAMEHDMI1", command_type=CommandType.GET, initialize_function_name="INPNAME"
+    )
+    inpnamehdmi2 = YncaFunctionStr(
+        "INPNAMEHDMI2", command_type=CommandType.GET, initialize_function_name="INPNAME"
+    )
+    inpnamehdmi3 = YncaFunctionStr(
+        "INPNAMEHDMI3", command_type=CommandType.GET, initialize_function_name="INPNAME"
+    )
+    inpnamehdmi4 = YncaFunctionStr(
+        "INPNAMEHDMI4", command_type=CommandType.GET, initialize_function_name="INPNAME"
+    )
+    inpnamehdmi5 = YncaFunctionStr(
+        "INPNAMEHDMI5", command_type=CommandType.GET, initialize_function_name="INPNAME"
+    )
+    inpnamehdmi6 = YncaFunctionStr(
+        "INPNAMEHDMI6", command_type=CommandType.GET, initialize_function_name="INPNAME"
+    )
+    inpnamehdmi7 = YncaFunctionStr(
+        "INPNAMEHDMI7", command_type=CommandType.GET, initialize_function_name="INPNAME"
+    )
+    inpnamemultich = YncaFunctionStr(
+        "INPNAMEMULTICH",
+        command_type=CommandType.GET,
+        initialize_function_name="INPNAME",
+    )
+    inpnamephono = YncaFunctionStr(
+        "INPNAMEPHONO", command_type=CommandType.GET, initialize_function_name="INPNAME"
+    )
+    inpnameusb = YncaFunctionStr(
+        "INPNAMEUSB", command_type=CommandType.GET, initialize_function_name="INPNAME"
+    )
+    inpnamevaux = YncaFunctionStr(
+        "INPNAMEVAUX", command_type=CommandType.GET, initialize_function_name="INPNAME"
+    )
+
+    inpnamephono = YncaFunctionStr(
+        "INPNAMEPHONO", command_type=CommandType.GET, initialize_function_name="INPNAME"
+    )
     modelname = YncaFunctionStr("MODELNAME")
     party = YncaFunctionEnum[Party]("PARTY", Party)
     partymute = YncaFunctionEnum[PartyMute](
@@ -55,39 +138,3 @@ class System(SubunitBase):
                 f"REMOTECODE value must be of length 8, but was {len(value)} for {value}"
             )
         self._put("REMOTECODE", value)
-
-    def __init__(self, connection: YncaConnection) -> None:
-        super().__init__(connection)
-        self._reset_internal_state()
-
-    def _reset_internal_state(self):
-        self._initialized = False
-        self._inp_names: Dict[str, str] = {}
-
-    def on_initialize(self):
-        self._reset_internal_state()
-
-        # Get user-friendly names for inputs (also allows detection of a number of available inputs)
-        # Note that these are not all inputs, just the external ones it seems.
-        self._get("INPNAME")
-
-    def on_message_received_without_handler(
-        self, status: YncaProtocolStatus, function_: str, value: str
-    ) -> bool:
-        updated = True
-
-        if function_.startswith("INPNAME"):
-            input_id = function_[7:]
-            if input_id == "VAUX":
-                # Input ID used to set/get INP is actually V-AUX so compensate for that mismatch on the API
-                input_id = "V-AUX"
-            self._inp_names[input_id] = value
-        else:
-            updated = False
-
-        return updated
-
-    @property
-    def inp_names(self) -> Dict[str, str]:
-        """Get input names, dictionary of INP-id,INPNAME"""
-        return dict(self._inp_names)
