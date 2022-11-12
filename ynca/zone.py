@@ -9,10 +9,12 @@ from .connection import YncaConnection, YncaProtocolStatus
 from .constants import Mute, SoundPrg, Subunit, TwoChDecoder
 from .function_mixins import PlaybackFunctionMixin, Pwr
 from .helpers import number_to_string_with_stepsize
-from .subunit import (
-    CommandType,
+from .converters import (
     FloatConverter,
     StrConverter,
+)
+from .subunit import (
+    CommandType,
     SubunitBase,
     YncaFunctionEnum,
     YncaFunctionFloat,

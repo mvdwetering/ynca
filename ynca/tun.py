@@ -2,9 +2,11 @@ from __future__ import annotations
 
 from .constants import Band, Subunit
 from .helpers import number_to_string_with_stepsize
-from .subunit import (
+from .converters import (
     FloatConverter,
     IntConverter,
+)
+from .subunit import (
     SubunitBase,
     YncaFunctionEnum,
     YncaFunctionFloat,

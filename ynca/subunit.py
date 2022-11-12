@@ -4,7 +4,15 @@ from abc import ABC, abstractmethod
 from enum import Enum, Flag, auto
 import logging
 import threading
-from typing import Any, Callable, Dict, Set, Type, TypeVar, Generic, cast
+from typing import Any, Callable, Dict, Set, Type, TypeVar, Generic
+
+from .converters import (
+    ConverterBase,
+    EnumConverter,
+    FloatConverter,
+    IntConverter,
+    StrConverter,
+)
 
 from .constants import Avail, Subunit
 from .errors import YncaInitializationFailedException
@@ -20,69 +28,6 @@ class CommandType(Flag):
 
 T = TypeVar("T")
 E = TypeVar("E", bound=Enum)
-
-
-class ConverterBase(ABC, Generic[T]):
-    @abstractmethod
-    def to_value(self, value_string: str) -> T:
-        raise NotImplementedError("Implement in derived class")
-
-    @abstractmethod
-    def to_str(self, value: T) -> str:
-        raise NotImplementedError("Implement in derived class")
-
-
-class EnumConverter(ConverterBase, Generic[E]):
-    def __init__(self, datatype: Type[E]) -> None:
-        self.datatype = datatype
-
-    def to_value(self, value_string: str) -> E:
-        return self.datatype(value_string)
-
-    def to_str(self, value: E) -> str:
-        return cast(Enum, value).value
-
-
-class IntConverter(ConverterBase):
-    def __init__(self, to_str: Callable[[int], str] | None = None) -> None:
-        self._to_str = to_str
-
-    def to_value(self, value_string: str) -> int:
-        return int(value_string)
-
-    def to_str(self, value: int) -> str:
-        if self._to_str:
-            return self._to_str(value)
-        return str(value)
-
-
-class FloatConverter(ConverterBase):
-    def __init__(self, to_str: Callable[[float], str] | None = None) -> None:
-        self._to_str = to_str
-
-    def to_value(self, value_string: str) -> float:
-        return float(value_string)
-
-    def to_str(self, value: float) -> str:
-        if self._to_str:
-            return self._to_str(value)
-        return str(value)
-
-
-class StrConverter(ConverterBase):
-    def __init__(self, min_len: int | None = None, max_len: int | None = None) -> None:
-        self._min_len = min_len
-        self._max_len = max_len
-
-    def to_value(self, value_string: str) -> str:
-        return value_string
-
-    def to_str(self, value: str) -> str:
-        if self._min_len and len(value) < self._min_len:
-            raise ValueError(f"{value} has a minimum length of {self._min_len}")
-        if self._max_len and len(value) > self._max_len:
-            raise ValueError(f"{value} has a maxmimum length of {self._max_len}")
-        return value
 
 
 class YncaFunctionBase(ABC, Generic[T]):
@@ -136,7 +81,7 @@ class YncaFunctionBase(ABC, Generic[T]):
             )
         instance._put(self.function_name, self.converter.to_str(value))
 
-    def __delete__(self, instance: SubunitBase):
+    def __delete__(self, instance: SubunitBase):  # pragma: no cover
         # Don't think I have use for this
         pass
 
@@ -233,10 +178,13 @@ class YncaFunctionHandler:
 
 class SubunitBase(ABC):
 
-    # To be set in subclasses
-    id: str = ""
-
     avail = YncaFunctionEnum[Avail]("AVAIL", Avail)
+
+    @property
+    @abstractmethod
+    def id(self) -> str:
+        # Force subunits to set the ID
+        pass
 
     def __init__(self, connection: YncaConnection) -> None:
         """
@@ -261,8 +209,6 @@ class SubunitBase(ABC):
 
         self._connection = connection
         self._connection.register_message_callback(self._protocol_message_received)
-
-        # self.function_mixin_initialize_function_attributes()
 
     def initialize(self):
         """
