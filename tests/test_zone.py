@@ -18,6 +18,7 @@ from .mock_yncaconnection import YncaConnectionMock
 
 SYS = "SYS"
 SUBUNIT = "TESTZONE"
+NUM_SCENES = 12
 
 INITIALIZE_FULL_RESPONSES = [
     (
@@ -51,6 +52,23 @@ INITIALIZE_FULL_RESPONSES = [
         ],
     ),
     (
+        (SUBUNIT, "SCENENAME"),
+        [
+            (SUBUNIT, "SCENE1NAME", "Scene name 1"),
+            (SUBUNIT, "SCENE2NAME", "Scene name 2"),
+            (SUBUNIT, "SCENE3NAME", "Scene name 3"),
+            (SUBUNIT, "SCENE4NAME", "Scene name 4"),
+            (SUBUNIT, "SCENE5NAME", "Scene name 5"),
+            (SUBUNIT, "SCENE6NAME", "Scene name 6"),
+            (SUBUNIT, "SCENE7NAME", "Scene name 7"),
+            (SUBUNIT, "SCENE8NAME", "Scene name 8"),
+            (SUBUNIT, "SCENE9NAME", "Scene name 9"),
+            (SUBUNIT, "SCENE10NAME", "Scene name 10"),
+            (SUBUNIT, "SCENE11NAME", "Scene name 11"),
+            (SUBUNIT, "SCENE12NAME", "Scene name 12"),
+        ],
+    ),
+    (
         (SUBUNIT, "2CHDECODER"),
         [
             (SUBUNIT, "2CHDECODER", "Dolby PLIIx Movie"),
@@ -60,16 +78,6 @@ INITIALIZE_FULL_RESPONSES = [
         (SUBUNIT, "ZONENAME"),
         [
             (SUBUNIT, "ZONENAME", "ZoneName"),
-        ],
-    ),
-    (
-        (SUBUNIT, "SCENENAME"),
-        [
-            (SUBUNIT, "SCENE1NAME", "Scene name 1"),
-            (SUBUNIT, "SCENE2NAME", "Scene name 2"),
-            (SUBUNIT, "SCENE3NAME", "Scene name 3"),
-            (SUBUNIT, "SCENE4NAME", "Scene name 4"),
-            (SUBUNIT, "SCENE42NAME", "Scene name 42"),
         ],
     ),
     (
@@ -160,7 +168,8 @@ def test_initialize_minimal(connection, update_callback):
     assert z.soundprg is None
     assert z.twochdecoder is None
     assert z.puredirmode is None
-    assert len(z.scenenames.keys()) == 0
+    for scene_id in range(1, NUM_SCENES + 1):
+        assert getattr(z, f"scene{scene_id}name") is None
 
 
 def test_initialize_full(connection, update_callback):
@@ -183,12 +192,8 @@ def test_initialize_full(connection, update_callback):
     assert z.twochdecoder is TwoChDecoder.DolbyPl2xMovie
     assert z.puredirmode is PureDirMode.OFF
 
-    assert len(z.scenenames.keys()) == 5
-    assert z.scenenames["1"] == "Scene name 1"
-    assert z.scenenames["2"] == "Scene name 2"
-    assert z.scenenames["3"] == "Scene name 3"
-    assert z.scenenames["4"] == "Scene name 4"
-    assert z.scenenames["42"] == "Scene name 42"
+    for scene_id in range(1, NUM_SCENES + 1):
+        assert getattr(z, f"scene{scene_id}name") == f"Scene name {scene_id}"
 
 
 def test_mute(connection, initialized_zone: ZoneBase):
@@ -301,17 +306,17 @@ def test_straight(connection, initialized_zone: ZoneBase):
     assert initialized_zone.straight == Straight.OFF
 
 
-def test_scene(connection, initialized_zone: ZoneBase):
-    # Writing to device
-    with pytest.raises(ValueError):
-        initialized_zone.scene_activate("Invalid")
+def test_scenerecall(connection, initialized_zone: ZoneBase):
 
-    initialized_zone.scene_activate("42")
+    initialized_zone.scene_recall(42)
     connection.put.assert_called_with(SUBUNIT, "SCENE", "Scene 42")
+
+
+def test_scenename(connection, initialized_zone: ZoneBase):
 
     # Updates from device
     connection.send_protocol_message(SUBUNIT, "SCENE3NAME", "New Name")
-    assert initialized_zone.scenenames["3"] == "New Name"
+    assert initialized_zone.scene3name == "New Name"
 
 
 def test_zonename(connection, initialized_zone: ZoneBase):
@@ -348,27 +353,3 @@ def test_puredirmode(connection, initialized_zone: ZoneBase):
     assert initialized_zone.puredirmode == PureDirMode.ON
     connection.send_protocol_message(SUBUNIT, "PUREDIRMODE", "Off")
     assert initialized_zone.puredirmode == PureDirMode.OFF
-
-
-# TODO: This seems generic and probably should be moved to the subunit test
-def test_callbacks(connection, initialized_zone: ZoneBase, update_callback):
-    update_callback_2 = mock.MagicMock()
-
-    # Register multiple callbacks, both get called
-    initialized_zone.register_update_callback(update_callback)
-    initialized_zone.register_update_callback(update_callback_2)
-    connection.send_protocol_message(SUBUNIT, "VOL", "1")
-    assert update_callback.call_count == 1
-    assert update_callback_2.call_count == 1
-
-    # Double registration (second gets ignored)
-    initialized_zone.register_update_callback(update_callback_2)
-    connection.send_protocol_message(SUBUNIT, "VOL", "1")
-    assert update_callback.call_count == 2
-    assert update_callback_2.call_count == 2
-
-    # Unregistration
-    initialized_zone.unregister_update_callback(update_callback_2)
-    connection.send_protocol_message(SUBUNIT, "VOL", "1")
-    assert update_callback.call_count == 3
-    assert update_callback_2.call_count == 2

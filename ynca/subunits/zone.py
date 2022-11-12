@@ -39,9 +39,51 @@ class ZoneBase(PlaybackFunctionMixin, SubunitBase):
     inp = YncaFunctionStr("INP", initialize_function_name="BASIC")
     maxvol = YncaFunctionFloat("MAXVOL", command_type=CommandType.GET)
     mute = YncaFunctionEnum[Mute]("MUTE", Mute, initialize_function_name="BASIC")
-    pwr = YncaFunctionEnum[Pwr]("PWR", Pwr, initialize_function_name="BASIC")
     puredirmode = YncaFunctionEnum[PureDirMode](
         "PUREDIRMODE", PureDirMode, initialize_function_name="BASIC"
+    )
+    pwr = YncaFunctionEnum[Pwr]("PWR", Pwr, initialize_function_name="BASIC")
+    scene1name = YncaFunctionStr(
+        "SCENE1NAME", command_type=CommandType.GET, initialize_function_name="SCENENAME"
+    )
+    scene2name = YncaFunctionStr(
+        "SCENE2NAME", command_type=CommandType.GET, initialize_function_name="SCENENAME"
+    )
+    scene3name = YncaFunctionStr(
+        "SCENE3NAME", command_type=CommandType.GET, initialize_function_name="SCENENAME"
+    )
+    scene4name = YncaFunctionStr(
+        "SCENE4NAME", command_type=CommandType.GET, initialize_function_name="SCENENAME"
+    )
+    scene5name = YncaFunctionStr(
+        "SCENE5NAME", command_type=CommandType.GET, initialize_function_name="SCENENAME"
+    )
+    scene6name = YncaFunctionStr(
+        "SCENE6NAME", command_type=CommandType.GET, initialize_function_name="SCENENAME"
+    )
+    scene7name = YncaFunctionStr(
+        "SCENE7NAME", command_type=CommandType.GET, initialize_function_name="SCENENAME"
+    )
+    scene8name = YncaFunctionStr(
+        "SCENE8NAME", command_type=CommandType.GET, initialize_function_name="SCENENAME"
+    )
+    scene9name = YncaFunctionStr(
+        "SCENE9NAME", command_type=CommandType.GET, initialize_function_name="SCENENAME"
+    )
+    scene10name = YncaFunctionStr(
+        "SCENE10NAME",
+        command_type=CommandType.GET,
+        initialize_function_name="SCENENAME",
+    )
+    scene11name = YncaFunctionStr(
+        "SCENE11NAME",
+        command_type=CommandType.GET,
+        initialize_function_name="SCENENAME",
+    )
+    scene12name = YncaFunctionStr(
+        "SCENE12NAME",
+        command_type=CommandType.GET,
+        initialize_function_name="SCENENAME",
     )
     soundprg = YncaFunctionEnum[SoundPrg](
         "SOUNDPRG", SoundPrg, initialize_function_name="BASIC"
@@ -59,32 +101,9 @@ class ZoneBase(PlaybackFunctionMixin, SubunitBase):
     )
     zonename = YncaFunctionStr("ZONENAME", converter=StrConverter(min_len=0, max_len=9))
 
-    def __init__(
-        self,
-        connection: YncaConnection,
-    ):
-        super().__init__(connection)
-        self._reset_internal_state()
-
-    def _reset_internal_state(self):
-        self._scenenames: Dict[str, str] = {}
-
-    def on_initialize(self):
-        self._reset_internal_state()
-        self._get("SCENENAME")
-
-    def on_message_received_without_handler(
-        self, status: YncaProtocolStatus, function_: str, value: str
-    ) -> bool:
-        updated = True
-
-        if matches := re.match(r"SCENE(\d+)NAME", function_):
-            scene_id = matches[1]
-            self._scenenames[scene_id] = value
-        else:
-            updated = False
-
-        return updated
+    def scene_recall(self, scene_id: int):
+        """Recall a scene"""
+        self._put("SCENE", f"Scene {scene_id}")
 
     def vol_up(self, step_size: float = 0.5):
         """
@@ -105,18 +124,6 @@ class ZoneBase(PlaybackFunctionMixin, SubunitBase):
         if step_size in [1, 2, 5]:
             value = "Down {} dB".format(step_size)
         self._put("VOL", value)
-
-    @property
-    def scenenames(self) -> Dict[str, str]:
-        """Get a dictionary with scene names where key, value = id, name"""
-        return dict(self._scenenames)
-
-    def scene_activate(self, scene_id: str):
-        """Activate a scene"""
-        if scene_id not in self._scenenames.keys():
-            raise ValueError("Invalid scene ID")
-        else:
-            self._put("SCENE", f"Scene {scene_id}")
 
 
 class Main(ZoneBase):
