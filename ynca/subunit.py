@@ -102,9 +102,6 @@ class SubunitBase(ABC):
                     self._get(function_name)
                     initialized_function_names.append(function_name)
 
-        # Invoke subunit specific initialization implemented in the derived classes
-        self.on_initialize()
-
         # Use SYS:VERSION as a sync since it is available on all receivers
         # and has a guarenteed response
         self._connection.get(Subunit.SYS, "VERSION")
@@ -121,14 +118,7 @@ class SubunitBase(ABC):
                 f"Subunit {self.id} initialization failed"
             )
 
-        logger.debug("Subunit %s initialization done.", self.id)
-
-    def on_initialize(self):
-        """
-        Initializes the data for the subunit.
-        Can be implemented in derived classes.
-        """
-        pass
+        logger.info("Subunit %s initialization done.", self.id)
 
     def close(self):
         if self._connection:
@@ -137,17 +127,6 @@ class SubunitBase(ABC):
             )
             self._connection = None
             self._update_callbacks = set()
-
-    def on_message_received_without_handler(
-        self, status: YncaProtocolStatus, function_name: str, value: str
-    ) -> bool:
-        """
-        Called when a message for this subunit was received with no handler
-        Implement in subclasses for cases where the standard handler is not enough.
-
-        Return True if state was updated because of the message.
-        """
-        return False
 
     def _protocol_message_received(
         self,
@@ -171,20 +150,9 @@ class SubunitBase(ABC):
         if self.id != subunit:
             return
 
-        updated = False
-
         if handler := self.function_handlers.get(function_name, None):
             handler.update(value_str)
             self._call_registered_update_callbacks(function_name, handler.value)
-        else:
-            self.on_message_received_without_handler(status, function_name, value_str)
-            logger.warning("Update callback _not_ called for '%s'" % function_name)
-            # TODO: Can probably get rid of the "without" handler after completing rework
-
-        # if updated:
-        #     self._call_registered_update_callbacks(
-        #         function_name, value_str
-        #     )
 
     def _put(self, function_name: str, value: str):
         self._connection.put(self.id, function_name, value)
