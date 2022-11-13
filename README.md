@@ -19,7 +19,9 @@ python3 -m pip install ynca
 
 ## Contents
 
-This package contains:
+Note that the intended API to use is exposed from the toplevel package.
+
+This package contains
 
 ### YncaConnection
 
