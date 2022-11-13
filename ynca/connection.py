@@ -96,7 +96,7 @@ class YncaProtocol(serial.threaded.LineReader):
         function = None
         value = None
 
-        logger.debug("> %s", line)
+        logger.debug("Recv - %s", line)
         self._communication_log_buffer.add(f"Received: {line}")
 
         if line == "@UNDEFINED":
@@ -138,7 +138,7 @@ class YncaProtocol(serial.threaded.LineReader):
                     self._keep_alive_pending = True
 
                 if not stop:
-                    logger.debug("< %s", message)
+                    logger.debug("Send - %s", message)
                     self._communication_log_buffer.add(f"Send: {message}")
 
                     self._last_sent_command = message
