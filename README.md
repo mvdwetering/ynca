@@ -1,8 +1,8 @@
 # YNCA
 
-Automation Library for Yamaha receivers that support the YNCA protocol.
+Package to control Yamaha receivers that support the YNCA protocol.
 
-Supported receivers according to protocol documentation (not all tested) or logs found on the internet.
+Supported receivers according to info found on the internet (not all tested).
 There might be more receivers that support this protocol. If you find some let met know so the list can be updated.
 
 > RX-A700, RX-A710, RX-A720, RX-A800, RX-A810, RX-A820, RX-A840, RX-A850, RX-A1000, RX-A1010, RX-A1020, RX-A1040, RX-A2000, RX-A2010, RX-A2020, RX-A3000, RX-A3010, RX-A3020, RX-V475, RX-V671, RX-V673, RX-V867, RX-V871, RX-V1067, RX-V2067, RX-V3067, TSR-700
@@ -21,23 +21,19 @@ python3 -m pip install ynca
 
 This package contains:
 
-### Ynca class
+### YncaConnection
 
-The Ynca class is exposing the YNCA API as defined in the specification and allows to connect to devices supporting that API.
+The YncaConnection class creates a connection with a YNCA receiver and allows to send/receive YNCA commands. It handles throttling and informs of received values through a callback.
+Use this if all that is needed is a basic connection to a receiver.
+
+### YncaApi
+
+The YncaApi class is exposing the YNCA API as Python classes and allows to connect to devices supporting that API.
 It keeps a cache of last received values so reading is instant as it does not need to query the receiver.
-
-### get_inputinfo_list _list helper function
-
-This helper gets a list of all the inputs available on the device from the Ynca API to be used with the inputs on the Zone subunits.
-It is provided as a convenience because it is a bit tricky to build that list.
-
-### Get_modelinfo helper function
-
-Gets info specific to a certain model that can otherwise not be determined through YNCA (e.g. supported SoundPrg)
 
 ### YNCA Terminal
 
-The YNCA Terminal provides an interactive terminal for YNCA commands intended for debugging. Examples on how to start below.
+The YNCA Terminal provides an interactive terminal for YNCA commands intended for manual debugging. Examples on how to start below.
 
 ```
 python3 -m ynca.terminal /dev/ttyUSB0
@@ -53,50 +49,40 @@ Not part of the installed package, but available in the repo there is a very bas
 ## Example usage
 
 ```python
-# Create a Ynca class by specifying the port on your receiver.
+# Create a YncaApi class by specifying the port on your receiver.
 # Port could also be e.g. COM3 on Windows or any `serial_url` as supported by PySerial
-# Like for example `socket://192.168.1.12:50000` for IP connection
-ynca_receiver = Ynca("/dev/tty1")
+# Like for example `socket://192.168.178.21:50000` for IP connection
+receiver = YncaApi("/dev/tty1")
 
-# Initializing takes a while (multiple seconds) since it communicates
+# Initializing takes a while (~10 seconds for a 2 zone receiver) since it communicates
 # quite a lot with the actual device to determine its capabilities.
 # Later calls to the subunits are fast.
 # Note that attributes that are still None after initialization are not supported by the subunits
-ynca_receiver.initialize()
+receiver.initialize()
 
-# Every subunit has a dedicated attribute on the `Ynca` class.
+# Every subunit has a dedicated attribute on the `YncaApi` class.
 # The name of the attribute is the subunit id as used in YNCA.
 # The returned subunit class can be used to communicate with the subunit
-sys = ynca_receiver.SYS
-main = ynca_receiver.MAIN
+sys = receiver.sys
+main = receiver.main
 
 print(sys.modelname) # Print the modelname of the system
 print(main.zonename) # Print the name of the main zone
 
-# The `get_inputinfo_list` helper returns a list of available inputs.
-# It has the `input` to be used with the INP function in YNCA,
-# `subunit` if the input is associated with a subunit, e.g. Tuner/TUN
-# and `name ` with user provided name if available, otherwise `input`.
-#
-# Note that not all inputs will be available to all zones, but
-# it is not possible to derive this from the API
-for input_info in get_inputinfo_list(ynca_receiver):
-    print(f"{input_info.subunit=}, {input_info.input=}, {input_info.name=}")
-
 # To get notifications when something changes register callback with the subunit
-# Note that callbacks are called from a different thread and also should not block.
-def update_callback():
-    print("Something was updated on the MAIN subunit")
+# Note that callbacks are called from a different thread and should not block.
+def update_callback(function, value):
+    print(f"{function} changed to {value} on the MAIN subunit")
 
 main.register_update_callback(update_callback)
 
 # Examples to control a zone
-main.pwr = True
-main.mute = Mute.off
-main.inp = "HDMI3"
+main.pwr = Pwr.ON
+main.mute = Mute.OFF
+main.inp = Input.HDMI3
 main.vol = -50.5
 main.vol_up()
 
 # When done call close for proper shutdown
-ynca_receiver.close()
+receiver.close()
 ```

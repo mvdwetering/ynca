@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
-""" Example/manual test script. """
+""" Example of basic YncaApi usage"""
 
 import sys
 import time
 import logging
 
-from ynca import Ynca, Mute, Subunit, YncaException, get_inputinfo_list, Pwr
+from ynca import YncaApi, Mute, YncaException, Pwr
 
-ZONE_SUBUNIT_IDS = [Subunit.MAIN, Subunit.ZONE2, Subunit.ZONE3, Subunit.ZONE4]
+ZONE_SUBUNITS = ["main", "zone2", "zone3", "zone4"]
 
 
 if __name__ == "__main__":
@@ -25,12 +25,12 @@ if __name__ == "__main__":
     if len(sys.argv) > 1:
         port = sys.argv[1]
 
-    ynca_receiver = Ynca(port)
+    receiver = YncaApi(port)
 
     print("Initialize start")
-    print("This takes a while (approximately 10 seconds on a 2 zone receiver)")
+    print("This takes a while (about 10 seconds on a 2 zone receiver)")
     try:
-        ynca_receiver.initialize()
+        receiver.initialize()
         print("Initialize done\n")
     except YncaException as e:
         print("\n-- Exception during initialization")
@@ -39,34 +39,28 @@ if __name__ == "__main__":
         print(f"-- Details: {e}")
         exit(1)
 
-    def updated_sys():
-        print("- Update sys")
+    def updated_sys(function, value):
+        print(f"- Update sys {function}, {value}")
 
-    def updated_main():
-        print("- Update main")
+    def updated_main(function, value):
+        print(f"- Update main {function}, {value}")
 
-    ynca_receiver.SYS.register_update_callback(updated_sys)
-    ynca_receiver.MAIN.register_update_callback(updated_main)
+    receiver.sys.register_update_callback(updated_sys)
+    receiver.main.register_update_callback(updated_main)
 
     print("Zones:")
-    for subunit_id in ZONE_SUBUNIT_IDS:
-        if zone := getattr(ynca_receiver, subunit_id, None):
+    for subunit_id in ZONE_SUBUNITS:
+        if zone := getattr(receiver, subunit_id):
             print("  --- {} ---".format(zone.id))
             print(f"  {zone.zonename=}")
             print(f"  {zone.vol=}")
             print(f"  {zone.inp=}")
 
-    print("Inputs:")
-    print("  subunit: inp / name")
-    print("  -------------------")
-    for inputinfo in get_inputinfo_list(ynca_receiver):
-        print(f"  {inputinfo.subunit}: {inputinfo.input} / {inputinfo.name}")
-
     # Set loglevel to debug so you can see the commands
     # sent because of the statements below
     logger.setLevel(logging.DEBUG)
 
-    main = ynca_receiver.MAIN
+    main = receiver.main
     main.pwr = Pwr.ON
     current_volume = main.vol  # Save so we can restore it
     main.vol = -50
@@ -81,4 +75,4 @@ if __name__ == "__main__":
     )
     time.sleep(2)
 
-    ynca_receiver.close()
+    receiver.close()
