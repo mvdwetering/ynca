@@ -31,12 +31,64 @@ class PureDirMode(Enum):
     OFF = "Off"
 
 
+class Input(Enum):
+    # Inputs with connectors on the receiver
+    AUDIO1 = "AUDIO1"
+    AUDIO2 = "AUDIO2"
+    AUDIO3 = "AUDIO3"
+    AUDIO4 = "AUDIO4"
+    AV1 = "AV1"
+    AV2 = "AV2"
+    AV3 = "AV3"
+    AV4 = "AV4"
+    AV5 = "AV5"
+    AV6 = "AV6"
+    AV7 = "AV7"
+    DOCK = "DOCK"  # Selecting DOCK selects iPod for me, might depend on what dock is attached (I have no dock connected)
+    HDMI1 = "HDMI1"
+    HDMI2 = "HDMI2"
+    HDMI3 = "HDMI3"
+    HDMI4 = "HDMI4"
+    HDMI5 = "HDMI5"
+    HDMI6 = "HDMI6"
+    HDMI7 = "HDMI7"
+    MULTICH = "MULTICH"
+    PHONO = "PHONO"
+    VAUX = "V-AUX"
+
+    # Inputs provided by subunits
+    AIRPLAY = "Airplay"
+    BLUETOOTH = "Bluetooth"
+    IPOD = "iPod"
+    IPOD_USB = "iPod (USB)"
+    NAPSTER = "Napster"
+    NETRADIO = "NET RADIO"
+    PANDORA = "Pandora"
+    PC = "PC"
+    RHAPSODY = "Rhapsody"
+    SERVER = "SERVER"
+    SIRIUS = "SIRIUS"
+    SIRIUS_IR = "SIRIUS InternetRadio"
+    SIRIUS_XM = "SiriusXM"
+    SPOTIFY = "Spotify"
+    TUNER = "TUNER"  # This can be different types of tuners like AM/FM, DAB/FM or HDRADIO(?)
+    UAW = "UAW"
+    USB = "USB"
+
+    UNKNOWN = "Unknown"
+    """Not a real input, but used to map inputs not in the list so library does not break on new/unknown inputs"""
+
+    @classmethod
+    def _missing_(cls, value):
+        return Input.UNKNOWN
+
+
 class ZoneBase(PlaybackFunction, SubunitBase):
 
     # BASIC gets a lot of attribute like PWR, SLEEP, VOL, MUTE, INP, STRAIGHT, ENHANCER, SOUNDPRG and more
     # Use it to significantly reduce the amount of commands to send
 
-    inp = StrFunction("INP", init="BASIC")
+    inp = EnumFunction[Input]("INP", Input, init="BASIC")
     maxvol = FloatFunction("MAXVOL", command_type=Cmd.GET)
     mute = EnumFunction[Mute]("MUTE", Mute, init="BASIC")
     puredirmode = EnumFunction[PureDirMode]("PUREDIRMODE", PureDirMode, init="BASIC")

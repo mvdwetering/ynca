@@ -5,6 +5,7 @@ import pytest
 from ynca.constants import Mute, Subunit, SoundPrg, TwoChDecoder
 from ynca.subunits.functions import Pwr
 from ynca.subunits.zone import (
+    Input,
     PureDirMode,
     Straight,
     ZoneBase,
@@ -182,7 +183,7 @@ def test_initialize_full(connection, update_callback):
     z.initialize()
 
     assert z.pwr is Pwr.STANDBY
-    assert z.inp == "HDMI1"
+    assert z.inp == Input.HDMI1
     assert z.vol == -30.0
     assert z.maxvol == 1.2
     assert z.mute is Mute.OFF
@@ -274,12 +275,15 @@ def test_volume(connection, initialized_zone: ZoneBase):
 
 def test_input(connection, initialized_zone: ZoneBase):
     # Writing to device
-    initialized_zone.inp = "Input"
-    connection.put.assert_called_with(SUBUNIT, "INP", "Input")
+    initialized_zone.inp = Input.RHAPSODY
+    connection.put.assert_called_with(SUBUNIT, "INP", "Rhapsody")
 
     # Updates from device
-    connection.send_protocol_message(SUBUNIT, "INP", "NewInput")
-    assert initialized_zone.inp == "NewInput"
+    connection.send_protocol_message(SUBUNIT, "INP", "Napster")
+    assert initialized_zone.inp == Input.NAPSTER
+
+    connection.send_protocol_message(SUBUNIT, "INP", "Some unknown input")
+    assert initialized_zone.inp == Input.UNKNOWN
 
 
 def test_soundprg(connection, initialized_zone: ZoneBase):
