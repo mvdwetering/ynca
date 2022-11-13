@@ -68,7 +68,7 @@ class YncaApi:
         self._subunits: Dict[Subunit, Type[SubunitBase]] = {}
 
     def _detect_available_subunits(self):
-        logger.debug("Subunit availability check start")
+        logger.info("Subunit availability check start")
         self._initialized_event.clear()
         self._connection.register_message_callback(self._protocol_message_received)
 
@@ -92,7 +92,7 @@ class YncaApi:
             )
 
         self._connection.unregister_message_callback(self._protocol_message_received)
-        logger.debug("Subunit availability check done")
+        logger.info("Subunit availability check done")
 
     def _get_subunit_class(self, subunit_id):
         subunit_classes = all_subclasses(SubunitBase)
@@ -204,7 +204,7 @@ class YncaApi:
         Cleanup the internal resources.
         Safe to be called at any time.
 
-        Ynca object should _not_ be reused after being closed!
+        YncaApi object should _not_ be reused after being closed!
         """
         # Convert to list to avoid issues when deleting while iterating
         for id in list(self._subunits.keys()):
