@@ -24,7 +24,7 @@ setup(
     # the version across setup.py and the project code, see
     # https://packaging.python.org/en/latest/single_source_version.html
     version="3.11.0",
-    description="Automation control library for Yamaha receivers that support the YNCA protocol.",
+    description="Package to control Yamaha receivers that support the YNCA protocol.",
     long_description=long_description,
     long_description_content_type="text/markdown",
     # The project's main homepage.
