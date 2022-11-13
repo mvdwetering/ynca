@@ -1,8 +1,6 @@
 import logging
-from enum import Enum
-from typing import Dict
 
-from ..constants import Subunit
+from ..constants import Party, PartyMute, Subunit, Pwr
 from ..converters import StrConverter
 from ..subunit import SubunitBase
 from ..function import (
@@ -11,19 +9,8 @@ from ..function import (
     EnumFunction,
     StrFunction,
 )
-from .functions import Pwr
 
 logger = logging.getLogger(__name__)
-
-
-class Party(Enum):
-    ON = "On"
-    OFF = "Off"
-
-
-class PartyMute(Enum):
-    ON = "On"
-    OFF = "Off"
 
 
 class System(SubunitBase):

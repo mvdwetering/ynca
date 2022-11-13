@@ -1,4 +1,4 @@
-from ynca.constants import Playback
+from ynca import Playback
 from ynca.subunits.bt import Bt
 
 SYS = "SYS"

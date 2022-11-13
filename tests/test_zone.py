@@ -2,12 +2,18 @@ from typing import Callable
 from unittest import mock
 import pytest
 
-from ynca.constants import Mute, Subunit, SoundPrg, TwoChDecoder
-from ynca.subunits.functions import Pwr
-from ynca.subunits.zone import (
+from ynca import (
+    Mute,
+    Subunit,
+    SoundPrg,
+    TwoChDecoder,
+    Pwr,
     Input,
     PureDirMode,
     Straight,
+)
+
+from ynca.subunits.zone import (
     ZoneBase,
     Main,
     Zone2,

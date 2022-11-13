@@ -1,5 +1,5 @@
 from unittest import mock
-from ynca.constants import Playback
+from ynca import Playback
 
 from ynca.subunits.functions import (
     PlaybackFunction,

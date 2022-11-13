@@ -1,4 +1,4 @@
-from ynca.constants import Band
+from ynca import Band
 from ynca.subunits.tun import Tun
 
 

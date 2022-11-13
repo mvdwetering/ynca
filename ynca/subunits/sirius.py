@@ -3,16 +3,12 @@ from __future__ import annotations
 from ..constants import Subunit
 from .functions import (
     ArtistFunction,
+    ChannelnameFunction,
     PlaybackFunction,
     PlaybackInfoFunction,
     SongFunction,
 )
 from ..subunit import SubunitBase
-from ..function import Cmd, StrFunction
-
-
-class ChannelnameFunction:
-    chname = StrFunction("CHNAME", cmd=Cmd.GET, init="METAINFO")
 
 
 class Sirius(

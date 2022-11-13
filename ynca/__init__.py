@@ -1,26 +1,31 @@
 import logging
 
+# Import intended API so it is easily accessible through `from  ynca import Something``
+from .api import YncaApi
+from .connection import YncaConnection
 from .constants import (
     Avail,
     Band,
+    Input,
     Mute,
+    Party,
+    PartyMute,
     Playback,
     PlaybackInfo,
+    PureDirMode,
+    Pwr,
     Repeat,
+    Shuffle,
     SoundPrg,
-    Subunit,
+    Straight,
+    TwoChDecoder,
 )
 from .errors import (
-    YncaException,
     YncaConnectionError,
     YncaConnectionFailed,
+    YncaException,
     YncaInitializationFailedException,
 )
-from .api import (
-    YncaApi,
-)
-from .subunits.functions import Pwr
-
 from .modelinfo import get_modelinfo
 
 logging.getLogger(__name__).addHandler(logging.NullHandler())

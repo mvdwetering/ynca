@@ -1,4 +1,4 @@
-from ynca.constants import SoundPrg
+from ynca import SoundPrg
 from ynca.modelinfo import get_modelinfo, ModelInfo
 
 

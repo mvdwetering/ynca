@@ -1,86 +1,25 @@
 from __future__ import annotations
 
 import logging
-import re
-from enum import Enum
 from typing import Dict
 
-from ..connection import YncaConnection, YncaProtocolStatus
-from ..constants import Mute, SoundPrg, Subunit, TwoChDecoder
+from ..constants import (
+    Input,
+    Mute,
+    PureDirMode,
+    Pwr,
+    SoundPrg,
+    Straight,
+    Subunit,
+    TwoChDecoder,
+)
 from ..converters import FloatConverter, StrConverter
-from .functions import PlaybackFunction, Pwr
+from ..function import Cmd, EnumFunction, FloatFunction, StrFunction
 from ..helpers import number_to_string_with_stepsize
 from ..subunit import SubunitBase
-from ..function import (
-    Cmd,
-    EnumFunction,
-    FloatFunction,
-    StrFunction,
-)
+from .functions import PlaybackFunction
 
 logger = logging.getLogger(__name__)
-
-
-class Straight(Enum):
-    ON = "On"
-    OFF = "Off"
-
-
-class PureDirMode(Enum):
-    ON = "On"
-    OFF = "Off"
-
-
-class Input(Enum):
-    # Inputs with connectors on the receiver
-    AUDIO1 = "AUDIO1"
-    AUDIO2 = "AUDIO2"
-    AUDIO3 = "AUDIO3"
-    AUDIO4 = "AUDIO4"
-    AV1 = "AV1"
-    AV2 = "AV2"
-    AV3 = "AV3"
-    AV4 = "AV4"
-    AV5 = "AV5"
-    AV6 = "AV6"
-    AV7 = "AV7"
-    DOCK = "DOCK"  # Selecting DOCK selects iPod for me, might depend on what dock is attached (I have no dock connected)
-    HDMI1 = "HDMI1"
-    HDMI2 = "HDMI2"
-    HDMI3 = "HDMI3"
-    HDMI4 = "HDMI4"
-    HDMI5 = "HDMI5"
-    HDMI6 = "HDMI6"
-    HDMI7 = "HDMI7"
-    MULTICH = "MULTICH"
-    PHONO = "PHONO"
-    VAUX = "V-AUX"
-
-    # Inputs provided by subunits
-    AIRPLAY = "Airplay"
-    BLUETOOTH = "Bluetooth"
-    IPOD = "iPod"
-    IPOD_USB = "iPod (USB)"
-    NAPSTER = "Napster"
-    NETRADIO = "NET RADIO"
-    PANDORA = "Pandora"
-    PC = "PC"
-    RHAPSODY = "Rhapsody"
-    SERVER = "SERVER"
-    SIRIUS = "SIRIUS"
-    SIRIUS_IR = "SIRIUS InternetRadio"
-    SIRIUS_XM = "SiriusXM"
-    SPOTIFY = "Spotify"
-    TUNER = "TUNER"  # This can be different types of tuners like AM/FM, DAB/FM or HDRADIO(?)
-    UAW = "UAW"
-    USB = "USB"
-
-    UNKNOWN = "Unknown"
-    """Not a real input, but used to map inputs not in the list so library does not break on new/unknown inputs"""
-
-    @classmethod
-    def _missing_(cls, value):
-        return Input.UNKNOWN
 
 
 class ZoneBase(PlaybackFunction, SubunitBase):

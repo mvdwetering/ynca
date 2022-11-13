@@ -1,8 +1,8 @@
 from unittest import mock
 import pytest
 
-from ynca.subunits.system import Party, PartyMute, System
-from ynca.subunits.functions import Pwr
+from ynca import Party, PartyMute, Pwr
+from ynca.subunits.system import System
 
 SYS = "SYS"
 
