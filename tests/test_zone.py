@@ -4,7 +4,6 @@ import pytest
 
 from ynca import (
     Mute,
-    Subunit,
     SoundPrg,
     TwoChDecoder,
     Pwr,
@@ -127,19 +126,6 @@ def test_construct(connection, update_callback):
 
     assert connection.register_message_callback.call_count == 1
     assert update_callback.call_count == 0
-
-
-def test_construct_specific_zones(connection):
-
-    # Just grabbing coverage :/
-    z = Main(connection)
-    z.id = Subunit.MAIN
-    z = Zone2(connection)
-    z.id = Subunit.ZONE2
-    z = Zone3(connection)
-    z.id = Subunit.ZONE3
-    z = Zone4(connection)
-    z.id = Subunit.ZONE4
 
 
 def test_initialize_minimal(connection, update_callback):
