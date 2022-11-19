@@ -49,8 +49,8 @@ if __name__ == "__main__":
     receiver.main.register_update_callback(updated_main)
 
     print("Zones:")
-    for subunit_id in ZONE_SUBUNITS:
-        if zone := getattr(receiver, subunit_id):
+    for zone_attr_name in ZONE_SUBUNITS:
+        if zone := getattr(receiver, zone_attr_name):
             print("  --- {} ---".format(zone.id))
             print(f"  {zone.zonename=}")
             print(f"  {zone.vol=}")
