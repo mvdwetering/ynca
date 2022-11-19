@@ -101,7 +101,7 @@ class Input(Enum):
     HDMI5 = "HDMI5"
     HDMI6 = "HDMI6"
     HDMI7 = "HDMI7"
-    MULTICH = "MULTICH"
+    MULTICH = "MULTI CH"
     PHONO = "PHONO"
     VAUX = "V-AUX"
 
@@ -120,7 +120,7 @@ class Input(Enum):
     SIRIUS_IR = "SIRIUS InternetRadio"
     SIRIUS_XM = "SiriusXM"
     SPOTIFY = "Spotify"
-    TUNER = "TUNER"  # This can be different types of tuners like AM/FM, DAB/FM or HDRADIO(?)
+    TUNER = "TUNER"  # This can be different tuners like AM/FM, DAB/FM or HDRADIO
     UAW = "UAW"
     USB = "USB"
 
@@ -182,7 +182,7 @@ class Playback(str, Enum):
     SKIP_FWD = "Skip Fwd"
 
 
-class Band(str, Enum):
+class BandTun(str, Enum):
     AM = "AM"
     FM = "FM"
 

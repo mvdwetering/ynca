@@ -5,7 +5,7 @@ from .api import YncaApi
 from .connection import YncaConnection
 from .constants import (
     Avail,
-    Band,
+    BandTun,
     Input,
     Mute,
     Party,

@@ -1,4 +1,4 @@
-from ynca import Band
+from ynca import BandTun
 from ynca.subunits.tun import Tun
 
 
@@ -48,11 +48,11 @@ def test_initialize(connection, update_callback):
 
     tun.initialize()
 
-    assert tun.band is Band.FM
+    assert tun.band is BandTun.FM
     assert tun.amfreq == 1080
     assert tun.fmfreq == 101.60
 
-    tun.band = Band.AM
+    tun.band = BandTun.AM
     connection.put.assert_called_with(SUBUNIT, "BAND", "AM")
 
     # Set value and test stepsize handling (which is why it becomes 1000)

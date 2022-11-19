@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ..constants import Band, Subunit
+from ..constants import BandTun, Subunit
 from ..converters import FloatConverter, IntConverter
 from ..helpers import number_to_string_with_stepsize
 from ..subunit import SubunitBase
@@ -10,7 +10,7 @@ from ..function import EnumFunction, FloatFunction, IntFunction
 class Tun(SubunitBase):
     id = Subunit.TUN
 
-    band = EnumFunction[Band]("BAND", Band)
+    band = EnumFunction[BandTun]("BAND", BandTun)
 
     amfreq = IntFunction(
         "AMFREQ",
