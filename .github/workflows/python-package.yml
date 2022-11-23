@@ -20,7 +20,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    - if: ${{ startsWith(github.ref, 'refs/tags/releases/v') }}
+    - if: startsWith(github.ref, 'refs/tags/v')
+      # Assume all tags starting with a v are version tags.
       name: Check if verion in tag matches setup.py
       run: |
         VERSION_NUMBER="${GITHUB_REF_NAME:1}"
