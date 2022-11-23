@@ -20,6 +20,11 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+    - if: ${{ startsWith(github.ref, 'refs/tags/releases/v') }}
+      name: Check if verion in tag matches setup.py
+      run: |
+        VERSION_NUMBER="${GITHUB_REF_NAME:1}"
+        grep version=\"$VERSION_NUMBER\", setup.py
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v4
       with:
