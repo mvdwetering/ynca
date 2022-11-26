@@ -16,9 +16,10 @@ someone has a usecase for it and not just all off them.
 Some guidelines I try to follow when adding functions to the API.
 
 * YNCA functions supporting GET are modelled as attributes
-    * If the function also support PUT of the value the attribute will be writable
-* YNCA functions that perform actions or _only_ support PUT are modelled as methods
-    * While it is possible to create write only attributes they felt weird to use. MIght change my mind on it one day...
+    * If the function also support PUT of the value the attribute will also be writable
+* YNCA functions that _only_ support PUT are modelled as methods
+    * While it is possible to create write only attributes they felt weird to use.
+* YNCA functions that perform actions are modelled as methods
 * Attribute names on the API follow naming (but in lowercase) as used in YNCA except where not possible due to Python limitations. E.g. "2chdecoder" becomes "twochdecoder"
 * Method names on the API follow naming (but in lowercase) as used on YNCA with the "action" postfixed. E.g. "vol_up()" or "remote_send()"
 * While all values on YNCA are transmitted as strings these are converted to Python types
