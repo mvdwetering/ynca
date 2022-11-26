@@ -13,7 +13,7 @@ from collections import namedtuple
 import logging
 import re
 import socketserver
-from typing import Tuple
+from typing import Dict, Tuple
 
 RESTRICTED = "@RESTRICTED"
 UNDEFINED = "@UNDEFINED"
@@ -34,7 +34,7 @@ def line_to_command(line):
 
 class YncaDataStore:
     def __init__(self) -> None:
-        self._store = {}
+        self._store: Dict[str, str] = {}
 
     def fill_from_file(self, filename):
         print(f"--- Filling store with data from file: {filename}")
