@@ -62,9 +62,9 @@ class System(SubunitBase):
         """
         self._put("PARTYVOL", "Down")
 
-    def remotecode_send(self, value):
+    def remotecode(self, value):
         if len(value) != 8:
             raise ValueError(
-                f"REMOTECODE value must be of length 8, but was {len(value)} for {value}"
+                f"REMOTECODE value must be of length 8, but length of '{value}' is {len(value)}"
             )
         self._put("REMOTECODE", value)
