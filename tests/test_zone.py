@@ -301,9 +301,11 @@ def test_straight(connection, initialized_zone: ZoneBase):
     assert initialized_zone.straight == Straight.OFF
 
 
-def test_scenerecall(connection, initialized_zone: ZoneBase):
+def test_scene(connection, initialized_zone: ZoneBase):
 
-    initialized_zone.scene_recall(42)
+    initialized_zone.scene(42)
+    connection.put.assert_called_with(SUBUNIT, "SCENE", "Scene 42")
+    initialized_zone.scene("42")
     connection.put.assert_called_with(SUBUNIT, "SCENE", "Scene 42")
 
 

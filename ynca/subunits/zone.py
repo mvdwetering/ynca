@@ -77,7 +77,7 @@ class ZoneBase(PlaybackFunction, SubunitBase):
     )
     zonename = StrFunction("ZONENAME", converter=StrConverter(min_len=0, max_len=9))
 
-    def scene_recall(self, scene_id: int):
+    def scene(self, scene_id: int | str):
         """Recall a scene"""
         self._put("SCENE", f"Scene {scene_id}")
 
