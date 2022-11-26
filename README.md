@@ -21,31 +21,46 @@ python3 -m pip install ynca
 
 Note that the intended API to use is exposed from the toplevel package.
 
-This package contains
+### Classes
+#### YncaConnection
 
-### YncaConnection
+The YncaConnection class creates a basic connection with a YNCA receiver and allows to send/receive YNCA commands. It handles throttling as required by the protocol and informs of received values through a callback.
 
-The YncaConnection class creates a connection with a YNCA receiver and allows to send/receive YNCA commands. It handles throttling and informs of received values through a callback.
 Use this if all that is needed is a basic connection to a receiver.
 
-### YncaApi
+#### YncaApi
 
-The YncaApi class is exposing the YNCA API as Python classes and allows to connect to devices supporting that API.
+The YncaApi class is exposing YNCA subunits and their functions as Python classes/datatypes and allows to connect to devices supporting that API.
 It keeps a cache of last received values so reading is instant as it does not need to query the receiver.
 
-### YNCA Terminal
+### Tools
 
-The YNCA Terminal provides an interactive terminal for YNCA commands intended for manual debugging. Examples on how to start below.
+#### YNCA Terminal
+
+The YNCA Terminal provides an interactive terminal for manually sending YNCA commands intended for debugging.
+It can be started with commands like below.
 
 ```
 python3 -m ynca.terminal /dev/ttyUSB0
 python3 -m ynca.terminal socket://192.168.178.21:50000
 ```
 
-### YNCA Server
+#### YNCA Server
 
-Not part of the installed package, but available in the repo there is a very basic YNCA server intended for debugging
- and testing without connecting to a real device. Check the commandline help of `ynca_server.py` for more details.
+This is a very basic YNCA server intended for debugging and testing without connecting to a real device.
+
+Note that the server needs to be filled with data from an actual device and it will basically just repeat the same answers as the real device gave (with a few exceptions).
+Filling the server can be done by providing it with YNCA logging of a real device, like the ones in the YCNA package repository or a log from your own device e.g. by running `example.py` with loglevel DEBUG.
+
+It is intended to be just enough to test without a real device.
+
+It has some additional commandline options for using different ports, binding to a specific host or testing disconnects
+
+```
+python3 -m ynca.server <ynca_repo>/logs/RX-A810.txt
+python3 -m ynca.server --host 0.0.0.0 --port 12345 <ynca_repo>/logs/RX-A810.txt
+python3 -m ynca.server --help
+```
 
 
 ## Example usage
@@ -83,7 +98,7 @@ main.pwr = Pwr.ON
 main.mute = Mute.OFF
 main.inp = Input.HDMI3
 main.vol = -50.5
-main.vol_up()
+main.vol_up(2)
 
 # When done call close for proper shutdown
 receiver.close()
