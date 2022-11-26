@@ -51,7 +51,7 @@ Some notes on weird/unexpected behaviour found when dealing with YNCA devices
 
 ### Fixed volume
 
-Zones with fixed volume do _not_ give errors when trying to change the volume. Would have expected @RESTRICTED
+Zones with fixed volume have a readable volume and do _not_ give errors when trying to change the volume. Would have expected @RESTRICTED
 
 ### Scene activation not working
 
