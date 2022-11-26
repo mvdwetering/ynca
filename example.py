@@ -19,6 +19,8 @@ if __name__ == "__main__":
         logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
     )
     logger.addHandler(console_handler)
+
+    # Set loglevel to debug to see the commands sent/received
     # logger.setLevel(logging.DEBUG)
 
     port = "/dev/ttyUSB0"
@@ -40,10 +42,10 @@ if __name__ == "__main__":
         exit(1)
 
     def updated_sys(function, value):
-        print(f"- Update sys {function}, {value}")
+        print(f"- Update SYS {function}, {value}")
 
     def updated_main(function, value):
-        print(f"- Update main {function}, {value}")
+        print(f"- Update MAIN {function}, {value}")
 
     receiver.sys.register_update_callback(updated_sys)
     receiver.main.register_update_callback(updated_main)
@@ -56,16 +58,12 @@ if __name__ == "__main__":
             print(f"  {zone.vol=}")
             print(f"  {zone.inp=}")
 
-    # Set loglevel to debug so you can see the commands
-    # sent because of the statements below
-    logger.setLevel(logging.DEBUG)
-
     main = receiver.main
     main.pwr = Pwr.ON
-    current_volume = main.vol  # Save so we can restore it
+    current_volume = main.vol  # Save so it can be restored
     main.vol = -50
     main.vol = -50.5
-    main.vol_up()
+    main.vol_up(2)
     main.mute = Mute.OFF
     main.mute = Mute.ON
     main.vol = current_volume
