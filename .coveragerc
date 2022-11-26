@@ -1,0 +1,5 @@
+[report]
+show_missing = True
+omit =
+    # Terminal is for debugging only and hard to test, so no effort for now
+    ynca/terminal.py
