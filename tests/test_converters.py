@@ -5,7 +5,13 @@ from unittest import mock
 
 import pytest
 
-from ynca.converters import EnumConverter, FloatConverter, IntConverter, StrConverter
+from ynca.converters import (
+    EnumConverter,
+    FloatConverter,
+    IntConverter,
+    MultiConverter,
+    StrConverter,
+)
 
 
 def test_strconverter():
@@ -48,3 +54,22 @@ def test_enumconverter():
     c = EnumConverter(TestEnum)
     assert c.to_str(TestEnum.ONE) == "One"
     assert c.to_value("Two") == TestEnum.TWO
+
+
+def test_multiconverter():
+    class TestEnum(Enum):
+        ONE = "One"
+        TWO = "Two"
+
+    c = MultiConverter(
+        [EnumConverter[TestEnum](TestEnum), FloatConverter(to_str=lambda v: str(v * 2))]
+    )
+    assert c.to_str(TestEnum.ONE) == "One"
+    assert c.to_str(1.23) == "2.46"
+    with pytest.raises(ValueError):
+        c.to_str("Unknown")
+
+    assert c.to_value("Two") == TestEnum.TWO
+    assert c.to_value("1.23") == 1.23
+    with pytest.raises(ValueError):
+        c.to_value("Invalid")

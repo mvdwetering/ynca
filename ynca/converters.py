@@ -3,7 +3,7 @@ from __future__ import annotations
 import logging
 from abc import ABC, abstractmethod
 from enum import Enum
-from typing import Callable, Generic, Type, TypeVar, cast
+from typing import Any, Callable, Generic, List, Type, TypeVar, cast
 
 logger = logging.getLogger(__name__)
 
@@ -40,6 +40,9 @@ class IntConverter(ConverterBase):
         return int(value_string)
 
     def to_str(self, value: int) -> str:
+        # Make sure it is an int compatible types to be usable with MultiConverter
+        int(value)
+
         if self._to_str:
             return str(self._to_str(value))
         return str(value)
@@ -53,6 +56,9 @@ class FloatConverter(ConverterBase):
         return float(value_string)
 
     def to_str(self, value: float) -> str:
+        # Make sure it is a float compatible types to be usable with MultiConverter
+        float(value)
+
         if self._to_str:
             return self._to_str(value)
         return str(value)
@@ -67,8 +73,32 @@ class StrConverter(ConverterBase):
         return value_string
 
     def to_str(self, value: str) -> str:
+        # Make sure it is a str compatible types to be usable with MultiConverter
+        str(value)
+
         if self._min_len and len(value) < self._min_len:
             raise ValueError(f"{value} has a minimum length of {self._min_len}")
         if self._max_len and len(value) > self._max_len:
             raise ValueError(f"{value} has a maxmimum length of {self._max_len}")
         return value
+
+
+class MultiConverter(ConverterBase):
+    def __init__(self, converters: List[ConverterBase]) -> None:
+        self._converters = converters
+
+    def to_value(self, value_string: str) -> Any:
+        for converter in self._converters:
+            try:
+                return converter.to_value(value_string)
+            except:
+                pass
+        raise ValueError(f"No converter could convert '{value_string}' to value")
+
+    def to_str(self, value: Any) -> str:
+        for converter in self._converters:
+            try:
+                return converter.to_str(value)
+            except:
+                pass
+        raise ValueError(f"No converter could convert {value} to string")
