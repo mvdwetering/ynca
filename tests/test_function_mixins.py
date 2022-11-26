@@ -10,15 +10,15 @@ def test_playback():
     class WithPlaybackFunction(PlaybackFunction, mock.Mock):
         pass
 
-    pf = WithPlaybackFunction()
+    wpf = WithPlaybackFunction()
 
-    pf.playback(Playback.PLAY)
-    pf._put.assert_called_with("PLAYBACK", "Play")
-    pf.playback(Playback.PAUSE)
-    pf._put.assert_called_with("PLAYBACK", "Pause")
-    pf.playback(Playback.STOP)
-    pf._put.assert_called_with("PLAYBACK", "Stop")
-    pf.playback(Playback.SKIP_FWD)
-    pf._put.assert_called_with("PLAYBACK", "Skip Fwd")
-    pf.playback(Playback.SKIP_REV)
-    pf._put.assert_called_with("PLAYBACK", "Skip Rev")
+    wpf.playback(Playback.PLAY)
+    wpf._put.assert_called_with("PLAYBACK", "Play")
+    wpf.playback(Playback.PAUSE)
+    wpf._put.assert_called_with("PLAYBACK", "Pause")
+    wpf.playback(Playback.STOP)
+    wpf._put.assert_called_with("PLAYBACK", "Stop")
+    wpf.playback(Playback.SKIP_FWD)
+    wpf._put.assert_called_with("PLAYBACK", "Skip Fwd")
+    wpf.playback(Playback.SKIP_REV)
+    wpf._put.assert_called_with("PLAYBACK", "Skip Rev")

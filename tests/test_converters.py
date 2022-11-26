@@ -1,7 +1,6 @@
 """Test Zone subunit"""
 
 from enum import Enum
-from unittest import mock
 
 import pytest
 
@@ -67,7 +66,7 @@ def test_multiconverter():
     assert c.to_str(TestEnum.ONE) == "One"
     assert c.to_str(1.23) == "2.46"
     with pytest.raises(ValueError):
-        c.to_str("Unknown")
+        c.to_str("Invalid")
 
     assert c.to_value("Two") == TestEnum.TWO
     assert c.to_value("1.23") == 1.23
