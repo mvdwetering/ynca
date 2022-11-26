@@ -3,8 +3,8 @@ from __future__ import annotations
 import logging
 import threading
 from abc import ABC, abstractmethod
-from enum import Enum, Flag, auto
-from typing import Any, Callable, Dict, Set, TypeVar
+from enum import Flag, auto
+from typing import Any, Callable, Dict, Set
 
 from ynca.function import FunctionBase, EnumFunction
 
@@ -18,10 +18,6 @@ logger = logging.getLogger(__name__)
 class CommandType(Flag):
     GET = auto()
     PUT = auto()
-
-
-T = TypeVar("T")
-E = TypeVar("E", bound=Enum)
 
 
 class YncaFunctionHandler:
