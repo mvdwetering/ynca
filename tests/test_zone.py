@@ -1,24 +1,20 @@
 from typing import Callable
 from unittest import mock
+
 import pytest
 
 from ynca import (
-    Mute,
-    SoundPrg,
-    TwoChDecoder,
-    Pwr,
+    InitVolLvl,
+    InitVolMode,
     Input,
+    Mute,
     PureDirMode,
+    Pwr,
+    SoundPrg,
     Straight,
+    TwoChDecoder,
 )
-
-from ynca.subunits.zone import (
-    ZoneBase,
-    Main,
-    Zone2,
-    Zone3,
-    Zone4,
-)
+from ynca.subunits.zone import Main, Zone2, Zone3, Zone4, ZoneBase
 
 from .mock_yncaconnection import YncaConnectionMock
 
@@ -352,3 +348,31 @@ def test_puredirmode(connection, initialized_zone: ZoneBase):
     assert initialized_zone.puredirmode == PureDirMode.ON
     connection.send_protocol_message(SUBUNIT, "PUREDIRMODE", "Off")
     assert initialized_zone.puredirmode == PureDirMode.OFF
+
+
+def test_initvolmode(connection, initialized_zone: ZoneBase):
+    # Writing to device
+    initialized_zone.initvolmode = InitVolMode.ON
+    connection.put.assert_called_with(SUBUNIT, "INITVOLMODE", "On")
+    initialized_zone.initvolmode = InitVolMode.OFF
+    connection.put.assert_called_with(SUBUNIT, "INITVOLMODE", "Off")
+
+    # Updates from device
+    connection.send_protocol_message(SUBUNIT, "INITVOLMODE", "On")
+    assert initialized_zone.initvolmode == InitVolMode.ON
+    connection.send_protocol_message(SUBUNIT, "INITVOLMODE", "Off")
+    assert initialized_zone.initvolmode == InitVolMode.OFF
+
+
+def test_initvollvl(connection, initialized_zone: ZoneBase):
+    # Writing to device
+    initialized_zone.initvollvl = InitVolLvl.MUTE
+    connection.put.assert_called_with(SUBUNIT, "INITVOLLVL", "Mute")
+    initialized_zone.initvollvl = -12.3
+    connection.put.assert_called_with(SUBUNIT, "INITVOLLVL", "-12.5")
+
+    # Updates from device
+    connection.send_protocol_message(SUBUNIT, "INITVOLLVL", "Mute")
+    assert initialized_zone.initvollvl == InitVolLvl.MUTE
+    connection.send_protocol_message(SUBUNIT, "INITVOLLVL", "-10.5")
+    assert initialized_zone.initvollvl == -10.5

@@ -6,6 +6,8 @@ from .connection import YncaConnection
 from .constants import (
     Avail,
     BandTun,
+    InitVolLvl,
+    InitVolMode,
     Input,
     Mute,
     Party,

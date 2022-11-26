@@ -80,6 +80,15 @@ class Avail(str, Enum):
     READY = "Ready"
 
 
+class InitVolLvl(str, Enum):
+    MUTE = "Mute"
+
+
+class InitVolMode(str, Enum):
+    ON = "On"
+    OFF = "Off"
+
+
 class Input(Enum):
     # Inputs with connectors on the receiver
     AUDIO1 = "AUDIO1"

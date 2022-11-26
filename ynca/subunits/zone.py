@@ -4,6 +4,8 @@ import logging
 from typing import Dict
 
 from ..constants import (
+    InitVolLvl,
+    InitVolMode,
     Input,
     Mute,
     PureDirMode,
@@ -13,8 +15,14 @@ from ..constants import (
     Subunit,
     TwoChDecoder,
 )
-from ..converters import FloatConverter, StrConverter
-from ..function import Cmd, EnumFunction, FloatFunction, StrFunction
+from ..converters import EnumConverter, FloatConverter, MultiConverter, StrConverter
+from ..function import (
+    Cmd,
+    EnumFunction,
+    EnumOrFloatFunction,
+    FloatFunction,
+    StrFunction,
+)
 from ..helpers import number_to_string_with_stepsize
 from ..subunit import SubunitBase
 from .functions import PlaybackFunction
@@ -27,6 +35,19 @@ class ZoneBase(PlaybackFunction, SubunitBase):
     # BASIC gets a lot of attribute like PWR, SLEEP, VOL, MUTE, INP, STRAIGHT, ENHANCER, SOUNDPRG and more
     # Use it to significantly reduce the amount of commands to send
 
+    initvollvl = EnumOrFloatFunction[InitVolLvl](
+        "INITVOLLVL",
+        InitVolLvl,
+        MultiConverter(
+            [
+                EnumConverter[InitVolLvl](InitVolLvl),
+                FloatConverter(
+                    to_str=lambda v: number_to_string_with_stepsize(v, 1, 0.5)
+                ),
+            ]
+        ),
+    )
+    initvolmode = EnumFunction[InitVolMode]("INITVOLMODE", InitVolMode)
     inp = EnumFunction[Input]("INP", Input, init="BASIC")
     maxvol = FloatFunction("MAXVOL", command_type=Cmd.GET)
     mute = EnumFunction[Mute]("MUTE", Mute, init="BASIC")

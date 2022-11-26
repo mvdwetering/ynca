@@ -3,7 +3,7 @@ from __future__ import annotations
 import logging
 from abc import ABC
 from enum import Enum, Flag, auto
-from typing import TYPE_CHECKING, Generic, Type, TypeVar
+from typing import TYPE_CHECKING, Generic, List, Type, TypeVar
 
 if TYPE_CHECKING:  # pragma: no cover
     from .subunit import SubunitBase
@@ -13,6 +13,7 @@ from .converters import (
     EnumConverter,
     FloatConverter,
     IntConverter,
+    MultiConverter,
     StrConverter,
 )
 
@@ -140,5 +141,23 @@ class FloatFunction(FunctionBase):
             name,
             cmd=command_type,
             converter=converter,
+            init=init,
+        )
+
+
+class EnumOrFloatFunction(FunctionBase, Generic[E]):
+    def __init__(
+        self,
+        name: str,
+        datatype: Type[E],
+        converter: MultiConverter = None,
+        cmd: Cmd = Cmd.GET | Cmd.PUT,
+        init=None,
+    ) -> None:
+        super().__init__(
+            name,
+            cmd=cmd,
+            converter=converter
+            or MultiConverter([EnumConverter[E](datatype), FloatConverter()]),
             init=init,
         )
