@@ -1,4 +1,6 @@
+import collections
 from math import modf
+from typing import Generic, List, TypeVar
 
 """Misc helper functions"""
 
@@ -27,3 +29,19 @@ def all_subclasses(cls):
     return set(cls.__subclasses__()).union(
         [s for c in cls.__subclasses__() for s in all_subclasses(c)]
     )
+
+
+T = TypeVar("T")
+
+
+class RingBuffer(Generic[T]):
+    """Simple ringbuffer that hold size amount of items, adding more will discard oldest items"""
+
+    def __init__(self, size):
+        self._buffer = collections.deque(maxlen=size)
+
+    def add(self, item: T):
+        self._buffer.append(item)
+
+    def get_buffer(self) -> List[T]:
+        return list(self._buffer)
