@@ -22,6 +22,7 @@ python3 -m pip install ynca
 Note that the intended API to use is exposed from the toplevel package.
 
 ### Classes
+
 #### YncaConnection
 
 The YncaConnection class creates a basic connection with a YNCA receiver and allows to send/receive YNCA commands. It handles throttling as required by the protocol and informs of received values through a callback.
@@ -33,11 +34,16 @@ Use this if all that is needed is a basic connection to a receiver.
 The YncaApi class is exposing YNCA subunits and their functions as Python classes/datatypes and allows to connect to devices supporting that API.
 It keeps a cache of last received values so reading is instant as it does not need to query the receiver.
 
+#### YncaModelInfo
+
+The YncaModelInfo class is information about features that a specific model supports.
+It is technically not really related to the protocol, but since there seems to be no other repository with this info I decided to keep it here.
+
 ### Tools
 
 #### YNCA Terminal
 
-The YNCA Terminal provides an interactive terminal for manually sending YNCA commands intended for debugging.
+The YNCA Terminal provides an interactive terminal for manually sending YNCA commands. It is only intended for manual debugging.
 It can be started with commands like below.
 
 ```
@@ -47,12 +53,10 @@ python3 -m ynca.terminal socket://192.168.178.21:50000
 
 #### YNCA Server
 
-This is a very basic YNCA server intended for debugging and testing without connecting to a real device.
+This is a very basic YNCA server intended to be just enough for debugging and testing without connecting to a real device.
 
 Note that the server needs to be filled with data from an actual device and it will basically just repeat the same answers as the real device gave (with a few exceptions).
-Filling the server can be done by providing it with YNCA logging of a real device, like the ones in the YCNA package repository or a log from your own device e.g. by running `example.py` with loglevel DEBUG.
-
-It is intended to be just enough to test without a real device.
+Filling the server can be done by providing it with YNCA logging of a real device, like the ones in the YCNA package repository or a log from your own device e.g. by running `example.py` with loglevel DEBUG (uncomment the line in the example code).
 
 It has some additional commandline options for using different ports, binding to a specific host or testing disconnects
 

@@ -28,6 +28,6 @@ from .errors import (
     YncaException,
     YncaInitializationFailedException,
 )
-from .modelinfo import get_modelinfo
+from .modelinfo import YncaModelInfo
 
 logging.getLogger(__name__).addHandler(logging.NullHandler())

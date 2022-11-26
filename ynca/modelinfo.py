@@ -84,5 +84,7 @@ MODELINFO = {
 }
 
 
-def get_modelinfo(modelname: str) -> Optional[ModelInfo]:
-    return MODELINFO.get(modelname, None)
+class YncaModelInfo:
+    @staticmethod
+    def get(modelname: str) -> Optional[ModelInfo]:
+        return MODELINFO.get(modelname, None)
