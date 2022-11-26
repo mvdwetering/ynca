@@ -106,7 +106,7 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
         super().__init__(request, client_address, server)
 
     def write_line(self, line: str):
-        print(f"< {line}")
+        print(f"Send - {line}")
         line += "\r\n"
         self.wfile.write(line.encode("utf-8"))
         self._commands_sent += 1
@@ -206,8 +206,8 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
             line = line.strip()
             line = line.decode(
                 "utf-8"
-            )  # Note that YNCA spec says in some places that text can be ASCII, Latin-1 or UTF-8 without a way to indicate what it is :/
-            print(f"> {line}")
+            )  # Note that YNCA spec says in some places that text can be ASCII, Latin-1 or UTF-8 without a way to indicate what it is :/ UTF-8 seems to work fine for now
+            print(f"Recv - {line}")
 
             command = line_to_command(line)
             if command is not None:
