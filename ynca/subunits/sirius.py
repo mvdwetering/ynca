@@ -3,7 +3,7 @@ from __future__ import annotations
 from ..constants import Subunit
 from .functions import (
     ArtistFunction,
-    ChannelnameFunction,
+    ChNameFunction,
     PlaybackFunction,
     PlaybackInfoFunction,
     SongFunction,
@@ -14,7 +14,7 @@ from ..subunit import SubunitBase
 class Sirius(
     ArtistFunction,
     SongFunction,
-    ChannelnameFunction,
+    ChNameFunction,
     SubunitBase,
 ):
     id = Subunit.SIRIUS
@@ -23,7 +23,7 @@ class Sirius(
 class SiriusIr(
     ArtistFunction,
     SongFunction,
-    ChannelnameFunction,
+    ChNameFunction,
     PlaybackFunction,
     PlaybackInfoFunction,
     SubunitBase,

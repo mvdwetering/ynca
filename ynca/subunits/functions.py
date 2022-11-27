@@ -14,7 +14,7 @@ class ArtistFunction:
     artist = StrFunction("ARTIST", cmd=Cmd.GET, init="METAINFO")
 
 
-class ChannelnameFunction:
+class ChNameFunction:
     chname = StrFunction("CHNAME", cmd=Cmd.GET, init="METAINFO")
 
 
