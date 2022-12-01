@@ -23,9 +23,14 @@ if __name__ == "__main__":
     # Set loglevel to debug to see the commands sent/received
     # logger.setLevel(logging.DEBUG)
 
-    port = "/dev/ttyUSB0"
-    if len(sys.argv) > 1:
-        port = sys.argv[1]
+    if len(sys.argv) <= 1:
+        print("Must provide a port like for example:")
+        print("  /dev/ttyUSB0")
+        print("  COM3")
+        print("  socket://192.168.178.21:50000")
+        exit(1)
+
+    port = sys.argv[1]
 
     receiver = YncaApi(port)
 
@@ -53,7 +58,7 @@ if __name__ == "__main__":
     print("Zones:")
     for zone_attr_name in ZONE_SUBUNITS:
         if zone := getattr(receiver, zone_attr_name):
-            print("  --- {} ---".format(zone.id))
+            print(f"  --- {zone.id} ---")
             print(f"  {zone.zonename=}")
             print(f"  {zone.vol=}")
             print(f"  {zone.inp=}")
