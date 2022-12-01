@@ -2,12 +2,11 @@ from unittest import mock
 
 import pytest
 import ynca
-from ynca.bt import Bt
+from ynca.subunits.bt import Bt
 from ynca.errors import YncaConnectionError, YncaInitializationFailedException
-from ynca.get_all_zone_inputs import FALLBACK_INPUTS
-from ynca.mediaplayback_subunits import Usb
-from ynca.system import System
-from ynca.zone import Main
+from ynca.subunits.usb import Usb
+from ynca.subunits.system import System
+from ynca.subunits.zone import Main
 
 SYS = "SYS"
 MAIN = "MAIN"
@@ -90,9 +89,11 @@ INITIALIZE_FULL_RESPONSES = [
         ],
     ),
     (
-        (SYS, "PWR"),
+        (SYS, "INPNAME"),
         [
-            (SYS, "PWR", "Standby"),
+            (SYS, "INPNAMEHDMI1", "InputHdmi1One"),
+            (SYS, "INPNAMEUSB", "InputUsb"),
+            (SYS, "INPNAMEUNKNOWN", "InputUnknown"),
         ],
     ),
     (
@@ -102,14 +103,12 @@ INITIALIZE_FULL_RESPONSES = [
         ],
     ),
     (
-        (SYS, "INPNAME"),
+        (SYS, "PWR"),
         [
-            (SYS, "INPNAMEONE", "InputOne"),
-            (SYS, "INPNAMETWO", "InputTwo"),
-            (SYS, "INPNAMEUSB", "InputUsb"),
+            (SYS, "PWR", "Standby"),
         ],
     ),
-    # SYS Subunit iniatilize sync
+    # SYS Subunit initialize sync
     (
         (SYS, "VERSION"),
         [
@@ -168,21 +167,21 @@ INITIALIZE_FULL_RESPONSES = [
 
 
 def test_construct():
-    y = ynca.Ynca("serial_url")
+    y = ynca.YncaApi("serial_url")
     y.close()
 
 
 def test_check_connection_check_success(connection):
 
     with mock.patch.object(
-        ynca.ynca.YncaConnection, "create_from_serial_url"
+        ynca.api.YncaConnection, "create_from_serial_url"
     ) as create_from_serial_url:
         create_from_serial_url.return_value = connection
         connection.get_response_list = CONNECTION_CHECK_RESPONSES
 
         disconnect_callback = mock.MagicMock()
 
-        y = ynca.Ynca("serial_url", disconnect_callback, 123)
+        y = ynca.YncaApi("serial_url", disconnect_callback, 123)
         modelname = y.connection_check()
         assert modelname == "ModelName"
 
@@ -193,14 +192,14 @@ def test_check_connection_check_success(connection):
 def test_check_connection_check_fail_connect(connection):
 
     with mock.patch.object(
-        ynca.ynca.YncaConnection, "create_from_serial_url"
+        ynca.api.YncaConnection, "create_from_serial_url"
     ) as create_from_serial_url:
         create_from_serial_url.return_value = connection
         connection.connect.side_effect = YncaConnectionError("something is wrong")
 
         disconnect_callback = mock.MagicMock()
 
-        y = ynca.Ynca("serial_url", disconnect_callback)
+        y = ynca.YncaApi("serial_url", disconnect_callback)
         with pytest.raises(YncaConnectionError):
             y.connection_check()
 
@@ -211,13 +210,13 @@ def test_check_connection_check_fail_connect(connection):
 def test_check_connection_check_fail_no_response(connection):
 
     with mock.patch.object(
-        ynca.ynca.YncaConnection, "create_from_serial_url"
+        ynca.api.YncaConnection, "create_from_serial_url"
     ) as create_from_serial_url:
         create_from_serial_url.return_value = connection
 
         disconnect_callback = mock.MagicMock()
 
-        y = ynca.Ynca("serial_url", disconnect_callback)
+        y = ynca.YncaApi("serial_url", disconnect_callback)
         with pytest.raises(YncaConnectionError):
             y.connection_check()
 
@@ -228,22 +227,18 @@ def test_check_connection_check_fail_no_response(connection):
 def test_initialize_minimal(connection):
 
     with mock.patch.object(
-        ynca.ynca.YncaConnection, "create_from_serial_url"
+        ynca.api.YncaConnection, "create_from_serial_url"
     ) as create_from_serial_url:
         create_from_serial_url.return_value = connection
         connection.get_response_list = INITIALIZE_MINIMAL_RESPONSES
 
         disconnect_callback = mock.MagicMock()
 
-        y = ynca.Ynca("serial_url", disconnect_callback)
+        y = ynca.YncaApi("serial_url", disconnect_callback)
         y.initialize()
 
-        assert isinstance(y.SYS, System)
-        assert y.SYS.version == "Version"
-
-        inputs = ynca.get_inputinfo_list(y)
-        assert sorted([inp.input for inp in inputs]) == sorted(FALLBACK_INPUTS.keys())
-        assert sorted([inp.name for inp in inputs]) == sorted(FALLBACK_INPUTS.values())
+        assert isinstance(y.sys, System)
+        assert y.sys.version == "Version"
 
         y.close()
 
@@ -254,12 +249,12 @@ def test_initialize_minimal(connection):
 def test_close(connection):
 
     with mock.patch.object(
-        ynca.ynca.YncaConnection, "create_from_serial_url"
+        ynca.api.YncaConnection, "create_from_serial_url"
     ) as create_from_serial_url:
         create_from_serial_url.return_value = connection
         connection.get_response_list = INITIALIZE_MINIMAL_RESPONSES
 
-        y = ynca.Ynca("serial_url")
+        y = ynca.YncaApi("serial_url")
         y.close()
         y.initialize()
 
@@ -274,14 +269,14 @@ def test_close(connection):
 def test_initialize_fail(connection):
 
     with mock.patch.object(
-        ynca.ynca.YncaConnection, "create_from_serial_url"
+        ynca.api.YncaConnection, "create_from_serial_url"
     ) as create_from_serial_url:
         create_from_serial_url.return_value = connection
         connection.get_response_list = []
 
         disconnect_callback = mock.MagicMock()
 
-        y = ynca.Ynca("serial_url", disconnect_callback)
+        y = ynca.YncaApi("serial_url", disconnect_callback)
         with pytest.raises(YncaInitializationFailedException):
             y.initialize()
 
@@ -292,14 +287,14 @@ def test_initialize_fail(connection):
 def test_disconnect_callback(connection):
 
     with mock.patch.object(
-        ynca.ynca.YncaConnection, "create_from_serial_url"
+        ynca.api.YncaConnection, "create_from_serial_url"
     ) as create_from_serial_url:
         create_from_serial_url.return_value = connection
         connection.get_response_list = INITIALIZE_MINIMAL_RESPONSES
 
         disconnect_callback = mock.MagicMock()
 
-        y = ynca.Ynca("serial_url", disconnect_callback)
+        y = ynca.YncaApi("serial_url", disconnect_callback)
         y.initialize()
 
         # Report disconnect from connection by using callback registered in connect call
@@ -312,12 +307,12 @@ def test_disconnect_callback(connection):
 def test_get_communication_log_items(connection):
 
     with mock.patch.object(
-        ynca.ynca.YncaConnection, "create_from_serial_url"
+        ynca.api.YncaConnection, "create_from_serial_url"
     ) as create_from_serial_url:
         create_from_serial_url.return_value = connection
         connection.get_response_list = INITIALIZE_MINIMAL_RESPONSES
 
-        y = ynca.Ynca("serial_url")
+        y = ynca.YncaApi("serial_url")
         assert y.get_communication_log_items() == []
         y.initialize()
 
@@ -332,12 +327,12 @@ def test_get_communication_log_items(connection):
 def test_send_raw(connection):
 
     with mock.patch.object(
-        ynca.ynca.YncaConnection, "create_from_serial_url"
+        ynca.api.YncaConnection, "create_from_serial_url"
     ) as create_from_serial_url:
         create_from_serial_url.return_value = connection
         connection.get_response_list = INITIALIZE_MINIMAL_RESPONSES
 
-        y = ynca.Ynca("serial_url")
+        y = ynca.YncaApi("serial_url")
         y.send_raw("not initialized, silently ignored")
         y.initialize()
 
@@ -350,108 +345,44 @@ def test_send_raw(connection):
 def test_initialize_full(connection):
 
     with mock.patch.object(
-        ynca.ynca.YncaConnection, "create_from_serial_url"
+        ynca.api.YncaConnection, "create_from_serial_url"
     ) as create_from_serial_url:
         create_from_serial_url.return_value = connection
 
         connection.get_response_list = INITIALIZE_FULL_RESPONSES
 
-        y = ynca.Ynca("serial_url")
+        y = ynca.YncaApi("serial_url")
         y.initialize()
-
-        inputs = ynca.get_inputinfo_list(y)
-
-        assert len(inputs) == 4
-        assert [inp for inp in inputs if inp.input == "ONE"][0].name == "InputOne"
-        assert [inp for inp in inputs if inp.input == "TWO"][0].name == "InputTwo"
-        assert [inp for inp in inputs if inp.input == "USB"][
-            0
-        ].name == "InputUsb"  # Make sure renamed value is returned
-        assert [inp for inp in inputs if inp.input == "Bluetooth"][
-            0
-        ].name == "Bluetooth"
 
         assert len(y._subunits.keys()) == 4
 
-        assert isinstance(y.SYS, System)
-        assert y.SYS.modelname == "ModelName"
-        assert y.SYS.version == "Version"
+        assert isinstance(y.sys, System)
+        assert y.sys.modelname == "ModelName"
+        assert y.sys.version == "Version"
+        assert y.sys.inpnameusb == "InputUsb"
 
-        assert isinstance(y.MAIN, Main)
-        assert y.MAIN.zonename == "MainZoneName"
-        assert isinstance(y.BT, Bt)
-        assert isinstance(y.USB, Usb)
-        assert y.ZONE2 is None
-        assert y.ZONE3 is None
-        assert y.ZONE4 is None
+        assert isinstance(y.main, Main)
+        assert y.main.zonename == "MainZoneName"
+        assert isinstance(y.bt, Bt)
+        assert isinstance(y.usb, Usb)
+        assert y.zone2 is None
+        assert y.zone3 is None
+        assert y.zone4 is None
 
-        assert y.AIRPLAY is None
-        assert y.IPOD is None
-        assert y.IPODUSB is None
-        assert y.NAPSTER is None
-        assert y.NETRADIO is None
-        assert y.PANDORA is None
-        assert y.PC is None
-        assert y.RHAP is None
-        assert y.SERVER is None
-        assert y.SIRIUS is None
-        assert y.SIRIUSIR is None
-        assert y.SIRIUSXM is None
-        assert y.SPOTIFY is None
-        assert y.TUN is None
-        assert y.UAW is None
-
-        y.close()
-
-
-def test_initialize_full_deprecated_receiver(connection):
-
-    with mock.patch.object(
-        ynca.ynca.YncaConnection, "create_from_serial_url"
-    ) as create_from_serial_url:
-        create_from_serial_url.return_value = connection
-
-        connection.get_response_list = INITIALIZE_FULL_RESPONSES
-
-        y = ynca.Receiver("serial_url")
-        y.initialize()
-
-        inputs = y.inputs
-
-        assert len(inputs.keys()) == 4
-        assert inputs["ONE"] == "InputOne"
-        assert inputs["TWO"] == "InputTwo"
-        assert inputs["USB"] == "InputUsb"
-        assert inputs["Bluetooth"] == "Bluetooth"
-
-        assert len(y._subunits.keys()) == 4
-
-        assert isinstance(y.SYS, System)
-        assert y.SYS.modelname == "ModelName"
-        assert y.SYS.version == "Version"
-
-        assert isinstance(y.MAIN, Main)
-        assert y.MAIN.zonename == "MainZoneName"
-        assert isinstance(y.BT, Bt)
-        assert isinstance(y.USB, Usb)
-        assert y.ZONE2 is None
-        assert y.ZONE3 is None
-        assert y.ZONE4 is None
-
-        assert y.AIRPLAY is None
-        assert y.IPOD is None
-        assert y.IPODUSB is None
-        assert y.NAPSTER is None
-        assert y.NETRADIO is None
-        assert y.PANDORA is None
-        assert y.PC is None
-        assert y.RHAP is None
-        assert y.SERVER is None
-        assert y.SIRIUS is None
-        assert y.SIRIUSIR is None
-        assert y.SIRIUSXM is None
-        assert y.SPOTIFY is None
-        assert y.TUN is None
-        assert y.UAW is None
+        assert y.airplay is None
+        assert y.ipod is None
+        assert y.ipodusb is None
+        assert y.napster is None
+        assert y.netradio is None
+        assert y.pandora is None
+        assert y.pc is None
+        assert y.rhap is None
+        assert y.server is None
+        assert y.sirius is None
+        assert y.siriusir is None
+        assert y.siriusxm is None
+        assert y.spotify is None
+        assert y.tun is None
+        assert y.uaw is None
 
         y.close()

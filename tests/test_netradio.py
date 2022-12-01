@@ -1,5 +1,5 @@
-from ynca.constants import Playback, PlaybackInfo
-from ynca.netradio import NetRadio
+from ynca import Playback, PlaybackInfo
+from ynca.subunits.netradio import NetRadio
 
 SYS = "SYS"
 SUBUNIT = "NETRADIO"
@@ -41,7 +41,6 @@ def test_initialize(connection, update_callback):
 
     netradio.initialize()
 
-    assert update_callback.call_count == 1
     assert netradio.station == "Station"
     assert netradio.playbackinfo is PlaybackInfo.PLAY
 

@@ -1,20 +1,28 @@
 """Test Zone subunit"""
 
+from unittest import mock
 import pytest
 
-from ynca.constants import Avail
+from ynca import Avail
 from ynca.subunit import SubunitBase
+from ynca.function import IntFunction
 from ynca.errors import YncaInitializationFailedException
 
 
 SYS = "SYS"
-SUBUNIT = "SUBUNIT"
+SUBUNIT = "DUMMY"
 
 INITIALIZE_FULL_RESPONSES = [
     (
         (SUBUNIT, "AVAIL"),
         [
             (SUBUNIT, "AVAIL", "Ready"),
+        ],
+    ),
+    (
+        (SUBUNIT, "DUMMY_FUNCTION"),
+        [
+            (SUBUNIT, "DUMMY_FUNCTION", "1"),
         ],
     ),
     (
@@ -29,9 +37,11 @@ INITIALIZE_FULL_RESPONSES = [
 class DummySubunit(SubunitBase):
     id = SUBUNIT
 
+    dummy = IntFunction("DUMMY_FUNCTION")
+
 
 @pytest.fixture
-def initialized_SubunitBase(connection) -> DummySubunit:
+def initialized_dummysubunit(connection) -> DummySubunit:
     connection.get_response_list = INITIALIZE_FULL_RESPONSES
     sui = DummySubunit(connection)
     sui.initialize()
@@ -66,30 +76,62 @@ def test_initialize(connection, update_callback):
 
     dsu.initialize()
 
-    assert update_callback.call_count == 1
+    assert update_callback.call_count == 0
     assert dsu.avail == Avail.READY
 
 
-def test_close(connection, initialized_SubunitBase):
+def test_registration(connection, initialized_dummysubunit: SubunitBase):
 
-    initialized_SubunitBase.close()
+    update_callback_1 = mock.MagicMock()
+    update_callback_2 = mock.MagicMock()
+
+    # Register multiple callbacks, both get called
+    initialized_dummysubunit.register_update_callback(update_callback_1)
+    initialized_dummysubunit.register_update_callback(update_callback_2)
+    connection.send_protocol_message(SUBUNIT, "DUMMY_FUNCTION", "2")
+    assert update_callback_1.call_count == 1
+    update_callback_1.assert_called_with("DUMMY_FUNCTION", 2)
+    assert update_callback_2.call_count == 1
+    update_callback_2.assert_called_with("DUMMY_FUNCTION", 2)
+
+    # Double registration (second gets ignored)
+    initialized_dummysubunit.register_update_callback(update_callback_2)
+    connection.send_protocol_message(SUBUNIT, "DUMMY_FUNCTION", "3")
+    assert update_callback_1.call_count == 2
+    update_callback_1.assert_called_with("DUMMY_FUNCTION", 3)
+    assert update_callback_2.call_count == 2
+    update_callback_2.assert_called_with("DUMMY_FUNCTION", 3)
+
+    # Unregistration
+    initialized_dummysubunit.unregister_update_callback(update_callback_2)
+    connection.send_protocol_message(SUBUNIT, "DUMMY_FUNCTION", "4")
+    assert update_callback_1.call_count == 3
+    update_callback_1.assert_called_with("DUMMY_FUNCTION", 4)
+    assert update_callback_2.call_count == 2
+
+
+def test_close(connection, initialized_dummysubunit: SubunitBase):
+
+    initialized_dummysubunit.close()
     connection.unregister_message_callback.assert_called_once()
 
     # Should be safe to call multiple times
-    initialized_SubunitBase.close()
+    initialized_dummysubunit.close()
     connection.unregister_message_callback.assert_called_once()
 
 
 def test_unknown_functions_ignored(
-    connection, initialized_SubunitBase, update_callback
+    connection, initialized_dummysubunit: SubunitBase, update_callback
 ):
-    initialized_SubunitBase.register_update_callback(update_callback)
+    initialized_dummysubunit.register_update_callback(update_callback)
     connection.send_protocol_message(SUBUNIT, "UnknownFunction", "Value")
     assert update_callback.call_count == 0
 
 
-def test_status_not_ok_ignored(connection, initialized_SubunitBase, update_callback):
-    initialized_SubunitBase.register_update_callback(update_callback)
+def test_status_not_ok_ignored(
+    connection, initialized_dummysubunit: SubunitBase, update_callback
+):
+    initialized_dummysubunit.register_update_callback(update_callback)
     connection.send_protocol_error("@UNDEFINED")
     assert update_callback.call_count == 0
     connection.send_protocol_error("@RESTRICTED")

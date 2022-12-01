@@ -23,8 +23,8 @@ setup(
     # Versions should comply with PEP440.  For a discussion on single-sourcing
     # the version across setup.py and the project code, see
     # https://packaging.python.org/en/latest/single_source_version.html
-    version="3.11.0",
-    description="Automation control library for Yamaha receivers that support the YNCA protocol.",
+    version="4.0.0b2",
+    description="Package to control Yamaha receivers that support the YNCA protocol.",
     long_description=long_description,
     long_description_content_type="text/markdown",
     # The project's main homepage.
@@ -57,8 +57,8 @@ setup(
     keywords="automation",
     # You can just specify the packages manually here if your project is
     # simple. Or you can use find_packages().
-    # packages=find_packages(exclude=["contrib", "docs", "tests"]),
-    packages=["ynca"],
+    packages=find_packages(exclude=["contrib", "docs", "tests"]),
+    # packages=["ynca"], -- Note that this simple method does not include subpackages like subunits
     # Alternatively, if you want to distribute just a my_module.py, uncomment
     # this:
     #   py_modules=["my_module"],

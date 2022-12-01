@@ -13,7 +13,7 @@ from collections import namedtuple
 import logging
 import re
 import socketserver
-from typing import Tuple
+from typing import Dict, Tuple
 
 RESTRICTED = "@RESTRICTED"
 UNDEFINED = "@UNDEFINED"
@@ -34,7 +34,7 @@ def line_to_command(line):
 
 class YncaDataStore:
     def __init__(self) -> None:
-        self._store = {}
+        self._store: Dict[str, str] = {}
 
     def fill_from_file(self, filename):
         print(f"--- Filling store with data from file: {filename}")
@@ -106,7 +106,7 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
         super().__init__(request, client_address, server)
 
     def write_line(self, line: str):
-        print(f"< {line}")
+        print(f"Send - {line}")
         line += "\r\n"
         self.wfile.write(line.encode("utf-8"))
         self._commands_sent += 1
@@ -144,11 +144,7 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
                 self.handle_get(subunit, basic_function, skip_error_response=True)
             return
         elif function == "METAINFO":
-            for metainfo_function in [
-                "ARTIST",
-                "ALBUM",
-                "SONG",
-            ]:
+            for metainfo_function in ["ARTIST", "ALBUM", "SONG", "CHNAME"]:
                 self.handle_get(subunit, metainfo_function, skip_error_response=True)
             return
         elif function == "SCENENAME":
@@ -176,13 +172,14 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
 
     def handle_put(self, subunit, function, value):
         if function == "VOL" and value.startswith("Up") or value.startswith("Down"):
-            # Bit of a hack to avoid Up/Down breaking our data as VOL should be a number and not Up/Down text
-            value = self.store.get_data(subunit, function)
-            value = "-24" if value != "-24" else "-25"
-            logging.warning(
-                "Volume up/down detected, dummy value '%s' generated", value
-            )
+            # Need to handle Up/Down as it would otherwise overwrite the VOL value wtih text Up/Down
+            up = value.startswith("Up")
 
+            parts = value.split(" ")
+            amount = 0.5 if len(parts) == 1 else (int(parts[1]))
+
+            value = float(self.store.get_data(subunit, function))
+            value = str(value + (amount * (1 if up else -1)))
         result = self.store.put_data(subunit, function, value)
         if result[0].startswith("@"):
             self.write_line(result[0])
@@ -209,8 +206,8 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
             line = line.strip()
             line = line.decode(
                 "utf-8"
-            )  # Note that YNCA spec says in some places that text can be ASCII, Latin-1 or UTF-8 without a way to indicate what it is :/
-            print(f"> {line}")
+            )  # Note that YNCA spec says in some places that text can be ASCII, Latin-1 or UTF-8 without a way to indicate what it is :/ UTF-8 seems to work fine for now
+            print(f"Recv - {line}")
 
             command = line_to_command(line)
             if command is not None:
@@ -302,6 +299,12 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="YNCA server to emulate a device for testing."
     )
+
+    parser.add_argument(
+        "initfile",
+        help="File to use to initialize the YncaDatastore. Needs to contain Ynca command logging in format `@SUBUNIT:FUNCTION=VALUE`. E.g. output of example script with loglevel DEBUG.",
+    )
+
     parser.add_argument(
         "--host",
         help="Host interface to bind to, default is localhost",
@@ -314,18 +317,14 @@ if __name__ == "__main__":
         type=int,
     )
     parser.add_argument(
-        "--initfile",
-        help="File to use to initialize the YncaDatastore. Needs to contain Ynca command logging in format `> @SUBUNIT:FUNCTION=VALUE` for sent values, and `< @SUBUNIT:FUNCTION=VALUE`. E.g. output of example script with loglevel DEBUG.",
-    )
-    parser.add_argument(
         "--disconnect_after_receiving_num_commands",
-        help="Disconnect after receiving this amount of commands",
+        help="Disconnect after receiving this amount of commands, useful for testing disconnects",
         default=None,
         type=int,
     )
     parser.add_argument(
         "--disconnect_after_sending_num_commands",
-        help="Disconnect after sending this amount of commands",
+        help="Disconnect after sending this amount of commands, useful for testing disconnects",
         default=None,
         type=int,
     )

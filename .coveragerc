@@ -1,0 +1,6 @@
+[report]
+show_missing = True
+omit =
+    # Debugging tools do not require coverage (for now)
+    ynca/server.py
+    ynca/terminal.py

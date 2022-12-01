@@ -45,3 +45,27 @@ This response occurs when a valid YNCA command was sent, but the command is (tem
 
 This response occurs when an invalid YNCA command is sent
 
+## Weirdnesses
+
+Some notes on weird/unexpected behaviour found when dealing with YNCA devices
+
+### Fixed volume
+
+Zones with fixed volume have a readable volume and do _not_ give errors when trying to change the volume. Would have expected @RESTRICTED
+
+### Scene activation not working
+
+For some receivers activating scenes does not work they answer with @RESTRICTED.
+See https://github.com/mvdwetering/yamaha_ynca/issues/19 for logs.
+
+Currently known receivers that behave like this: RX-475
+
+### No names
+
+Some receivers respond with @UNDEFINED for ZONENAME and SCENENAME requests.
+Strange part is that the user seems to be able to change names on the receiver (or only in the app?), but that info is not available through YNCA.
+See https://github.com/mvdwetering/yamaha_ynca/issues/8 for logs
+
+Currently known receivers that behave like this: TSR-700
+
+

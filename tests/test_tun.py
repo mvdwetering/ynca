@@ -1,11 +1,17 @@
-from ynca.constants import Band
-from ynca.tun import Tun
+from ynca import BandTun
+from ynca.subunits.tun import Tun
 
 
 SYS = "SYS"
 SUBUNIT = "TUN"
 
 INITIALIZE_FULL_RESPONSES = [
+    (
+        (SUBUNIT, "AMFREQ"),
+        [
+            (SUBUNIT, "AMFREQ", "1080"),
+        ],
+    ),
     (
         (SUBUNIT, "AVAIL"),
         [
@@ -16,12 +22,6 @@ INITIALIZE_FULL_RESPONSES = [
         (SUBUNIT, "BAND"),
         [
             (SUBUNIT, "BAND", "FM"),
-        ],
-    ),
-    (
-        (SUBUNIT, "AMFREQ"),
-        [
-            (SUBUNIT, "AMFREQ", "1080"),
         ],
     ),
     (
@@ -48,14 +48,17 @@ def test_initialize(connection, update_callback):
 
     tun.initialize()
 
-    assert update_callback.call_count == 1
-    assert tun.band is Band.FM
+    assert tun.band is BandTun.FM
     assert tun.amfreq == 1080
     assert tun.fmfreq == 101.60
 
-    tun.band = Band.AM
+    tun.band = BandTun.AM
     connection.put.assert_called_with(SUBUNIT, "BAND", "AM")
+
+    # Set value and test stepsize handling (which is why it becomes 1000)
     tun.amfreq = 999
     connection.put.assert_called_with(SUBUNIT, "AMFREQ", "1000")
+
+    # Set value and test stepsize handling (which is why it becomes 100.00)
     tun.fmfreq = 100.05
     connection.put.assert_called_with(SUBUNIT, "FMFREQ", "100.00")

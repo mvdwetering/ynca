@@ -1,21 +1,16 @@
 from unittest import mock
 import pytest
 
-from ynca.system import System
+from ynca import Party, PartyMute, Pwr
+from ynca.subunits.system import System
 
 SYS = "SYS"
 
 INITIALIZE_FULL_RESPONSES = [
     (
-        (SYS, "PWR"),
+        (SYS, "AVAIL"),
         [
-            (SYS, "PWR", "Standby"),
-        ],
-    ),
-    (
-        (SYS, "MODELNAME"),
-        [
-            (SYS, "MODELNAME", "ModelName"),
+            (SYS, "AVAIL", "Ready"),
         ],
     ),
     (
@@ -35,11 +30,33 @@ INITIALIZE_FULL_RESPONSES = [
             (SYS, "INPNAMEAV4", "InputAv4"),
             (SYS, "INPNAMEAV5", "InputAv5"),
             (SYS, "INPNAMEAV6", "InputAv6"),
+            (SYS, "INPNAMEAV7", "InputAv7"),
             (SYS, "INPNAMEVAUX", "InputVAux"),
             (SYS, "INPNAMEAUDIO1", "InputAudio1"),
             (SYS, "INPNAMEAUDIO2", "InputAudio2"),
+            (SYS, "INPNAMEAUDIO3", "InputAudio3"),
+            (SYS, "INPNAMEAUDIO4", "InputAudio4"),
             (SYS, "INPNAMEDOCK", "InputDock"),
             (SYS, "INPNAMEUSB", "InputUsb"),
+            (SYS, "INPNAMEMULTICH", "InputMultiCh"),
+        ],
+    ),
+    (
+        (SYS, "MODELNAME"),
+        [
+            (SYS, "MODELNAME", "ModelName"),
+        ],
+    ),
+    (
+        (SYS, "PARTY"),
+        [
+            (SYS, "PARTY", "On"),
+        ],
+    ),
+    (
+        (SYS, "PWR"),
+        [
+            (SYS, "PWR", "Standby"),
         ],
     ),
     (
@@ -70,6 +87,12 @@ def test_construct(connection, update_callback):
 def test_initialize_minimal(connection, update_callback):
     connection.get_response_list = [
         (
+            (SYS, "AVAIL"),
+            [
+                (SYS, "AVAIL", "Ready"),
+            ],
+        ),
+        (
             (SYS, "VERSION"),
             [
                 (SYS, "VERSION", "Version"),
@@ -82,11 +105,33 @@ def test_initialize_minimal(connection, update_callback):
 
     s.initialize()
 
-    assert update_callback.call_count == 1
     assert s.version == "Version"
-    assert s.pwr is None
     assert s.modelname is None
-    assert len(s.inp_names.keys()) == 0
+    assert s.pwr is None
+    assert s.party is None
+    assert s.inpnameaudio1 is None
+    assert s.inpnameaudio2 is None
+    assert s.inpnameaudio3 is None
+    assert s.inpnameaudio4 is None
+    assert s.inpnameav1 is None
+    assert s.inpnameav2 is None
+    assert s.inpnameav3 is None
+    assert s.inpnameav4 is None
+    assert s.inpnameav5 is None
+    assert s.inpnameav6 is None
+    assert s.inpnameav7 is None
+    assert s.inpnamedock is None
+    assert s.inpnamehdmi1 is None
+    assert s.inpnamehdmi2 is None
+    assert s.inpnamehdmi3 is None
+    assert s.inpnamehdmi4 is None
+    assert s.inpnamehdmi5 is None
+    assert s.inpnamehdmi6 is None
+    assert s.inpnamehdmi7 is None
+    assert s.inpnamemultich is None
+    assert s.inpnamephono is None
+    assert s.inpnameusb is None
+    assert s.inpnamevaux is None
 
 
 def test_initialize_full(connection, update_callback):
@@ -98,59 +143,82 @@ def test_initialize_full(connection, update_callback):
 
     s.initialize()
 
-    assert update_callback.call_count == 1
+    assert update_callback.call_count == 0
     assert s.version == "Version"
     assert s.modelname == "ModelName"
-    assert s.pwr is False
+    assert s.pwr == Pwr.STANDBY
+    assert s.party == Party.ON
 
-    assert len(s.inp_names.keys()) == 19
-    assert s.inp_names["PHONO"] == "InputPhono"
-    assert s.inp_names["HDMI1"] == "InputHdmi1"
-    assert s.inp_names["HDMI2"] == "InputHdmi2"
-    assert s.inp_names["HDMI3"] == "InputHdmi3"
-    assert s.inp_names["HDMI4"] == "InputHdmi4"
-    assert s.inp_names["HDMI5"] == "InputHdmi5"
-    assert s.inp_names["HDMI6"] == "InputHdmi6"
-    assert s.inp_names["HDMI7"] == "InputHdmi7"
-    assert s.inp_names["AV1"] == "InputAv1"
-    assert s.inp_names["AV2"] == "InputAv2"
-    assert s.inp_names["AV3"] == "InputAv3"
-    assert s.inp_names["AV4"] == "InputAv4"
-    assert s.inp_names["AV5"] == "InputAv5"
-    assert s.inp_names["AV6"] == "InputAv6"
-    assert s.inp_names["V-AUX"] == "InputVAux"
-    assert s.inp_names["AUDIO1"] == "InputAudio1"
-    assert s.inp_names["AUDIO2"] == "InputAudio2"
-    assert s.inp_names["DOCK"] == "InputDock"
-    assert s.inp_names["USB"] == "InputUsb"
-
-
-def test_registration(connection, initialized_system):
-
-    update_callback_1 = mock.MagicMock()
-    update_callback_2 = mock.MagicMock()
-
-    # Register multiple callbacks, both get called
-    initialized_system.register_update_callback(update_callback_1)
-    initialized_system.register_update_callback(update_callback_2)
-    connection.send_protocol_message(SYS, "PWR", "On")
-    assert update_callback_1.call_count == 1
-    assert update_callback_2.call_count == 1
-
-    # Double registration (second gets ignored)
-    initialized_system.register_update_callback(update_callback_2)
-    connection.send_protocol_message(SYS, "PWR", "On")
-    assert update_callback_1.call_count == 2
-    assert update_callback_2.call_count == 2
-
-    # Unregistration
-    initialized_system.unregister_update_callback(update_callback_2)
-    connection.send_protocol_message(SYS, "PWR", "On")
-    assert update_callback_1.call_count == 3
-    assert update_callback_2.call_count == 2
+    assert s.inpnameaudio1 == "InputAudio1"
+    assert s.inpnameaudio2 == "InputAudio2"
+    assert s.inpnameaudio3 == "InputAudio3"
+    assert s.inpnameaudio4 == "InputAudio4"
+    assert s.inpnameav1 == "InputAv1"
+    assert s.inpnameav2 == "InputAv2"
+    assert s.inpnameav3 == "InputAv3"
+    assert s.inpnameav4 == "InputAv4"
+    assert s.inpnameav5 == "InputAv5"
+    assert s.inpnameav6 == "InputAv6"
+    assert s.inpnameav7 == "InputAv7"
+    assert s.inpnamedock == "InputDock"
+    assert s.inpnamehdmi1 == "InputHdmi1"
+    assert s.inpnamehdmi2 == "InputHdmi2"
+    assert s.inpnamehdmi3 == "InputHdmi3"
+    assert s.inpnamehdmi4 == "InputHdmi4"
+    assert s.inpnamehdmi5 == "InputHdmi5"
+    assert s.inpnamehdmi6 == "InputHdmi6"
+    assert s.inpnamehdmi7 == "InputHdmi7"
+    assert s.inpnamemultich == "InputMultiCh"
+    assert s.inpnamephono == "InputPhono"
+    assert s.inpnameusb == "InputUsb"
+    assert s.inpnamevaux == "InputVAux"
 
 
-def test_unhandled_function(connection, initialized_system):
+def test_party(connection, initialized_system: System):
+    # Writing to device
+    initialized_system.party = Party.ON
+    connection.put.assert_called_with(SYS, "PARTY", "On")
+    initialized_system.party = Party.OFF
+    connection.put.assert_called_with(SYS, "PARTY", "Off")
+
+
+def test_partymute(connection, initialized_system: System):
+    # Writing to device
+    initialized_system.partymute = PartyMute.ON
+    connection.put.assert_called_with(SYS, "PARTYMUTE", "On")
+    initialized_system.partymute = PartyMute.OFF
+    connection.put.assert_called_with(SYS, "PARTYMUTE", "Off")
+
+
+def test_partyvol(connection, initialized_system: System):
+    # Writing to device
+    initialized_system.partyvol_up()
+    connection.put.assert_called_with(SYS, "PARTYVOL", "Up")
+    initialized_system.partyvol_down()
+    connection.put.assert_called_with(SYS, "PARTYVOL", "Down")
+
+
+def test_partyvol_method(connection, initialized_system: System):
+    # Writing to device
+    initialized_system.partyvol_up()
+    connection.put.assert_called_with(SYS, "PARTYVOL", "Up")
+    initialized_system.partyvol_down()
+    connection.put.assert_called_with(SYS, "PARTYVOL", "Down")
+
+
+def test_remotecode(connection, initialized_system: System):
+    initialized_system.remotecode("code1234")
+    connection.put.assert_called_with(SYS, "REMOTECODE", "code1234")
+
+
+def test_remotecode_wrong_length(initialized_system: System):
+    with pytest.raises(ValueError):
+        initialized_system.remotecode("7777777")
+    with pytest.raises(ValueError):
+        initialized_system.remotecode("999999999")
+
+
+def test_unhandled_function(connection, initialized_system: System):
 
     # Updates from device
     update_callback_1 = mock.MagicMock()

@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import collections
 import logging
 import queue
 import re
@@ -12,20 +11,14 @@ from typing import Callable, List, Optional, Set
 import serial  # type: ignore
 import serial.threaded  # type: ignore
 
+from .helpers import RingBuffer
 from .errors import YncaConnectionError, YncaConnectionFailed
 
 logger = logging.getLogger(__name__)
 
 
-class RingBuffer:
-    def __init__(self, size):
-        self._buffer = collections.deque(maxlen=size)
-
-    def add(self, item: str):
-        self._buffer.append(item)
-
-    def get_buffer(self) -> List[str]:
-        return list(self._buffer)
+class LogBuffer(RingBuffer[str]):
+    pass
 
 
 class YncaProtocolStatus(Enum):
@@ -51,7 +44,7 @@ class YncaProtocol(serial.threaded.LineReader):
         self._last_sent_command = None
         self.connected = False
         self._keep_alive_pending = False
-        self._communication_log_buffer: RingBuffer = RingBuffer(0)
+        self._communication_log_buffer: LogBuffer = LogBuffer(0)
         self.num_commands_sent = 0
 
     def connection_made(self, transport):
@@ -96,7 +89,7 @@ class YncaProtocol(serial.threaded.LineReader):
         function = None
         value = None
 
-        logger.debug("> %s", line)
+        logger.debug("Recv - %s", line)
         self._communication_log_buffer.add(f"Received: {line}")
 
         if line == "@UNDEFINED":
@@ -138,7 +131,7 @@ class YncaProtocol(serial.threaded.LineReader):
                     self._keep_alive_pending = True
 
                 if not stop:
-                    logger.debug("< %s", message)
+                    logger.debug("Send - %s", message)
                     self._communication_log_buffer.add(f"Send: {message}")
 
                     self._last_sent_command = message
@@ -166,7 +159,7 @@ class YncaProtocol(serial.threaded.LineReader):
         Set the amount of items to track in the communication log buffer.
         Setting a new size will discard existing items.
         """
-        self._communication_log_buffer = RingBuffer(size)
+        self._communication_log_buffer = LogBuffer(size)
 
     def get_communication_log_items(self) -> List[str]:
         """
