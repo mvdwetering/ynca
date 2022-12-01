@@ -25,6 +25,7 @@ jobs:
       name: Check if versiontag matches setup.py
       run: |
         VERSION_NUMBER="${GITHUB_REF_NAME:1}"
+        echo Version $VERSION_NUMBER extracted from $GITHUB_REF_NAME
         grep version=\"$VERSION_NUMBER\", setup.py
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v4
