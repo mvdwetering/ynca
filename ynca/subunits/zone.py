@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import logging
-from typing import Dict
 
 from ..constants import (
     InitVolLvl,
@@ -25,7 +24,7 @@ from ..function import (
 )
 from ..helpers import number_to_string_with_stepsize
 from ..subunit import SubunitBase
-from .functions import PlaybackFunction
+from . import PlaybackFunction
 
 logger = logging.getLogger(__name__)
 

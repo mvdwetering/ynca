@@ -1,12 +1,8 @@
 from __future__ import annotations
 
 from ..constants import Subunit
-from .functions import (
-    PlaybackFunction,
-    PlaybackInfoFunction,
-    StationFunction,
-)
 from ..subunit import SubunitBase
+from . import PlaybackFunction, PlaybackInfoFunction, StationFunction
 
 
 class NetRadio(

@@ -11,22 +11,20 @@ from .helpers import all_subclasses
 from .subunit import SubunitBase
 from .subunits.airplay import Airplay
 from .subunits.bt import Bt
-from .subunits.mediaplayback_subunits import (
-    Ipod,
-    IpodUsb,
-    Napster,
-    Pc,
-    Rhap,
-    Server,
-    Spotify,
-    Usb,
-)
+from .subunits.ipod import Ipod
+from .subunits.ipodusb import IpodUsb
+from .subunits.napster import Napster
 from .subunits.netradio import NetRadio
 from .subunits.pandora import Pandora
+from .subunits.pc import Pc
+from .subunits.rhap import Rhap
+from .subunits.server import Server
 from .subunits.sirius import Sirius, SiriusIr, SiriusXm
+from .subunits.spotify import Spotify
 from .subunits.system import System
 from .subunits.tun import Tun
 from .subunits.uaw import Uaw
+from .subunits.usb import Usb
 from .subunits.zone import Main, Zone2, Zone3, Zone4
 
 logger = logging.getLogger(__name__)

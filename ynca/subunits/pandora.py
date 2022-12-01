@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 from ..constants import Subunit
-from .functions import (
+from ..subunit import SubunitBase
+from . import (
     AlbumFunction,
     ArtistFunction,
     PlaybackFunction,
@@ -9,7 +10,6 @@ from .functions import (
     SongFunction,
     StationFunction,
 )
-from ..subunit import SubunitBase
 
 
 class Pandora(

@@ -1,7 +1,7 @@
 from unittest import mock
 from ynca import Playback
 
-from ynca.subunits.functions import (
+from ynca.subunits import (
     PlaybackFunction,
 )
 

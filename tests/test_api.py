@@ -4,7 +4,7 @@ import pytest
 import ynca
 from ynca.subunits.bt import Bt
 from ynca.errors import YncaConnectionError, YncaInitializationFailedException
-from ynca.subunits.mediaplayback_subunits import Usb
+from ynca.subunits.usb import Usb
 from ynca.subunits.system import System
 from ynca.subunits.zone import Main
 

@@ -1,14 +1,9 @@
 from __future__ import annotations
 
 from ..constants import Subunit
-from .functions import (
-    ArtistFunction,
-    ChNameFunction,
-    PlaybackFunction,
-    PlaybackInfoFunction,
-    SongFunction,
-)
 from ..subunit import SubunitBase
+from . import (ArtistFunction, ChNameFunction, PlaybackFunction,
+               PlaybackInfoFunction, SongFunction)
 
 
 class Sirius(

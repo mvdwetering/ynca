@@ -1,5 +1,5 @@
 from ynca import Playback, PlaybackInfo, Repeat, Shuffle
-from ynca.subunits.mediaplayback_subunits import MediaPlaybackSubunitBase
+from ynca.subunits import MediaPlaybackSubunitBase
 
 SYS = "SYS"
 SUBUNIT = "SUBUNIT"

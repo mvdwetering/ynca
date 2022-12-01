@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from ..constants import Subunit
-from .functions import PlaybackFunction
+from . import PlaybackFunction
 from ..subunit import SubunitBase
 
 
