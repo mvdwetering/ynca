@@ -23,16 +23,15 @@ Note that the intended API to use is exposed from the toplevel package.
 
 ### Classes
 
-#### YncaConnection
-
-The YncaConnection class creates a basic connection with a YNCA receiver and allows to send/receive YNCA commands. It handles throttling as required by the protocol and informs of received values through a callback.
-
-Use this if all that is needed is a basic connection to a receiver.
-
 #### YncaApi
 
-The YncaApi class is exposing YNCA subunits and their functions as Python classes/datatypes and allows to connect to devices supporting that API.
-It keeps a cache of last received values so reading is instant as it does not need to query the receiver.
+This is the main class to interact with. The YncaApi class is exposing YNCA subunits and their functions as Python classes/datatypes and allows to connect to devices supporting that API. It keeps a cache which gets updated when values are received from the device so reading attributes is instant as it does not need to query the receiver.
+
+#### YncaConnection
+
+The YncaConnection class creates a basic connection with a YNCA receiver and allows to send/receive YNCA commands. It handles throttling as required by the protocol and informs of received values through a callback. The YncaApi class uses this under the hood.
+
+Use this if all that is needed is a basic connection to a receiver.
 
 #### YncaModelInfo
 
