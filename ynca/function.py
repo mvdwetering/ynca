@@ -62,7 +62,9 @@ class FunctionBase(ABC, Generic[T]):
         self.no_initialize = no_initialize
         self.initializer = init
 
-    def __get__(self, instance: SubunitBase, owner) -> T | None | FunctionBase[T]:
+    def __get__(
+        self, instance: SubunitBase | None, owner
+    ) -> T | None | FunctionBase[T]:
         if instance is None:
             return self
 
@@ -150,7 +152,7 @@ class EnumOrFloatFunction(FunctionBase, Generic[E]):
         self,
         name: str,
         datatype: Type[E],
-        converter: MultiConverter = None,
+        converter: MultiConverter | None = None,
         cmd: Cmd = Cmd.GET | Cmd.PUT,
         init=None,
     ) -> None:

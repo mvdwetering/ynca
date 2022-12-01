@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import logging
 import threading
-from typing import Callable, Dict, List, Optional, Set, Type, cast
+from typing import Callable, Dict, List, Optional, Set, cast
 
 from .connection import YncaConnection, YncaProtocol, YncaProtocolStatus
 from .constants import Subunit
@@ -34,7 +34,7 @@ class YncaApi:
     def __init__(
         self,
         serial_url: str,
-        disconnect_callback: Callable[[], None] = None,
+        disconnect_callback: Callable[[], None] | None = None,
         communication_log_size: int = 0,
     ):
         """
@@ -63,25 +63,25 @@ class YncaApi:
         self._communication_log_size = communication_log_size
 
         # This is the list of instantiated Subunit classes
-        self._subunits: Dict[Subunit, Type[SubunitBase]] = {}
+        self._subunits: Dict[Subunit, SubunitBase] = {}
 
-    def _detect_available_subunits(self):
+    def _detect_available_subunits(self, connection: YncaConnection):
         logger.info("Subunit availability check start")
         self._initialized_event.clear()
-        self._connection.register_message_callback(self._protocol_message_received)
+        connection.register_message_callback(self._protocol_message_received)
 
         # Figure out what subunits are available
-        num_commands_sent_start = self._connection.num_commands_sent
+        num_commands_sent_start = connection.num_commands_sent
         self._available_subunits = set()
         for subunit_id in Subunit:
-            self._connection.get(subunit_id, "AVAIL")
+            connection.get(subunit_id, "AVAIL")
 
         # Use @SYS:VERSION=? as end marker (even though this is not the SYS subunit)
-        self._connection.get(Subunit.SYS, "VERSION")
+        connection.get(Subunit.SYS, "VERSION")
 
         # Take command spacing into account and apply large margin
         # Large margin is needed in practice on slower/busier systems
-        num_commands_sent = self._connection.num_commands_sent - num_commands_sent_start
+        num_commands_sent = connection.num_commands_sent - num_commands_sent_start
         if not self._initialized_event.wait(
             2 + (num_commands_sent * (YncaProtocol.COMMAND_SPACING * 5))
         ):
@@ -89,7 +89,7 @@ class YncaApi:
                 f"Subunit availability check failed"
             )
 
-        self._connection.unregister_message_callback(self._protocol_message_received)
+        connection.unregister_message_callback(self._protocol_message_received)
         logger.info("Subunit availability check done")
 
     def _get_subunit_class(self, subunit_id):
@@ -98,17 +98,17 @@ class YncaApi:
             if subunit_class.id == subunit_id:
                 return subunit_class
 
-    def _initialize_available_subunits(self):
+    def _initialize_available_subunits(self, connection: YncaConnection):
         # Every receiver has a System subunit
         # It also does not respond to AVAIL=? so it will not end up in _available_subunits
-        system = System(self._connection)
+        system = System(connection)
         system.initialize()
         self._subunits[system.id] = system
 
         # Initialize detected subunits
         for subunit_id in sorted(self._available_subunits):
             if subunit_class := self._get_subunit_class(subunit_id):
-                subunit_instance = subunit_class(self._connection)
+                subunit_instance = subunit_class(connection)
                 subunit_instance.initialize()
                 self._subunits[subunit_instance.id] = subunit_instance
 
@@ -167,8 +167,8 @@ class YncaApi:
         self._connection = connection
 
         try:
-            self._detect_available_subunits()
-            self._initialize_available_subunits()
+            self._detect_available_subunits(connection)
+            self._initialize_available_subunits(connection)
             is_initialized = True
         finally:
             if not is_initialized:
@@ -206,7 +206,7 @@ class YncaApi:
         """
         # Convert to list to avoid issues when deleting while iterating
         for id in list(self._subunits.keys()):
-            subunit = self._subunits.pop(id, None)
+            subunit = self._subunits.pop(id)
             subunit.close()
         if self._connection:
             self._connection.close()

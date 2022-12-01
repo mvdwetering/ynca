@@ -1,6 +1,6 @@
 import collections
 from math import modf
-from typing import Generic, List, TypeVar
+from typing import Deque, Generic, List, TypeVar
 
 """Misc helper functions"""
 
@@ -38,7 +38,7 @@ class RingBuffer(Generic[T]):
     """Simple ringbuffer that hold size amount of items, adding more will discard oldest items"""
 
     def __init__(self, size):
-        self._buffer = collections.deque(maxlen=size)
+        self._buffer: Deque = collections.deque(maxlen=size)
 
     def add(self, item: T):
         self._buffer.append(item)

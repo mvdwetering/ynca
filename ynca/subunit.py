@@ -67,7 +67,7 @@ class SubunitBase(ABC):
         self._initialized = False
         self._initialized_event = threading.Event()
 
-        self._connection = connection
+        self._connection: YncaConnection | None = connection
         self._connection.register_message_callback(self._protocol_message_received)
 
     def initialize(self):
@@ -75,6 +75,10 @@ class SubunitBase(ABC):
         Initializes the data for the subunit and makes sure to wait until done.
         This call can take a long time
         """
+        if not self._connection:
+            raise YncaInitializationFailedException(
+                "No valid connection"
+            )  # pragma: no cover
 
         logger.info("Subunit %s initialization start.", self.id)
 
@@ -149,10 +153,12 @@ class SubunitBase(ABC):
             self._call_registered_update_callbacks(function_name, handler.value)
 
     def _put(self, function_name: str, value: str):
-        self._connection.put(self.id, function_name, value)
+        if self._connection:
+            self._connection.put(self.id, function_name, value)
 
     def _get(self, function_name: str):
-        self._connection.get(self.id, function_name)
+        if self._connection:
+            self._connection.get(self.id, function_name)
 
     def register_update_callback(self, callback: Callable[[str, Any], None]):
         self._update_callbacks.add(callback)

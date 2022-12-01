@@ -34,7 +34,7 @@ def line_to_command(line):
 
 class YncaDataStore:
     def __init__(self) -> None:
-        self._store: Dict[str, str] = {}
+        self._store: Dict[str, Dict[str, str]] = {}
 
     def fill_from_file(self, filename):
         print(f"--- Filling store with data from file: {filename}")
@@ -45,8 +45,9 @@ class YncaDataStore:
                 line = line.rstrip(
                     '",'
                 )  # Strip to be able to use diagnotics output directly
+
                 # Error values are stored based on command sent on previous line
-                if RESTRICTED in line or UNDEFINED in line:
+                if command and (RESTRICTED in line or UNDEFINED in line):
                     # Only set RESTRICTED or UNDEFINED for non existing entries
                     # Avoids "removal" of valid values that were already stored
                     if self.get_data(command.subunit, command.function) == UNDEFINED:
@@ -197,14 +198,14 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
 
         print(f"--- Client connected from: {self.client_address[0]}")
         while True:
-            line = self.rfile.readline()
-            if line == b"":
+            bytes_line = self.rfile.readline()
+            if bytes_line == b"":
                 print("--- Client disconnected")
                 print("--- Waiting for connections")
                 return
 
-            line = line.strip()
-            line = line.decode(
+            bytes_line = bytes_line.strip()
+            line = bytes_line.decode(
                 "utf-8"
             )  # Note that YNCA spec says in some places that text can be ASCII, Latin-1 or UTF-8 without a way to indicate what it is :/ UTF-8 seems to work fine for now
             print(f"Recv - {line}")

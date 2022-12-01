@@ -69,15 +69,17 @@ class YncaProtocol(serial.threaded.LineReader):
 
         logger.debug("Connection closed/lost %s" % exc)
 
-        # There seems to be no way to clear a queue so just read all and add the _EXIT command
-        try:
-            while self._send_queue.get(False):
+        if self._send_queue:
+            # There seems to be no way to clear a queue so just read all and add the _EXIT command
+            try:
+                while self._send_queue.get(False):
+                    pass
+            except queue.Empty:
                 pass
-        except queue.Empty:
-            pass
-        finally:
-            self._send_queue.put("_EXIT")
-        self._send_thread.join(2)
+            finally:
+                self._send_queue.put("_EXIT")
+        if self._send_thread:
+            self._send_thread.join(2)
 
         if self.disconnect_callback:
             self.disconnect_callback()
@@ -116,11 +118,12 @@ class YncaProtocol(serial.threaded.LineReader):
             self.message_callback(status, subunit, function, value)
 
     def _send_keepalive(self):
-        self._send_queue.put("_KEEP_ALIVE")
+        if self._send_queue:
+            self._send_queue.put("_KEEP_ALIVE")
 
     def _send_handler(self):
         stop = False
-        while not stop:
+        while not stop and self._send_queue:
             try:
                 message = self._send_queue.get(True, self.KEEP_ALIVE_INTERVAL)
 
@@ -144,12 +147,14 @@ class YncaProtocol(serial.threaded.LineReader):
                 self._send_keepalive()
 
     def raw(self, raw_data: str):
-        self._send_queue.put(raw_data)
-        self.num_commands_sent += 1
+        if self._send_queue:
+            self._send_queue.put(raw_data)
+            self.num_commands_sent += 1
 
     def put(self, subunit: str, funcname: str, parameter: str):
-        self._send_queue.put(f"@{subunit}:{funcname}={parameter}")
-        self.num_commands_sent += 1
+        if self._send_queue:
+            self._send_queue.put(f"@{subunit}:{funcname}={parameter}")
+            self.num_commands_sent += 1
 
     def get(self, subunit: str, funcname: str):
         self.put(subunit, funcname, "?")
@@ -211,7 +216,7 @@ class YncaConnection:
 
     def connect(
         self,
-        disconnect_callback: Callable[[], None] = None,
+        disconnect_callback: Callable[[], None] | None = None,
         communication_log_size: int = 0,
     ):
         try:
@@ -254,11 +259,11 @@ class YncaConnection:
 
     @property
     def connected(self):
-        return self._protocol.connected
+        return self._protocol.connected if self._protocol else False
 
     @property
     def num_commands_sent(self):
-        return self._protocol.num_commands_sent
+        return self._protocol.num_commands_sent if self._protocol else None
 
     def get_communication_log_items(self) -> List[str]:
         """Get a list of logged communication items."""
