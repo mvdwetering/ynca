@@ -1,8 +1,16 @@
 from __future__ import annotations
 
+from ynca.converters import FloatConverter
+from ynca.helpers import number_to_string_with_stepsize
+
 from ..subunit import SubunitBase
-from ..constants import Playback, PlaybackInfo, Repeat, Shuffle
-from ..function import Cmd, EnumFunction, StrFunction
+from ..constants import (
+    Playback,
+    PlaybackInfo,
+    Repeat,
+    Shuffle,
+)
+from ..function import Cmd, EnumFunction, FloatFunction, StrFunction
 
 
 class AlbumFunction:
@@ -56,3 +64,14 @@ class MediaPlaybackSubunitBase(
     SubunitBase,
 ):
     pass
+
+
+class FmFreqFunction:
+
+    fmfreq = FloatFunction(
+        "FMFREQ",
+        converter=FloatConverter(
+            to_str=lambda v: number_to_string_with_stepsize(v, 2, 0.2)
+        ),
+    )
+    """Read/write FM frequency. Values will be aligned to a valid stepsize."""

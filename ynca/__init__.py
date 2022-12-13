@@ -6,6 +6,9 @@ from .connection import YncaConnection
 from .constants import (
     Avail,
     BandTun,
+    Preset,
+    SigStereoMono,
+    Tuned,
     InitVolLvl,
     InitVolMode,
     Input,

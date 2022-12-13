@@ -199,6 +199,20 @@ class BandTun(str, Enum):
     FM = "FM"
 
 
+class Preset(str, Enum):
+    NO_PRESET = "No Preset"
+
+
+class SigStereoMono(str, Enum):
+    NEGATE = "Negate"
+    ASSERT = "Assert"
+
+
+class Tuned(str, Enum):
+    NEGATE = "Negate"
+    ASSERT = "Assert"
+
+
 class TwoChDecoder(str, Enum):
     DolbyPl = "Dolby PL"
     DolbyPl2Movie = "Dolby PLII Movie"
