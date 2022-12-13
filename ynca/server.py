@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+from __future__ import annotations
+
 """
 Simple socket server to test without a real YNCA device
 
@@ -86,6 +88,32 @@ class YncaDataStore:
         return (RESTRICTED, False)
 
 
+multiresponse_functions_table = {
+    "BASIC": [
+        "PWR",
+        "SLEEP",
+        "VOL",
+        "MUTE",
+        "INP",
+        "STRAIGHT",
+        "ENHANCER",
+        "SOUNDPRG",
+        "TONEBASS",
+        "TONETREBLE",
+        "3DCINEMA",
+        "PUREDIRMODE",
+        "SPBASS",
+        "SPTREBLE",
+        "EXBASS",
+        "ADAPTIVEDRC",
+        "DIALOGUELVL",
+        "DTSDIALOGUECONTROL",
+    ],
+    "METAINFO": ["ARTIST", "ALBUM", "SONG", "CHNAME"],
+    "RDSINFO": ["RDSPRGTYPE", "RDSPRGSERVICE", "RDSTXTA", "RDSTXTB", "RDSCLOCK"],
+}
+
+
 class YncaCommandHandler(socketserver.StreamRequestHandler):
     """
     The request handler class for our server.
@@ -95,7 +123,7 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
     client.
     """
 
-    def __init__(self, request, client_address, server):
+    def __init__(self, request, client_address, server: YncaServer):
         self.store = server.store
         self.disconnect_after_receiving_num_commands = (
             server.disconnect_after_receiving_num_commands
@@ -121,32 +149,13 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
                 if key.startswith("INPNAME") and key != "INPNAME":
                     self.handle_get(subunit, key)
             return
-        elif function == "BASIC":  # Only applies to zones, but should be good enough
-            for basic_function in [
-                "PWR",
-                "SLEEP",
-                "VOL",
-                "MUTE",
-                "INP",
-                "STRAIGHT",
-                "ENHANCER",
-                "SOUNDPRG",
-                "TONEBASS",
-                "TONETREBLE",
-                "3DCINEMA",
-                "PUREDIRMODE",
-                "SPBASS",
-                "SPTREBLE",
-                "EXBASS",
-                "ADAPTIVEDRC",
-                "DIALOGUELVL",
-                "DTSDIALOGUECONTROL",
-            ]:
-                self.handle_get(subunit, basic_function, skip_error_response=True)
-            return
-        elif function == "METAINFO":
-            for metainfo_function in ["ARTIST", "ALBUM", "SONG", "CHNAME"]:
-                self.handle_get(subunit, metainfo_function, skip_error_response=True)
+        elif response_functions := multiresponse_functions_table.get(function, None):
+            before = self._commands_sent
+            for response_function in response_functions:
+                self.handle_get(subunit, response_function, skip_error_response=True)
+            if self._commands_sent == before:
+                # No responses so apparently not supported
+                self.write_line(UNDEFINED)
             return
         elif function == "SCENENAME":
             response_sent = False
