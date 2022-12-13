@@ -14,12 +14,12 @@ from ynca import (
     Straight,
     TwoChDecoder,
 )
-from ynca.subunits.zone import Main, Zone2, Zone3, Zone4, ZoneBase
+from ynca.subunits.zone import Main, ZoneBase
 
 from .mock_yncaconnection import YncaConnectionMock
 
 SYS = "SYS"
-SUBUNIT = "TESTZONE"
+SUBUNIT = "MAIN"
 NUM_SCENES = 12
 
 INITIALIZE_FULL_RESPONSES = [
@@ -91,18 +91,6 @@ INITIALIZE_FULL_RESPONSES = [
 ]
 
 
-# Need a zone class with an id for testing
-class DummyZone(ZoneBase):
-    id = "TESTZONE"
-
-
-@pytest.fixture
-def connection():
-    c = YncaConnectionMock()
-    c.setup_responses()
-    return c
-
-
 @pytest.fixture
 def update_callback() -> Callable[[], None]:
     return mock.MagicMock()
@@ -111,14 +99,14 @@ def update_callback() -> Callable[[], None]:
 @pytest.fixture
 def initialized_zone(connection) -> ZoneBase:
     connection.get_response_list = INITIALIZE_FULL_RESPONSES
-    z = DummyZone(connection)
+    z = Main(connection)
     z.initialize()
     return z
 
 
 def test_construct(connection, update_callback):
 
-    DummyZone(connection)
+    Main(connection)
 
     assert connection.register_message_callback.call_count == 1
     assert update_callback.call_count == 0
@@ -140,7 +128,7 @@ def test_initialize_minimal(connection, update_callback):
         ),
     ]
 
-    z = DummyZone(connection)
+    z = Main(connection)
     z.register_update_callback(update_callback)
     z.unregister_update_callback(update_callback)
 
@@ -165,7 +153,7 @@ def test_initialize_full(connection, update_callback):
 
     connection.get_response_list = INITIALIZE_FULL_RESPONSES
 
-    z = DummyZone(connection)
+    z = Main(connection)
     z.register_update_callback(update_callback)
 
     z.initialize()
