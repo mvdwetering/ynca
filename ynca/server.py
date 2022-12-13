@@ -245,6 +245,7 @@ class YncaServer(socketserver.TCPServer):
         disconnect_after_receiving_num_commands=None,
         disconnect_after_sending_num_commands=None,
     ) -> None:
+        self.allow_reuse_address = True
         super().__init__(server_address, YncaCommandHandler)
 
         self.store = YncaDataStore()
