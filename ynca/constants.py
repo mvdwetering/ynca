@@ -73,6 +73,9 @@ class Subunit(str, Enum):
     UAW = "UAW"
     USB = "USB"
 
+    # Not a real subunit, but to be able to have a subunit value for typing purposes
+    INVALID = "INVALID"
+
 
 class Avail(str, Enum):
     NOT_CONNECTED = "Not Connected"

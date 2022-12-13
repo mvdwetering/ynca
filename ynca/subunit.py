@@ -44,12 +44,7 @@ class SubunitBase(ABC):
     """
 
     avail = EnumFunction[Avail]("AVAIL", Avail)
-
-    @property
-    @abstractmethod
-    def id(self) -> str:  # pragma: no cover
-        # Force subunits to set the ID
-        pass
+    id: Subunit = Subunit.INVALID
 
     def __init__(self, connection: YncaConnection) -> None:
         self._update_callbacks: Set[Callable[[str, Any], None]] = set()

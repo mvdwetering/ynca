@@ -122,6 +122,7 @@ class YncaApi:
         """
         connection_check_event = threading.Event()
         modelname = ""
+        connection = None
 
         def _connection_check_message_received(
             status: YncaProtocolStatus, subunit: str, function_: str, value: str

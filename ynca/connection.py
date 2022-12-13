@@ -263,7 +263,7 @@ class YncaConnection:
 
     @property
     def num_commands_sent(self):
-        return self._protocol.num_commands_sent if self._protocol else None
+        return self._protocol.num_commands_sent if self._protocol else 0
 
     def get_communication_log_items(self) -> List[str]:
         """Get a list of logged communication items."""
