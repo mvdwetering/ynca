@@ -4,7 +4,7 @@ from ynca.converters import FloatConverter
 from ynca.helpers import number_to_string_with_stepsize
 
 from ..subunit import SubunitBase
-from ..constants import (
+from ..function_enums import (
     Playback,
     PlaybackInfo,
     Repeat,

@@ -6,11 +6,12 @@ from abc import ABC, abstractmethod
 from enum import Flag, auto
 from typing import Any, Callable, Dict, Set
 
-from ynca.function import FunctionBase, EnumFunction
+from ynca.function import EnumFunction, FunctionBase
 
 from .connection import YncaConnection, YncaProtocol, YncaProtocolStatus
-from .constants import Avail, Subunit
+from .constants import Subunit
 from .errors import YncaInitializationFailedException
+from .function_enums import Avail
 
 logger = logging.getLogger(__name__)
 

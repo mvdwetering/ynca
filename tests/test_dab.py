@@ -1,7 +1,7 @@
 import pytest
 
 from ynca import BandDab, Preset
-from ynca.constants import (
+from ynca.function_enums import (
     AssertNegate,
     BandDab,
     DabAudioMode,

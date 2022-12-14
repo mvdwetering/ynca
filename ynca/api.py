@@ -4,7 +4,6 @@ import logging
 import threading
 from typing import Callable, Dict, List, Optional, Set, cast
 
-
 from .connection import YncaConnection, YncaProtocol, YncaProtocolStatus
 from .constants import Subunit
 from .errors import YncaConnectionError, YncaInitializationFailedException

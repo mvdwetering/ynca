@@ -2,7 +2,16 @@ from __future__ import annotations
 
 import logging
 
-from ..constants import (
+from ..constants import Subunit
+from ..converters import EnumConverter, FloatConverter, MultiConverter, StrConverter
+from ..function import (
+    Cmd,
+    EnumFunction,
+    EnumOrFloatFunction,
+    FloatFunction,
+    StrFunction,
+)
+from ..function_enums import (
     InitVolLvl,
     InitVolMode,
     Input,
@@ -11,16 +20,7 @@ from ..constants import (
     Pwr,
     SoundPrg,
     Straight,
-    Subunit,
     TwoChDecoder,
-)
-from ..converters import EnumConverter, FloatConverter, MultiConverter, StrConverter
-from ..function import (
-    Cmd,
-    EnumFunction,
-    EnumOrFloatFunction,
-    FloatFunction,
-    StrFunction,
 )
 from ..helpers import number_to_string_with_stepsize
 from ..subunit import SubunitBase

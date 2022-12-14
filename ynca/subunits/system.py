@@ -1,14 +1,10 @@
 import logging
 
-from ..constants import Party, PartyMute, Subunit, Pwr
+from ..constants import Subunit
 from ..converters import StrConverter
+from ..function import Cmd, EnumFunction, FunctionBase, StrFunction
+from ..function_enums import Party, PartyMute, Pwr
 from ..subunit import SubunitBase
-from ..function import (
-    Cmd,
-    FunctionBase,
-    EnumFunction,
-    StrFunction,
-)
 
 logger = logging.getLogger(__name__)
 

@@ -1,15 +1,14 @@
 from __future__ import annotations
 
+from ..constants import Subunit
 from ..function import Cmd, EnumFunction, EnumOrIntFunction, StrFunction
-
-from ..constants import (
+from ..function_enums import (
     BandDab,
     DabAudioMode,
     DabOffAir,
-    Preset,
     FmSigStereoMono,
     FmTuned,
-    Subunit,
+    Preset,
 )
 from ..subunit import SubunitBase
 from . import FmFreqFunction

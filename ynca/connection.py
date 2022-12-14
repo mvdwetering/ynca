@@ -11,8 +11,8 @@ from typing import Callable, List, Optional, Set
 import serial  # type: ignore
 import serial.threaded  # type: ignore
 
-from .helpers import RingBuffer
 from .errors import YncaConnectionError, YncaConnectionFailed
+from .helpers import RingBuffer
 
 logger = logging.getLogger(__name__)
 

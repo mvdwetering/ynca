@@ -11,10 +11,10 @@ It is intended to be just enough to test without a real device
 """
 
 import argparse
-from collections import namedtuple
 import logging
 import re
 import socketserver
+from collections import namedtuple
 from typing import Dict, Tuple
 
 RESTRICTED = "@RESTRICTED"

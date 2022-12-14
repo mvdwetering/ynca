@@ -3,7 +3,13 @@ import logging
 # Import intended API so it is easily accessible through `from  ynca import Something``
 from .api import YncaApi
 from .connection import YncaConnection
-from .constants import (
+from .errors import (
+    YncaConnectionError,
+    YncaConnectionFailed,
+    YncaException,
+    YncaInitializationFailedException,
+)
+from .function_enums import (
     Avail,
     BandDab,
     BandTun,
@@ -29,12 +35,6 @@ from .constants import (
     Straight,
     Tuned,
     TwoChDecoder,
-)
-from .errors import (
-    YncaConnectionError,
-    YncaConnectionFailed,
-    YncaException,
-    YncaInitializationFailedException,
 )
 from .modelinfo import YncaModelInfo
 
