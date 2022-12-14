@@ -4,6 +4,7 @@ import logging
 import threading
 from typing import Callable, Dict, List, Optional, Set, cast
 
+
 from .connection import YncaConnection, YncaProtocol, YncaProtocolStatus
 from .constants import Subunit
 from .errors import YncaConnectionError, YncaInitializationFailedException
@@ -11,6 +12,7 @@ from .helpers import all_subclasses
 from .subunit import SubunitBase
 from .subunits.airplay import Airplay
 from .subunits.bt import Bt
+from .subunits.dab import Dab
 from .subunits.ipod import Ipod
 from .subunits.ipodusb import IpodUsb
 from .subunits.napster import Napster
@@ -220,6 +222,10 @@ class YncaApi:
     @property
     def sys(self) -> Optional[System]:
         return cast(System, self._subunits.get(Subunit.SYS, None))
+
+    @property
+    def dab(self) -> Optional[Dab]:
+        return cast(Dab, self._subunits.get(Subunit.DAB, None))
 
     @property
     def main(self) -> Optional[Main]:

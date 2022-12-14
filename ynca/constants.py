@@ -71,6 +71,7 @@ class Subunit(str, Enum):
     ZONE4 = "ZONE4"
     AIRPLAY = "AIRPLAY"
     BT = "BT"
+    DAB = "DAB"
     IPOD = "IPOD"
     IPODUSB = "IPODUSB"
     NAPSTER = "NAPSTER"
@@ -155,6 +156,7 @@ class Input(Enum):
     # Inputs provided by subunits
     AIRPLAY = "Airplay"
     BLUETOOTH = "Bluetooth"
+    DAB = "TUNER"
     IPOD = "iPod"
     IPOD_USB = "iPod (USB)"
     NAPSTER = "Napster"

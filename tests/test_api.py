@@ -370,6 +370,7 @@ def test_initialize_full(connection):
         assert y.zone4 is None
 
         assert y.airplay is None
+        assert y.dab is None
         assert y.ipod is None
         assert y.ipodusb is None
         assert y.napster is None
