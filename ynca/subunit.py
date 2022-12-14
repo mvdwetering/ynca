@@ -44,7 +44,7 @@ class SubunitBase(ABC):
     """
 
     avail = EnumFunction[Avail]("AVAIL", Avail)
-    id: Subunit = Subunit.INVALID
+    id: Subunit = Subunit.UNKNOWN
 
     def __init__(self, connection: YncaConnection) -> None:
         self._update_callbacks: Set[Callable[[str, Any], None]] = set()

@@ -1,5 +1,8 @@
 """Misc constants"""
 from enum import Enum
+import logging
+
+logger = logging.getLogger(__name__)
 
 MIN_VOLUME = -80.5  # Minimum volume value for receivers
 
@@ -33,11 +36,14 @@ class SoundPrg(str, Enum):
     NINE_CH_STEREO = "9ch Stereo"
     SURROUND_DECODER = "Surround Decoder"
     ALL_CH_STEREO = "All-Ch Stereo"
-    UNKNOWN = "Unknown"
 
     @classmethod
     def _missing_(cls, value):
-        return SoundPrg.UNKNOWN
+        logger.warning("Unknown value '%s' in %s", value, cls.__name__)
+        return cls.UNKNOWN
+
+    UNKNOWN = "Unknown"
+    """Unknown values in the enum are mapped to UNKNOWN"""
 
 
 class Mute(str, Enum):
@@ -45,6 +51,14 @@ class Mute(str, Enum):
     ATT_MINUS_20 = "Att -20 dB"
     ATT_MINUS_40 = "Att -40 dB"
     OFF = "Off"
+
+    @classmethod
+    def _missing_(cls, value):
+        logger.warning("Unknown value '%s' in %s", value, cls.__name__)
+        return cls.UNKNOWN
+
+    UNKNOWN = "Unknown"
+    """Unknown values in the enum are mapped to UNKNOWN"""
 
 
 class Subunit(str, Enum):
@@ -73,14 +87,27 @@ class Subunit(str, Enum):
     UAW = "UAW"
     USB = "USB"
 
-    # Not a real subunit, but to be able to have a subunit value for typing purposes
-    INVALID = "INVALID"
+    @classmethod
+    def _missing_(cls, value):
+        logger.warning("Unknown value '%s' in %s", value, cls.__name__)
+        return cls.UNKNOWN
+
+    UNKNOWN = "Unknown"
+    """Unknown values in the enum are mapped to UNKNOWN"""
 
 
 class Avail(str, Enum):
     NOT_CONNECTED = "Not Connected"
     NOT_READY = "Not Ready"
     READY = "Ready"
+
+    @classmethod
+    def _missing_(cls, value):
+        logger.warning("Unknown value '%s' in %s", value, cls.__name__)
+        return cls.UNKNOWN
+
+    UNKNOWN = "Unknown"
+    """Unknown values in the enum are mapped to UNKNOWN"""
 
 
 class InitVolLvl(str, Enum):
@@ -90,6 +117,14 @@ class InitVolLvl(str, Enum):
 class InitVolMode(str, Enum):
     ON = "On"
     OFF = "Off"
+
+    @classmethod
+    def _missing_(cls, value):
+        logger.warning("Unknown value '%s' in %s", value, cls.__name__)
+        return cls.UNKNOWN
+
+    UNKNOWN = "Unknown"
+    """Unknown values in the enum are mapped to UNKNOWN"""
 
 
 class Input(Enum):
@@ -136,42 +171,91 @@ class Input(Enum):
     UAW = "UAW"
     USB = "USB"
 
-    UNKNOWN = "Unknown"
-    """Not a real input, but used to map inputs not in the list so library does not break on new/unknown inputs"""
-
     @classmethod
     def _missing_(cls, value):
-        return Input.UNKNOWN
+        logger.warning("Unknown value '%s' in %s", value, cls.__name__)
+        return cls.UNKNOWN
+
+    UNKNOWN = "Unknown"
+    """Unknown values in the enum are mapped to UNKNOWN"""
 
 
 class Party(Enum):
     ON = "On"
     OFF = "Off"
 
+    @classmethod
+    def _missing_(cls, value):
+        logger.warning("Unknown value '%s' in %s", value, cls.__name__)
+        return cls.UNKNOWN
+
+    UNKNOWN = "Unknown"
+    """Unknown values in the enum are mapped to UNKNOWN"""
+
 
 class PartyMute(Enum):
     ON = "On"
     OFF = "Off"
+
+    @classmethod
+    def _missing_(cls, value):
+        logger.warning("Unknown value '%s' in %s", value, cls.__name__)
+        return cls.UNKNOWN
+
+    UNKNOWN = "Unknown"
+    """Unknown values in the enum are mapped to UNKNOWN"""
 
 
 class PureDirMode(Enum):
     ON = "On"
     OFF = "Off"
 
+    @classmethod
+    def _missing_(cls, value):
+        logger.warning("Unknown value '%s' in %s", value, cls.__name__)
+        return cls.UNKNOWN
+
+    UNKNOWN = "Unknown"
+    """Unknown values in the enum are mapped to UNKNOWN"""
+
 
 class Pwr(Enum):
     ON = "On"
     STANDBY = "Standby"
+
+    @classmethod
+    def _missing_(cls, value):
+        logger.warning("Unknown value '%s' in %s", value, cls.__name__)
+        return cls.UNKNOWN
+
+    UNKNOWN = "Unknown"
+    """Unknown values in the enum are mapped to UNKNOWN"""
 
 
 class Shuffle(Enum):
     ON = "On"
     OFF = "Off"
 
+    @classmethod
+    def _missing_(cls, value):
+        logger.warning("Unknown value '%s' in %s", value, cls.__name__)
+        return cls.UNKNOWN
+
+    UNKNOWN = "Unknown"
+    """Unknown values in the enum are mapped to UNKNOWN"""
+
 
 class Straight(Enum):
     ON = "On"
     OFF = "Off"
+
+    @classmethod
+    def _missing_(cls, value):
+        logger.warning("Unknown value '%s' in %s", value, cls.__name__)
+        return cls.UNKNOWN
+
+    UNKNOWN = "Unknown"
+    """Unknown values in the enum are mapped to UNKNOWN"""
 
 
 class Repeat(str, Enum):
@@ -179,11 +263,27 @@ class Repeat(str, Enum):
     SINGLE = "Single"
     ALL = "All"
 
+    @classmethod
+    def _missing_(cls, value):
+        logger.warning("Unknown value '%s' in %s", value, cls.__name__)
+        return cls.UNKNOWN
+
+    UNKNOWN = "Unknown"
+    """Unknown values in the enum are mapped to UNKNOWN"""
+
 
 class PlaybackInfo(str, Enum):
     STOP = "Stop"
     PAUSE = "Pause"
     PLAY = "Play"
+
+    @classmethod
+    def _missing_(cls, value):
+        logger.warning("Unknown value '%s' in %s", value, cls.__name__)
+        return cls.UNKNOWN
+
+    UNKNOWN = "Unknown"
+    """Unknown values in the enum are mapped to UNKNOWN"""
 
 
 class Playback(str, Enum):
@@ -193,24 +293,121 @@ class Playback(str, Enum):
     SKIP_REV = "Skip Rev"
     SKIP_FWD = "Skip Fwd"
 
+    @classmethod
+    def _missing_(cls, value):
+        logger.warning("Unknown value '%s' in %s", value, cls.__name__)
+        return cls.UNKNOWN
+
+    UNKNOWN = "Unknown"
+    """Unknown values in the enum are mapped to UNKNOWN"""
+
 
 class BandTun(str, Enum):
     AM = "AM"
     FM = "FM"
+
+    @classmethod
+    def _missing_(cls, value):
+        logger.warning("Unknown value '%s' in %s", value, cls.__name__)
+        return cls.UNKNOWN
+
+    UNKNOWN = "Unknown"
+    """Unknown values in the enum are mapped to UNKNOWN"""
+
+
+class BandDab(str, Enum):
+    DAB = "DAB"
+    FM = "FM"
+
+    @classmethod
+    def _missing_(cls, value):
+        logger.warning("Unknown value '%s' in %s", value, cls.__name__)
+        return cls.UNKNOWN
+
+    UNKNOWN = "Unknown"
+    """Unknown values in the enum are mapped to UNKNOWN"""
+
+
+class DabAudioMode(str, Enum):
+    STEREO = "Stereo"
+    MONO = "Mono"
+
+    @classmethod
+    def _missing_(cls, value):
+        logger.warning("Unknown value '%s' in %s", value, cls.__name__)
+        return cls.UNKNOWN
+
+    UNKNOWN = "Unknown"
+    """Unknown values in the enum are mapped to UNKNOWN"""
+
+
+class DabOffAir(str, Enum):
+    NEGATE = "Negate"
+    ASSERT = "Assert"
+
+    @classmethod
+    def _missing_(cls, value):
+        logger.warning("Unknown value '%s' in %s", value, cls.__name__)
+        return cls.UNKNOWN
+
+    UNKNOWN = "Unknown"
+    """Unknown values in the enum are mapped to UNKNOWN"""
 
 
 class Preset(str, Enum):
     NO_PRESET = "No Preset"
 
 
+class FmSigStereoMono(str, Enum):
+    NEGATE = "Negate"
+    ASSERT = "Assert"
+
+    @classmethod
+    def _missing_(cls, value):
+        logger.warning("Unknown value '%s' in %s", value, cls.__name__)
+        return cls.UNKNOWN
+
+    UNKNOWN = "Unknown"
+    """Unknown values in the enum are mapped to UNKNOWN"""
+
+
 class SigStereoMono(str, Enum):
     NEGATE = "Negate"
     ASSERT = "Assert"
+
+    @classmethod
+    def _missing_(cls, value):
+        logger.warning("Unknown value '%s' in %s", value, cls.__name__)
+        return cls.UNKNOWN
+
+    UNKNOWN = "Unknown"
+    """Unknown values in the enum are mapped to UNKNOWN"""
+
+
+class FmTuned(str, Enum):
+    NEGATE = "Negate"
+    ASSERT = "Assert"
+
+    @classmethod
+    def _missing_(cls, value):
+        logger.warning("Unknown value '%s' in %s", value, cls.__name__)
+        return cls.UNKNOWN
+
+    UNKNOWN = "Unknown"
+    """Unknown values in the enum are mapped to UNKNOWN"""
 
 
 class Tuned(str, Enum):
     NEGATE = "Negate"
     ASSERT = "Assert"
+
+    @classmethod
+    def _missing_(cls, value):
+        logger.warning("Unknown value '%s' in %s", value, cls.__name__)
+        return cls.UNKNOWN
+
+    UNKNOWN = "Unknown"
+    """Unknown values in the enum are mapped to UNKNOWN"""
 
 
 class TwoChDecoder(str, Enum):
@@ -223,3 +420,11 @@ class TwoChDecoder(str, Enum):
     DolbyPl2xGame = "Dolby PLIIx Game"
     DtsNeo6Cinema = "DTS NEO:6 Cinema"
     DtsNeo6Music = "DTS NEO:6 Music"
+
+    @classmethod
+    def _missing_(cls, value):
+        logger.warning("Unknown value '%s' in %s", value, cls.__name__)
+        return cls.UNKNOWN
+
+    UNKNOWN = "Unknown"
+    """Unknown values in the enum are mapped to UNKNOWN"""

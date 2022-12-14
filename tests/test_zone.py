@@ -325,6 +325,10 @@ def test_twochdecoder(connection, initialized_zone: ZoneBase):
     connection.send_protocol_message(SUBUNIT, "2CHDECODER", "DTS NEO:6 Cinema")
     assert initialized_zone.twochdecoder is TwoChDecoder.DtsNeo6Cinema
 
+    # Unknown value
+    connection.send_protocol_message(SUBUNIT, "2CHDECODER", "Auto")
+    assert initialized_zone.twochdecoder is TwoChDecoder.UNKNOWN
+
 
 def test_puredirmode(connection, initialized_zone: ZoneBase):
     # Writing to device
