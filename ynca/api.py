@@ -220,16 +220,84 @@ class YncaApi:
     # Also helps with typing compared to using generic SubunitBase types
 
     @property
-    def sys(self) -> Optional[System]:
-        return cast(System, self._subunits.get(Subunit.SYS, None))
+    def airplay(self) -> Optional[Airplay]:
+        return cast(Airplay, self._subunits.get(Subunit.AIRPLAY, None))
+
+    @property
+    def bt(self) -> Optional[Bt]:
+        return cast(Bt, self._subunits.get(Subunit.BT, None))
 
     @property
     def dab(self) -> Optional[Dab]:
         return cast(Dab, self._subunits.get(Subunit.DAB, None))
 
     @property
+    def ipod(self) -> Optional[Ipod]:
+        return cast(Ipod, self._subunits.get(Subunit.IPOD, None))
+
+    @property
+    def ipodusb(self) -> Optional[IpodUsb]:
+        return cast(IpodUsb, self._subunits.get(Subunit.IPODUSB, None))
+
+    @property
     def main(self) -> Optional[Main]:
         return cast(Main, self._subunits.get(Subunit.MAIN, None))
+
+    @property
+    def napster(self) -> Optional[Napster]:
+        return cast(Napster, self._subunits.get(Subunit.NAPSTER, None))
+
+    @property
+    def netradio(self) -> Optional[NetRadio]:
+        return cast(NetRadio, self._subunits.get(Subunit.NETRADIO, None))
+
+    @property
+    def pandora(self) -> Optional[Pandora]:
+        return cast(Pandora, self._subunits.get(Subunit.PANDORA, None))
+
+    @property
+    def pc(self) -> Optional[Pc]:
+        return cast(Pc, self._subunits.get(Subunit.PC, None))
+
+    @property
+    def rhap(self) -> Optional[Rhap]:
+        return cast(Rhap, self._subunits.get(Subunit.RHAP, None))
+
+    @property
+    def server(self) -> Optional[Server]:
+        return cast(Server, self._subunits.get(Subunit.SERVER, None))
+
+    @property
+    def sirius(self) -> Optional[Sirius]:
+        return cast(Sirius, self._subunits.get(Subunit.SIRIUS, None))
+
+    @property
+    def siriusir(self) -> Optional[SiriusIr]:
+        return cast(SiriusIr, self._subunits.get(Subunit.SIRIUSIR, None))
+
+    @property
+    def siriusxm(self) -> Optional[SiriusXm]:
+        return cast(SiriusXm, self._subunits.get(Subunit.SIRIUSXM, None))
+
+    @property
+    def spotify(self) -> Optional[Spotify]:
+        return cast(Spotify, self._subunits.get(Subunit.SPOTIFY, None))
+
+    @property
+    def sys(self) -> Optional[System]:
+        return cast(System, self._subunits.get(Subunit.SYS, None))
+
+    @property
+    def tun(self) -> Optional[Tun]:
+        return cast(Tun, self._subunits.get(Subunit.TUN, None))
+
+    @property
+    def uaw(self) -> Optional[Uaw]:
+        return cast(Uaw, self._subunits.get(Subunit.UAW, None))
+
+    @property
+    def usb(self) -> Optional[Usb]:
+        return cast(Usb, self._subunits.get(Subunit.USB, None))
 
     @property
     def zone2(self) -> Optional[Zone2]:
@@ -242,71 +310,3 @@ class YncaApi:
     @property
     def zone4(self) -> Optional[Zone4]:
         return cast(Zone4, self._subunits.get(Subunit.ZONE4, None))
-
-    @property
-    def pc(self) -> Optional[Pc]:
-        return cast(Pc, self._subunits.get(Subunit.PC, None))
-
-    @property
-    def netradio(self) -> Optional[NetRadio]:
-        return cast(NetRadio, self._subunits.get(Subunit.NETRADIO, None))
-
-    @property
-    def usb(self) -> Optional[Usb]:
-        return cast(Usb, self._subunits.get(Subunit.USB, None))
-
-    @property
-    def tun(self) -> Optional[Tun]:
-        return cast(Tun, self._subunits.get(Subunit.TUN, None))
-
-    @property
-    def sirius(self) -> Optional[Sirius]:
-        return cast(Sirius, self._subunits.get(Subunit.SIRIUS, None))
-
-    @property
-    def siriusir(self) -> Optional[SiriusIr]:
-        return cast(SiriusIr, self._subunits.get(Subunit.SIRIUSIR, None))
-
-    @property
-    def ipod(self) -> Optional[Ipod]:
-        return cast(Ipod, self._subunits.get(Subunit.IPOD, None))
-
-    @property
-    def ipodusb(self) -> Optional[IpodUsb]:
-        return cast(IpodUsb, self._subunits.get(Subunit.IPODUSB, None))
-
-    @property
-    def bt(self) -> Optional[Bt]:
-        return cast(Bt, self._subunits.get(Subunit.BT, None))
-
-    @property
-    def rhap(self) -> Optional[Rhap]:
-        return cast(Rhap, self._subunits.get(Subunit.RHAP, None))
-
-    @property
-    def pandora(self) -> Optional[Pandora]:
-        return cast(Pandora, self._subunits.get(Subunit.PANDORA, None))
-
-    @property
-    def uaw(self) -> Optional[Uaw]:
-        return cast(Uaw, self._subunits.get(Subunit.UAW, None))
-
-    @property
-    def napster(self) -> Optional[Napster]:
-        return cast(Napster, self._subunits.get(Subunit.NAPSTER, None))
-
-    @property
-    def spotify(self) -> Optional[Spotify]:
-        return cast(Spotify, self._subunits.get(Subunit.SPOTIFY, None))
-
-    @property
-    def server(self) -> Optional[Server]:
-        return cast(Server, self._subunits.get(Subunit.SERVER, None))
-
-    @property
-    def siriusxm(self) -> Optional[SiriusXm]:
-        return cast(SiriusXm, self._subunits.get(Subunit.SIRIUSXM, None))
-
-    @property
-    def airplay(self) -> Optional[Airplay]:
-        return cast(Airplay, self._subunits.get(Subunit.AIRPLAY, None))
