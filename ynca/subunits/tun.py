@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from ynca.subunits import FmFreqFunction
 
-from ..constants import BandTun, Preset, SigStereoMono, Subunit, Tuned
+from ..constants import AssertNegate, BandTun, Preset, SigStereoMono, Subunit, Tuned
 from ..converters import IntConverter
 from ..helpers import number_to_string_with_stepsize
 from ..subunit import SubunitBase
@@ -39,5 +39,5 @@ class Tun(SubunitBase, FmFreqFunction):
     rdsprgtype = StrFunction("RDSPRGTYPE", init="RDSINFO")
     rdstxta = StrFunction("RDSTXTA", init="RDSINFO")
     rdstxtb = StrFunction("RDSTXTB", init="RDSINFO")
-    sigstereomono = EnumFunction[SigStereoMono]("SIGSTEREOMONO", SigStereoMono)
-    tuned = EnumFunction[Tuned]("TUNED", Tuned)
+    sigstereomono = EnumFunction[AssertNegate]("SIGSTEREOMONO", AssertNegate)
+    tuned = EnumFunction[AssertNegate]("TUNED", AssertNegate)

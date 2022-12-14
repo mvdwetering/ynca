@@ -341,6 +341,11 @@ class DabAudioMode(str, Enum):
     """Unknown values in the enum are mapped to UNKNOWN"""
 
 
+class AssertNegate(str, Enum):
+    NEGATE = "Negate"
+    ASSERT = "Assert"
+
+
 class DabOffAir(str, Enum):
     NEGATE = "Negate"
     ASSERT = "Assert"

@@ -1,6 +1,7 @@
 import pytest
 
 from ynca import BandTun, Preset, SigStereoMono, Tuned
+from ynca.constants import AssertNegate
 from ynca.subunits.tun import Tun
 
 SYS = "SYS"
@@ -131,11 +132,11 @@ def test_rds(connection, initialized_tun: Tun):
 def test_signal(connection, initialized_tun: Tun):
 
     connection.send_protocol_message(SUBUNIT, "SIGSTEREOMONO", "Assert")
-    assert initialized_tun.sigstereomono is SigStereoMono.ASSERT
+    assert initialized_tun.sigstereomono is AssertNegate.ASSERT
     connection.send_protocol_message(SUBUNIT, "SIGSTEREOMONO", "Negate")
-    assert initialized_tun.sigstereomono is SigStereoMono.NEGATE
+    assert initialized_tun.sigstereomono is AssertNegate.NEGATE
 
     connection.send_protocol_message(SUBUNIT, "TUNED", "Assert")
-    assert initialized_tun.tuned is Tuned.ASSERT
+    assert initialized_tun.tuned is AssertNegate.ASSERT
     connection.send_protocol_message(SUBUNIT, "TUNED", "Negate")
-    assert initialized_tun.tuned is Tuned.NEGATE
+    assert initialized_tun.tuned is AssertNegate.NEGATE
