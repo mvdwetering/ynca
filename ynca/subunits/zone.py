@@ -48,7 +48,7 @@ class ZoneBase(PlaybackFunction, SubunitBase):
     )
     initvolmode = EnumFunction[InitVolMode]("INITVOLMODE", InitVolMode)
     inp = EnumFunction[Input]("INP", Input, init="BASIC")
-    maxvol = FloatFunction("MAXVOL", command_type=Cmd.GET)
+    maxvol = FloatFunction("MAXVOL", cmd=Cmd.GET)
     mute = EnumFunction[Mute]("MUTE", Mute, init="BASIC")
     puredirmode = EnumFunction[PureDirMode]("PUREDIRMODE", PureDirMode, init="BASIC")
     pwr = EnumFunction[Pwr]("PWR", Pwr, init="BASIC")

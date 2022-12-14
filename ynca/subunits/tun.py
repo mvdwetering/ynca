@@ -7,6 +7,7 @@ from ..converters import IntConverter
 from ..helpers import number_to_string_with_stepsize
 from ..subunit import SubunitBase
 from ..function import (
+    Cmd,
     EnumFunction,
     EnumOrIntFunction,
     IntFunction,
@@ -35,9 +36,9 @@ class Tun(SubunitBase, FmFreqFunction):
     def preset_up(self):
         self._put("PRESET", "Up")  # type: ignore
 
-    rdsprgservice = StrFunction("RDSPRGSERVICE", init="RDSINFO")
-    rdsprgtype = StrFunction("RDSPRGTYPE", init="RDSINFO")
-    rdstxta = StrFunction("RDSTXTA", init="RDSINFO")
-    rdstxtb = StrFunction("RDSTXTB", init="RDSINFO")
-    sigstereomono = EnumFunction[AssertNegate]("SIGSTEREOMONO", AssertNegate)
-    tuned = EnumFunction[AssertNegate]("TUNED", AssertNegate)
+    rdsprgservice = StrFunction("RDSPRGSERVICE", Cmd.GET, init="RDSINFO")
+    rdsprgtype = StrFunction("RDSPRGTYPE", Cmd.GET, init="RDSINFO")
+    rdstxta = StrFunction("RDSTXTA", Cmd.GET, init="RDSINFO")
+    rdstxtb = StrFunction("RDSTXTB", Cmd.GET, init="RDSINFO")
+    sigstereomono = EnumFunction[AssertNegate]("SIGSTEREOMONO", AssertNegate, Cmd.GET)
+    tuned = EnumFunction[AssertNegate]("TUNED", AssertNegate, Cmd.GET)

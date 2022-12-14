@@ -135,13 +135,13 @@ class FloatFunction(FunctionBase):
     def __init__(
         self,
         name: str,
-        command_type: Cmd = Cmd.GET | Cmd.PUT,
+        cmd: Cmd = Cmd.GET | Cmd.PUT,
         converter: ConverterBase = FloatConverter(),
         init=None,
     ) -> None:
         super().__init__(
             name,
-            cmd=command_type,
+            cmd=cmd,
             converter=converter,
             init=init,
         )
