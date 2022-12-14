@@ -86,8 +86,8 @@ def test_am(connection, initialized_tun: Tun):
 
 def test_fm(connection, initialized_tun: Tun):
 
-    initialized_tun.band = BandTun.AM
-    connection.put.assert_called_with(SUBUNIT, "BAND", "AM")
+    initialized_tun.band = BandTun.FM
+    connection.put.assert_called_with(SUBUNIT, "BAND", "FM")
 
     # Set value and test stepsize handling (which is why it becomes 100.00)
     initialized_tun.fmfreq = 100.05
