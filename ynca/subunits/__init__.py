@@ -14,15 +14,15 @@ from ..function import Cmd, EnumFunction, FloatFunction, StrFunction
 
 
 class AlbumFunction:
-    album = StrFunction("ALBUM", cmd=Cmd.GET, init="METAINFO")
+    album = StrFunction("ALBUM", Cmd.GET, init="METAINFO")
 
 
 class ArtistFunction:
-    artist = StrFunction("ARTIST", cmd=Cmd.GET, init="METAINFO")
+    artist = StrFunction("ARTIST", Cmd.GET, init="METAINFO")
 
 
 class ChNameFunction:
-    chname = StrFunction("CHNAME", cmd=Cmd.GET, init="METAINFO")
+    chname = StrFunction("CHNAME", Cmd.GET, init="METAINFO")
 
 
 class PlaybackFunction:
@@ -32,7 +32,7 @@ class PlaybackFunction:
 
 
 class PlaybackInfoFunction:
-    playbackinfo = EnumFunction[PlaybackInfo]("PLAYBACKINFO", PlaybackInfo, cmd=Cmd.GET)
+    playbackinfo = EnumFunction[PlaybackInfo]("PLAYBACKINFO", PlaybackInfo, Cmd.GET)
 
 
 class RepeatFunction:
@@ -44,11 +44,11 @@ class ShuffleFunction:
 
 
 class SongFunction:
-    song = StrFunction("SONG", cmd=Cmd.GET, init="METAINFO")
+    song = StrFunction("SONG", Cmd.GET, init="METAINFO")
 
 
 class StationFunction:
-    station = StrFunction("STATION", cmd=Cmd.GET)
+    station = StrFunction("STATION", Cmd.GET)
 
 
 # A number of subunits have the same/similar featureset
