@@ -52,6 +52,8 @@ if __name__ == "__main__":
     def updated_main(function, value):
         print(f"- Update MAIN {function}, {value}")
 
+    assert receiver.sys is not None
+    assert receiver.main is not None
     receiver.sys.register_update_callback(updated_sys)
     receiver.main.register_update_callback(updated_main)
 
