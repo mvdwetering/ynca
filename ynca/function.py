@@ -3,13 +3,19 @@ from __future__ import annotations
 import logging
 from abc import ABC
 from enum import Enum, Flag, auto
-from typing import TYPE_CHECKING, Generic, List, Type, TypeVar
+from typing import TYPE_CHECKING, Generic, Type, TypeVar
 
 if TYPE_CHECKING:  # pragma: no cover
     from .subunit import SubunitBase
 
-from .converters import (ConverterBase, EnumConverter, FloatConverter,
-                         IntConverter, MultiConverter, StrConverter)
+from .converters import (
+    ConverterBase,
+    EnumConverter,
+    FloatConverter,
+    IntConverter,
+    MultiConverter,
+    StrConverter,
+)
 
 logger = logging.getLogger(__name__)
 
