@@ -78,10 +78,22 @@ def test_initialize(connection, update_callback):
     assert dab.fmpreset is None
 
 
-def test_dab(connection, initialized_dab: Dab):
+def test_band(connection, initialized_dab: Dab):
 
     initialized_dab.band = BandDab.DAB
     connection.put.assert_called_with(SUBUNIT, "BAND", "DAB")
+
+    connection.send_protocol_message(SUBUNIT, "BAND", "FM")
+    assert initialized_dab.band is BandDab.FM
+
+    initialized_dab.band = BandDab.FM
+    connection.put.assert_called_with(SUBUNIT, "BAND", "FM")
+
+    connection.send_protocol_message(SUBUNIT, "BAND", "DAB")
+    assert initialized_dab.band is BandDab.DAB
+
+
+def test_dab(connection, initialized_dab: Dab):
 
     connection.send_protocol_message(SUBUNIT, "DABAUDIOMODE", "Stereo")
     assert initialized_dab.dabaudiomode is DabAudioMode.STEREO
@@ -157,9 +169,6 @@ def test_fmrds(connection, initialized_dab: Dab):
 
 
 def test_fmsignal(connection, initialized_dab: Dab):
-
-    initialized_dab.band = BandDab.FM
-    connection.put.assert_called_with(SUBUNIT, "BAND", "FM")
 
     # Set value and test stepsize handling (which is why it becomes 100.00)
     initialized_dab.fmfreq = 100.05
