@@ -131,7 +131,6 @@ class Input(Enum):
     # Inputs provided by subunits
     AIRPLAY = "Airplay"
     BLUETOOTH = "Bluetooth"
-    DAB = "TUNER"
     IPOD = "iPod"
     IPOD_USB = "iPod (USB)"
     NAPSTER = "Napster"
@@ -144,7 +143,7 @@ class Input(Enum):
     SIRIUS_IR = "SIRIUS InternetRadio"
     SIRIUS_XM = "SiriusXM"
     SPOTIFY = "Spotify"
-    TUNER = "TUNER"  # This can be different tuners like AM/FM, DAB/FM or HDRADIO
+    TUNER = "TUNER"  # AM/FM tuner (@TUN) or DAB/FM tuner (@DAB)
     UAW = "UAW"
     USB = "USB"
 
