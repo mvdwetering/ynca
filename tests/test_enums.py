@@ -47,7 +47,3 @@ def test_invalid_values_on_enums():
     assert Straight("x") is Straight.UNKNOWN
     assert Tuned("x") is Tuned.UNKNOWN
     assert TwoChDecoder("x") is TwoChDecoder.UNKNOWN
-
-
-def test_invalid_values_on_subunit():
-    assert Subunit("x") is Subunit.UNKNOWN

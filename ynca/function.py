@@ -83,7 +83,7 @@ class FunctionBase(ABC, Generic[T]):
         pass
 
 
-class EnumFunction(FunctionBase, Generic[E]):
+class EnumFunction(FunctionBase[E], Generic[E]):
     def __init__(
         self,
         name: str,
@@ -99,7 +99,7 @@ class EnumFunction(FunctionBase, Generic[E]):
         )
 
 
-class StrFunction(FunctionBase):
+class StrFunction(FunctionBase[str]):
     def __init__(
         self,
         name: str,
@@ -115,7 +115,7 @@ class StrFunction(FunctionBase):
         )
 
 
-class IntFunction(FunctionBase):
+class IntFunction(FunctionBase[int]):
     def __init__(
         self,
         name: str,
@@ -131,7 +131,7 @@ class IntFunction(FunctionBase):
         )
 
 
-class FloatFunction(FunctionBase):
+class FloatFunction(FunctionBase[float]):
     def __init__(
         self,
         name: str,
