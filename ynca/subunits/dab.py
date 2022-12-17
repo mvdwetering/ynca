@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from ..constants import Subunit
 from ..function import Cmd, EnumFunction, EnumOrIntFunction, StrFunction
-from ..function_enums import (
+from ..enums import (
     BandDab,
     DabAudioMode,
     DabOffAir,

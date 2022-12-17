@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from ..converters import FloatConverter
 from ..function import Cmd, EnumFunction, FloatFunction, StrFunction
-from ..function_enums import Playback, PlaybackInfo, Repeat, Shuffle
+from ..enums import Playback, PlaybackInfo, Repeat, Shuffle
 from ..helpers import number_to_string_with_stepsize
 from ..subunit import SubunitBase
 

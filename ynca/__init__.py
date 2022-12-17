@@ -9,7 +9,7 @@ from .errors import (
     YncaException,
     YncaInitializationFailedException,
 )
-from .function_enums import (
+from .enums import (
     Avail,
     BandDab,
     BandTun,

@@ -2,7 +2,7 @@
 
 
 from ynca.constants import Subunit
-from ynca.function_enums import (
+from ynca.enums import (
     Avail,
     DabAudioMode,
     DabOffAir,

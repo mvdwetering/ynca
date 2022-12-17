@@ -11,7 +11,7 @@ from ..function import (
     FloatFunction,
     StrFunction,
 )
-from ..function_enums import (
+from ..enums import (
     InitVolLvl,
     InitVolMode,
     Input,

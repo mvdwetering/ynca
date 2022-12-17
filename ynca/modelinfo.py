@@ -3,7 +3,7 @@
 from dataclasses import dataclass
 from typing import List, Optional
 
-from .function_enums import SoundPrg
+from .enums import SoundPrg
 
 
 @dataclass

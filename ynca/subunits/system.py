@@ -3,7 +3,7 @@ import logging
 from ..constants import Subunit
 from ..converters import StrConverter
 from ..function import Cmd, EnumFunction, FunctionBase, StrFunction
-from ..function_enums import Party, PartyMute, Pwr
+from ..enums import Party, PartyMute, Pwr
 from ..subunit import SubunitBase
 
 logger = logging.getLogger(__name__)

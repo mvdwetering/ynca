@@ -3,7 +3,7 @@ from __future__ import annotations
 from ..constants import Subunit
 from ..converters import IntConverter
 from ..function import Cmd, EnumFunction, EnumOrIntFunction, IntFunction, StrFunction
-from ..function_enums import AssertNegate, BandTun, Preset, SigStereoMono, Tuned
+from ..enums import AssertNegate, BandTun, Preset, SigStereoMono, Tuned
 from ..helpers import number_to_string_with_stepsize
 from ..subunit import SubunitBase
 from . import FmFreqFunction

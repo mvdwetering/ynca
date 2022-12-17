@@ -1,7 +1,7 @@
 import pytest
 
 from ynca import BandTun, Preset, SigStereoMono, Tuned
-from ynca.function_enums import AssertNegate
+from ynca.enums import AssertNegate
 from ynca.subunits.tun import Tun
 
 SYS = "SYS"
