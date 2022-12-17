@@ -33,11 +33,3 @@ class Subunit(str, Enum):
     TUN = "TUN"
     UAW = "UAW"
     USB = "USB"
-
-    @classmethod
-    def _missing_(cls, value):
-        logger.warning("Unknown value '%s' in %s", value, cls.__name__)
-        return cls.UNKNOWN
-
-    UNKNOWN = "Unknown"
-    """Unknown values in the enum are mapped to UNKNOWN"""

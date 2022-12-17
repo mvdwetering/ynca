@@ -24,19 +24,24 @@ class YncaConnectionMock(mock.MagicMock):
         self._get_response_list_offset = 0
 
     def _get_response(self, subunit, function):
-        print(f"get_response({subunit}, {function})")
+        print(f"mock: get_response({subunit}, {function})")
         try:
-            (match, responses) = self.get_response_list[self._get_response_list_offset]
-            print(f"match={match}, responses={responses}")
-            if match[0] == subunit and match[1] == function:
-                self._get_response_list_offset += 1
-                for response in responses:
-                    if response[0].startswith("@"):
-                        self.send_protocol_error(response[0])
-                    else:
-                        self.send_protocol_message(
-                            response[0], response[1], response[2]
-                        )
+            (next_request, responses) = self.get_response_list[
+                self._get_response_list_offset
+            ]
+            print(f"mock:   next_request={next_request}, responses={responses}")
+            if not (next_request[0] == subunit and next_request[1] == function):
+                print(f"mock:   no match return @UNDEFINED")
+                self.send_protocol_error("@UNDEFINED")
+                return
+
+            self._get_response_list_offset += 1
+            for response in responses:
+                if response[0].startswith("@"):
+                    self.send_protocol_error(response[0])
+                else:
+                    self.send_protocol_message(response[0], response[1], response[2])
+
         except Exception as e:
             print(f"Skipping: {subunit}, {function} because of {e}")
 

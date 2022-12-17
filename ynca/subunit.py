@@ -44,7 +44,7 @@ class SubunitBase(ABC):
     """
 
     avail = EnumFunction[Avail]("AVAIL", Avail)
-    id: Subunit = Subunit.UNKNOWN
+    id: Subunit
 
     def __init__(self, connection: YncaConnection) -> None:
         self._update_callbacks: Set[Callable[[str, Any], None]] = set()
@@ -82,7 +82,7 @@ class SubunitBase(ABC):
 
         num_commands_sent_start = self._connection.num_commands_sent
 
-        # Request YNCA functions
+        # Setup YNCA function handlers
         initialized_function_names = []
         for function_name, handler in self.function_handlers.items():
             if not handler.function.no_initialize:

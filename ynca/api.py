@@ -96,8 +96,12 @@ class YncaApi:
     def _get_subunit_class(self, subunit_id):
         subunit_classes = all_subclasses(SubunitBase)
         for subunit_class in subunit_classes:
-            if subunit_class.id == subunit_id:
-                return subunit_class
+            try:
+                if subunit_class.id == subunit_id:
+                    return subunit_class
+            except AttributeError:
+                # Intermediate Subunit classes like ZoneBase don't have an ID
+                pass
 
     def _initialize_available_subunits(self, connection: YncaConnection):
         # Every receiver has a System subunit
