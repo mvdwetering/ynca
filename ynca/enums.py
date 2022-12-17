@@ -5,6 +5,8 @@ from enum import Enum
 
 logger = logging.getLogger(__name__)
 
+UNKNOWN_STRING = "< UNKNOWN >"
+
 
 class AssertNegate(str, Enum):
     NEGATE = "Negate"
@@ -21,7 +23,7 @@ class Avail(str, Enum):
         logger.warning("Unknown value '%s' in %s", value, cls.__name__)
         return cls.UNKNOWN
 
-    UNKNOWN = "Unknown"
+    UNKNOWN = UNKNOWN_STRING
     """Unknown values in the enum are mapped to UNKNOWN"""
 
 
@@ -44,7 +46,7 @@ class DabAudioMode(str, Enum):
         logger.warning("Unknown value '%s' in %s", value, cls.__name__)
         return cls.UNKNOWN
 
-    UNKNOWN = "Unknown"
+    UNKNOWN = UNKNOWN_STRING
     """Unknown values in the enum are mapped to UNKNOWN"""
 
 
@@ -57,7 +59,7 @@ class DabOffAir(str, Enum):
         logger.warning("Unknown value '%s' in %s", value, cls.__name__)
         return cls.UNKNOWN
 
-    UNKNOWN = "Unknown"
+    UNKNOWN = UNKNOWN_STRING
     """Unknown values in the enum are mapped to UNKNOWN"""
 
 
@@ -70,7 +72,7 @@ class FmSigStereoMono(str, Enum):
         logger.warning("Unknown value '%s' in %s", value, cls.__name__)
         return cls.UNKNOWN
 
-    UNKNOWN = "Unknown"
+    UNKNOWN = UNKNOWN_STRING
     """Unknown values in the enum are mapped to UNKNOWN"""
 
 
@@ -83,7 +85,7 @@ class FmTuned(str, Enum):
         logger.warning("Unknown value '%s' in %s", value, cls.__name__)
         return cls.UNKNOWN
 
-    UNKNOWN = "Unknown"
+    UNKNOWN = UNKNOWN_STRING
     """Unknown values in the enum are mapped to UNKNOWN"""
 
 
@@ -100,7 +102,7 @@ class InitVolMode(str, Enum):
         logger.warning("Unknown value '%s' in %s", value, cls.__name__)
         return cls.UNKNOWN
 
-    UNKNOWN = "Unknown"
+    UNKNOWN = UNKNOWN_STRING
     """Unknown values in the enum are mapped to UNKNOWN"""
 
 
@@ -153,7 +155,7 @@ class Input(Enum):
         logger.warning("Unknown value '%s' in %s", value, cls.__name__)
         return cls.UNKNOWN
 
-    UNKNOWN = "Unknown"
+    UNKNOWN = UNKNOWN_STRING
     """Unknown values in the enum are mapped to UNKNOWN"""
 
 
@@ -168,7 +170,7 @@ class Mute(str, Enum):
         logger.warning("Unknown value '%s' in %s", value, cls.__name__)
         return cls.UNKNOWN
 
-    UNKNOWN = "Unknown"
+    UNKNOWN = UNKNOWN_STRING
     """Unknown values in the enum are mapped to UNKNOWN"""
 
 
@@ -181,7 +183,7 @@ class Party(Enum):
         logger.warning("Unknown value '%s' in %s", value, cls.__name__)
         return cls.UNKNOWN
 
-    UNKNOWN = "Unknown"
+    UNKNOWN = UNKNOWN_STRING
     """Unknown values in the enum are mapped to UNKNOWN"""
 
 
@@ -194,7 +196,7 @@ class PartyMute(Enum):
         logger.warning("Unknown value '%s' in %s", value, cls.__name__)
         return cls.UNKNOWN
 
-    UNKNOWN = "Unknown"
+    UNKNOWN = UNKNOWN_STRING
     """Unknown values in the enum are mapped to UNKNOWN"""
 
 
@@ -210,7 +212,7 @@ class Playback(str, Enum):
         logger.warning("Unknown value '%s' in %s", value, cls.__name__)
         return cls.UNKNOWN
 
-    UNKNOWN = "Unknown"
+    UNKNOWN = UNKNOWN_STRING
     """Unknown values in the enum are mapped to UNKNOWN"""
 
 
@@ -224,7 +226,7 @@ class PlaybackInfo(str, Enum):
         logger.warning("Unknown value '%s' in %s", value, cls.__name__)
         return cls.UNKNOWN
 
-    UNKNOWN = "Unknown"
+    UNKNOWN = UNKNOWN_STRING
     """Unknown values in the enum are mapped to UNKNOWN"""
 
 
@@ -241,7 +243,7 @@ class PureDirMode(Enum):
         logger.warning("Unknown value '%s' in %s", value, cls.__name__)
         return cls.UNKNOWN
 
-    UNKNOWN = "Unknown"
+    UNKNOWN = UNKNOWN_STRING
     """Unknown values in the enum are mapped to UNKNOWN"""
 
 
@@ -254,7 +256,7 @@ class Pwr(Enum):
         logger.warning("Unknown value '%s' in %s", value, cls.__name__)
         return cls.UNKNOWN
 
-    UNKNOWN = "Unknown"
+    UNKNOWN = UNKNOWN_STRING
     """Unknown values in the enum are mapped to UNKNOWN"""
 
 
@@ -268,7 +270,7 @@ class Repeat(str, Enum):
         logger.warning("Unknown value '%s' in %s", value, cls.__name__)
         return cls.UNKNOWN
 
-    UNKNOWN = "Unknown"
+    UNKNOWN = UNKNOWN_STRING
     """Unknown values in the enum are mapped to UNKNOWN"""
 
 
@@ -281,7 +283,7 @@ class Shuffle(Enum):
         logger.warning("Unknown value '%s' in %s", value, cls.__name__)
         return cls.UNKNOWN
 
-    UNKNOWN = "Unknown"
+    UNKNOWN = UNKNOWN_STRING
     """Unknown values in the enum are mapped to UNKNOWN"""
 
 
@@ -294,7 +296,7 @@ class SigStereoMono(str, Enum):
         logger.warning("Unknown value '%s' in %s", value, cls.__name__)
         return cls.UNKNOWN
 
-    UNKNOWN = "Unknown"
+    UNKNOWN = UNKNOWN_STRING
     """Unknown values in the enum are mapped to UNKNOWN"""
 
 
@@ -333,7 +335,7 @@ class SoundPrg(str, Enum):
         logger.warning("Unknown value '%s' in %s", value, cls.__name__)
         return cls.UNKNOWN
 
-    UNKNOWN = "Unknown"
+    UNKNOWN = UNKNOWN_STRING
     """Unknown values in the enum are mapped to UNKNOWN"""
 
 
@@ -346,7 +348,7 @@ class Straight(Enum):
         logger.warning("Unknown value '%s' in %s", value, cls.__name__)
         return cls.UNKNOWN
 
-    UNKNOWN = "Unknown"
+    UNKNOWN = UNKNOWN_STRING
     """Unknown values in the enum are mapped to UNKNOWN"""
 
 
@@ -359,7 +361,7 @@ class Tuned(str, Enum):
         logger.warning("Unknown value '%s' in %s", value, cls.__name__)
         return cls.UNKNOWN
 
-    UNKNOWN = "Unknown"
+    UNKNOWN = UNKNOWN_STRING
     """Unknown values in the enum are mapped to UNKNOWN"""
 
 
@@ -379,5 +381,5 @@ class TwoChDecoder(str, Enum):
         logger.warning("Unknown value '%s' in %s", value, cls.__name__)
         return cls.UNKNOWN
 
-    UNKNOWN = "Unknown"
+    UNKNOWN = UNKNOWN_STRING
     """Unknown values in the enum are mapped to UNKNOWN"""
