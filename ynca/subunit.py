@@ -96,7 +96,6 @@ class SubunitBase(ABC):
                     initialized_function_names.append(function_name)
 
         # Use SYS:VERSION as a sync since it is available on all receivers
-        # and has a guarenteed response
         self._connection.get(Subunit.SYS, "VERSION")
 
         # Take command spacing into account and apply large margin

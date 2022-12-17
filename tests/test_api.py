@@ -354,8 +354,6 @@ def test_initialize_full(connection):
         y = ynca.YncaApi("serial_url")
         y.initialize()
 
-        assert len(y._subunits.keys()) == 4
-
         assert isinstance(y.sys, System)
         assert y.sys.modelname == "ModelName"
         assert y.sys.version == "Version"
