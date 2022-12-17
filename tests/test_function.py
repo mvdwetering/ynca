@@ -1,37 +1,26 @@
-"""Test Zone subunit"""
+"""Test function"""
 
 
 import pytest
-from ynca.constants import Subunit
 
-from ynca.function import (
-    Cmd,
-    StrFunction,
-)
-from ynca.subunit import SubunitBase
+from ynca.enums import Avail, PartyMute
+from ynca.subunits.system import System
 
-SUBUNIT = Subunit.MAIN
-
-
-class DummySubunit(SubunitBase):
-    id = SUBUNIT
-
-    function_put = StrFunction("FUNCTION_PUT", cmd=Cmd.PUT)
-    function_get = StrFunction("FUNCTION_GET", cmd=Cmd.GET)
+SUBUNIT = "SYS"
 
 
 def test_yncafunction_put_only(connection):
-    subunit = DummySubunit(connection)
+    subunit = System(connection)
 
-    subunit.function_put = "value"
-    connection.put.assert_called_with(SUBUNIT, "FUNCTION_PUT", "value")
+    subunit.partymute = PartyMute.OFF
+    connection.put.assert_called_with(SUBUNIT, "PARTYMUTE", "Off")
     with pytest.raises(AttributeError):
-        value = subunit.function_put
+        value = subunit.partymute
 
 
 def test_yncafunction_get_only(connection):
-    subunit = DummySubunit(connection)
+    subunit = System(connection)
 
-    assert subunit.function_get is None
+    assert subunit.avail is None
     with pytest.raises(AttributeError):
-        subunit.function_get = "value"
+        subunit.avail = Avail.NOT_CONNECTED
