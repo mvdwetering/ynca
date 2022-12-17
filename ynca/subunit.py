@@ -9,7 +9,7 @@ from typing import Any, Callable, Dict, Set
 from .connection import YncaConnection, YncaProtocol, YncaProtocolStatus
 from .constants import Subunit
 from .errors import YncaInitializationFailedException
-from .function import EnumFunction, FunctionBase
+from .function import Cmd, EnumFunction, FunctionBase
 from .enums import Avail
 
 logger = logging.getLogger(__name__)
@@ -43,8 +43,9 @@ class SubunitBase(ABC):
     Baseclass for Subunits, should be subclassed do not instantiate manually.
     """
 
-    avail = EnumFunction[Avail]("AVAIL", Avail)
-    id: Subunit
+    id: Subunit  # Just typed, needs to be set in subclasses
+
+    avail = EnumFunction[Avail]("AVAIL", Avail, Cmd.GET)
 
     def __init__(self, connection: YncaConnection) -> None:
         self._update_callbacks: Set[Callable[[str, Any], None]] = set()
