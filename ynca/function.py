@@ -163,21 +163,3 @@ class EnumOrFloatFunction(FunctionBase, Generic[E]):
             or MultiConverter([EnumConverter[E](datatype), FloatConverter()]),
             init=init,
         )
-
-
-class EnumOrIntFunction(FunctionBase, Generic[E]):
-    def __init__(
-        self,
-        name: str,
-        datatype: Type[E],
-        converter: MultiConverter | None = None,
-        cmd: Cmd = Cmd.GET | Cmd.PUT,
-        init=None,
-    ) -> None:
-        super().__init__(
-            name,
-            cmd=cmd,
-            converter=converter
-            or MultiConverter([EnumConverter[E](datatype), IntConverter()]),
-            init=init,
-        )
