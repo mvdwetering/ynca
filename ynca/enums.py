@@ -119,7 +119,7 @@ class Input(Enum):
     AV5 = "AV5"
     AV6 = "AV6"
     AV7 = "AV7"
-    DOCK = "DOCK"  # Selecting DOCK selects iPod for me, might depend on what dock is attached (I have no dock connected)
+    DOCK = "DOCK"  # Selecting DOCK selects iPod for me, might depend on what dock is attached (I have no dock to test)
     HDMI1 = "HDMI1"
     HDMI2 = "HDMI2"
     HDMI3 = "HDMI3"
