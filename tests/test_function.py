@@ -2,6 +2,7 @@
 
 
 import pytest
+from ynca.constants import Subunit
 
 from ynca.function import (
     Cmd,
@@ -9,7 +10,7 @@ from ynca.function import (
 )
 from ynca.subunit import SubunitBase
 
-SUBUNIT = "TESTSUBUNIT"
+SUBUNIT = Subunit.MAIN
 
 
 class DummySubunit(SubunitBase):

@@ -1,4 +1,5 @@
-"""Misc constants"""
+"""Enums used for mapping YNCA values"""
+
 import logging
 from enum import Enum
 
