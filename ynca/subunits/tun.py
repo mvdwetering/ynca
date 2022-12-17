@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from ..constants import Subunit
 from ..converters import IntConverter
-from ..function import Cmd, EnumFunction, EnumOrIntFunction, IntFunction, StrFunction
-from ..enums import AssertNegate, BandTun, Preset, SigStereoMono, Tuned
+from ..function import Cmd, EnumFunction, IntFunction, StrFunction
+from ..enums import BandTun
 from ..helpers import number_to_string_with_stepsize
 from ..subunit import SubunitBase
 from . import FmFreqFunction
@@ -22,17 +22,7 @@ class Tun(SubunitBase, FmFreqFunction):
     )
     """Read/write AM frequency. Values will be aligned to a valid stepsize."""
 
-    preset = EnumOrIntFunction("PRESET", Preset)
-
-    def preset_down(self):
-        self._put("PRESET", "Down")  # type: ignore
-
-    def preset_up(self):
-        self._put("PRESET", "Up")  # type: ignore
-
     rdsprgservice = StrFunction("RDSPRGSERVICE", Cmd.GET, init="RDSINFO")
     rdsprgtype = StrFunction("RDSPRGTYPE", Cmd.GET, init="RDSINFO")
     rdstxta = StrFunction("RDSTXTA", Cmd.GET, init="RDSINFO")
     rdstxtb = StrFunction("RDSTXTB", Cmd.GET, init="RDSINFO")
-    sigstereomono = EnumFunction[AssertNegate]("SIGSTEREOMONO", AssertNegate, Cmd.GET)
-    tuned = EnumFunction[AssertNegate]("TUNED", AssertNegate, Cmd.GET)

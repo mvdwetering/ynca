@@ -1,7 +1,6 @@
 import pytest
 
-from ynca import BandTun, Preset, SigStereoMono, Tuned
-from ynca.enums import AssertNegate
+from ynca import BandTun
 from ynca.subunits.tun import Tun
 
 SYS = "SYS"
@@ -71,7 +70,6 @@ def test_initialize(connection, update_callback):
     assert tun.band is BandTun.FM
     assert tun.amfreq == 1080
     assert tun.fmfreq == 101.60
-    assert tun.preset is None
 
 
 def test_am(connection, initialized_tun: Tun):
@@ -94,25 +92,6 @@ def test_fm(connection, initialized_tun: Tun):
     connection.put.assert_called_with(SUBUNIT, "FMFREQ", "100.00")
 
 
-def test_preset(connection, initialized_tun: Tun):
-
-    # Writing to device
-    initialized_tun.preset = 33
-    connection.put.assert_called_with(SUBUNIT, "PRESET", "33")
-
-    initialized_tun.preset_down()
-    connection.put.assert_called_with(SUBUNIT, "PRESET", "Down")
-
-    initialized_tun.preset_up()
-    connection.put.assert_called_with(SUBUNIT, "PRESET", "Up")
-
-    # Updates from device
-    connection.send_protocol_message(SUBUNIT, "PRESET", "42")
-    assert initialized_tun.preset == 42
-    connection.send_protocol_message(SUBUNIT, "PRESET", "No Preset")
-    assert initialized_tun.preset is Preset.NO_PRESET
-
-
 def test_rds(connection, initialized_tun: Tun):
 
     # Updates from device
@@ -127,16 +106,3 @@ def test_rds(connection, initialized_tun: Tun):
 
     connection.send_protocol_message(SUBUNIT, "RDSTXTB", "radiotext b")
     assert initialized_tun.rdstxtb == "radiotext b"
-
-
-def test_signal(connection, initialized_tun: Tun):
-
-    connection.send_protocol_message(SUBUNIT, "SIGSTEREOMONO", "Assert")
-    assert initialized_tun.sigstereomono is AssertNegate.ASSERT
-    connection.send_protocol_message(SUBUNIT, "SIGSTEREOMONO", "Negate")
-    assert initialized_tun.sigstereomono is AssertNegate.NEGATE
-
-    connection.send_protocol_message(SUBUNIT, "TUNED", "Assert")
-    assert initialized_tun.tuned is AssertNegate.ASSERT
-    connection.send_protocol_message(SUBUNIT, "TUNED", "Negate")
-    assert initialized_tun.tuned is AssertNegate.NEGATE

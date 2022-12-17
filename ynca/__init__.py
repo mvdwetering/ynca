@@ -1,6 +1,7 @@
 import logging
 
-# Import intended API so it is easily accessible through `from  ynca import Something``
+# Import intended API so it is easily accessible through `from  ynca import Something`
+
 from .api import YncaApi
 from .connection import YncaConnection
 from .errors import (
@@ -13,10 +14,6 @@ from .enums import (
     Avail,
     BandDab,
     BandTun,
-    DabAudioMode,
-    DabOffAir,
-    FmSigStereoMono,
-    FmTuned,
     InitVolLvl,
     InitVolMode,
     Input,
@@ -25,15 +22,12 @@ from .enums import (
     PartyMute,
     Playback,
     PlaybackInfo,
-    Preset,
     PureDirMode,
     Pwr,
     Repeat,
     Shuffle,
-    SigStereoMono,
     SoundPrg,
     Straight,
-    Tuned,
     TwoChDecoder,
 )
 from .modelinfo import YncaModelInfo

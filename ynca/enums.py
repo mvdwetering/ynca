@@ -8,11 +8,6 @@ logger = logging.getLogger(__name__)
 UNKNOWN_STRING = "< UNKNOWN >"
 
 
-class AssertNegate(str, Enum):
-    NEGATE = "Negate"
-    ASSERT = "Assert"
-
-
 class Avail(str, Enum):
     NOT_CONNECTED = "Not Connected"
     NOT_READY = "Not Ready"
@@ -35,58 +30,6 @@ class BandDab(str, Enum):
 class BandTun(str, Enum):
     AM = "AM"
     FM = "FM"
-
-
-class DabAudioMode(str, Enum):
-    STEREO = "Stereo"
-    MONO = "Mono"
-
-    @classmethod
-    def _missing_(cls, value):
-        logger.warning("Unknown value '%s' in %s", value, cls.__name__)
-        return cls.UNKNOWN
-
-    UNKNOWN = UNKNOWN_STRING
-    """Unknown values in the enum are mapped to UNKNOWN"""
-
-
-class DabOffAir(str, Enum):
-    NEGATE = "Negate"
-    ASSERT = "Assert"
-
-    @classmethod
-    def _missing_(cls, value):
-        logger.warning("Unknown value '%s' in %s", value, cls.__name__)
-        return cls.UNKNOWN
-
-    UNKNOWN = UNKNOWN_STRING
-    """Unknown values in the enum are mapped to UNKNOWN"""
-
-
-class FmSigStereoMono(str, Enum):
-    NEGATE = "Negate"
-    ASSERT = "Assert"
-
-    @classmethod
-    def _missing_(cls, value):
-        logger.warning("Unknown value '%s' in %s", value, cls.__name__)
-        return cls.UNKNOWN
-
-    UNKNOWN = UNKNOWN_STRING
-    """Unknown values in the enum are mapped to UNKNOWN"""
-
-
-class FmTuned(str, Enum):
-    NEGATE = "Negate"
-    ASSERT = "Assert"
-
-    @classmethod
-    def _missing_(cls, value):
-        logger.warning("Unknown value '%s' in %s", value, cls.__name__)
-        return cls.UNKNOWN
-
-    UNKNOWN = UNKNOWN_STRING
-    """Unknown values in the enum are mapped to UNKNOWN"""
 
 
 class InitVolLvl(str, Enum):
@@ -230,10 +173,6 @@ class PlaybackInfo(str, Enum):
     """Unknown values in the enum are mapped to UNKNOWN"""
 
 
-class Preset(str, Enum):
-    NO_PRESET = "No Preset"
-
-
 class PureDirMode(Enum):
     ON = "On"
     OFF = "Off"
@@ -287,19 +226,6 @@ class Shuffle(Enum):
     """Unknown values in the enum are mapped to UNKNOWN"""
 
 
-class SigStereoMono(str, Enum):
-    NEGATE = "Negate"
-    ASSERT = "Assert"
-
-    @classmethod
-    def _missing_(cls, value):
-        logger.warning("Unknown value '%s' in %s", value, cls.__name__)
-        return cls.UNKNOWN
-
-    UNKNOWN = UNKNOWN_STRING
-    """Unknown values in the enum are mapped to UNKNOWN"""
-
-
 class SoundPrg(str, Enum):
     HALL_IN_MUNICH = "Hall in Munich"
     HALL_IN_VIENNA = "Hall in Vienna"
@@ -342,19 +268,6 @@ class SoundPrg(str, Enum):
 class Straight(Enum):
     ON = "On"
     OFF = "Off"
-
-    @classmethod
-    def _missing_(cls, value):
-        logger.warning("Unknown value '%s' in %s", value, cls.__name__)
-        return cls.UNKNOWN
-
-    UNKNOWN = UNKNOWN_STRING
-    """Unknown values in the enum are mapped to UNKNOWN"""
-
-
-class Tuned(str, Enum):
-    NEGATE = "Negate"
-    ASSERT = "Assert"
 
     @classmethod
     def _missing_(cls, value):

@@ -122,7 +122,7 @@ INITIALIZE_FULL_RESPONSES = [
             (BT, "AVAIL", "Not Connected"),
         ],
     ),
-    # BT Subunit iniatilize sync
+    # BT Subunit initialize sync
     (
         (SYS, "VERSION"),
         [
