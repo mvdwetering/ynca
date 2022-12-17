@@ -75,7 +75,7 @@ class SubunitBase(ABC):
                 "No valid connection"
             )  # pragma: no cover
 
-        logger.info("Subunit %s initialization start.", self.id)
+        logger.info("Subunit %s initialization begin.", self.id)
 
         self._initialized_event.clear()
         self._initialized = False
@@ -110,7 +110,7 @@ class SubunitBase(ABC):
                 f"Subunit {self.id} initialization failed"
             )
 
-        logger.info("Subunit %s initialization done.", self.id)
+        logger.info("Subunit %s initialization end.", self.id)
 
     def close(self):
         if self._connection:

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """ Example of basic YncaApi usage"""
 
+import argparse
 import sys
 import time
 import logging
@@ -12,16 +13,22 @@ ZONE_SUBUNITS = ["main", "zone2", "zone3", "zone4"]
 
 if __name__ == "__main__":
 
-    logger = logging.getLogger()
-
-    console_handler = logging.StreamHandler()
-    console_handler.setFormatter(
-        logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+    parser = argparse.ArgumentParser(
+        description="Example application for ynca package."
     )
-    logger.addHandler(console_handler)
 
-    # Set loglevel to debug to see the commands sent/received
-    # logger.setLevel(logging.DEBUG)
+    parser.add_argument(
+        "serial_url",
+        help="Can be a devicename like /dev/ttyUSB0 or COM3 for serial or use socket://<ip-or-host>:50000 IP based connections.",
+    )
+    parser.add_argument(
+        "--loglevel",
+        choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
+        default="INFO",
+        help="Define loglevel, default is INFO.",
+    )
+    args = parser.parse_args()
+    logging.basicConfig(level=args.loglevel)
 
     if len(sys.argv) <= 1:
         print("Must provide a port like for example:")

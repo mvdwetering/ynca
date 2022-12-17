@@ -67,7 +67,7 @@ class YncaApi:
         self._subunits: Dict[Subunit, SubunitBase] = {}
 
     def _detect_available_subunits(self, connection: YncaConnection):
-        logger.info("Subunit availability check start")
+        logger.info("Subunit availability check begin")
         self._initialized_event.clear()
         connection.register_message_callback(self._protocol_message_received)
 
@@ -91,7 +91,7 @@ class YncaApi:
             )
 
         connection.unregister_message_callback(self._protocol_message_received)
-        logger.info("Subunit availability check done")
+        logger.info("Subunit availability check end")
 
     def _get_subunit_class(self, subunit_id):
         subunit_classes = all_subclasses(SubunitBase)
