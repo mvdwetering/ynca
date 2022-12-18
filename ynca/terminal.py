@@ -22,7 +22,7 @@ def YncaTerminal(serial_url: str):
     This is useful to figure out what a command does.
 
     Use ? as <value> to GET the value.
-    Type 'exit' to exit.
+    Type 'exit' or 'quit' to exit.
 
     Command format: @<subunit>:<function>=<value>
     Examples:
@@ -54,7 +54,7 @@ def YncaTerminal(serial_url: str):
     while not quit_:
         command = input(PROMPT)
 
-        if command == "exit":
+        if command.lower() in ["bye", "done", "exit", "q", "quit"]:
             quit_ = True
         elif command != "":
             match = re.match(
