@@ -1,6 +1,7 @@
 # YNCA Protocol recap
 
-This is a short collection of the basics for the YNCA protocol. The real specs are always leading!
+This is a short collection of the basics for the YNCA protocol.
+The final source of thruth is how the devices actually respond!
 
 Known receivers that support YNCA (there may be more):
 RX-V671, RX-A710, RX-V871, RX-A810, RX-A1010, RX-A2010 and RX-A3010
@@ -11,61 +12,36 @@ RX-V671, RX-A710, RX-V871, RX-A810, RX-A1010, RX-A2010 and RX-A3010
 YNCA is a protocol to control certain Yamaha receivers.
 The protocol can be transmitted over serial or IP.
 
-There is another control protocol over IP for Yamaha receivers called YNC.
+There are another protocols for Yamaha receviers like YNC and Musiccast.
 YNCA is simpler, but more limited.
 
-The YNCA spec refers to setting a value as a `PUT` and reading a value as `GET`.
+In YNCA setting a value is referred to as a `PUT` and reading a value as `GET`.
 Both commands have the same format `@SUBUNIT:FUNCTION=VALUE`
 For a `GET` the `VALUE` will always be '?'
 
-The receiver will generate messages when a value changes or when a `GET` command is received.
-Note there is no way to tell if a message is because of a `GET` request or the value got changes in another way
-(e.g. using the remote control or buttons on the device)
-This also means that sending a `PUT` not always results in a message, only when the value changes!
+The receiver will generate messages when a value changes, when a `GET` command is received or other releted events (e.g. turning on a one will send lots of data).
+Note there is no way to tell if a message is because of a `GET` request or the value got changes in another way (e.g. using the remote control or buttons on the device)
+This also means that sending a `PUT` will not always results in a message as messages are usually (not always) only sent when the value changes.
 
-The receiver is split up in SUBUNITs, examples are zones (e.g. MAIN), inputs (e.g. TUN for the Tunre) and the system 'SYS'
+The receiver is split up in SUBUNITs, examples are zones (e.g. MAIN), inputs (e.g. TUN for the Tuner) and the system 'SYS'
 
 ## Examples
 
-Set input of the main zone to `HDMI1` = `@MAIN:INP=HDMI1`
+To set input of subunit MAIN to `HDMI1` use command `@MAIN:INP=HDMI1`
 
-Get the current volume for `ZONE2` = `@ZONE2:VOL=?` the receiver will respond with:
-`@ZONE2:VOL=12.5`
+To get the current volume for subunit `ZONE2` use command `@ZONE2:VOL=?` and the receiver will respond with: `@ZONE2:VOL=12.5`
 
 ## Errors
 
-There are 2 error types
+There are 2 error types.
+
+Note that there seems to be no error response when writing to a GET only function (e.g. setting MODELNAME), actually there is no response at all.
 
 ### @RESTRICTED
 
 This response occurs when a valid YNCA command was sent, but the command is (temporarily) not applicable to the unit
-(e.g. setting `VOL` when the unit is in standby or accessing a function not available on the unit)
+(e.g. setting `VOL` when the unit is in standby or accessing a function not available on the unit like a Zone that does not exist)
 
 ### @UNDEFINED
 
-This response occurs when an invalid YNCA command is sent
-
-## Weirdnesses
-
-Some notes on weird/unexpected behaviour found when dealing with YNCA devices
-
-### Fixed volume
-
-Zones with fixed volume have a readable volume and do _not_ give errors when trying to change the volume. Would have expected @RESTRICTED
-
-### Scene activation not working
-
-For some receivers activating scenes does not work they answer with @RESTRICTED.
-See https://github.com/mvdwetering/yamaha_ynca/issues/19 for logs.
-
-Currently known receivers that behave like this: RX-475
-
-### No names
-
-Some receivers respond with @UNDEFINED for ZONENAME and SCENENAME requests.
-Strange part is that the user seems to be able to change names on the receiver (or only in the app?), but that info is not available through YNCA.
-See https://github.com/mvdwetering/yamaha_ynca/issues/8 for logs
-
-Currently known receivers that behave like this: TSR-700
-
-
+This response occurs when an invalid/unknown YNCA command is sent
