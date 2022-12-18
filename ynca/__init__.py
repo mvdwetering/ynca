@@ -3,7 +3,7 @@ import logging
 # Import intended API so it is easily accessible through `from  ynca import Something`
 
 from .api import YncaApi
-from .connection import YncaConnection
+from .connection import YncaConnection, YncaProtocolStatus
 from .errors import (
     YncaConnectionError,
     YncaConnectionFailed,
