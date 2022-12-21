@@ -255,6 +255,7 @@ class SoundPrg(str, Enum):
     NINE_CH_STEREO = "9ch Stereo"
     SURROUND_DECODER = "Surround Decoder"
     ALL_CH_STEREO = "All-Ch Stereo"
+    ENHANCED = "Enhanced"
 
     @classmethod
     def _missing_(cls, value):

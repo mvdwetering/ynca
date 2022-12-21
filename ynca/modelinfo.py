@@ -57,9 +57,14 @@ ExtendedSoundPrgSevenChannel.append(SoundPrg.SEVEN_CH_STEREO)
 ExtendedSoundPrgNineChannel: List[SoundPrg] = list(ExtendedSoundPrgList)
 ExtendedSoundPrgNineChannel.append(SoundPrg.NINE_CH_STEREO)
 
+ExtendedSoundPrgAllChannel: List[SoundPrg] = list(ExtendedSoundPrgList)
+ExtendedSoundPrgAllChannel.append(SoundPrg.ALL_CH_STEREO)
+ExtendedSoundPrgAllChannel.append(SoundPrg.ENHANCED)
+
 
 MODELINFO = {
     "HTR-7065": ModelInfo(soundprg=BasicSoundPrgSevenChannel),
+    "RX-A6A": ModelInfo(soundprg=ExtendedSoundPrgAllChannel),
     "RX-A700": ModelInfo(soundprg=BasicSoundPrgSevenChannel),
     "RX-A710": ModelInfo(soundprg=BasicSoundPrgSevenChannel),
     "RX-A720": ModelInfo(soundprg=BasicSoundPrgSevenChannel),
