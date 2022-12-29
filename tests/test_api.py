@@ -10,13 +10,48 @@ from ynca.subunits.zone import Main
 
 SYS = "SYS"
 MAIN = "MAIN"
+ZONE2 = "ZONE2"
+ZONE3 = "ZONE3"
 ZONE4 = "ZONE4"
 BT = "BT"
 USB = "USB"
 
 RESTRICTED = "@RESTRICTED"
 
-CONNECTION_CHECK_RESPONSES = [
+CONNECTION_CHECK_RESPONSES_NO_ZONES = [
+    (
+        (SYS, "MODELNAME"),
+        [
+            (SYS, "MODELNAME", "ModelName"),
+        ],
+    ),
+]
+
+CONNECTION_CHECK_RESPONSES_ALL_ZONES = [
+    (
+        (MAIN, "AVAIL"),
+        [
+            (MAIN, "AVAIL", "Not Ready"),
+        ],
+    ),
+    (
+        (ZONE2, "AVAIL"),
+        [
+            (ZONE2, "AVAIL", "Not Ready"),
+        ],
+    ),
+    (
+        (ZONE3, "AVAIL"),
+        [
+            (ZONE3, "AVAIL", "Not Ready"),
+        ],
+    ),
+    (
+        (ZONE4, "AVAIL"),
+        [
+            (ZONE4, "AVAIL", "Not Ready"),
+        ],
+    ),
     (
         (SYS, "MODELNAME"),
         [
@@ -171,19 +206,43 @@ def test_construct():
     y.close()
 
 
-def test_check_connection_check_success(connection):
+def test_check_connection_check_success_all_zones(connection):
 
     with mock.patch.object(
         ynca.api.YncaConnection, "create_from_serial_url"
     ) as create_from_serial_url:
         create_from_serial_url.return_value = connection
-        connection.get_response_list = CONNECTION_CHECK_RESPONSES
+        connection.get_response_list = CONNECTION_CHECK_RESPONSES_ALL_ZONES
 
         disconnect_callback = mock.MagicMock()
 
         y = ynca.YncaApi("serial_url", disconnect_callback, 123)
-        modelname = y.connection_check()
-        assert modelname == "ModelName"
+        result = y.connection_check()
+        assert result.modelname == "ModelName"
+        assert len(result.zones) == 4
+        assert "MAIN" in result.zones
+        assert "ZONE2" in result.zones
+        assert "ZONE3" in result.zones
+        assert "ZONE4" in result.zones
+
+        connection.close.assert_called_once()
+        disconnect_callback.assert_not_called()
+
+
+def test_check_connection_check_success_no_zones(connection):
+
+    with mock.patch.object(
+        ynca.api.YncaConnection, "create_from_serial_url"
+    ) as create_from_serial_url:
+        create_from_serial_url.return_value = connection
+        connection.get_response_list = CONNECTION_CHECK_RESPONSES_NO_ZONES
+
+        disconnect_callback = mock.MagicMock()
+
+        y = ynca.YncaApi("serial_url", disconnect_callback, 123)
+        result = y.connection_check()
+        assert result.modelname == "ModelName"
+        assert len(result.zones) == 0
 
         connection.close.assert_called_once()
         disconnect_callback.assert_not_called()

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from dataclasses import dataclass, field
 import logging
 import threading
 from typing import Callable, Dict, List, Optional, Set, cast
@@ -29,6 +30,14 @@ from .subunits.usb import Usb
 from .subunits.zone import Main, Zone2, Zone3, Zone4
 
 logger = logging.getLogger(__name__)
+
+CONNECTION_CHECK_TIMEOUT = 1.5
+
+
+@dataclass
+class YncaConnectionCheckResult:
+    modelname: str = ""
+    zones: List[str] = field(default_factory=list)
 
 
 class YncaApi:
@@ -117,34 +126,39 @@ class YncaApi:
                 subunit_instance.initialize()
                 self._subunits[subunit_instance.id] = subunit_instance
 
-    def connection_check(self) -> str:
+    def connection_check(self) -> YncaConnectionCheckResult:
         """
-        Does a quick connection check by setting up a connection and requesting the modelname.
+        Does a quick connection check by setting up a connection and requesting some basic info.
         Connection gets closed again automatically.
 
         This is a fast way to check the connection and if it is a YNCA device
         without executing the timeconsuming `initialize()` method.
         """
-        connection_check_event = threading.Event()
-        modelname = ""
+        result: YncaConnectionCheckResult = YncaConnectionCheckResult()
         connection = None
+        connection_check_event = threading.Event()
 
         def _connection_check_message_received(
             status: YncaProtocolStatus, subunit: str, function_: str, value: str
         ):
             if subunit == Subunit.SYS and function_ == "MODELNAME":
-                nonlocal modelname
-                modelname = value
+                result.modelname = value
                 connection_check_event.set()
+            if function_ == "AVAIL":
+                result.zones.append(subunit)
 
         try:
             connection = YncaConnection.create_from_serial_url(self._serial_url)
             connection.connect(self._disconnect_callback, self._communication_log_size)
             connection.register_message_callback(_connection_check_message_received)
+            connection.get(Subunit.MAIN, "AVAIL")
+            connection.get(Subunit.ZONE2, "AVAIL")
+            connection.get(Subunit.ZONE3, "AVAIL")
+            connection.get(Subunit.ZONE4, "AVAIL")
             connection.get(Subunit.SYS, "MODELNAME")
 
             # Give it a bit of time to receive a response
-            if not connection_check_event.wait(0.5):
+            if not connection_check_event.wait(CONNECTION_CHECK_TIMEOUT):
                 raise YncaConnectionError(
                     "Connectioncheck failed, no valid response in time from device"
                 )
@@ -154,7 +168,8 @@ class YncaApi:
                     _connection_check_message_received
                 )
                 connection.close()
-        return modelname
+
+        return result
 
     def initialize(self):
         """
