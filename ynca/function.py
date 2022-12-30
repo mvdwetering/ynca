@@ -63,11 +63,11 @@ class FunctionBase(ABC, Generic[T]):
         self.initializer = init
 
     @overload
-    def __get__(self, instance: None, owner) -> FunctionBase[T]:
+    def __get__(self, instance: None, owner) -> FunctionBase[T]:  # pragma: no cover
         ...
 
     @overload
-    def __get__(self, instance: SubunitBase, owner) -> T | None:
+    def __get__(self, instance: SubunitBase, owner) -> T | None:  # pragma: no cover
         ...
 
     def __get__(
