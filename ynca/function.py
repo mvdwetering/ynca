@@ -3,7 +3,7 @@ from __future__ import annotations
 import logging
 from abc import ABC
 from enum import Enum, Flag, auto
-from typing import TYPE_CHECKING, Generic, Type, TypeVar
+from typing import TYPE_CHECKING, Generic, Type, TypeVar, overload
 
 if TYPE_CHECKING:  # pragma: no cover
     from .subunit import SubunitBase
@@ -61,6 +61,14 @@ class FunctionBase(ABC, Generic[T]):
         self.converter = converter
         self.no_initialize = no_initialize
         self.initializer = init
+
+    @overload
+    def __get__(self, instance: None, owner) -> FunctionBase[T]:
+        ...
+
+    @overload
+    def __get__(self, instance: SubunitBase, owner) -> T | None:
+        ...
 
     def __get__(
         self, instance: SubunitBase | None, owner
