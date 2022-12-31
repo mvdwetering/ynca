@@ -249,6 +249,36 @@ def test_volume(connection, initialized_zone: ZoneBase):
     assert initialized_zone.vol == -10
 
 
+def test_maxvol(connection, initialized_zone: ZoneBase):
+    # Writing to device
+
+    # Positive with step rounding
+    initialized_zone.maxvol = 0
+    connection.put.assert_called_with(SUBUNIT, "MAXVOL", "0.0")
+    initialized_zone.maxvol = 0.1
+    connection.put.assert_called_with(SUBUNIT, "MAXVOL", "0.0")
+    initialized_zone.maxvol = 4
+    connection.put.assert_called_with(SUBUNIT, "MAXVOL", "5.0")
+
+    # Negative with step rounding
+    initialized_zone.maxvol = -5
+    connection.put.assert_called_with(SUBUNIT, "MAXVOL", "-5.0")
+    initialized_zone.maxvol = -5.5
+    connection.put.assert_called_with(SUBUNIT, "MAXVOL", "-5.0")
+
+    # 16.5 is special meaning no limit and does not fit normal step size
+    initialized_zone.maxvol = 16.5
+    connection.put.assert_called_with(SUBUNIT, "MAXVOL", "16.5")
+
+    # Updates from device
+    connection.send_protocol_message(SUBUNIT, "MAXVOL", "0.0")
+    assert initialized_zone.maxvol == 0
+    connection.send_protocol_message(SUBUNIT, "MAXVOL", "10.0")
+    assert initialized_zone.maxvol == 10
+    connection.send_protocol_message(SUBUNIT, "MAXVOL", "-10.0")
+    assert initialized_zone.maxvol == -10
+
+
 def test_input(connection, initialized_zone: ZoneBase):
     # Writing to device
     initialized_zone.inp = Input.RHAPSODY

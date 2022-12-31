@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+from typing import Type
 
 from ..constants import Subunit
 from ..converters import EnumConverter, FloatConverter, MultiConverter, StrConverter
@@ -29,6 +30,10 @@ from . import PlaybackFunction
 logger = logging.getLogger(__name__)
 
 
+def raiser(ex: Type[Exception]):
+    raise ex
+
+
 class ZoneBase(PlaybackFunction, SubunitBase):
 
     # BASIC gets a lot of attribute like PWR, SLEEP, VOL, MUTE, INP, STRAIGHT, ENHANCER, SOUNDPRG and more
@@ -48,7 +53,20 @@ class ZoneBase(PlaybackFunction, SubunitBase):
     )
     initvolmode = EnumFunction[InitVolMode]("INITVOLMODE", InitVolMode)
     inp = EnumFunction[Input]("INP", Input, init="BASIC")
-    maxvol = FloatFunction("MAXVOL", Cmd.GET)
+    maxvol = FloatFunction(
+        "MAXVOL",
+        converter=MultiConverter(
+            [
+                # Special handling for 16.5 which is valid, but does not fit stepsize of 5
+                FloatConverter(
+                    to_str=lambda v: "16.5" if v == 16.5 else raiser(ValueError)
+                ),
+                FloatConverter(
+                    to_str=lambda v: number_to_string_with_stepsize(v, 1, 5)
+                ),
+            ]
+        ),
+    )
     mute = EnumFunction[Mute]("MUTE", Mute, init="BASIC")
     puredirmode = EnumFunction[PureDirMode]("PUREDIRMODE", PureDirMode, init="BASIC")
     pwr = EnumFunction[Pwr]("PWR", Pwr, init="BASIC")
