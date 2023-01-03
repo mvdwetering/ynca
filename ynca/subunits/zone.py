@@ -13,14 +13,19 @@ from ..function import (
     StrFunction,
 )
 from ..enums import (
+    HdmiOut,
     InitVolLvl,
     InitVolMode,
     Input,
     Mute,
+    AdaptiveDrc,
+    Enhancer,
     PureDirMode,
     Pwr,
+    Sleep,
     SoundPrg,
     Straight,
+    ThreeDeeCinema,
     TwoChDecoder,
 )
 from ..helpers import number_to_string_with_stepsize
@@ -39,15 +44,30 @@ class ZoneBase(PlaybackFunction, SubunitBase):
     # BASIC gets a lot of attribute like PWR, SLEEP, VOL, MUTE, INP, STRAIGHT, ENHANCER, SOUNDPRG and more
     # Use it to significantly reduce the amount of commands to send
 
+    adaptivedrc = EnumFunction[AdaptiveDrc]("ADAPTIVEDRC", AdaptiveDrc)
+    enhancer = EnumFunction[Enhancer]("ENHANCER", Enhancer)
+    hdmiout = EnumFunction[HdmiOut]("HDMIOUT", HdmiOut)
+    hpbass = FloatFunction(
+        "HPBASS",
+        converter=FloatConverter(
+            to_str=lambda v: number_to_string_with_stepsize(v, 1, 0.5)
+        ),
+    )
+    hptreble = FloatFunction(
+        "HPTREBLE",
+        converter=FloatConverter(
+            to_str=lambda v: number_to_string_with_stepsize(v, 1, 0.5)
+        ),
+    )
     initvollvl = EnumOrFloatFunction[InitVolLvl](
         "INITVOLLVL",
         InitVolLvl,
         MultiConverter(
             [
-                EnumConverter[InitVolLvl](InitVolLvl),
                 FloatConverter(
                     to_str=lambda v: number_to_string_with_stepsize(v, 1, 0.5)
                 ),
+                EnumConverter[InitVolLvl](InitVolLvl),
             ]
         ),
     )
@@ -82,8 +102,22 @@ class ZoneBase(PlaybackFunction, SubunitBase):
     scene10name = StrFunction("SCENE10NAME", Cmd.GET, init="SCENENAME")
     scene11name = StrFunction("SCENE11NAME", Cmd.GET, init="SCENENAME")
     scene12name = StrFunction("SCENE12NAME", Cmd.GET, init="SCENENAME")
+    sleep = EnumFunction[Sleep]("SLEEP", Sleep)
     soundprg = EnumFunction[SoundPrg]("SOUNDPRG", SoundPrg, init="BASIC")
+    spbass = FloatFunction(
+        "SPBASS",
+        converter=FloatConverter(
+            to_str=lambda v: number_to_string_with_stepsize(v, 1, 0.5)
+        ),
+    )
+    sptreble = FloatFunction(
+        "SPTREBLE",
+        converter=FloatConverter(
+            to_str=lambda v: number_to_string_with_stepsize(v, 1, 0.5)
+        ),
+    )
     straight = EnumFunction[Straight]("STRAIGHT", Straight, init="BASIC")
+    threedcinema = EnumFunction[ThreeDeeCinema]("3DCINEMA", ThreeDeeCinema)
     twochdecoder = EnumFunction[TwoChDecoder]("2CHDECODER", TwoChDecoder)
     vol = FloatFunction(
         "VOL",

@@ -12,8 +12,11 @@ from .errors import (
 )
 from .enums import (
     Avail,
+    AdaptiveDrc,
     BandDab,
     BandTun,
+    Enhancer,
+    HdmiOut,
     InitVolLvl,
     InitVolMode,
     Input,
@@ -26,8 +29,10 @@ from .enums import (
     Pwr,
     Repeat,
     Shuffle,
+    Sleep,
     SoundPrg,
     Straight,
+    ThreeDeeCinema,
     TwoChDecoder,
 )
 from .modelinfo import YncaModelInfo
