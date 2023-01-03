@@ -26,6 +26,8 @@ Some guidelines I try to follow when adding functions to the API.
     * Strings stay strings
     * Numbers become integers or floats
     * Multiple options are mapped to Enums
+        * Each function will have its own Enum even though values are the same. On multiple occasions it has turned out that possible values have changed between receivers. Having individual Enums allows to just extend the impacted one.
+        * All enums will have an "UNKNOWN" field for the case where a receiver responds with an unknown value. In these cases a warning will be logged. This UNKNOWN mapping is to avoid exceptions when mapping to an Enum which would break the code.
     * These are guidelines, exceptions can be made.
 
 
