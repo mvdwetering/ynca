@@ -30,16 +30,8 @@ if __name__ == "__main__":
     args = parser.parse_args()
     logging.basicConfig(level=args.loglevel)
 
-    if len(sys.argv) <= 1:
-        print("Must provide a port like for example:")
-        print("  /dev/ttyUSB0")
-        print("  COM3")
-        print("  socket://192.168.178.21:50000")
-        exit(1)
-
-    port = sys.argv[1]
-
-    receiver = YncaApi(port)
+    print("Create YncaApi instance")
+    receiver = YncaApi(args.serial_url)
 
     print("Initialize start")
     print("This takes a while (about 10 seconds on a 2 zone receiver)")
