@@ -376,6 +376,7 @@ class ThreeDeeCinema(str, Enum):
 
 
 class TwoChDecoder(str, Enum):
+    # Older models support Dolby Prologic and DTS:Neo settings
     DolbyPl = "Dolby PL"
     DolbyPl2Movie = "Dolby PLII Movie"
     DolbyPl2Music = "Dolby PLII Music"
@@ -385,6 +386,11 @@ class TwoChDecoder(str, Enum):
     DolbyPl2xGame = "Dolby PLIIx Game"
     DtsNeo6Cinema = "DTS NEO:6 Cinema"
     DtsNeo6Music = "DTS NEO:6 Music"
+
+    # Newer models seem to have diffent values
+    # These have been seen
+    Auro3d = "AURO-3D"  # Seen on RX-A6A
+    DtsNeuralX = "DTS Neural:X"  # Seen on RX-A1060
 
     @classmethod
     def _missing_(cls, value):
