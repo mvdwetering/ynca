@@ -142,7 +142,7 @@ class Input(Enum):
     VAUX = "V-AUX"
 
     # Inputs provided by subunits
-    AIRPLAY = "Airplay"
+    AIRPLAY = "AirPlay"
     BLUETOOTH = "Bluetooth"
     IPOD = "iPod"
     IPOD_USB = "iPod (USB)"
