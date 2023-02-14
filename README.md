@@ -2,7 +2,7 @@
 
 Package to control Yamaha receivers that support the YNCA protocol.
 
-Supported receivers according to info found on the internet (not all tested).
+According to reports of user and info found on the internet the following receivers should work (not all tested).
 There might be more receivers that support this protocol. If you find some let met know so the list can be updated.
 
 > RX-A700, RX-A710, RX-A720, RX-A800, RX-A810, RX-A820, RX-A840, RX-A850, RX-A1000, RX-A1010, RX-A1020, RX-A1030, RX-A1040, RX-A2000, RX-A2010, RX-A2020, RX-A3000, RX-A3010, RX-A3020, RX-V475, RX-V671, RX-V673, RX-V677, RX-V773, RX-V867, RX-V871, RX-V1067, RX-V2067, RX-V3067, TSR-700
