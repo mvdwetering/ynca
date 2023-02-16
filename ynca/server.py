@@ -17,11 +17,15 @@ import socketserver
 from collections import namedtuple
 from typing import Dict, Tuple
 
+from .enums import Input
+
 RESTRICTED = "@RESTRICTED"
 UNDEFINED = "@UNDEFINED"
 OK = "OK"
 
 YncaCommand = namedtuple("YncaCommand", ["subunit", "function", "value"])
+
+ZONES = ["MAIN", "ZONE2", "ZONE3", "ZONE4"]
 
 
 def line_to_command(line):
@@ -114,6 +118,27 @@ multiresponse_functions_table = {
 }
 
 
+INPUT_SUBUNITLIST_MAPPING = [
+    (Input.AIRPLAY, ["AIRPLAY"]),
+    (Input.BLUETOOTH, ["BT"]),
+    (Input.IPOD, ["IPOD"]),
+    (Input.IPOD_USB, ["IPODUSB"]),
+    (Input.NAPSTER, ["NAPSTER"]),
+    (Input.NETRADIO, ["NETRADIO"]),
+    (Input.PANDORA, ["PANDORA"]),
+    (Input.PC, ["PC"]),
+    (Input.RHAPSODY, ["RHAP"]),
+    (Input.SERVER, ["SERVER"]),
+    (Input.SIRIUS, ["SIRIUS"]),
+    (Input.SIRIUS_IR, ["SIRIUSIR"]),
+    (Input.SIRIUS_XM, ["SIRIUSXM"]),
+    (Input.SPOTIFY, ["SPOTIFY"]),
+    (Input.TUNER, ["TUN", "DAB"]),
+    (Input.UAW, ["UAW"]),
+    (Input.USB, ["USB"]),
+]
+
+
 class YncaCommandHandler(socketserver.StreamRequestHandler):
     """
     The request handler class for our server.
@@ -190,11 +215,29 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
 
             value = float(self.store.get_data(subunit, function))
             value = str(value + (amount * (1 if up else -1)))
+
         result = self.store.put_data(subunit, function, value)
+
         if result[0].startswith("@"):
             self.write_line(result[0])
-        elif result[1]:
-            # Value change so send a report
+        elif result[1]:  # Value change so send a report
+
+            if function == "PLAYBACK":
+                # Response is PLAYBACKINFO
+                function = "PLAYBACKINFO"
+
+                # Not for Fwd or others as they are not a state
+                if value not in ["Play", "Pause", "Stop"]:
+                    return
+
+                # When received on a Zone the response is on INP subunit
+                if subunit in ZONES:
+                    subunit = [
+                        m[1][0]
+                        for m in INPUT_SUBUNITLIST_MAPPING
+                        if m[0].value == self.store.get_data(subunit, "INP")
+                    ][0]
+
             self.write_line(f"@{subunit}:{function}={value}")
 
     def handle(self):
