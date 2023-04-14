@@ -67,3 +67,13 @@ Values seen until now:
 
 From a quick look at the product manuals those models do not support the older surround decoder values. AURO-3D does not seem to be available on RX-1060 and it is unknown how to detect AURO-3D support.
 
+## SONG vs TRACK for songtitles
+
+It seems that most sources that support METAINFO for songs use SONG for songtitle.
+
+However Spotify uses TRACK instead.
+
+Pandora seems to use TRACK or SONG. Might depend on firmware version?
+
+TRACK is seen in the RX-A6A (1.80/3.12) and TSR-700 (1.53/3.12) logs and on internet mentioned for RX-A850
+SONG only seen on internet without mention of receiver or firmware version
