@@ -61,7 +61,7 @@ It has some additional commandline options for using different ports, binding to
 
 ```
 python3 -m ynca.server <ynca_repo>/logs/RX-A810.txt
-python3 -m ynca.server --host 0.0.0.0 --port 12345 <ynca_repo>/logs/RX-A810.txt
+python3 -m ynca.server --host localhost --port 12345 <ynca_repo>/logs/RX-A810.txt
 python3 -m ynca.server --help
 ```
 
