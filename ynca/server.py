@@ -361,8 +361,8 @@ if __name__ == "__main__":
 
     parser.add_argument(
         "--host",
-        help="Host interface to bind to, default is localhost",
-        default="localhost",
+        help="Host interface to bind to, default is 0.0.0.0 for all interfaces",
+        default="0.0.0.0",
     )
     parser.add_argument(
         "--port",
