@@ -11,6 +11,7 @@ INITIALIZE_FULL_RESPONSES = [
             (SUBUNIT, "ALBUM", "Album"),
             (SUBUNIT, "ARTIST", "Artist"),
             (SUBUNIT, "SONG", "Song"),
+            (SUBUNIT, "TRACK", "Track"),
         ],
     ),
     (
@@ -52,6 +53,7 @@ def test_initialize(connection, update_callback):
     assert pandora.album == "Album"
     assert pandora.artist == "Artist"
     assert pandora.song == "Song"
+    assert pandora.track == "Track"
     assert pandora.station == "Station"
     assert pandora.playbackinfo is PlaybackInfo.PAUSE
 

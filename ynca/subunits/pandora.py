@@ -9,6 +9,7 @@ from . import (
     PlaybackInfoFunction,
     SongFunction,
     StationFunction,
+    TrackFunction,
 )
 
 
@@ -18,6 +19,7 @@ class Pandora(
     ArtistFunction,
     AlbumFunction,
     SongFunction,
+    TrackFunction,    # Pandora seems to use TRACK or SONG for title based on logs. Maybe depends on firmware version?
     StationFunction,
     SubunitBase,
 ):
