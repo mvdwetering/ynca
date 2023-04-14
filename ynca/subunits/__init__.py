@@ -45,6 +45,10 @@ class StationFunction:
     station = StrFunction("STATION", Cmd.GET)
 
 
+class TrackFunction:
+    track = StrFunction("TRACK", Cmd.GET, init="METAINFO")
+
+
 # A number of subunits have the same/similar featureset
 # so make a common base that only needs to be tested once
 class MediaPlaybackSubunitBase(
@@ -61,7 +65,6 @@ class MediaPlaybackSubunitBase(
 
 
 class FmFreqFunction:
-
     fmfreq = FloatFunction(
         "FMFREQ",
         converter=FloatConverter(
