@@ -51,7 +51,7 @@ So assumed functionality is:
 
 * "Off" = Disabled (a.k.a. last state)
 * "Mute" = Enabled with Mute
-* <number> = Enabled with specific level
+* number = Enabled with specific level
 
 Currently known receivers that can report "Off":
 - RX-V477 1.28/1.4
@@ -62,8 +62,8 @@ It looks like the 2CHDECODER values completely changed on newer models of receiv
 The older models have support for Dolby Prologic and DTS:Neo settings, while newer models seem to have diffent values.
 
 Values seen until now:
-* "AURO-3D"  # Seen on RX-A6A
-* "DTS Neural:X"  # Seen on RX-A1060
+* "AURO-3D" Seen on RX-A6A
+* "DTS Neural:X" Seen on RX-A1060
 
 From a quick look at the product manuals those models do not support the older surround decoder values. AURO-3D does not seem to be available on RX-1060 and it is unknown how to detect AURO-3D support.
 
