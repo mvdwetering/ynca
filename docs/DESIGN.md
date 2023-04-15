@@ -16,19 +16,19 @@ someone has a usecase for it and not just all off them.
 Some guidelines I try to follow when adding functions to the API.
 
 * YNCA functions supporting GET are modelled as attributes
-    * If the function also support PUT of the value the attribute will also be writable
+    * If the function also support PUT for the value this attribute will also be writable
 * YNCA functions that _only_ support PUT are modelled as methods
     * While it is possible to create write only attributes they felt weird to use.
 * YNCA functions that perform actions are modelled as methods
-* Attribute names on the API follow naming (but in lowercase) as used in YNCA except where not possible due to Python limitations. E.g. "2chdecoder" becomes "twochdecoder"
-* Method names on the API follow naming (but in lowercase) as used on YNCA with the "action" postfixed. E.g. "vol_up()" or "remote_send()"
+* Attribute names on the API follow naming as used in YNCA but in lowercase; except where not possible due to Python limitations. E.g. "2chdecoder" becomes "twochdecoder"
+* Method names on the API follow naming as used on YNCA but in lowercase with the "action" postfixed. E.g. "vol_up()" or "remote_send()"
 * While all values on YNCA are transmitted as strings these are converted to Python types
     * Strings stay strings
     * Numbers become integers or floats
     * Multiple options are mapped to Enums
-        * Each function will have its own Enum even though values are the same. On multiple occasions it has turned out that possible values have changed between receivers. Having individual Enums allows to just extend the impacted one.
-        * All enums will have an "UNKNOWN" field for the case where a receiver responds with an unknown value. In these cases a warning will be logged. This UNKNOWN mapping is to avoid exceptions when mapping to an Enum which would break the code.
-    * These are guidelines, exceptions can be made.
+        * Each function will have its own Enum even though values are the same. On multiple occasions it has turned out that possible values have changed between receivers. Having individual Enums allows to just extend the impacted one without impacting other attributes.
+        * All enums will have an "UNKNOWN" field for the case where a receiver responds with an unknown value. In these cases a warning will be logged. This UNKNOWN mapping is to avoid exceptions when mapping to an Enum which would break the code. Unknown values occur because there is no official documentation available and new receivers might support more/different values.
+ * These are guidelines, exceptions can be made.
 
 
 ## Input detection
@@ -69,5 +69,5 @@ The unit can go to sleep or break the connection in case of IP.
 The first command sent to the unit when it is asleep is lost.
 To avoid this keep the connection alive by sending a dummy command when the connection is idle for a while.
 
-The YNCA spec recommends using the `@SYS:MODELNAME=?` command.
+The `@SYS:MODELNAME=?` command is used for it as it is available on all receivers.
 
