@@ -19,23 +19,23 @@ In YNCA setting a value is referred to as a `PUT` and reading a value as `GET`.
 Both commands have the same format `@SUBUNIT:FUNCTION=VALUE`
 For a `GET` the `VALUE` will always be '?'
 
-The receiver will generate messages when a value changes, when a `GET` command is received or other releted events (e.g. turning on a one will send lots of data).
-Note there is no way to tell if a message is because of a `GET` request or the value got changes in another way (e.g. using the remote control or buttons on the device)
+The receiver will generate messages when a value changes, when a `GET` command is received or other releted events (e.g. turning on a zone will send multiple messages).
+Note there is no way to tell if a message is because of a `GET` request or the value got changed in another way (e.g. using the remote control or buttons on the device)
 This also means that sending a `PUT` will not always results in a message as messages are usually (not always) only sent when the value changes.
 
-The receiver is split up in SUBUNITs, examples are zones (e.g. MAIN), inputs (e.g. TUN for the Tuner) and the system 'SYS'
+The receiver is split up in SUBUNITs, examples are zones (e.g. MAIN, ZONE2), inputs (e.g. TUN for the Tuner) and the system 'SYS'
 
 ## Examples
 
 To set input of subunit MAIN to `HDMI1` use command `@MAIN:INP=HDMI1`
 
-To get the current volume for subunit `ZONE2` use command `@ZONE2:VOL=?` and the receiver will respond with: `@ZONE2:VOL=12.5`
+To get the current volume for subunit `ZONE2` use command `@ZONE2:VOL=?` and the receiver will respond with: `@ZONE2:VOL=12.5` (value obviously depends on current value)
 
 ## Errors
 
 There are 2 error types.
 
-Note that there seems to be no error response when writing to a GET only function (e.g. setting MODELNAME), actually there is no response at all.
+Note that there seems to be no error response when writing to a GET only function (e.g. setting MODELNAME). In that case there is no response at all.
 
 ### @RESTRICTED
 
