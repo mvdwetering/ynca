@@ -17,6 +17,7 @@ from .enums import (
     BandTun,
     Enhancer,
     HdmiOut,
+    HdmiOutOnOff,
     InitVolLvl,
     InitVolMode,
     Input,

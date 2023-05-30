@@ -3,7 +3,7 @@ import logging
 from ..constants import Subunit
 from ..converters import StrConverter
 from ..function import Cmd, EnumFunction, FunctionBase, StrFunction
-from ..enums import Party, PartyMute, Pwr
+from ..enums import HdmiOutOnOff, Party, PartyMute, Pwr
 from ..subunit import SubunitBase
 
 logger = logging.getLogger(__name__)
@@ -12,6 +12,9 @@ logger = logging.getLogger(__name__)
 class System(SubunitBase):
     id = Subunit.SYS
 
+    hdmiout1 = EnumFunction[HdmiOutOnOff]("HDMIOUT1", HdmiOutOnOff)
+    hdmiout2 = EnumFunction[HdmiOutOnOff]("HDMIOUT2", HdmiOutOnOff)
+    hdmiout3 = EnumFunction[HdmiOutOnOff]("HDMIOUT3", HdmiOutOnOff)
     inpnameaudio1 = StrFunction("INPNAMEAUDIO1", Cmd.GET, init="INPNAME")
     inpnameaudio2 = StrFunction("INPNAMEAUDIO2", Cmd.GET, init="INPNAME")
     inpnameaudio3 = StrFunction("INPNAMEAUDIO3", Cmd.GET, init="INPNAME")

@@ -1,7 +1,7 @@
 from unittest import mock
 import pytest
 
-from ynca import Party, PartyMute, Pwr
+from ynca import HdmiOutOnOff, Party, PartyMute, Pwr
 from ynca.subunits.system import System
 
 SYS = "SYS"
@@ -11,6 +11,24 @@ INITIALIZE_FULL_RESPONSES = [
         (SYS, "AVAIL"),
         [
             (SYS, "AVAIL", "Ready"),
+        ],
+    ),
+    (
+        (SYS, "HDMIOUT1"),
+        [
+            (SYS, "HDMIOUT1", "On"),
+        ],
+    ),
+    (
+        (SYS, "HDMIOUT2"),
+        [
+            (SYS, "HDMIOUT2", "Off"),
+        ],
+    ),
+    (
+        (SYS, "HDMIOUT3"),
+        [
+            (SYS, "HDMIOUT3", "Off"),
         ],
     ),
     (
@@ -107,8 +125,9 @@ def test_initialize_minimal(connection, update_callback):
 
     assert s.version == "Version"
     assert s.modelname is None
-    assert s.pwr is None
-    assert s.party is None
+    assert s.hdmiout1 is None
+    assert s.hdmiout2 is None
+    assert s.hdmiout3 is None
     assert s.inpnameaudio1 is None
     assert s.inpnameaudio2 is None
     assert s.inpnameaudio3 is None
@@ -132,6 +151,8 @@ def test_initialize_minimal(connection, update_callback):
     assert s.inpnamephono is None
     assert s.inpnameusb is None
     assert s.inpnamevaux is None
+    assert s.pwr is None
+    assert s.party is None
 
 
 def test_initialize_full(connection, update_callback):
@@ -146,8 +167,10 @@ def test_initialize_full(connection, update_callback):
     assert update_callback.call_count == 0
     assert s.version == "Version"
     assert s.modelname == "ModelName"
-    assert s.pwr == Pwr.STANDBY
-    assert s.party == Party.ON
+
+    assert s.hdmiout1 is HdmiOutOnOff.ON
+    assert s.hdmiout2 is HdmiOutOnOff.OFF
+    assert s.hdmiout3 is HdmiOutOnOff.OFF
 
     assert s.inpnameaudio1 == "InputAudio1"
     assert s.inpnameaudio2 == "InputAudio2"
@@ -172,6 +195,17 @@ def test_initialize_full(connection, update_callback):
     assert s.inpnamephono == "InputPhono"
     assert s.inpnameusb == "InputUsb"
     assert s.inpnamevaux == "InputVAux"
+
+    assert s.pwr == Pwr.STANDBY
+    assert s.party == Party.ON
+
+
+def test_hdmiout(connection, initialized_system: System):
+    # Writing to device
+    initialized_system.hdmiout1 = HdmiOutOnOff.ON
+    connection.put.assert_called_with(SYS, "HDMIOUT1", "On")
+    initialized_system.hdmiout2 = HdmiOutOnOff.OFF
+    connection.put.assert_called_with(SYS, "HDMIOUT2", "Off")
 
 
 def test_party(connection, initialized_system: System):

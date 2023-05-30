@@ -88,6 +88,18 @@ class HdmiOut(str, Enum):
     UNKNOWN = UNKNOWN_STRING
     """Unknown values in the enum are mapped to UNKNOWN"""
 
+class HdmiOutOnOff(Enum):
+    ON = "On"
+    OFF = "Off"
+
+    @classmethod
+    def _missing_(cls, value):
+        logger.warning("Unknown value '%s' in %s", value, cls.__name__)
+        return cls.UNKNOWN
+
+    UNKNOWN = UNKNOWN_STRING
+    """Unknown values in the enum are mapped to UNKNOWN"""
+
 
 class InitVolLvl(str, Enum):
     MUTE = "Mute"
