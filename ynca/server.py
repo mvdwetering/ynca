@@ -240,6 +240,27 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
 
             self.write_line(f"@{subunit}:{function}={value}")
 
+            if function == "PWR":
+                if subunit == "SYS":
+                    # Setting PWR on SYS impacts Zone PWR
+                    for zone in ZONES:
+                        result = self.store.put_data(zone, function, value)
+                        if result[1]:
+                            self.write_line(f"@{zone}:{function}={value}")
+                elif subunit in ZONES:
+                    # Setting PWR on a ZONE can influence SYS overall PWR
+                    sys_is_on = False
+                    for zone in ZONES:
+                        zone_is_on = self.store.get_data(zone, function)
+                        if zone_is_on != UNDEFINED:
+                            sys_is_on |= zone_is_on == "On"
+                    sys_on_value = "On" if sys_is_on else "Standby"
+                    result = self.store.put_data("SYS", function, sys_on_value)
+                    if result[1]:
+                        self.write_line(f"@SYS:{function}={sys_on_value}")
+
+
+
     def handle(self):
         # self.rfile is a file-like object created by the handler;
         # we can now use e.g. readline() instead of raw recv() calls
