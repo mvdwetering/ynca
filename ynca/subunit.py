@@ -45,7 +45,7 @@ class SubunitBase(ABC):
 
     id: Subunit  # Just typed, needs to be set in subclasses
 
-    avail = EnumFunction[Avail]("AVAIL", Avail, Cmd.GET)
+    avail = EnumFunction[Avail](Avail, Cmd.GET)
 
     def __init__(self, connection: YncaConnection) -> None:
         self._update_callbacks: Set[Callable[[str, Any], None]] = set()

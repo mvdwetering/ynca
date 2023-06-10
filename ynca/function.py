@@ -38,29 +38,33 @@ class FunctionBase(ABC, Generic[T]):
 
     def __init__(
         self,
-        name: str,
         converter: ConverterBase,
         cmd: Cmd = Cmd.GET | Cmd.PUT,
+        name_override: str | None = None,
         init: str | None = None,
         no_initialize: bool = False,
     ) -> None:
         """
-        name:
-            Name of the function
         converter:
             Converter to use for value to/from str conversions
         cmd:
             Operations the command supports. PUT and/or GET
+        name_override:
+            Optional name_override useful in case where function name can not be a valid Python attribute name (e.g. 2CHDECODER)
         init:
             Name of function to use for initialize. Only needed if the function name to initialize is different from the function name itself. E.g. METAINFO for ARTIST, ALBUM and SONG to reduce amount of commands needed
         no_initialize:
             Do not initialize this function, very specific usecase, do _not_ use unless you know what you are doing!
         """
-        self.name = name
-        self.cmd = cmd
         self.converter = converter
-        self.no_initialize = no_initialize
+        self.cmd = cmd
         self.initializer = init
+        self.no_initialize = no_initialize
+
+        # Name will be set in __set_name__, provide typehint to help the linter
+        self.name:str
+        self._name_override = name_override
+
 
     @overload
     def __get__(self, instance: None, owner) -> FunctionBase[T]:  # pragma: no cover
@@ -90,17 +94,20 @@ class FunctionBase(ABC, Generic[T]):
         # Don't think I have use for this
         pass
 
+    def __set_name__(self, owner, name):
+        self.name = name.upper() if not self._name_override else self._name_override
+
 
 class EnumFunction(FunctionBase[E], Generic[E]):
     def __init__(
         self,
-        name: str,
         datatype: Type[E],
         cmd: Cmd = Cmd.GET | Cmd.PUT,
+        name_override: str | None = None,
         init=None,
     ) -> None:
         super().__init__(
-            name,
+            name_override=name_override,
             cmd=cmd,
             converter=EnumConverter[E](datatype),
             init=init,
@@ -110,13 +117,13 @@ class EnumFunction(FunctionBase[E], Generic[E]):
 class StrFunction(FunctionBase[str]):
     def __init__(
         self,
-        name: str,
         cmd: Cmd = Cmd.GET | Cmd.PUT,
         converter: ConverterBase = StrConverter(),
+        name_override: str | None = None,
         init=None,
     ) -> None:
         super().__init__(
-            name,
+            name_override=name_override,
             cmd=cmd,
             converter=converter,
             init=init,
@@ -126,13 +133,13 @@ class StrFunction(FunctionBase[str]):
 class IntFunction(FunctionBase[int]):
     def __init__(
         self,
-        name: str,
         command_type: Cmd = Cmd.GET | Cmd.PUT,
         converter: ConverterBase = IntConverter(),
+        name_override: str | None = None,
         init=None,
     ) -> None:
         super().__init__(
-            name,
+            name_override=name_override,
             cmd=command_type,
             converter=converter,
             init=init,
@@ -142,13 +149,13 @@ class IntFunction(FunctionBase[int]):
 class FloatFunction(FunctionBase[float]):
     def __init__(
         self,
-        name: str,
         cmd: Cmd = Cmd.GET | Cmd.PUT,
         converter: ConverterBase = FloatConverter(),
+        name_override: str | None = None,
         init=None,
     ) -> None:
         super().__init__(
-            name,
+            name_override=name_override,
             cmd=cmd,
             converter=converter,
             init=init,
@@ -158,14 +165,14 @@ class FloatFunction(FunctionBase[float]):
 class EnumOrFloatFunction(FunctionBase, Generic[E]):
     def __init__(
         self,
-        name: str,
         datatype: Type[E],
         converter: MultiConverter | None = None,
         cmd: Cmd = Cmd.GET | Cmd.PUT,
+        name_override: str | None = None,
         init=None,
     ) -> None:
         super().__init__(
-            name,
+            name_override=name_override,
             cmd=cmd,
             converter=converter
             or MultiConverter([EnumConverter[E](datatype), FloatConverter()]),

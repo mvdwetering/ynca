@@ -8,15 +8,15 @@ from ..subunit import SubunitBase
 
 
 class AlbumFunction:
-    album = StrFunction("ALBUM", Cmd.GET, init="METAINFO")
+    album = StrFunction(Cmd.GET, init="METAINFO")
 
 
 class ArtistFunction:
-    artist = StrFunction("ARTIST", Cmd.GET, init="METAINFO")
+    artist = StrFunction(Cmd.GET, init="METAINFO")
 
 
 class ChNameFunction:
-    chname = StrFunction("CHNAME", Cmd.GET, init="METAINFO")
+    chname = StrFunction(Cmd.GET, init="METAINFO")
 
 
 class PlaybackFunction:
@@ -26,27 +26,27 @@ class PlaybackFunction:
 
 
 class PlaybackInfoFunction:
-    playbackinfo = EnumFunction[PlaybackInfo]("PLAYBACKINFO", PlaybackInfo, Cmd.GET)
+    playbackinfo = EnumFunction[PlaybackInfo](PlaybackInfo, Cmd.GET)
 
 
 class RepeatFunction:
-    repeat = EnumFunction[Repeat]("REPEAT", Repeat)
+    repeat = EnumFunction[Repeat](Repeat)
 
 
 class ShuffleFunction:
-    shuffle = EnumFunction[Shuffle]("SHUFFLE", Shuffle)
+    shuffle = EnumFunction[Shuffle](Shuffle)
 
 
 class SongFunction:
-    song = StrFunction("SONG", Cmd.GET, init="METAINFO")
+    song = StrFunction(Cmd.GET, init="METAINFO")
 
 
 class StationFunction:
-    station = StrFunction("STATION", Cmd.GET)
+    station = StrFunction(Cmd.GET)
 
 
 class TrackFunction:
-    track = StrFunction("TRACK", Cmd.GET, init="METAINFO")
+    track = StrFunction(Cmd.GET, init="METAINFO")
 
 
 # A number of subunits have the same/similar featureset
@@ -66,7 +66,6 @@ class MediaPlaybackSubunitBase(
 
 class FmFreqFunction:
     fmfreq = FloatFunction(
-        "FMFREQ",
         converter=FloatConverter(
             to_str=lambda v: number_to_string_with_stepsize(v, 2, 0.2)
         ),

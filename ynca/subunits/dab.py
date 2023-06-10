@@ -12,14 +12,14 @@ from . import FmFreqFunction
 class Dab(SubunitBase, FmFreqFunction):
     id = Subunit.DAB
 
-    band = EnumFunction[BandDab]("BAND", BandDab)
+    band = EnumFunction[BandDab](BandDab)
 
-    dabchlabel = StrFunction("DABCHLABEL", Cmd.GET)
-    dabdlslabel = StrFunction("DABDLSLABEL", Cmd.GET)
-    dabensemblelabel = StrFunction("DABENSEMBLELABEL", Cmd.GET)
-    dabservicelabel = StrFunction("DABSERVICELABEL", Cmd.GET)
-    dabprgtype = StrFunction("DABPRGTYPE", Cmd.GET)
+    dabchlabel = StrFunction(Cmd.GET)
+    dabdlslabel = StrFunction(Cmd.GET)
+    dabensemblelabel = StrFunction(Cmd.GET)
+    dabservicelabel = StrFunction(Cmd.GET)
+    dabprgtype = StrFunction(Cmd.GET)
 
-    fmrdsprgservice = StrFunction("FMRDSPRGSERVICE", Cmd.GET, init="FMRDSINFO")
-    fmrdsprgtype = StrFunction("FMRDSPRGTYPE", Cmd.GET, init="FMRDSINFO")
-    fmrdstxt = StrFunction("FMRDSTXT", Cmd.GET, init="FMRDSINFO")
+    fmrdsprgservice = StrFunction(Cmd.GET, init="FMRDSINFO")
+    fmrdsprgtype = StrFunction(Cmd.GET, init="FMRDSINFO")
+    fmrdstxt = StrFunction(Cmd.GET, init="FMRDSINFO")
