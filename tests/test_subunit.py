@@ -37,7 +37,7 @@ INITIALIZE_FULL_RESPONSES = [
 class DummySubunit(SubunitBase):
     id = SUBUNIT
 
-    dummy = IntFunction("DUMMY_FUNCTION")
+    dummy_function = IntFunction()
 
 
 @pytest.fixture

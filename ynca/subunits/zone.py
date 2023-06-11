@@ -44,23 +44,20 @@ class ZoneBase(PlaybackFunction, SubunitBase):
     # BASIC gets a lot of attribute like PWR, SLEEP, VOL, MUTE, INP, STRAIGHT, ENHANCER, SOUNDPRG and more
     # Use it to significantly reduce the amount of commands to send
 
-    adaptivedrc = EnumFunction[AdaptiveDrc]("ADAPTIVEDRC", AdaptiveDrc)
-    enhancer = EnumFunction[Enhancer]("ENHANCER", Enhancer)
-    hdmiout = EnumFunction[HdmiOut]("HDMIOUT", HdmiOut)
+    adaptivedrc = EnumFunction[AdaptiveDrc](AdaptiveDrc)
+    enhancer = EnumFunction[Enhancer](Enhancer)
+    hdmiout = EnumFunction[HdmiOut](HdmiOut)
     hpbass = FloatFunction(
-        "HPBASS",
         converter=FloatConverter(
             to_str=lambda v: number_to_string_with_stepsize(v, 1, 0.5)
         ),
     )
     hptreble = FloatFunction(
-        "HPTREBLE",
         converter=FloatConverter(
             to_str=lambda v: number_to_string_with_stepsize(v, 1, 0.5)
         ),
     )
     initvollvl = EnumOrFloatFunction[InitVolLvl](
-        "INITVOLLVL",
         InitVolLvl,
         MultiConverter(
             [
@@ -71,10 +68,9 @@ class ZoneBase(PlaybackFunction, SubunitBase):
             ]
         ),
     )
-    initvolmode = EnumFunction[InitVolMode]("INITVOLMODE", InitVolMode)
-    inp = EnumFunction[Input]("INP", Input, init="BASIC")
+    initvolmode = EnumFunction[InitVolMode](InitVolMode)
+    inp = EnumFunction[Input](Input, init="BASIC")
     maxvol = FloatFunction(
-        "MAXVOL",
         converter=MultiConverter(
             [
                 # Special handling for 16.5 which is valid, but does not fit stepsize of 5
@@ -87,46 +83,43 @@ class ZoneBase(PlaybackFunction, SubunitBase):
             ]
         ),
     )
-    mute = EnumFunction[Mute]("MUTE", Mute, init="BASIC")
-    puredirmode = EnumFunction[PureDirMode]("PUREDIRMODE", PureDirMode, init="BASIC")
-    pwr = EnumFunction[Pwr]("PWR", Pwr, init="BASIC")
-    scene1name = StrFunction("SCENE1NAME", Cmd.GET, init="SCENENAME")
-    scene2name = StrFunction("SCENE2NAME", Cmd.GET, init="SCENENAME")
-    scene3name = StrFunction("SCENE3NAME", Cmd.GET, init="SCENENAME")
-    scene4name = StrFunction("SCENE4NAME", Cmd.GET, init="SCENENAME")
-    scene5name = StrFunction("SCENE5NAME", Cmd.GET, init="SCENENAME")
-    scene6name = StrFunction("SCENE6NAME", Cmd.GET, init="SCENENAME")
-    scene7name = StrFunction("SCENE7NAME", Cmd.GET, init="SCENENAME")
-    scene8name = StrFunction("SCENE8NAME", Cmd.GET, init="SCENENAME")
-    scene9name = StrFunction("SCENE9NAME", Cmd.GET, init="SCENENAME")
-    scene10name = StrFunction("SCENE10NAME", Cmd.GET, init="SCENENAME")
-    scene11name = StrFunction("SCENE11NAME", Cmd.GET, init="SCENENAME")
-    scene12name = StrFunction("SCENE12NAME", Cmd.GET, init="SCENENAME")
-    sleep = EnumFunction[Sleep]("SLEEP", Sleep)
-    soundprg = EnumFunction[SoundPrg]("SOUNDPRG", SoundPrg, init="BASIC")
+    mute = EnumFunction[Mute](Mute, init="BASIC")
+    puredirmode = EnumFunction[PureDirMode](PureDirMode, init="BASIC")
+    pwr = EnumFunction[Pwr](Pwr, init="BASIC")
+    scene1name = StrFunction(Cmd.GET, init="SCENENAME")
+    scene2name = StrFunction(Cmd.GET, init="SCENENAME")
+    scene3name = StrFunction(Cmd.GET, init="SCENENAME")
+    scene4name = StrFunction(Cmd.GET, init="SCENENAME")
+    scene5name = StrFunction(Cmd.GET, init="SCENENAME")
+    scene6name = StrFunction(Cmd.GET, init="SCENENAME")
+    scene7name = StrFunction(Cmd.GET, init="SCENENAME")
+    scene8name = StrFunction(Cmd.GET, init="SCENENAME")
+    scene9name = StrFunction(Cmd.GET, init="SCENENAME")
+    scene10name = StrFunction(Cmd.GET, init="SCENENAME")
+    scene11name = StrFunction(Cmd.GET, init="SCENENAME")
+    scene12name = StrFunction(Cmd.GET, init="SCENENAME")
+    sleep = EnumFunction[Sleep](Sleep)
+    soundprg = EnumFunction[SoundPrg](SoundPrg, init="BASIC")
     spbass = FloatFunction(
-        "SPBASS",
         converter=FloatConverter(
             to_str=lambda v: number_to_string_with_stepsize(v, 1, 0.5)
         ),
     )
     sptreble = FloatFunction(
-        "SPTREBLE",
         converter=FloatConverter(
             to_str=lambda v: number_to_string_with_stepsize(v, 1, 0.5)
         ),
     )
-    straight = EnumFunction[Straight]("STRAIGHT", Straight, init="BASIC")
-    threedcinema = EnumFunction[ThreeDeeCinema]("3DCINEMA", ThreeDeeCinema)
-    twochdecoder = EnumFunction[TwoChDecoder]("2CHDECODER", TwoChDecoder)
+    straight = EnumFunction[Straight](Straight, init="BASIC")
+    threedcinema = EnumFunction[ThreeDeeCinema](ThreeDeeCinema, name_override="3DCINEMA")
+    twochdecoder = EnumFunction[TwoChDecoder](TwoChDecoder, name_override="2CHDECODER")
     vol = FloatFunction(
-        "VOL",
         converter=FloatConverter(
             to_str=lambda v: number_to_string_with_stepsize(v, 1, 0.5)
         ),
         init="BASIC",
     )
-    zonename = StrFunction("ZONENAME", converter=StrConverter(min_len=0, max_len=9))
+    zonename = StrFunction(converter=StrConverter(min_len=0, max_len=9))
 
     def scene(self, scene_id: int | str):
         """Recall a scene"""

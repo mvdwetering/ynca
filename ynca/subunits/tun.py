@@ -12,17 +12,16 @@ from . import FmFreqFunction
 class Tun(SubunitBase, FmFreqFunction):
     id = Subunit.TUN
 
-    band = EnumFunction[BandTun]("BAND", BandTun)
+    band = EnumFunction[BandTun](BandTun)
 
     amfreq = IntFunction(
-        "AMFREQ",
         converter=IntConverter(
             to_str=lambda v: number_to_string_with_stepsize(v, 0, 10)
         ),
     )
     """Read/write AM frequency. Values will be aligned to a valid stepsize."""
 
-    rdsprgservice = StrFunction("RDSPRGSERVICE", Cmd.GET, init="RDSINFO")
-    rdsprgtype = StrFunction("RDSPRGTYPE", Cmd.GET, init="RDSINFO")
-    rdstxta = StrFunction("RDSTXTA", Cmd.GET, init="RDSINFO")
-    rdstxtb = StrFunction("RDSTXTB", Cmd.GET, init="RDSINFO")
+    rdsprgservice = StrFunction(Cmd.GET, init="RDSINFO")
+    rdsprgtype = StrFunction(Cmd.GET, init="RDSINFO")
+    rdstxta = StrFunction(Cmd.GET, init="RDSINFO")
+    rdstxtb = StrFunction(Cmd.GET, init="RDSINFO")
