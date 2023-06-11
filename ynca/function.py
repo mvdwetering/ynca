@@ -50,7 +50,7 @@ class FunctionBase(ABC, Generic[T]):
         cmd:
             Operations the command supports. PUT and/or GET
         name_override:
-            Optional name_override useful in case where function name can not be a valid Python attribute name (e.g. 2CHDECODER)
+            Optional name_override useful in case where function name can not be a valid Python attribute name e.g. 2CHDECODER
         init:
             Name of function to use for initialize. Only needed if the function name to initialize is different from the function name itself. E.g. METAINFO for ARTIST, ALBUM and SONG to reduce amount of commands needed
         no_initialize:
@@ -90,9 +90,8 @@ class FunctionBase(ABC, Generic[T]):
             raise AttributeError(f"Function {self.name} does not support PUT command")
         instance._put(self.name, self.converter.to_str(value))
 
-    def __delete__(self, instance: SubunitBase):  # pragma: no cover
-        # Don't think I have use for this
-        pass
+    def __delete__(self, instance: SubunitBase): 
+        del instance.function_handlers[self.name]
 
     def __set_name__(self, owner, name):
         self.name = name.upper() if not self._name_override else self._name_override
