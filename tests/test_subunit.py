@@ -4,13 +4,14 @@ from unittest import mock
 import pytest
 
 from ynca import Avail
+from ynca.constants import Subunit
 from ynca.subunit import SubunitBase
 from ynca.function import IntFunction
 from ynca.errors import YncaInitializationFailedException
 
 
 SYS = "SYS"
-SUBUNIT = "DUMMY"
+SUBUNIT = "UAW"
 
 INITIALIZE_FULL_RESPONSES = [
     (
@@ -35,7 +36,7 @@ INITIALIZE_FULL_RESPONSES = [
 
 # Need a class with an ID to test some of the handling
 class DummySubunit(SubunitBase):
-    id = SUBUNIT
+    id = Subunit.UAW
 
     dummy_function = IntFunction()
 
@@ -136,3 +137,10 @@ def test_status_not_ok_ignored(
     assert update_callback.call_count == 0
     connection.send_protocol_error("@RESTRICTED")
     assert update_callback.call_count == 0
+
+
+def test_write_function_calls_connection_put(
+    connection, initialized_dummysubunit: SubunitBase, update_callback
+):
+    initialized_dummysubunit.dummy_function = 123
+    connection.put.assert_called_with("UAW", "DUMMY_FUNCTION", "123")
