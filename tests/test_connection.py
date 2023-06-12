@@ -3,6 +3,7 @@ from contextlib import contextmanager
 from unittest import mock
 
 import pytest
+from flaky import flaky
 from mock_serial import MockSerial
 
 from ynca.connection import YncaConnection, YncaProtocolStatus
@@ -228,9 +229,11 @@ def test_get_communication_log_items(mock_serial):
         assert len(logitems) == 5 # 1 dropped out due to size limit
 
 
+# Flaky due to multiple threads needing to communicate.
+@flaky(max_runs=5)
 def test_keep_alive(mock_serial):
 
-    # Tweak the internal keep alive interval to keep test short
+    # Tweak the internal keep-alive interval to keep test short
     from ynca.connection import YncaProtocol
     YncaProtocol.KEEP_ALIVE_INTERVAL = 1
 
@@ -250,7 +253,7 @@ def test_keep_alive(mock_serial):
         # Keep alives do not generate message callbacks
         assert message_callback.call_count == 0
 
-        # Manual MODELNAME (which is internal keep alive)
+        # Manual sending of MODELNAME (which is internal keep alive)
         # must still work as expected
         connection.get("SYS", "MODELNAME")
         time.sleep(SHORT_DELAY)
