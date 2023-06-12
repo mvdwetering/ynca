@@ -235,18 +235,18 @@ def test_keep_alive(mock_serial):
 
     # Tweak the internal keep-alive interval to keep test short
     from ynca.connection import YncaProtocol
-    YncaProtocol.KEEP_ALIVE_INTERVAL = 1
+    YncaProtocol.KEEP_ALIVE_INTERVAL = 2
 
     with active_connection(mock_serial, communication_log_size=100) as connection:
 
         message_callback = mock.MagicMock()
         connection.register_message_callback(message_callback)
 
-        time.sleep(SHORT_DELAY)
+        time.sleep(1)
         logitems = connection.get_communication_log_items()
         assert len(logitems) == 4 # Send en received keep-alive are logged
 
-        time.sleep(1)
+        time.sleep(2)
         logitems = connection.get_communication_log_items()
         assert len(logitems) == 6 # 1 additional keep alive pair
 
