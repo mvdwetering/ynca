@@ -77,3 +77,27 @@ Pandora seems to use TRACK or SONG. Might depend on firmware version?
 
 TRACK is seen in the RX-A6A (1.80/3.12) and TSR-700 (1.53/3.12) logs and on internet mentioned for RX-A850
 SONG only seen on internet without mention of receiver or firmware version
+
+## HDMIOUT control
+
+There seem to be 2 methods of controlling HDMIOUT status
+
+### MAIN:HDMIOUT 
+
+This seems to be how older receivers work.
+
+MAIN:HDMIOUT is an enum which can have values Off, OUT1, OUT2 and OUT1 + 2. I have only seen it for the MAIN zone, but in theory it could also apply to others
+
+### SYS:HDMIOUT#
+
+This seems to be for newer receivers like TSR-700 and RX-A6A
+
+SYS:HDMIOUT# is a boolean that can have values On and Off. This command toggles a specific HDMIOUT on/off.
+
+This command has been seen for HDMIOUT 1, 2 and 3.
+
+What makes this command a bit weird is while it is part of the SYS subunit it can _only_ be controlled when the related zone is On. So for example you can only control HDMIOUT1 when the MAIN zone is On. See logging in https://github.com/mvdwetering/yamaha_ynca/discussions/119#discussioncomment-6103924
+
+That seems workable for HDMIOUT 1 and 2 since those always seem to be related to the MAIN zone, but HDMIOUT3 is special and can be linked with ZONE2 and ZONE4 on an RX-A4A or RX-A6A according to the manual. It is unknown if/how it is possible to figure out to which zone it is configured. Would need logging when changing that setting.
+
+In RX-A6A logging (see logs directory) it seems like both zones (2 and 4) report HDMIOUT3 as a result of requesting BASIC.
