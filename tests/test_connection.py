@@ -6,7 +6,7 @@ import pytest
 from mock_serial import MockSerial
 
 from ynca.connection import YncaConnection, YncaProtocolStatus
-from ynca.errors import YncaConnectionError
+from ynca.errors import YncaConnectionError, YncaConnectionFailed
 
 SHORT_DELAY = 0.5
 
@@ -67,6 +67,17 @@ def test_connect_invalid_port():
     connection = YncaConnection("invalid")
     with pytest.raises(YncaConnectionError):
         connection.connect()
+
+
+def test_connect_runtime_error(mock_serial):
+
+    with mock.patch(
+        "serial.serial_for_url",
+        side_effect=RuntimeError("Runtime error"),
+    ):
+        connection = YncaConnection(mock_serial.port)
+        with pytest.raises(YncaConnectionFailed):
+            connection.connect()
 
 
 def test_disconnect():
