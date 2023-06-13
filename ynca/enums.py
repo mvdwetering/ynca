@@ -88,6 +88,7 @@ class HdmiOut(str, Enum):
     UNKNOWN = UNKNOWN_STRING
     """Unknown values in the enum are mapped to UNKNOWN"""
 
+
 class HdmiOutOnOff(Enum):
     ON = "On"
     OFF = "Off"

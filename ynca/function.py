@@ -62,9 +62,8 @@ class FunctionBase(ABC, Generic[T]):
         self.no_initialize = no_initialize
 
         # Name will be set in __set_name__, provide typehint to help the linter
-        self.name:str
+        self.name: str
         self._name_override = name_override
-
 
     @overload
     def __get__(self, instance: None, owner) -> FunctionBase[T]:  # pragma: no cover
@@ -90,7 +89,7 @@ class FunctionBase(ABC, Generic[T]):
             raise AttributeError(f"Function {self.name} does not support PUT command")
         instance._put(self.name, self.converter.to_str(value))
 
-    def __delete__(self, instance: SubunitBase): 
+    def __delete__(self, instance: SubunitBase):
         del instance.function_handlers[self.name]
 
     def __set_name__(self, owner, name):

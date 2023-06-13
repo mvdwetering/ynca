@@ -14,7 +14,7 @@ def number_to_string_with_stepsize(value: float, decimals: int, stepsize: float)
     after_the_point, before_the_point = modf(stepped_value)
 
     before_the_point = abs(before_the_point)
-    after_the_point = int(abs(after_the_point * (10**decimals)))
+    after_the_point = int(abs(after_the_point * (10 ** decimals)))
 
     output = "-" if negative and (before_the_point > 0 or after_the_point > 0) else ""
     output += str(int(before_the_point))

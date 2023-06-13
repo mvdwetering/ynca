@@ -108,7 +108,7 @@ class YncaApi:
             try:
                 if subunit_class.id == subunit_id:
                     return subunit_class
-            except AttributeError:   # pragma: no cover
+            except AttributeError:  # pragma: no cover
                 # Intermediate Subunit classes like ZoneBase don't have an ID
                 pass
 

@@ -15,6 +15,6 @@ class YncaConnectionFailed(YncaException):
 
 class YncaInitializationFailedException(YncaException):
     """Initialization of Zone failed.
-Several possible causes, for example:
-* connecting to a device that already has the YNCA port occupied
-* bug in the ynca component > enable debug logging for more info"""
+    Several possible causes, for example:
+    * connecting to a device that already has the YNCA port occupied
+    * bug in the ynca component > enable debug logging for more info"""

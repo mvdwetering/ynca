@@ -11,12 +11,15 @@ from ynca.errors import YncaConnectionError, YncaConnectionFailed
 
 SHORT_DELAY = 0.5
 
+
 @contextmanager
-def active_connection(serial_mock, delay_after_close:float=SHORT_DELAY, communication_log_size=0):
+def active_connection(
+    serial_mock, delay_after_close: float = SHORT_DELAY, communication_log_size=0
+):
 
     keep_alive = serial_mock.stub(
-        receive_bytes=b'@SYS:MODELNAME=?\r\n',
-        send_bytes=b'@SYS:MODELNAME=TESTMODEL\r\n'
+        receive_bytes=b"@SYS:MODELNAME=?\r\n",
+        send_bytes=b"@SYS:MODELNAME=TESTMODEL\r\n",
     )
 
     try:
@@ -32,8 +35,6 @@ def active_connection(serial_mock, delay_after_close:float=SHORT_DELAY, communic
         connection.close()
 
 
-
-
 def test_close_uninitialized():
     connection = YncaConnection("dummy")
     assert not connection.connected
@@ -44,8 +45,8 @@ def test_close_uninitialized():
 def test_connect(mock_serial):
 
     keep_alive = mock_serial.stub(
-        receive_bytes=b'@SYS:MODELNAME=?\r\n',
-        send_bytes=b'@SYS:MODELNAME=TESTMODEL\r\n'
+        receive_bytes=b"@SYS:MODELNAME=?\r\n",
+        send_bytes=b"@SYS:MODELNAME=TESTMODEL\r\n",
     )
 
     connection = YncaConnection(mock_serial.port)
@@ -87,8 +88,8 @@ def test_disconnect():
     mock_serial.open()
 
     keep_alive = mock_serial.stub(
-        receive_bytes=b'@SYS:MODELNAME=?\r\n',
-        send_bytes=b'@SYS:MODELNAME=TESTMODEL\r\n'
+        receive_bytes=b"@SYS:MODELNAME=?\r\n",
+        send_bytes=b"@SYS:MODELNAME=TESTMODEL\r\n",
     )
 
     disconnect_callback = mock.MagicMock()
@@ -105,22 +106,19 @@ def test_disconnect():
 def test_send_raw(mock_serial):
 
     with active_connection(mock_serial) as connection:
-        raw_data = mock_serial.stub(
-            receive_bytes=b'RAW DATA',
-            send_bytes=b''
-        )
+        raw_data = mock_serial.stub(receive_bytes=b"RAW DATA", send_bytes=b"")
 
         connection.raw("RAW DATA")
         assert connection.num_commands_sent == 1
 
     assert raw_data.calls == 1
 
+
 def test_send_put(mock_serial):
 
     with active_connection(mock_serial) as connection:
         raw_data = mock_serial.stub(
-            receive_bytes=b'@Subunit:Function=Value\r\n',
-            send_bytes=b''
+            receive_bytes=b"@Subunit:Function=Value\r\n", send_bytes=b""
         )
 
         connection.put("Subunit", "Function", "Value")
@@ -133,8 +131,7 @@ def test_send_get(mock_serial):
 
     with active_connection(mock_serial) as connection:
         raw_data = mock_serial.stub(
-            receive_bytes=b'@Subunit:Function=?\r\n',
-            send_bytes=b''
+            receive_bytes=b"@Subunit:Function=?\r\n", send_bytes=b""
         )
 
         connection.get("Subunit", "Function")
@@ -147,12 +144,12 @@ def test_message_callbacks(mock_serial):
 
     with active_connection(mock_serial) as connection:
         data_1 = mock_serial.stub(
-            receive_bytes=b'@RequestSubunit1:RequestFunction1=?\r\n',
-            send_bytes=b'@ResponseSubunit1:ResponseFunction1=ResponseValue1\r\n',
+            receive_bytes=b"@RequestSubunit1:RequestFunction1=?\r\n",
+            send_bytes=b"@ResponseSubunit1:ResponseFunction1=ResponseValue1\r\n",
         )
         data_2 = mock_serial.stub(
-            receive_bytes=b'@RequestSubunit2:RequestFunction2=?\r\n',
-            send_bytes=b'@ResponseSubunit2:ResponseFunction2=ResponseValue2\r\n',
+            receive_bytes=b"@RequestSubunit2:RequestFunction2=?\r\n",
+            send_bytes=b"@ResponseSubunit2:ResponseFunction2=ResponseValue2\r\n",
         )
 
         # 2 message callbacks registered
@@ -166,10 +163,14 @@ def test_message_callbacks(mock_serial):
         time.sleep(SHORT_DELAY)
         assert message_callback_1.call_count == 1
         assert message_callback_2.call_count == 1
-        call_args_1 = mock.call(YncaProtocolStatus.OK, "ResponseSubunit1", "ResponseFunction1", "ResponseValue1")
+        call_args_1 = mock.call(
+            YncaProtocolStatus.OK,
+            "ResponseSubunit1",
+            "ResponseFunction1",
+            "ResponseValue1",
+        )
         assert message_callback_1.call_args == call_args_1
         assert message_callback_2.call_args == call_args_1
-
 
         # Unregister message callback 1, duplicate register message callback 2
         connection.unregister_message_callback(message_callback_1)
@@ -180,9 +181,14 @@ def test_message_callbacks(mock_serial):
         time.sleep(SHORT_DELAY)
         assert message_callback_1.call_count == 1
         assert message_callback_2.call_count == 2
-        assert message_callback_2.call_args == mock.call(YncaProtocolStatus.OK, "ResponseSubunit2", "ResponseFunction2", "ResponseValue2")
+        assert message_callback_2.call_args == mock.call(
+            YncaProtocolStatus.OK,
+            "ResponseSubunit2",
+            "ResponseFunction2",
+            "ResponseValue2",
+        )
 
-        # Unregister message callback too many times 
+        # Unregister message callback too many times
         connection.unregister_message_callback(message_callback_1)
 
 
@@ -190,13 +196,13 @@ def test_protocol_status(mock_serial):
 
     with active_connection(mock_serial) as connection:
         undefined = mock_serial.stub(
-            receive_bytes=b'@Subunit:Function=Undefined\r\n',
-            send_bytes=b'@UNDEFINED\r\n'
+            receive_bytes=b"@Subunit:Function=Undefined\r\n",
+            send_bytes=b"@UNDEFINED\r\n",
         )
 
         restricted = mock_serial.stub(
-            receive_bytes=b'@Subunit:Function=Restricted\r\n',
-            send_bytes=b'@RESTRICTED\r\n'
+            receive_bytes=b"@Subunit:Function=Restricted\r\n",
+            send_bytes=b"@RESTRICTED\r\n",
         )
 
         message_callback = mock.MagicMock()
@@ -204,29 +210,32 @@ def test_protocol_status(mock_serial):
 
         connection.put("Subunit", "Function", "Undefined")
         time.sleep(SHORT_DELAY)
-        assert message_callback.call_args == mock.call(YncaProtocolStatus.UNDEFINED, mock.ANY, mock.ANY, mock.ANY)
+        assert message_callback.call_args == mock.call(
+            YncaProtocolStatus.UNDEFINED, mock.ANY, mock.ANY, mock.ANY
+        )
 
         connection.put("Subunit", "Function", "Restricted")
         time.sleep(SHORT_DELAY)
-        assert message_callback.call_args == mock.call(YncaProtocolStatus.RESTRICTED, mock.ANY, mock.ANY, mock.ANY)
+        assert message_callback.call_args == mock.call(
+            YncaProtocolStatus.RESTRICTED, mock.ANY, mock.ANY, mock.ANY
+        )
 
 
 def test_get_communication_log_items(mock_serial):
 
     with active_connection(mock_serial, communication_log_size=5) as connection:
         raw_data = mock_serial.stub(
-            receive_bytes=b'@Subunit:Function=?\r\n',
-            send_bytes=b''
+            receive_bytes=b"@Subunit:Function=?\r\n", send_bytes=b""
         )
 
         time.sleep(SHORT_DELAY)
         logitems = connection.get_communication_log_items()
-        assert len(logitems) == 4 # Send en received keep-alive
+        assert len(logitems) == 4  # Send en received keep-alive
 
         connection.get("Subunit", "Function")
         time.sleep(SHORT_DELAY)
         logitems = connection.get_communication_log_items()
-        assert len(logitems) == 5 # 1 dropped out due to size limit
+        assert len(logitems) == 5  # 1 dropped out due to size limit
 
 
 # Flaky due to multiple threads needing to communicate.
@@ -235,6 +244,7 @@ def test_keep_alive(mock_serial):
 
     # Tweak the internal keep-alive interval to keep test short
     from ynca.connection import YncaProtocol
+
     YncaProtocol.KEEP_ALIVE_INTERVAL = 2
 
     with active_connection(mock_serial, communication_log_size=100) as connection:
@@ -244,11 +254,11 @@ def test_keep_alive(mock_serial):
 
         time.sleep(1)
         logitems = connection.get_communication_log_items()
-        assert len(logitems) == 4 # Send en received keep-alive are logged
+        assert len(logitems) == 4  # Send en received keep-alive are logged
 
         time.sleep(2)
         logitems = connection.get_communication_log_items()
-        assert len(logitems) == 6 # 1 additional keep alive pair
+        assert len(logitems) == 6  # 1 additional keep alive pair
 
         # Keep alives do not generate message callbacks
         assert message_callback.call_count == 0
@@ -257,4 +267,6 @@ def test_keep_alive(mock_serial):
         # must still work as expected
         connection.get("SYS", "MODELNAME")
         time.sleep(SHORT_DELAY)
-        assert message_callback.call_args == mock.call(YncaProtocolStatus.OK, "SYS", "MODELNAME", "TESTMODEL")
+        assert message_callback.call_args == mock.call(
+            YncaProtocolStatus.OK, "SYS", "MODELNAME", "TESTMODEL"
+        )

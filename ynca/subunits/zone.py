@@ -111,7 +111,9 @@ class ZoneBase(PlaybackFunction, SubunitBase):
         ),
     )
     straight = EnumFunction[Straight](Straight, init="BASIC")
-    threedcinema = EnumFunction[ThreeDeeCinema](ThreeDeeCinema, name_override="3DCINEMA")
+    threedcinema = EnumFunction[ThreeDeeCinema](
+        ThreeDeeCinema, name_override="3DCINEMA"
+    )
     twochdecoder = EnumFunction[TwoChDecoder](TwoChDecoder, name_override="2CHDECODER")
     vol = FloatFunction(
         converter=FloatConverter(

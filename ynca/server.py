@@ -259,8 +259,6 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
                     if result[1]:
                         self.write_line(f"@SYS:{function}={sys_on_value}")
 
-
-
     def handle(self):
         # self.rfile is a file-like object created by the handler;
         # we can now use e.g. readline() instead of raw recv() calls
