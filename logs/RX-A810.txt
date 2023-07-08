@@ -1,248 +1,284 @@
-2022-07-16 20:35:21 DEBUG (Thread-3) [ynca.connection] Connected
-2022-07-16 20:35:21 DEBUG (Thread-4) [ynca.connection] < @SYS:MODELNAME=?
-2022-07-16 20:35:21 DEBUG (SyncWorker_0) [ynca.ynca] Subunit availability check start
-2022-07-16 20:35:21 DEBUG (Thread-3) [ynca.connection] > @SYS:MODELNAME=RX-A810
-2022-07-16 20:35:22 DEBUG (Thread-4) [ynca.connection] < @SYS:MODELNAME=?
-2022-07-16 20:35:22 DEBUG (Thread-3) [ynca.connection] > @SYS:MODELNAME=RX-A810
-2022-07-16 20:35:22 DEBUG (Thread-4) [ynca.connection] < @SYS:AVAIL=?
-2022-07-16 20:35:22 DEBUG (Thread-3) [ynca.connection] > @UNDEFINED
-2022-07-16 20:35:22 DEBUG (Thread-4) [ynca.connection] < @MAIN:AVAIL=?
-2022-07-16 20:35:22 DEBUG (Thread-3) [ynca.connection] > @MAIN:AVAIL=Not Ready
-2022-07-16 20:35:22 DEBUG (Thread-4) [ynca.connection] < @ZONE2:AVAIL=?
-2022-07-16 20:35:22 DEBUG (Thread-3) [ynca.connection] > @ZONE2:AVAIL=Not Ready
-2022-07-16 20:35:22 DEBUG (Thread-4) [ynca.connection] < @ZONE3:AVAIL=?
-2022-07-16 20:35:22 DEBUG (Thread-3) [ynca.connection] > @RESTRICTED
-2022-07-16 20:35:22 DEBUG (Thread-4) [ynca.connection] < @ZONE4:AVAIL=?
-2022-07-16 20:35:22 DEBUG (Thread-3) [ynca.connection] > @RESTRICTED
-2022-07-16 20:35:22 DEBUG (Thread-4) [ynca.connection] < @TUN:AVAIL=?
-2022-07-16 20:35:22 DEBUG (Thread-3) [ynca.connection] > @TUN:AVAIL=Not Ready
-2022-07-16 20:35:22 DEBUG (Thread-4) [ynca.connection] < @SIRIUS:AVAIL=?
-2022-07-16 20:35:22 DEBUG (Thread-3) [ynca.connection] > @RESTRICTED
-2022-07-16 20:35:22 DEBUG (Thread-4) [ynca.connection] < @IPOD:AVAIL=?
-2022-07-16 20:35:22 DEBUG (Thread-3) [ynca.connection] > @IPOD:AVAIL=Not Connected
-2022-07-16 20:35:22 DEBUG (Thread-4) [ynca.connection] < @BT:AVAIL=?
-2022-07-16 20:35:22 DEBUG (Thread-3) [ynca.connection] > @BT:AVAIL=Not Connected
-2022-07-16 20:35:23 DEBUG (Thread-4) [ynca.connection] < @RHAP:AVAIL=?
-2022-07-16 20:35:23 DEBUG (Thread-3) [ynca.connection] > @RESTRICTED
-2022-07-16 20:35:23 DEBUG (Thread-4) [ynca.connection] < @SIRIUSIR:AVAIL=?
-2022-07-16 20:35:23 DEBUG (Thread-3) [ynca.connection] > @RESTRICTED
-2022-07-16 20:35:23 DEBUG (Thread-4) [ynca.connection] < @PANDORA:AVAIL=?
-2022-07-16 20:35:23 DEBUG (Thread-3) [ynca.connection] > @RESTRICTED
-2022-07-16 20:35:23 DEBUG (Thread-4) [ynca.connection] < @NAPSTER:AVAIL=?
-2022-07-16 20:35:23 DEBUG (Thread-3) [ynca.connection] > @NAPSTER:AVAIL=Not Ready
-2022-07-16 20:35:23 DEBUG (Thread-4) [ynca.connection] < @PC:AVAIL=?
-2022-07-16 20:35:23 DEBUG (Thread-3) [ynca.connection] > @PC:AVAIL=Not Ready
-2022-07-16 20:35:23 DEBUG (Thread-4) [ynca.connection] < @NETRADIO:AVAIL=?
-2022-07-16 20:35:23 DEBUG (Thread-3) [ynca.connection] > @NETRADIO:AVAIL=Not Ready
-2022-07-16 20:35:23 DEBUG (Thread-4) [ynca.connection] < @USB:AVAIL=?
-2022-07-16 20:35:23 DEBUG (Thread-3) [ynca.connection] > @USB:AVAIL=Not Connected
-2022-07-16 20:35:23 DEBUG (Thread-4) [ynca.connection] < @IPODUSB:AVAIL=?
-2022-07-16 20:35:23 DEBUG (Thread-3) [ynca.connection] > @IPODUSB:AVAIL=Not Connected
-2022-07-16 20:35:23 DEBUG (Thread-4) [ynca.connection] < @UAW:AVAIL=?
-2022-07-16 20:35:23 DEBUG (Thread-3) [ynca.connection] > @UAW:AVAIL=Not Connected
-2022-07-16 20:35:23 DEBUG (Thread-4) [ynca.connection] < @SIRIUSXM:AVAIL=?
-2022-07-16 20:35:23 DEBUG (Thread-3) [ynca.connection] > @UNDEFINED
-2022-07-16 20:35:24 DEBUG (Thread-4) [ynca.connection] < @SPOTIFY:AVAIL=?
-2022-07-16 20:35:24 DEBUG (Thread-3) [ynca.connection] > @UNDEFINED
-2022-07-16 20:35:24 DEBUG (Thread-4) [ynca.connection] < @SERVER:AVAIL=?
-2022-07-16 20:35:24 DEBUG (Thread-3) [ynca.connection] > @UNDEFINED
-2022-07-16 20:35:24 DEBUG (Thread-4) [ynca.connection] < @AIRPLAY:AVAIL=?
-2022-07-16 20:35:24 DEBUG (Thread-3) [ynca.connection] > @UNDEFINED
-2022-07-16 20:35:24 DEBUG (Thread-4) [ynca.connection] < @SYS:VERSION=?
-2022-07-16 20:35:24 DEBUG (Thread-3) [ynca.connection] > @SYS:VERSION=1.80/2.01
-2022-07-16 20:35:24 DEBUG (SyncWorker_0) [ynca.ynca] Subunit availability check done
-2022-07-16 20:35:24 DEBUG (SyncWorker_0) [ynca.subunit] Subunit Subunit.SYS initialization start.
-2022-07-16 20:35:24 DEBUG (Thread-4) [ynca.connection] < @SYS:AVAIL=?
-2022-07-16 20:35:24 DEBUG (Thread-3) [ynca.connection] > @UNDEFINED
-2022-07-16 20:35:24 DEBUG (Thread-4) [ynca.connection] < @SYS:PWR=?
-2022-07-16 20:35:24 DEBUG (Thread-3) [ynca.connection] > @SYS:PWR=Standby
-2022-07-16 20:35:24 DEBUG (Thread-4) [ynca.connection] < @SYS:MODELNAME=?
-2022-07-16 20:35:24 DEBUG (Thread-3) [ynca.connection] > @SYS:MODELNAME=RX-A810
-2022-07-16 20:35:24 DEBUG (Thread-4) [ynca.connection] < @SYS:INPNAME=?
-2022-07-16 20:35:24 DEBUG (Thread-3) [ynca.connection] > @SYS:INPNAMEPHONO=PHONO
-2022-07-16 20:35:24 DEBUG (Thread-3) [ynca.connection] > @SYS:INPNAMEHDMI1=Blu-ray
-2022-07-16 20:35:24 DEBUG (Thread-3) [ynca.connection] > @SYS:INPNAMEHDMI2=Shield
-2022-07-16 20:35:24 DEBUG (Thread-3) [ynca.connection] > @SYS:INPNAMEHDMI3=HTPC
-2022-07-16 20:35:24 DEBUG (Thread-3) [ynca.connection] > @SYS:INPNAMEHDMI4=HassIO
-2022-07-16 20:35:24 DEBUG (Thread-3) [ynca.connection] > @SYS:INPNAMEHDMI5=Cromecast
-2022-07-16 20:35:24 DEBUG (Thread-3) [ynca.connection] > @SYS:INPNAMEHDMI6=SteamLink
-2022-07-16 20:35:24 DEBUG (Thread-3) [ynca.connection] > @SYS:INPNAMEHDMI7=HDMI7
-2022-07-16 20:35:24 DEBUG (Thread-3) [ynca.connection] > @SYS:INPNAMEAV1=AV1
-2022-07-16 20:35:24 DEBUG (Thread-3) [ynca.connection] > @SYS:INPNAMEAV2=AV2
-2022-07-16 20:35:24 DEBUG (Thread-3) [ynca.connection] > @SYS:INPNAMEAV3=AV3
-2022-07-16 20:35:24 DEBUG (Thread-3) [ynca.connection] > @SYS:INPNAMEAV4=AV4
-2022-07-16 20:35:24 DEBUG (Thread-3) [ynca.connection] > @SYS:INPNAMEAV5=XBox
-2022-07-16 20:35:24 DEBUG (Thread-3) [ynca.connection] > @SYS:INPNAMEAV6=AV6
-2022-07-16 20:35:24 DEBUG (Thread-3) [ynca.connection] > @SYS:INPNAMEVAUX=V-AUX
-2022-07-16 20:35:24 DEBUG (Thread-3) [ynca.connection] > @SYS:INPNAMEAUDIO1=AUDIO1
-2022-07-16 20:35:24 DEBUG (Thread-3) [ynca.connection] > @SYS:INPNAMEAUDIO2=AUDIO2
-2022-07-16 20:35:24 DEBUG (Thread-3) [ynca.connection] > @SYS:INPNAMEDOCK=DOCK
-2022-07-16 20:35:24 DEBUG (Thread-3) [ynca.connection] > @SYS:INPNAMEUSB=USB
-2022-07-16 20:35:24 DEBUG (Thread-4) [ynca.connection] < @SYS:VERSION=?
-2022-07-16 20:35:24 DEBUG (Thread-3) [ynca.connection] > @SYS:VERSION=1.80/2.01
-2022-07-16 20:35:24 DEBUG (SyncWorker_0) [ynca.subunit] Subunit Subunit.SYS initialization done.
-2022-07-16 20:35:24 DEBUG (SyncWorker_0) [ynca.subunit] Subunit Subunit.BT initialization start.
-2022-07-16 20:35:24 DEBUG (Thread-4) [ynca.connection] < @BT:AVAIL=?
-2022-07-16 20:35:24 DEBUG (Thread-3) [ynca.connection] > @BT:AVAIL=Not Connected
-2022-07-16 20:35:25 DEBUG (Thread-4) [ynca.connection] < @SYS:VERSION=?
-2022-07-16 20:35:25 DEBUG (Thread-3) [ynca.connection] > @SYS:VERSION=1.80/2.01
-2022-07-16 20:35:25 DEBUG (SyncWorker_0) [ynca.subunit] Subunit Subunit.BT initialization done.
-2022-07-16 20:35:25 DEBUG (SyncWorker_0) [ynca.subunit] Subunit Subunit.IPOD initialization start.
-2022-07-16 20:35:25 DEBUG (Thread-4) [ynca.connection] < @IPOD:AVAIL=?
-2022-07-16 20:35:25 DEBUG (Thread-3) [ynca.connection] > @IPOD:AVAIL=Not Connected
-2022-07-16 20:35:25 DEBUG (Thread-4) [ynca.connection] < @IPOD:PLAYBACKINFO=?
-2022-07-16 20:35:25 DEBUG (Thread-3) [ynca.connection] > @IPOD:PLAYBACKINFO=Stop
-2022-07-16 20:35:25 DEBUG (Thread-4) [ynca.connection] < @IPOD:METAINFO=?
-2022-07-16 20:35:25 DEBUG (Thread-3) [ynca.connection] > @IPOD:ARTIST=
-2022-07-16 20:35:25 DEBUG (Thread-3) [ynca.connection] > @IPOD:ALBUM=
-2022-07-16 20:35:25 DEBUG (Thread-3) [ynca.connection] > @IPOD:SONG=
-2022-07-16 20:35:25 DEBUG (Thread-4) [ynca.connection] < @IPOD:REPEAT=?
-2022-07-16 20:35:25 DEBUG (Thread-3) [ynca.connection] > @IPOD:REPEAT=Off
-2022-07-16 20:35:25 DEBUG (Thread-4) [ynca.connection] < @IPOD:SHUFFLE=?
-2022-07-16 20:35:25 DEBUG (Thread-3) [ynca.connection] > @IPOD:SHUFFLE=Off
-2022-07-16 20:35:25 DEBUG (Thread-4) [ynca.connection] < @SYS:VERSION=?
-2022-07-16 20:35:25 DEBUG (Thread-3) [ynca.connection] > @SYS:VERSION=1.80/2.01
-2022-07-16 20:35:25 DEBUG (SyncWorker_0) [ynca.subunit] Subunit Subunit.IPOD initialization done.
-2022-07-16 20:35:25 DEBUG (SyncWorker_0) [ynca.subunit] Subunit Subunit.IPODUSB initialization start.
-2022-07-16 20:35:25 DEBUG (Thread-4) [ynca.connection] < @IPODUSB:AVAIL=?
-2022-07-16 20:35:25 DEBUG (Thread-3) [ynca.connection] > @IPODUSB:AVAIL=Not Connected
-2022-07-16 20:35:25 DEBUG (Thread-4) [ynca.connection] < @IPODUSB:PLAYBACKINFO=?
-2022-07-16 20:35:25 DEBUG (Thread-3) [ynca.connection] > @IPODUSB:PLAYBACKINFO=Stop
-2022-07-16 20:35:25 DEBUG (Thread-4) [ynca.connection] < @IPODUSB:METAINFO=?
-2022-07-16 20:35:25 DEBUG (Thread-3) [ynca.connection] > @IPODUSB:ARTIST=
-2022-07-16 20:35:25 DEBUG (Thread-3) [ynca.connection] > @IPODUSB:ALBUM=
-2022-07-16 20:35:25 DEBUG (Thread-3) [ynca.connection] > @IPODUSB:SONG=
-2022-07-16 20:35:26 DEBUG (Thread-4) [ynca.connection] < @IPODUSB:REPEAT=?
-2022-07-16 20:35:26 DEBUG (Thread-3) [ynca.connection] > @IPODUSB:REPEAT=Off
-2022-07-16 20:35:26 DEBUG (Thread-4) [ynca.connection] < @IPODUSB:SHUFFLE=?
-2022-07-16 20:35:26 DEBUG (Thread-3) [ynca.connection] > @IPODUSB:SHUFFLE=Off
-2022-07-16 20:35:26 DEBUG (Thread-4) [ynca.connection] < @SYS:VERSION=?
-2022-07-16 20:35:26 DEBUG (Thread-3) [ynca.connection] > @SYS:VERSION=1.80/2.01
-2022-07-16 20:35:26 DEBUG (SyncWorker_0) [ynca.subunit] Subunit Subunit.IPODUSB initialization done.
-2022-07-16 20:35:26 DEBUG (SyncWorker_0) [ynca.subunit] Subunit Subunit.MAIN initialization start.
-2022-07-16 20:35:26 DEBUG (Thread-4) [ynca.connection] < @MAIN:AVAIL=?
-2022-07-16 20:35:26 DEBUG (Thread-3) [ynca.connection] > @MAIN:AVAIL=Not Ready
-2022-07-16 20:35:26 DEBUG (Thread-4) [ynca.connection] < @MAIN:PWR=?
-2022-07-16 20:35:26 DEBUG (Thread-3) [ynca.connection] > @MAIN:PWR=Standby
-2022-07-16 20:35:26 DEBUG (Thread-4) [ynca.connection] < @MAIN:BASIC=?
-2022-07-16 20:35:26 DEBUG (Thread-3) [ynca.connection] > @MAIN:PWR=Standby
-2022-07-16 20:35:26 DEBUG (Thread-3) [ynca.connection] > @MAIN:SLEEP=Off
-2022-07-16 20:35:26 DEBUG (Thread-3) [ynca.connection] > @MAIN:VOL=-34.0
-2022-07-16 20:35:26 DEBUG (Thread-3) [ynca.connection] > @MAIN:MUTE=Off
-2022-07-16 20:35:26 DEBUG (Thread-3) [ynca.connection] > @MAIN:INP=HDMI2
-2022-07-16 20:35:26 DEBUG (Thread-3) [ynca.connection] > @MAIN:STRAIGHT=Off
-2022-07-16 20:35:26 DEBUG (Thread-3) [ynca.connection] > @MAIN:ENHANCER=On
-2022-07-16 20:35:26 DEBUG (Thread-3) [ynca.connection] > @MAIN:SOUNDPRG=Standard
-2022-07-16 20:35:26 DEBUG (Thread-3) [ynca.connection] > @MAIN:3DCINEMA=Auto
-2022-07-16 20:35:26 DEBUG (Thread-3) [ynca.connection] > @MAIN:PUREDIRMODE=Off
-2022-07-16 20:35:26 DEBUG (Thread-3) [ynca.connection] > @MAIN:SPBASS=0.0
-2022-07-16 20:35:26 DEBUG (Thread-3) [ynca.connection] > @MAIN:SPTREBLE=0.0
-2022-07-16 20:35:26 DEBUG (Thread-3) [ynca.connection] > @MAIN:ADAPTIVEDRC=Off
-2022-07-16 20:35:26 DEBUG (Thread-4) [ynca.connection] < @MAIN:MAXVOL=?
-2022-07-16 20:35:26 DEBUG (Thread-3) [ynca.connection] > @MAIN:MAXVOL=0.0
-2022-07-16 20:35:26 DEBUG (Thread-4) [ynca.connection] < @MAIN:SCENENAME=?
-2022-07-16 20:35:26 DEBUG (Thread-3) [ynca.connection] > @MAIN:SCENE1NAME=BD/DVD Movie Viewing
-2022-07-16 20:35:26 DEBUG (Thread-3) [ynca.connection] > @MAIN:SCENE2NAME=TV Viewing
-2022-07-16 20:35:26 DEBUG (Thread-3) [ynca.connection] > @MAIN:SCENE3NAME=Mediacenter
-2022-07-16 20:35:26 DEBUG (Thread-3) [ynca.connection] > @MAIN:SCENE4NAME=Radio Listening
-2022-07-16 20:35:26 DEBUG (Thread-4) [ynca.connection] < @MAIN:ZONENAME=?
-2022-07-16 20:35:26 DEBUG (Thread-3) [ynca.connection] > @MAIN:ZONENAME=Main
-2022-07-16 20:35:26 DEBUG (Thread-4) [ynca.connection] < @SYS:VERSION=?
-2022-07-16 20:35:26 DEBUG (Thread-3) [ynca.connection] > @SYS:VERSION=1.80/2.01
-2022-07-16 20:35:26 DEBUG (SyncWorker_0) [ynca.subunit] Subunit Subunit.MAIN initialization done.
-2022-07-16 20:35:26 DEBUG (SyncWorker_0) [ynca.subunit] Subunit Subunit.NAPSTER initialization start.
-2022-07-16 20:35:27 DEBUG (Thread-4) [ynca.connection] < @NAPSTER:AVAIL=?
-2022-07-16 20:35:27 DEBUG (Thread-3) [ynca.connection] > @NAPSTER:AVAIL=Not Ready
-2022-07-16 20:35:27 DEBUG (Thread-4) [ynca.connection] < @NAPSTER:PLAYBACKINFO=?
-2022-07-16 20:35:27 DEBUG (Thread-3) [ynca.connection] > @NAPSTER:PLAYBACKINFO=Stop
-2022-07-16 20:35:27 DEBUG (Thread-4) [ynca.connection] < @NAPSTER:METAINFO=?
-2022-07-16 20:35:27 DEBUG (Thread-3) [ynca.connection] > @NAPSTER:ARTIST=
-2022-07-16 20:35:27 DEBUG (Thread-3) [ynca.connection] > @NAPSTER:ALBUM=
-2022-07-16 20:35:27 DEBUG (Thread-3) [ynca.connection] > @NAPSTER:SONG=
-2022-07-16 20:35:27 DEBUG (Thread-4) [ynca.connection] < @NAPSTER:REPEAT=?
-2022-07-16 20:35:27 DEBUG (Thread-3) [ynca.connection] > @NAPSTER:REPEAT=Off
-2022-07-16 20:35:27 DEBUG (Thread-4) [ynca.connection] < @NAPSTER:SHUFFLE=?
-2022-07-16 20:35:27 DEBUG (Thread-3) [ynca.connection] > @NAPSTER:SHUFFLE=On
-2022-07-16 20:35:27 DEBUG (Thread-4) [ynca.connection] < @SYS:VERSION=?
-2022-07-16 20:35:27 DEBUG (Thread-3) [ynca.connection] > @SYS:VERSION=1.80/2.01
-2022-07-16 20:35:27 DEBUG (SyncWorker_0) [ynca.subunit] Subunit Subunit.NAPSTER initialization done.
-2022-07-16 20:35:27 DEBUG (SyncWorker_0) [ynca.subunit] Subunit Subunit.NETRADIO initialization start.
-2022-07-16 20:35:27 DEBUG (Thread-4) [ynca.connection] < @NETRADIO:AVAIL=?
-2022-07-16 20:35:27 DEBUG (Thread-3) [ynca.connection] > @NETRADIO:AVAIL=Not Ready
-2022-07-16 20:35:27 DEBUG (Thread-4) [ynca.connection] < @NETRADIO:PLAYBACKINFO=?
-2022-07-16 20:35:27 DEBUG (Thread-3) [ynca.connection] > @NETRADIO:PLAYBACKINFO=Stop
-2022-07-16 20:35:27 DEBUG (Thread-4) [ynca.connection] < @NETRADIO:STATION=?
-2022-07-16 20:35:27 DEBUG (Thread-3) [ynca.connection] > @NETRADIO:STATION=
-2022-07-16 20:35:27 DEBUG (Thread-4) [ynca.connection] < @SYS:VERSION=?
-2022-07-16 20:35:27 DEBUG (Thread-3) [ynca.connection] > @SYS:VERSION=1.80/2.01
-2022-07-16 20:35:27 DEBUG (SyncWorker_0) [ynca.subunit] Subunit Subunit.NETRADIO initialization done.
-2022-07-16 20:35:27 DEBUG (SyncWorker_0) [ynca.subunit] Subunit Subunit.PC initialization start.
-2022-07-16 20:35:28 DEBUG (Thread-4) [ynca.connection] < @PC:AVAIL=?
-2022-07-16 20:35:28 DEBUG (Thread-3) [ynca.connection] > @PC:AVAIL=Not Ready
-2022-07-16 20:35:28 DEBUG (Thread-4) [ynca.connection] < @PC:PLAYBACKINFO=?
-2022-07-16 20:35:28 DEBUG (Thread-3) [ynca.connection] > @PC:PLAYBACKINFO=Stop
-2022-07-16 20:35:28 DEBUG (Thread-4) [ynca.connection] < @PC:METAINFO=?
-2022-07-16 20:35:28 DEBUG (Thread-3) [ynca.connection] > @PC:ARTIST=
-2022-07-16 20:35:28 DEBUG (Thread-3) [ynca.connection] > @PC:ALBUM=
-2022-07-16 20:35:28 DEBUG (Thread-3) [ynca.connection] > @PC:SONG=
-2022-07-16 20:35:28 DEBUG (Thread-4) [ynca.connection] < @PC:REPEAT=?
-2022-07-16 20:35:28 DEBUG (Thread-3) [ynca.connection] > @PC:REPEAT=Off
-2022-07-16 20:35:28 DEBUG (Thread-4) [ynca.connection] < @PC:SHUFFLE=?
-2022-07-16 20:35:28 DEBUG (Thread-3) [ynca.connection] > @PC:SHUFFLE=On
-2022-07-16 20:35:28 DEBUG (Thread-4) [ynca.connection] < @SYS:VERSION=?
-2022-07-16 20:35:28 DEBUG (Thread-3) [ynca.connection] > @SYS:VERSION=1.80/2.01
-2022-07-16 20:35:28 DEBUG (SyncWorker_0) [ynca.subunit] Subunit Subunit.PC initialization done.
-2022-07-16 20:35:28 DEBUG (SyncWorker_0) [ynca.subunit] Subunit Subunit.TUN initialization start.
-2022-07-16 20:35:28 DEBUG (Thread-4) [ynca.connection] < @TUN:AVAIL=?
-2022-07-16 20:35:28 DEBUG (Thread-3) [ynca.connection] > @TUN:AVAIL=Not Ready
-2022-07-16 20:35:28 DEBUG (Thread-4) [ynca.connection] < @TUN:BAND=?
-2022-07-16 20:35:28 DEBUG (Thread-3) [ynca.connection] > @TUN:BAND=FM
-2022-07-16 20:35:28 DEBUG (Thread-4) [ynca.connection] < @TUN:AMFREQ=?
-2022-07-16 20:35:28 DEBUG (Thread-3) [ynca.connection] > @TUN:AMFREQ=1080
-2022-07-16 20:35:28 DEBUG (Thread-4) [ynca.connection] < @TUN:FMFREQ=?
-2022-07-16 20:35:28 DEBUG (Thread-3) [ynca.connection] > @TUN:FMFREQ=90.40
-2022-07-16 20:35:29 DEBUG (Thread-4) [ynca.connection] < @SYS:VERSION=?
-2022-07-16 20:35:29 DEBUG (Thread-3) [ynca.connection] > @SYS:VERSION=1.80/2.01
-2022-07-16 20:35:29 DEBUG (SyncWorker_0) [ynca.subunit] Subunit Subunit.TUN initialization done.
-2022-07-16 20:35:29 DEBUG (SyncWorker_0) [ynca.subunit] Subunit Subunit.UAW initialization start.
-2022-07-16 20:35:29 DEBUG (Thread-4) [ynca.connection] < @UAW:AVAIL=?
-2022-07-16 20:35:29 DEBUG (Thread-3) [ynca.connection] > @UAW:AVAIL=Not Connected
-2022-07-16 20:35:29 DEBUG (Thread-4) [ynca.connection] < @SYS:VERSION=?
-2022-07-16 20:35:29 DEBUG (Thread-3) [ynca.connection] > @SYS:VERSION=1.80/2.01
-2022-07-16 20:35:29 DEBUG (SyncWorker_0) [ynca.subunit] Subunit Subunit.UAW initialization done.
-2022-07-16 20:35:29 DEBUG (SyncWorker_0) [ynca.subunit] Subunit Subunit.USB initialization start.
-2022-07-16 20:35:29 DEBUG (Thread-4) [ynca.connection] < @USB:AVAIL=?
-2022-07-16 20:35:29 DEBUG (Thread-3) [ynca.connection] > @USB:AVAIL=Not Connected
-2022-07-16 20:35:29 DEBUG (Thread-4) [ynca.connection] < @USB:PLAYBACKINFO=?
-2022-07-16 20:35:29 DEBUG (Thread-3) [ynca.connection] > @USB:PLAYBACKINFO=Stop
-2022-07-16 20:35:29 DEBUG (Thread-4) [ynca.connection] < @USB:METAINFO=?
-2022-07-16 20:35:29 DEBUG (Thread-3) [ynca.connection] > @USB:ARTIST=
-2022-07-16 20:35:29 DEBUG (Thread-3) [ynca.connection] > @USB:ALBUM=
-2022-07-16 20:35:29 DEBUG (Thread-3) [ynca.connection] > @USB:SONG=
-2022-07-16 20:35:29 DEBUG (Thread-4) [ynca.connection] < @USB:REPEAT=?
-2022-07-16 20:35:29 DEBUG (Thread-3) [ynca.connection] > @USB:REPEAT=Off
-2022-07-16 20:35:29 DEBUG (Thread-4) [ynca.connection] < @USB:SHUFFLE=?
-2022-07-16 20:35:29 DEBUG (Thread-3) [ynca.connection] > @USB:SHUFFLE=On
-2022-07-16 20:35:29 DEBUG (Thread-4) [ynca.connection] < @SYS:VERSION=?
-2022-07-16 20:35:29 DEBUG (Thread-3) [ynca.connection] > @SYS:VERSION=1.80/2.01
-2022-07-16 20:35:29 DEBUG (SyncWorker_0) [ynca.subunit] Subunit Subunit.USB initialization done.
-2022-07-16 20:35:29 DEBUG (SyncWorker_0) [ynca.subunit] Subunit Subunit.ZONE2 initialization start.
-2022-07-16 20:35:29 DEBUG (Thread-4) [ynca.connection] < @ZONE2:AVAIL=?
-2022-07-16 20:35:29 DEBUG (Thread-3) [ynca.connection] > @ZONE2:AVAIL=Not Ready
-2022-07-16 20:35:30 DEBUG (Thread-4) [ynca.connection] < @ZONE2:PWR=?
-2022-07-16 20:35:30 DEBUG (Thread-3) [ynca.connection] > @ZONE2:PWR=Standby
-2022-07-16 20:35:30 DEBUG (Thread-4) [ynca.connection] < @ZONE2:BASIC=?
-2022-07-16 20:35:30 DEBUG (Thread-3) [ynca.connection] > @ZONE2:PWR=Standby
-2022-07-16 20:35:30 DEBUG (Thread-3) [ynca.connection] > @ZONE2:SLEEP=Off
-2022-07-16 20:35:30 DEBUG (Thread-3) [ynca.connection] > @ZONE2:VOL=2.5
-2022-07-16 20:35:30 DEBUG (Thread-3) [ynca.connection] > @ZONE2:MUTE=Off
-2022-07-16 20:35:30 DEBUG (Thread-3) [ynca.connection] > @ZONE2:INP=PC
-2022-07-16 20:35:30 DEBUG (Thread-4) [ynca.connection] < @ZONE2:MAXVOL=?
-2022-07-16 20:35:30 DEBUG (Thread-3) [ynca.connection] > @ZONE2:MAXVOL=16.5
-2022-07-16 20:35:30 DEBUG (Thread-4) [ynca.connection] < @ZONE2:SCENENAME=?
-2022-07-16 20:35:30 DEBUG (Thread-3) [ynca.connection] > @RESTRICTED
-2022-07-16 20:35:30 DEBUG (Thread-4) [ynca.connection] < @ZONE2:ZONENAME=?
-2022-07-16 20:35:30 DEBUG (Thread-3) [ynca.connection] > @ZONE2:ZONENAME=Zone2   ß
-2022-07-16 20:35:30 DEBUG (Thread-4) [ynca.connection] < @SYS:VERSION=?
-2022-07-16 20:35:30 DEBUG (Thread-3) [ynca.connection] > @SYS:VERSION=1.80/2.01
-2022-07-16 20:35:30 DEBUG (SyncWorker_0) [ynca.subunit] Subunit Subunit.ZONE2 initialization done.
+    "communication": {
+      "initialization": [
+        "Received: @SYS:MODELNAME=RX-A810",
+        "Send: @SYS:MODELNAME=?",
+        "Received: @SYS:MODELNAME=RX-A810",
+        "Send: @SYS:AVAIL=?",
+        "Received: @UNDEFINED",
+        "Send: @MAIN:AVAIL=?",
+        "Received: @MAIN:AVAIL=Not Ready",
+        "Send: @ZONE2:AVAIL=?",
+        "Received: @ZONE2:AVAIL=Not Ready",
+        "Send: @ZONE3:AVAIL=?",
+        "Received: @RESTRICTED",
+        "Send: @ZONE4:AVAIL=?",
+        "Received: @RESTRICTED",
+        "Send: @AIRPLAY:AVAIL=?",
+        "Received: @UNDEFINED",
+        "Send: @BT:AVAIL=?",
+        "Received: @BT:AVAIL=Not Connected",
+        "Send: @DAB:AVAIL=?",
+        "Received: @UNDEFINED",
+        "Send: @IPOD:AVAIL=?",
+        "Received: @IPOD:AVAIL=Not Connected",
+        "Send: @IPODUSB:AVAIL=?",
+        "Received: @IPODUSB:AVAIL=Not Connected",
+        "Send: @NAPSTER:AVAIL=?",
+        "Received: @NAPSTER:AVAIL=Not Ready",
+        "Send: @NETRADIO:AVAIL=?",
+        "Received: @NETRADIO:AVAIL=Not Ready",
+        "Send: @PANDORA:AVAIL=?",
+        "Received: @RESTRICTED",
+        "Send: @PC:AVAIL=?",
+        "Received: @PC:AVAIL=Not Ready",
+        "Send: @RHAP:AVAIL=?",
+        "Received: @RESTRICTED",
+        "Send: @SIRIUS:AVAIL=?",
+        "Received: @RESTRICTED",
+        "Send: @SIRIUSIR:AVAIL=?",
+        "Received: @RESTRICTED",
+        "Send: @SIRIUSXM:AVAIL=?",
+        "Received: @UNDEFINED",
+        "Send: @SERVER:AVAIL=?",
+        "Received: @UNDEFINED",
+        "Send: @SPOTIFY:AVAIL=?",
+        "Received: @UNDEFINED",
+        "Send: @TUN:AVAIL=?",
+        "Received: @TUN:AVAIL=Not Ready",
+        "Send: @UAW:AVAIL=?",
+        "Received: @UAW:AVAIL=Not Connected",
+        "Send: @USB:AVAIL=?",
+        "Received: @USB:AVAIL=Not Connected",
+        "Send: @SYS:VERSION=?",
+        "Received: @SYS:VERSION=1.80/2.01",
+        "Send: @SYS:AVAIL=?",
+        "Received: @UNDEFINED",
+        "Send: @SYS:HDMIOUT1=?",
+        "Received: @UNDEFINED",
+        "Send: @SYS:HDMIOUT2=?",
+        "Received: @UNDEFINED",
+        "Send: @SYS:HDMIOUT3=?",
+        "Received: @UNDEFINED",
+        "Send: @SYS:INPNAME=?",
+        "Received: @SYS:INPNAMEPHONO=PHONO",
+        "Received: @SYS:INPNAMEHDMI1=Blu-ray",
+        "Received: @SYS:INPNAMEHDMI2=Shield",
+        "Received: @SYS:INPNAMEHDMI3=HTPC",
+        "Received: @SYS:INPNAMEHDMI4=HassIO",
+        "Received: @SYS:INPNAMEHDMI5=Cromecast",
+        "Received: @SYS:INPNAMEHDMI6=SteamLink",
+        "Received: @SYS:INPNAMEHDMI7=HDMI7",
+        "Received: @SYS:INPNAMEAV1=AV1",
+        "Received: @SYS:INPNAMEAV2=AV2",
+        "Received: @SYS:INPNAMEAV3=AV3",
+        "Received: @SYS:INPNAMEAV4=AV4",
+        "Received: @SYS:INPNAMEAV5=XBox",
+        "Received: @SYS:INPNAMEAV6=AV6",
+        "Received: @SYS:INPNAMEVAUX=V-AUX",
+        "Received: @SYS:INPNAMEAUDIO1=AUDIO1",
+        "Received: @SYS:INPNAMEAUDIO2=AUDIO2",
+        "Received: @SYS:INPNAMEDOCK=DOCK",
+        "Received: @SYS:INPNAMEUSB=USB",
+        "Send: @SYS:MODELNAME=?",
+        "Received: @SYS:MODELNAME=RX-A810",
+        "Send: @SYS:PARTY=?",
+        "Received: @SYS:PARTY=Off",
+        "Send: @SYS:PARTYMUTE=?",
+        "Send: @SYS:PWR=?",
+        "Received: @SYS:PWR=Standby",
+        "Send: @SYS:VERSION=?",
+        "Received: @SYS:VERSION=1.80/2.01",
+        "Send: @BT:AVAIL=?",
+        "Received: @BT:AVAIL=Not Connected",
+        "Send: @SYS:VERSION=?",
+        "Received: @SYS:VERSION=1.80/2.01",
+        "Send: @IPOD:METAINFO=?",
+        "Received: @IPOD:ARTIST=",
+        "Received: @IPOD:ALBUM=",
+        "Received: @IPOD:SONG=",
+        "Send: @IPOD:AVAIL=?",
+        "Received: @IPOD:AVAIL=Not Connected",
+        "Send: @IPOD:PLAYBACKINFO=?",
+        "Received: @IPOD:PLAYBACKINFO=Stop",
+        "Send: @IPOD:REPEAT=?",
+        "Received: @IPOD:REPEAT=Off",
+        "Send: @IPOD:SHUFFLE=?",
+        "Received: @IPOD:SHUFFLE=Off",
+        "Send: @SYS:VERSION=?",
+        "Received: @SYS:VERSION=1.80/2.01",
+        "Send: @IPODUSB:METAINFO=?",
+        "Received: @IPODUSB:ARTIST=",
+        "Received: @IPODUSB:ALBUM=",
+        "Received: @IPODUSB:SONG=",
+        "Send: @IPODUSB:AVAIL=?",
+        "Received: @IPODUSB:AVAIL=Not Connected",
+        "Send: @IPODUSB:PLAYBACKINFO=?",
+        "Received: @IPODUSB:PLAYBACKINFO=Stop",
+        "Send: @IPODUSB:REPEAT=?",
+        "Received: @IPODUSB:REPEAT=Off",
+        "Send: @IPODUSB:SHUFFLE=?",
+        "Received: @IPODUSB:SHUFFLE=Off",
+        "Send: @SYS:VERSION=?",
+        "Received: @SYS:VERSION=1.80/2.01",
+        "Send: @MAIN:ADAPTIVEDRC=?",
+        "Received: @MAIN:ADAPTIVEDRC=Off",
+        "Send: @MAIN:AVAIL=?",
+        "Received: @MAIN:AVAIL=Not Ready",
+        "Send: @MAIN:ENHANCER=?",
+        "Received: @MAIN:ENHANCER=Off",
+        "Send: @MAIN:HDMIOUT=?",
+        "Received: @MAIN:HDMIOUT=OUT1 + 2",
+        "Send: @MAIN:HPBASS=?",
+        "Received: @MAIN:HPBASS=0.0",
+        "Send: @MAIN:HPTREBLE=?",
+        "Received: @MAIN:HPTREBLE=0.0",
+        "Send: @MAIN:INITVOLLVL=?",
+        "Received: @MAIN:INITVOLLVL=-33.0",
+        "Send: @MAIN:INITVOLMODE=?",
+        "Received: @MAIN:INITVOLMODE=On",
+        "Send: @MAIN:BASIC=?",
+        "Received: @MAIN:PWR=Standby",
+        "Received: @MAIN:SLEEP=Off",
+        "Received: @MAIN:VOL=-33.0",
+        "Received: @MAIN:MUTE=Off",
+        "Received: @MAIN:INP=HDMI2",
+        "Received: @MAIN:STRAIGHT=Off",
+        "Received: @MAIN:ENHANCER=Off",
+        "Received: @MAIN:SOUNDPRG=Surround Decoder",
+        "Received: @MAIN:3DCINEMA=Auto",
+        "Received: @MAIN:PUREDIRMODE=Off",
+        "Received: @MAIN:SPBASS=0.0",
+        "Received: @MAIN:SPTREBLE=0.0",
+        "Received: @MAIN:ADAPTIVEDRC=Off",
+        "Send: @MAIN:MAXVOL=?",
+        "Received: @MAIN:MAXVOL=0.0",
+        "Send: @MAIN:SCENENAME=?",
+        "Received: @MAIN:SCENE1NAME=BD/DVD Movie Viewing",
+        "Received: @MAIN:SCENE2NAME=TV Viewing",
+        "Received: @MAIN:SCENE3NAME=Mediacenter",
+        "Received: @MAIN:SCENE4NAME=Radio Listening",
+        "Send: @MAIN:SLEEP=?",
+        "Received: @MAIN:SLEEP=Off",
+        "Send: @MAIN:SPBASS=?",
+        "Received: @MAIN:SPBASS=0.0",
+        "Send: @MAIN:SPTREBLE=?",
+        "Received: @MAIN:SPTREBLE=0.0",
+        "Send: @MAIN:3DCINEMA=?",
+        "Received: @MAIN:3DCINEMA=Auto",
+        "Send: @MAIN:2CHDECODER=?",
+        "Received: @MAIN:2CHDECODER=DTS NEO:6 Cinema",
+        "Send: @MAIN:ZONENAME=?",
+        "Received: @MAIN:ZONENAME=Main",
+        "Send: @SYS:VERSION=?",
+        "Received: @SYS:VERSION=1.80/2.01",
+        "Send: @NAPSTER:METAINFO=?",
+        "Received: @NAPSTER:ARTIST=",
+        "Received: @NAPSTER:ALBUM=",
+        "Received: @NAPSTER:SONG=",
+        "Send: @NAPSTER:AVAIL=?",
+        "Received: @NAPSTER:AVAIL=Not Ready",
+        "Send: @NAPSTER:PLAYBACKINFO=?",
+        "Received: @NAPSTER:PLAYBACKINFO=Stop",
+        "Send: @NAPSTER:REPEAT=?",
+        "Received: @NAPSTER:REPEAT=Off",
+        "Send: @NAPSTER:SHUFFLE=?",
+        "Received: @NAPSTER:SHUFFLE=Off",
+        "Send: @SYS:VERSION=?",
+        "Received: @SYS:VERSION=1.80/2.01",
+        "Send: @NETRADIO:AVAIL=?",
+        "Received: @NETRADIO:AVAIL=Not Ready",
+        "Send: @NETRADIO:PLAYBACKINFO=?",
+        "Received: @NETRADIO:PLAYBACKINFO=Stop",
+        "Send: @NETRADIO:STATION=?",
+        "Received: @NETRADIO:STATION=",
+        "Send: @SYS:VERSION=?",
+        "Received: @SYS:VERSION=1.80/2.01",
+        "Send: @PC:METAINFO=?",
+        "Received: @PC:ARTIST=",
+        "Received: @PC:ALBUM=",
+        "Received: @PC:SONG=",
+        "Send: @PC:AVAIL=?",
+        "Received: @PC:AVAIL=Not Ready",
+        "Send: @PC:PLAYBACKINFO=?",
+        "Received: @PC:PLAYBACKINFO=Stop",
+        "Send: @PC:REPEAT=?",
+        "Received: @PC:REPEAT=Off",
+        "Send: @PC:SHUFFLE=?",
+        "Received: @PC:SHUFFLE=Off",
+        "Send: @SYS:VERSION=?",
+        "Received: @SYS:VERSION=1.80/2.01",
+        "Send: @TUN:AMFREQ=?",
+        "Received: @TUN:AMFREQ=1080",
+        "Send: @TUN:AVAIL=?",
+        "Received: @TUN:AVAIL=Not Ready",
+        "Send: @TUN:BAND=?",
+        "Received: @TUN:BAND=FM",
+        "Send: @TUN:FMFREQ=?",
+        "Received: @TUN:FMFREQ=96.80",
+        "Send: @TUN:RDSINFO=?",
+        "Received: @TUN:RDSPRGTYPE=",
+        "Received: @TUN:RDSPRGSERVICE=",
+        "Received: @TUN:RDSTXTA=",
+        "Received: @TUN:RDSTXTB=",
+        "Received: @TUN:RDSCLOCK=",
+        "Send: @SYS:VERSION=?",
+        "Received: @SYS:VERSION=1.80/2.01",
+        "Send: @UAW:AVAIL=?",
+        "Received: @UAW:AVAIL=Not Connected",
+        "Send: @SYS:VERSION=?",
+        "Received: @SYS:VERSION=1.80/2.01",
+        "Send: @USB:METAINFO=?",
+        "Received: @USB:ARTIST=",
+        "Received: @USB:ALBUM=",
+        "Received: @USB:SONG=",
+        "Send: @USB:AVAIL=?",
+        "Received: @USB:AVAIL=Not Connected",
+        "Send: @USB:PLAYBACKINFO=?",
+        "Received: @USB:PLAYBACKINFO=Stop",
+        "Send: @USB:REPEAT=?",
+        "Received: @USB:REPEAT=Off",
+        "Send: @USB:SHUFFLE=?",
+        "Received: @USB:SHUFFLE=Off",
+        "Send: @SYS:VERSION=?",
+        "Received: @SYS:VERSION=1.80/2.01",
+        "Send: @ZONE2:ADAPTIVEDRC=?",
+        "Received: @UNDEFINED",
+        "Send: @ZONE2:AVAIL=?",
+        "Received: @ZONE2:AVAIL=Not Ready",
+        "Send: @ZONE2:ENHANCER=?",
+        "Received: @UNDEFINED",
+        "Send: @ZONE2:HDMIOUT=?",
+        "Received: @UNDEFINED",
+        "Send: @ZONE2:HPBASS=?",
+        "Received: @UNDEFINED",
+        "Send: @ZONE2:HPTREBLE=?",
+        "Received: @UNDEFINED",
+        "Send: @ZONE2:INITVOLLVL=?",
+        "Received: @ZONE2:INITVOLLVL=-28.5",
+        "Send: @ZONE2:INITVOLMODE=?",
+        "Received: @ZONE2:INITVOLMODE=Off",
+        "Send: @ZONE2:BASIC=?",
+        "Received: @ZONE2:PWR=Standby",
+        "Received: @ZONE2:SLEEP=Off",
+        "Received: @ZONE2:VOL=2.5",
+        "Received: @ZONE2:MUTE=Off",
+        "Received: @ZONE2:INP=NET RADIO",
+        "Send: @ZONE2:MAXVOL=?",
+        "Received: @ZONE2:MAXVOL=0.0",
+        "Send: @ZONE2:SCENENAME=?",
+        "Received: @RESTRICTED",
+        "Send: @ZONE2:SLEEP=?",
+        "Received: @ZONE2:SLEEP=Off",
+        "Send: @ZONE2:SPBASS=?",
+        "Received: @UNDEFINED",
+        "Send: @ZONE2:SPTREBLE=?",
+        "Received: @UNDEFINED",
+        "Send: @ZONE2:3DCINEMA=?",
+        "Received: @UNDEFINED",
+        "Send: @ZONE2:2CHDECODER=?",
+        "Received: @UNDEFINED",
+        "Send: @ZONE2:ZONENAME=?",
+        "Received: @ZONE2:ZONENAME=Zone2   \u00df",
+        "Send: @SYS:VERSION=?",
+        "Received: @SYS:VERSION=1.80/2.01"
+      ],
