@@ -139,12 +139,12 @@ class YncaApi:
         connection_check_event = threading.Event()
 
         def _connection_check_message_received(
-            status: YncaProtocolStatus, subunit: str, function_: str, value: str
+            status: YncaProtocolStatus, subunit: str|None, function_: str|None, value: str|None
         ):
-            if subunit == Subunit.SYS and function_ == "MODELNAME":
-                result.modelname = value
+            if subunit == Subunit.SYS and function_ == "MODELNAME" and value is not None:
+                result.modelname = value 
                 connection_check_event.set()
-            if function_ == "AVAIL":
+            if function_ == "AVAIL" and subunit is not None:
                 result.zones.append(subunit)
 
         try:
@@ -196,7 +196,7 @@ class YncaApi:
                 self.close()
 
     def _protocol_message_received(
-        self, status: YncaProtocolStatus, subunit: str, function_: str, value: str
+        self, status: YncaProtocolStatus, subunit: str|None, function_: str|None, value: str|None
     ):
         if function_ == "AVAIL":
             self._available_subunits.add(subunit)

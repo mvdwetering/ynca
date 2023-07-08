@@ -124,9 +124,9 @@ class SubunitBase(ABC):
     def _protocol_message_received(
         self,
         status: YncaProtocolStatus,
-        subunit: str,
-        function_name: str,
-        value_str: str,
+        subunit: str|None,
+        function_name: str|None,
+        value_str: str|None,
     ):
         if status is not YncaProtocolStatus.OK:
             # Can't really handle errors since at this point we can't see to what command it belonged
@@ -143,7 +143,7 @@ class SubunitBase(ABC):
         if self.id != subunit:
             return
 
-        if handler := self.function_handlers.get(function_name, None):
+        if function_name is not None and value_str is not None and (handler := self.function_handlers.get(function_name, None)):
             handler.update(value_str)
             self._call_registered_update_callbacks(function_name, handler.value)
 

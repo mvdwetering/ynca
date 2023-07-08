@@ -6,7 +6,7 @@ import re
 import threading
 import time
 from enum import Enum
-from typing import Callable, List, Optional, Set
+from typing import Callable, List, Optional, Set, cast
 
 import serial  # type: ignore
 import serial.threaded  # type: ignore
@@ -37,8 +37,8 @@ class YncaProtocol(serial.threaded.LineReader):
 
     def __init__(self):
         super().__init__()
-        self.message_callback = None
-        self.disconnect_callback = None
+        self.message_callback:Callable[[YncaProtocolStatus, str|None, str|None, str|None], None]
+        self.disconnect_callback:Callable[[], None] | None
         self._send_queue = None
         self._send_thread = None
         self._last_sent_command = None
@@ -87,9 +87,9 @@ class YncaProtocol(serial.threaded.LineReader):
     def handle_line(self, line):
         ignore = False
         status = YncaProtocolStatus.OK
-        subunit = None
-        function = None
-        value = None
+        subunit:str|None = None
+        function:str|None = None
+        value:str|None = None
 
         logger.debug("Recv - %s", line)
         self._communication_log_buffer.add(f"Received: {line}")
@@ -195,21 +195,21 @@ class YncaConnection:
         self._protocol: Optional[YncaProtocol] = None
 
         self._message_callbacks: Set[
-            Callable[[YncaProtocolStatus, str, str, str], None]
+            Callable[[YncaProtocolStatus, str|None, str|None, str|None], None]
         ] = set()
 
     def register_message_callback(
-        self, callback: Callable[[YncaProtocolStatus, str, str, str], None]
+        self, callback: Callable[[YncaProtocolStatus, str|None, str|None, str|None], None]
     ):
         self._message_callbacks.add(callback)
 
     def unregister_message_callback(
-        self, callback: Callable[[YncaProtocolStatus, str, str, str], None]
+        self, callback: Callable[[YncaProtocolStatus, str|None, str|None, str|None], None]
     ):
         self._message_callbacks.discard(callback)
 
     def _call_registered_message_callbacks(
-        self, status: YncaProtocolStatus, subunit: str, function_: str, value: str
+        self, status: YncaProtocolStatus, subunit: str|None, function_: str|None, value: str|None
     ):
         for callback in self._message_callbacks:
             callback(status, subunit, function_, value)
@@ -225,7 +225,8 @@ class YncaConnection:
                 self._serial, YncaProtocol
             )
             self._readerthread.start()
-            _, self._protocol = self._readerthread.connect()
+            _, protocol = self._readerthread.connect()
+            self._protocol = cast(YncaProtocol, protocol)
         except serial.SerialException as e:
             raise YncaConnectionError(e)
         except RuntimeError as e:
