@@ -206,6 +206,14 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
             self.write_line(f"@{subunit}:{function}={value}")
 
     def handle_put(self, subunit, function, value):
+
+        # Just eat remote codes as they don't give responses
+        # unless not supported, but can not really check
+        if subunit == "SYS" and function == "REMOTECODE":
+            if len(value) != 8:
+                self.write_line(UNDEFINED)
+            return
+
         if function == "VOL" and value.startswith("Up") or value.startswith("Down"):
             # Need to handle Up/Down as it would otherwise overwrite the VOL value wtih text Up/Down
             up = value.startswith("Up")
