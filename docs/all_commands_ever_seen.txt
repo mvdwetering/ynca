@@ -9,6 +9,7 @@
 # Order is SYS, MAIN, ZONE2, ZONE3, ZONE4 then others in alphabetical order
 # Not every command will be available on all units
 #
+# Ends with a power down of all Zones so easy to know when it is done
 
 ## SYS
 
@@ -983,3 +984,6 @@
 @USB:REPEAT=?
 @USB:SHUFFLE=?
 @USB:SONG=?
+
+# Power off to indicate done
+@SYS:PWR=Standby
