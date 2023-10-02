@@ -5,9 +5,9 @@ Package to control Yamaha receivers that support the YNCA protocol.
 According to reports of users and info found on the internet the following receivers should work.
 There might be more receivers that support this protocol. If you find some let met know so the list can be updated.
 
-> HTR-4065, HTR-4071, HTR-6064, RX-A660, RX-A700, RX-A710, RX-A720, RX-A740, RX-A750, RX-A800, RX-A810, RX-A820, RX-A840, RX-A850, RX-A1000, RX-A1010, RX-A1020, RX-A1030, RX-A1040, RX-A2000, RX-A2010, RX-A2020, RX-A2070, RX-A3000, RX-A3010, RX-A3020, RX-A3030, RX-V475, RX-V477, RX-V481D, RX-V483, RX-V671, RX-V673, RX-V675, RX-V677, RX-V771, RX-V773, RX-V775, RX-V777, RX-V867, RX-V871, RX-V1067, RX-V1071, RX-V2067, RX-V2071, RX-V3067, RX-V3071, TSR-700, TSR-7850
+> HTR-4065, HTR-4071, HTR-6064, RX-A660, RX-A700, RX-A710, RX-A720, RX-A740, RX-A750, RX-A800, RX-A810, RX-A820, RX-A840, RX-A850, RX-A1000, RX-A1010, RX-A1020, RX-A1030, RX-A1040, RX-A2000, RX-A2010, RX-A2020, RX-A2070, RX-A3000, RX-A3010, RX-A3020, RX-A3030, RX-A3070, RX-V475, RX-V477, RX-V481D, RX-V483, RX-V671, RX-V673, RX-V675, RX-V677, RX-V771, RX-V773, RX-V775, RX-V777, RX-V867, RX-V871, RX-V1067, RX-V1071, RX-V2067, RX-V2071, RX-V3067, RX-V3071, TSR-700, TSR-7850
 
-Note that there is a restriction that only 1 YNCA connection to a receiver can be made at the time (restriction on the receiver side, not this library).
+Note that only 1 YNCA connection to a receiver can be made at the time (restriction on the receiver side, not this library).
 Usually not a problem as the Yamaha AV Control App uses a different protocol which can be used at the same time, but something to be aware of when testing the library.
 
 
@@ -19,7 +19,7 @@ python3 -m pip install ynca
 
 ## Contents
 
-Note that the intended API to use is exposed from the toplevel package.
+The intended API to use is exposed from the toplevel package.
 
 ### Classes
 
@@ -54,7 +54,7 @@ python3 -m ynca.terminal socket://192.168.178.21:50000
 
 This is a very basic YNCA server intended to be just enough for debugging and testing without connecting to a real device.
 
-Note that the server needs to be filled with data from an actual device and it will basically just repeat the same answers as the real device gave (with a few exceptions).
+The server needs to be filled with data from an actual device and it will basically just repeat the same answers as the real device gave (with a few exceptions).
 Filling the server can be done by providing it with YNCA logging of a real device, like the ones in the YCNA package repository or a log from your own device e.g. by running `example.py` with loglevel DEBUG (uncomment the line in the example code).
 
 It has some additional commandline options for using different ports, binding to a specific host or testing disconnects
@@ -77,7 +77,7 @@ receiver = YncaApi("/dev/tty1")
 # Initializing takes a while (~10 seconds for a 2 zone receiver) since it communicates
 # quite a lot with the actual device to determine its capabilities.
 # Later calls to the subunits are fast.
-# Note that attributes that are still None after initialization are not supported by the subunits
+# The attributes that are still None after initialization are not supported by the subunits
 receiver.initialize()
 
 # Every subunit has a dedicated attribute on the `YncaApi` class.
