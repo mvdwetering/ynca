@@ -32,6 +32,8 @@ See https://github.com/mvdwetering/yamaha_ynca/issues/19 for logs.
 Currently known receivers that behave like this:
 - RX-V475 1.34/2.06
 
+Potential workaround would be to send the remote codes for SCENE1 etc...
+
 ## No Zone and Scene names
 
 Some receivers respond with @UNDEFINED for ZONENAME and SCENENAME requests.
@@ -63,9 +65,15 @@ The older models have support for Dolby Prologic and DTS:Neo settings, while new
 
 Values seen until now:
 * "AURO-3D" Seen on RX-A6A
-* "DTS Neural:X" Seen on RX-A1060
+* "DTS Neural:X" Seen on RX-A1060 and RX-A3070
 
-From a quick look at the product manuals those models do not support the older surround decoder values. AURO-3D does not seem to be available on RX-1060 and it is unknown how to detect AURO-3D support.
+From a quick look at the product manuals those models do not support the older surround decoder values. 
+However the RX-A3070 does... it supports the DTS:NEO presets and Auto, Dolby Surround, Neural X.
+
+AURO-3D does not seem to be available on RX-1060 and it is unknown how to detect AURO-3D support.
+
+It is unfortunately unknown if it is possible to derive the 2CHDECODER options from other settings.
+
 
 ## SONG vs TRACK for songtitles
 

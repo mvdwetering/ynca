@@ -1,13 +1,13 @@
 """Enums used for mapping YNCA values"""
 
 import logging
-from enum import Enum
+from enum import Enum, unique
 
 logger = logging.getLogger(__name__)
 
 UNKNOWN_STRING = "< UNKNOWN >"
 
-
+@unique
 class AdaptiveDrc(str, Enum):
     OFF = "Off"
     AUTO = "Auto"
@@ -21,6 +21,7 @@ class AdaptiveDrc(str, Enum):
     """Unknown values in the enum are mapped to UNKNOWN"""
 
 
+@unique
 class Avail(str, Enum):
     NOT_CONNECTED = "Not Connected"
     NOT_READY = "Not Ready"
@@ -35,6 +36,7 @@ class Avail(str, Enum):
     """Unknown values in the enum are mapped to UNKNOWN"""
 
 
+@unique
 class BandDab(str, Enum):
     DAB = "DAB"
     FM = "FM"
@@ -48,6 +50,7 @@ class BandDab(str, Enum):
     """Unknown values in the enum are mapped to UNKNOWN"""
 
 
+@unique
 class BandTun(str, Enum):
     AM = "AM"
     FM = "FM"
@@ -61,6 +64,7 @@ class BandTun(str, Enum):
     """Unknown values in the enum are mapped to UNKNOWN"""
 
 
+@unique
 class Enhancer(str, Enum):
     ON = "On"
     OFF = "Off"
@@ -74,6 +78,7 @@ class Enhancer(str, Enum):
     """Unknown values in the enum are mapped to UNKNOWN"""
 
 
+@unique
 class HdmiOut(str, Enum):
     OFF = "Off"
     OUT1 = "OUT1"
@@ -89,6 +94,7 @@ class HdmiOut(str, Enum):
     """Unknown values in the enum are mapped to UNKNOWN"""
 
 
+@unique
 class HdmiOutOnOff(Enum):
     ON = "On"
     OFF = "Off"
@@ -102,6 +108,7 @@ class HdmiOutOnOff(Enum):
     """Unknown values in the enum are mapped to UNKNOWN"""
 
 
+@unique
 class InitVolLvl(str, Enum):
     MUTE = "Mute"
     OFF = "Off"
@@ -116,6 +123,7 @@ class InitVolLvl(str, Enum):
     """Unknown values in the enum are mapped to UNKNOWN"""
 
 
+@unique
 class InitVolMode(str, Enum):
     ON = "On"
     OFF = "Off"
@@ -129,6 +137,7 @@ class InitVolMode(str, Enum):
     """Unknown values in the enum are mapped to UNKNOWN"""
 
 
+@unique
 class Input(Enum):
     # Inputs with connectors on the receiver
     AUDIO1 = "AUDIO1"
@@ -182,6 +191,7 @@ class Input(Enum):
     """Unknown values in the enum are mapped to UNKNOWN"""
 
 
+@unique
 class Mute(str, Enum):
     ON = "On"
     ATT_MINUS_20 = "Att -20 dB"
@@ -196,7 +206,7 @@ class Mute(str, Enum):
     UNKNOWN = UNKNOWN_STRING
     """Unknown values in the enum are mapped to UNKNOWN"""
 
-
+@unique
 class Party(Enum):
     ON = "On"
     OFF = "Off"
@@ -210,6 +220,7 @@ class Party(Enum):
     """Unknown values in the enum are mapped to UNKNOWN"""
 
 
+@unique
 class PartyMute(Enum):
     ON = "On"
     OFF = "Off"
@@ -223,6 +234,7 @@ class PartyMute(Enum):
     """Unknown values in the enum are mapped to UNKNOWN"""
 
 
+@unique
 class Playback(str, Enum):
     STOP = "Stop"
     PAUSE = "Pause"
@@ -239,6 +251,7 @@ class Playback(str, Enum):
     """Unknown values in the enum are mapped to UNKNOWN"""
 
 
+@unique
 class PlaybackInfo(str, Enum):
     STOP = "Stop"
     PAUSE = "Pause"
@@ -253,6 +266,7 @@ class PlaybackInfo(str, Enum):
     """Unknown values in the enum are mapped to UNKNOWN"""
 
 
+@unique
 class PureDirMode(Enum):
     ON = "On"
     OFF = "Off"
@@ -266,6 +280,7 @@ class PureDirMode(Enum):
     """Unknown values in the enum are mapped to UNKNOWN"""
 
 
+@unique
 class Pwr(Enum):
     ON = "On"
     STANDBY = "Standby"
@@ -279,6 +294,7 @@ class Pwr(Enum):
     """Unknown values in the enum are mapped to UNKNOWN"""
 
 
+@unique
 class Repeat(str, Enum):
     OFF = "Off"
     SINGLE = "Single"
@@ -293,6 +309,7 @@ class Repeat(str, Enum):
     """Unknown values in the enum are mapped to UNKNOWN"""
 
 
+@unique
 class Shuffle(str, Enum):
     ON = "On"
     OFF = "Off"
@@ -306,6 +323,7 @@ class Shuffle(str, Enum):
     """Unknown values in the enum are mapped to UNKNOWN"""
 
 
+@unique
 class Sleep(str, Enum):
     OFF = "Off"
     THIRTY_MIN = "30 min"
@@ -322,6 +340,7 @@ class Sleep(str, Enum):
     """Unknown values in the enum are mapped to UNKNOWN"""
 
 
+@unique
 class SoundPrg(str, Enum):
     HALL_IN_MUNICH = "Hall in Munich"
     HALL_IN_VIENNA = "Hall in Vienna"
@@ -362,6 +381,7 @@ class SoundPrg(str, Enum):
     """Unknown values in the enum are mapped to UNKNOWN"""
 
 
+@unique
 class Straight(Enum):
     ON = "On"
     OFF = "Off"
@@ -375,6 +395,7 @@ class Straight(Enum):
     """Unknown values in the enum are mapped to UNKNOWN"""
 
 
+@unique
 class ThreeDeeCinema(str, Enum):
     OFF = "Off"
     AUTO = "Auto"
@@ -388,6 +409,7 @@ class ThreeDeeCinema(str, Enum):
     """Unknown values in the enum are mapped to UNKNOWN"""
 
 
+@unique
 class TwoChDecoder(str, Enum):
     # Older models support Dolby Prologic and DTS:Neo settings
     DolbyPl = "Dolby PL"
@@ -401,9 +423,11 @@ class TwoChDecoder(str, Enum):
     DtsNeo6Music = "DTS NEO:6 Music"
 
     # Newer models seem to have diffent values
-    # These have been seen
+    # These have been seen (Note that RX-A3070 also supports the DTS NEO presets)
     Auro3d = "AURO-3D"  # Seen on RX-A6A
-    DtsNeuralX = "DTS Neural:X"  # Seen on RX-A1060
+    Auto = "Auto"  # SEen on RX-A3070
+    DolbySurround = "Dolby Surround"  # Seen on RX-A3070
+    DtsNeuralX = "DTS Neural:X"  # Seen on RX-A1060 and RX-A3070
 
     @classmethod
     def _missing_(cls, value):
