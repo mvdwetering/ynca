@@ -1,12 +1,12 @@
 """Misc constants"""
 import logging
-from enum import Enum
+from enum import Enum, unique
 
 logger = logging.getLogger(__name__)
 
 MIN_VOLUME = -80.5  # Minimum volume value for receivers
 
-
+@unique
 class Subunit(str, Enum):
     """Known Subunits in YNCA"""
 
