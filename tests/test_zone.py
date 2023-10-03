@@ -356,7 +356,7 @@ def test_twochdecoder(connection, initialized_zone: ZoneBase):
     assert initialized_zone.twochdecoder is TwoChDecoder.DtsNeo6Cinema
 
     # Unknown value
-    connection.send_protocol_message(SUBUNIT, "2CHDECODER", "Auto")
+    connection.send_protocol_message(SUBUNIT, "2CHDECODER", "UnknownValue")
     assert initialized_zone.twochdecoder is TwoChDecoder.UNKNOWN
 
 
