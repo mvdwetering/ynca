@@ -423,9 +423,11 @@ class TwoChDecoder(str, Enum):
     DtsNeo6Music = "DTS NEO:6 Music"
 
     # Newer models seem to have diffent values
-    # These have been seen
+    # These have been seen (Note that RX-A3070 also supports the DTS NEO presets)
     Auro3d = "AURO-3D"  # Seen on RX-A6A
-    DtsNeuralX = "DTS Neural:X"  # Seen on RX-A1060
+    Auto = "Auto"  # SEen on RX-A3070
+    DolbySurround = "Dolby Surround"  # Seen on RX-A3070
+    DtsNeuralX = "DTS Neural:X"  # Seen on RX-A1060 and RX-A3070
 
     @classmethod
     def _missing_(cls, value):
