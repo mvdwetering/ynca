@@ -11,6 +11,7 @@ from ynca.enums import (
     HdmiOutOnOff,
     InitVolLvl,
     InitVolMode,
+    Input,
     Mute,
     Party,
     PartyMute,
@@ -38,6 +39,7 @@ def test_invalid_values_on_enums():
     assert HdmiOutOnOff("x") is HdmiOutOnOff.UNKNOWN
     assert InitVolLvl("x") is InitVolLvl.UNKNOWN
     assert InitVolMode("x") is InitVolMode.UNKNOWN
+    assert Input("x") is Input.UNKNOWN
     assert Mute("x") is Mute.UNKNOWN
     assert Party("x") is Party.UNKNOWN
     assert PartyMute("x") is PartyMute.UNKNOWN

@@ -140,6 +140,7 @@ class InitVolMode(str, Enum):
 @unique
 class Input(Enum):
     # Inputs with connectors on the receiver
+    AUDIO = "AUDIO"  # This input is kind of weird since it is not reported by INPNAME=?
     AUDIO1 = "AUDIO1"
     AUDIO2 = "AUDIO2"
     AUDIO3 = "AUDIO3"
