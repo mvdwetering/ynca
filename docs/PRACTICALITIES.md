@@ -30,9 +30,10 @@ For some receivers activating scenes does not work and they answer with @RESTRIC
 See https://github.com/mvdwetering/yamaha_ynca/issues/19 for logs.
 
 Currently known receivers that behave like this:
-- RX-V475 1.34/2.06
+- RX-V475 1.34/2.06 (probably also RX-V575/HTR-4066/HTR-5066 as they share the same firmware
 
 Potential workaround would be to send the remote codes for SCENE1 etc...
+The remote codes works for my receiver, but I have not had feedback from an RX-V475 user.
 
 ## No Zone and Scene names
 
@@ -109,3 +110,11 @@ What makes this command a bit weird is while it is part of the SYS subunit it ca
 That seems workable for HDMIOUT 1 and 2 since those always seem to be related to the MAIN zone, but HDMIOUT3 is special and can be linked with ZONE2 and ZONE4 on an RX-A4A or RX-A6A according to the manual. It is unknown if/how it is possible to figure out to which zone it is configured. Would need logging when changing that setting.
 
 In RX-A6A logging (see logs directory) it seems like both zones (2 and 4) report HDMIOUT3 as a result of requesting BASIC.
+
+## AUDIO input
+
+Some receivers have 1 audio input and that input is called AUDIO. Receivers with multiple audio inputs have them called AUDIO1, AUDIO2 etc...
+
+Seen on RX-V475 receiver in #230, but probably also applies to RX-V575/HTR-4066/HTR-5066 as they share the same firmware.
+
+For some reason this input is _not_ reported when requesting the input names with `@SYS:INPNAME=?` (unlike AUDIO1, AUDIO2 inputs). This makes it impossible to automatically detect if the input is supported by the receiver. The receiver does respond with `@RESTRICTED` when requesting `@SYS:INPNAMEAUDIO1=?` or `@SYS:TRIG1INPAUDIO1=?` instead of `@UNDEFINED`. However these responses are currently not really handled by the library and building support for that will be hard as there is not a guarenteed request/response mechanism due to the asynchronous nature of the protocol.
