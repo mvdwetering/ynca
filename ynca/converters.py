@@ -34,7 +34,7 @@ class EnumConverter(ConverterBase, Generic[E]):
 
 class IntConverter(ConverterBase):
     def __init__(self, to_str: Callable[[int], str] | None = None) -> None:
-        self._to_str = to_str
+        self._to_str = to_str or str
 
     def to_value(self, value_string: str) -> int:
         return int(value_string)
@@ -42,15 +42,12 @@ class IntConverter(ConverterBase):
     def to_str(self, value: int) -> str:
         # Make sure it is an int compatible types to be usable with MultiConverter
         int(value)
-
-        if self._to_str:
-            return str(self._to_str(value))
-        return str(value)
+        return self._to_str(value)
 
 
 class FloatConverter(ConverterBase):
     def __init__(self, to_str: Callable[[float], str] | None = None) -> None:
-        self._to_str = to_str
+        self._to_str = to_str or str
 
     def to_value(self, value_string: str) -> float:
         return float(value_string)
@@ -58,10 +55,7 @@ class FloatConverter(ConverterBase):
     def to_str(self, value: float) -> str:
         # Make sure it is a float compatible types to be usable with MultiConverter
         float(value)
-
-        if self._to_str:
-            return self._to_str(value)
-        return str(value)
+        return self._to_str(value)
 
 
 class StrConverter(ConverterBase):
