@@ -10,9 +10,12 @@ RX-V671, RX-A710, RX-V871, RX-A810, RX-A1010, RX-A2010 and RX-A3010
 ## Description
 
 YNCA is a protocol to control certain Yamaha receivers.
-The protocol can be transmitted over serial or IP.
+The protocol can be transmitted over serial or a TCP/IP socket.
 
-There are another protocols for Yamaha receviers like YNC and Musiccast.
+Serial connection parameters: 9600,8,N,1
+TCP port: 50000 (standard, can be customized by user)
+
+There are other protocols for Yamaha receviers like YNC and Musiccast.
 YNCA is simpler, but more limited.
 
 In YNCA setting a value is referred to as a `PUT` and reading a value as `GET`.
