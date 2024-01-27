@@ -2,12 +2,12 @@ from unittest import mock
 from ynca import Playback
 
 from ynca.subunits import (
-    PlaybackFunction,
+    PlaybackFunctionMixin,
 )
 
 
 def test_playback():
-    class WithPlaybackFunction(PlaybackFunction, mock.Mock):
+    class WithPlaybackFunction(PlaybackFunctionMixin, mock.Mock):
         pass
 
     wpf = WithPlaybackFunction()

@@ -29,11 +29,14 @@ T = TypeVar("T")
 E = TypeVar("E", bound=Enum)
 
 
-class FunctionBase(ABC, Generic[T]):
+class FunctionMixinBase(ABC, Generic[T]):
     """
     Provides an easy way to specify all properties needed to handle a YNCA function.
+
     The resulting descriptor makes it easy to just read/write to the attributes and
     values will be read from cache or converted and sent to the device.
+
+    The function mixins have to be used/mixedin with SubunitBase subclasses to work
     """
 
     def __init__(
@@ -66,7 +69,7 @@ class FunctionBase(ABC, Generic[T]):
         self._name_override = name_override
 
     @overload
-    def __get__(self, instance: None, owner) -> FunctionBase[T]:  # pragma: no cover
+    def __get__(self, instance: None, owner) -> FunctionMixinBase[T]:  # pragma: no cover
         ...
 
     @overload
@@ -75,7 +78,7 @@ class FunctionBase(ABC, Generic[T]):
 
     def __get__(
         self, instance: SubunitBase | None, owner
-    ) -> T | None | FunctionBase[T]:
+    ) -> T | None | FunctionMixinBase[T]:
         if instance is None:
             return self
 
@@ -96,7 +99,7 @@ class FunctionBase(ABC, Generic[T]):
         self.name = name.upper() if not self._name_override else self._name_override
 
 
-class EnumFunction(FunctionBase[E], Generic[E]):
+class EnumFunctionMixin(FunctionMixinBase[E], Generic[E]):
     def __init__(
         self,
         datatype: Type[E],
@@ -112,7 +115,7 @@ class EnumFunction(FunctionBase[E], Generic[E]):
         )
 
 
-class StrFunction(FunctionBase[str]):
+class StrFunctionMixin(FunctionMixinBase[str]):
     def __init__(
         self,
         cmd: Cmd = Cmd.GET | Cmd.PUT,
@@ -128,7 +131,7 @@ class StrFunction(FunctionBase[str]):
         )
 
 
-class IntFunction(FunctionBase[int]):
+class IntFunctionMixin(FunctionMixinBase[int]):
     def __init__(
         self,
         command_type: Cmd = Cmd.GET | Cmd.PUT,
@@ -144,7 +147,7 @@ class IntFunction(FunctionBase[int]):
         )
 
 
-class FloatFunction(FunctionBase[float]):
+class FloatFunctionMixin(FunctionMixinBase[float]):
     def __init__(
         self,
         cmd: Cmd = Cmd.GET | Cmd.PUT,
@@ -160,7 +163,7 @@ class FloatFunction(FunctionBase[float]):
         )
 
 
-class EnumOrFloatFunction(FunctionBase, Generic[E]):
+class EnumOrFloatFunctionMixin(FunctionMixinBase, Generic[E]):
     def __init__(
         self,
         datatype: Type[E],

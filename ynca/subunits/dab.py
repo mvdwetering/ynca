@@ -1,25 +1,25 @@
 from __future__ import annotations
 
 from ..constants import Subunit
-from ..function import Cmd, EnumFunction, StrFunction
+from ..function import Cmd, EnumFunctionMixin, StrFunctionMixin
 from ..enums import (
     BandDab,
 )
 from ..subunit import SubunitBase
-from . import FmFreqFunction
+from . import FmFreqFunctionMixin
 
 
-class Dab(SubunitBase, FmFreqFunction):
+class Dab(SubunitBase, FmFreqFunctionMixin):
     id = Subunit.DAB
 
-    band = EnumFunction[BandDab](BandDab)
+    band = EnumFunctionMixin[BandDab](BandDab)
 
-    dabchlabel = StrFunction(Cmd.GET)
-    dabdlslabel = StrFunction(Cmd.GET)
-    dabensemblelabel = StrFunction(Cmd.GET)
-    dabservicelabel = StrFunction(Cmd.GET)
-    dabprgtype = StrFunction(Cmd.GET)
+    dabchlabel = StrFunctionMixin(Cmd.GET)
+    dabdlslabel = StrFunctionMixin(Cmd.GET)
+    dabensemblelabel = StrFunctionMixin(Cmd.GET)
+    dabservicelabel = StrFunctionMixin(Cmd.GET)
+    dabprgtype = StrFunctionMixin(Cmd.GET)
 
-    fmrdsprgservice = StrFunction(Cmd.GET, init="FMRDSINFO")
-    fmrdsprgtype = StrFunction(Cmd.GET, init="FMRDSINFO")
-    fmrdstxt = StrFunction(Cmd.GET, init="FMRDSINFO")
+    fmrdsprgservice = StrFunctionMixin(Cmd.GET, init="FMRDSINFO")
+    fmrdsprgtype = StrFunctionMixin(Cmd.GET, init="FMRDSINFO")
+    fmrdstxt = StrFunctionMixin(Cmd.GET, init="FMRDSINFO")

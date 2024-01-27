@@ -1,71 +1,71 @@
 from __future__ import annotations
 
 from ..converters import FloatConverter
-from ..function import Cmd, EnumFunction, FloatFunction, StrFunction
+from ..function import Cmd, EnumFunctionMixin, FloatFunctionMixin, StrFunctionMixin
 from ..enums import Playback, PlaybackInfo, Repeat, Shuffle
 from ..helpers import number_to_string_with_stepsize
 from ..subunit import SubunitBase
 
 
-class AlbumFunction:
-    album = StrFunction(Cmd.GET, init="METAINFO")
+class AlbumFunctionMixin:
+    album = StrFunctionMixin(Cmd.GET, init="METAINFO")
 
 
-class ArtistFunction:
-    artist = StrFunction(Cmd.GET, init="METAINFO")
+class ArtistFunctionMixin:
+    artist = StrFunctionMixin(Cmd.GET, init="METAINFO")
 
 
-class ChNameFunction:
-    chname = StrFunction(Cmd.GET, init="METAINFO")
+class ChNameFunctionMixin:
+    chname = StrFunctionMixin(Cmd.GET, init="METAINFO")
 
 
-class PlaybackFunction:
+class PlaybackFunctionMixin:
     def playback(self, parameter: Playback):
         """Change playback state"""
         self._put("PLAYBACK", parameter)  # type: ignore
 
 
-class PlaybackInfoFunction:
-    playbackinfo = EnumFunction[PlaybackInfo](PlaybackInfo, Cmd.GET)
+class PlaybackInfoFunctionMixin:
+    playbackinfo = EnumFunctionMixin[PlaybackInfo](PlaybackInfo, Cmd.GET)
 
 
-class RepeatFunction:
-    repeat = EnumFunction[Repeat](Repeat)
+class RepeatFunctionMixin:
+    repeat = EnumFunctionMixin[Repeat](Repeat)
 
 
-class ShuffleFunction:
-    shuffle = EnumFunction[Shuffle](Shuffle)
+class ShuffleFunctionMixin:
+    shuffle = EnumFunctionMixin[Shuffle](Shuffle)
 
 
-class SongFunction:
-    song = StrFunction(Cmd.GET, init="METAINFO")
+class SongFunctionMixin:
+    song = StrFunctionMixin(Cmd.GET, init="METAINFO")
 
 
-class StationFunction:
-    station = StrFunction(Cmd.GET)
+class StationFunctionMixin:
+    station = StrFunctionMixin(Cmd.GET)
 
 
-class TrackFunction:
-    track = StrFunction(Cmd.GET, init="METAINFO")
+class TrackFunctionMixin:
+    track = StrFunctionMixin(Cmd.GET, init="METAINFO")
 
 
 # A number of subunits have the same/similar featureset
 # so make a common base that only needs to be tested once
 class MediaPlaybackSubunitBase(
-    PlaybackFunction,
-    PlaybackInfoFunction,
-    RepeatFunction,
-    ShuffleFunction,
-    ArtistFunction,
-    AlbumFunction,
-    SongFunction,
+    PlaybackFunctionMixin,
+    PlaybackInfoFunctionMixin,
+    RepeatFunctionMixin,
+    ShuffleFunctionMixin,
+    ArtistFunctionMixin,
+    AlbumFunctionMixin,
+    SongFunctionMixin,
     SubunitBase,
 ):
     pass
 
 
-class FmFreqFunction:
-    fmfreq = FloatFunction(
+class FmFreqFunctionMixin:
+    fmfreq = FloatFunctionMixin(
         converter=FloatConverter(
             to_str=lambda v: number_to_string_with_stepsize(v, 2, 0.2)
         ),

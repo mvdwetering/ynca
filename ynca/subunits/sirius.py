@@ -3,36 +3,36 @@ from __future__ import annotations
 from ..constants import Subunit
 from ..subunit import SubunitBase
 from . import (
-    ArtistFunction,
-    ChNameFunction,
-    PlaybackFunction,
-    PlaybackInfoFunction,
-    SongFunction,
+    ArtistFunctionMixin,
+    ChNameFunctionMixin,
+    PlaybackFunctionMixin,
+    PlaybackInfoFunctionMixin,
+    SongFunctionMixin,
 )
 
 
 class Sirius(
-    ArtistFunction,
-    SongFunction,
-    ChNameFunction,
+    ArtistFunctionMixin,
+    SongFunctionMixin,
+    ChNameFunctionMixin,
     SubunitBase,
 ):
     id = Subunit.SIRIUS
 
 
 class SiriusIr(
-    ArtistFunction,
-    SongFunction,
-    ChNameFunction,
-    PlaybackFunction,
-    PlaybackInfoFunction,
+    ArtistFunctionMixin,
+    SongFunctionMixin,
+    ChNameFunctionMixin,
+    PlaybackFunctionMixin,
+    PlaybackInfoFunctionMixin,
     SubunitBase,
 ):
     id = Subunit.SIRIUSIR
 
 
 class SiriusXm(
-    PlaybackFunction,
+    PlaybackFunctionMixin,
     SubunitBase,
 ):
     id = Subunit.SIRIUSXM

@@ -3,20 +3,20 @@ from __future__ import annotations
 from ..constants import Subunit
 from ..subunit import SubunitBase
 from . import (
-    AlbumFunction,
-    ArtistFunction,
-    PlaybackFunction,
-    PlaybackInfoFunction,
-    SongFunction,
+    AlbumFunctionMixin,
+    ArtistFunctionMixin,
+    PlaybackFunctionMixin,
+    PlaybackInfoFunctionMixin,
+    SongFunctionMixin,
 )
 
 
 class Airplay(
-    AlbumFunction,
-    ArtistFunction,
-    PlaybackFunction,
-    PlaybackInfoFunction,
-    SongFunction,
+    AlbumFunctionMixin,
+    ArtistFunctionMixin,
+    PlaybackFunctionMixin,
+    PlaybackInfoFunctionMixin,
+    SongFunctionMixin,
     SubunitBase,
 ):
     id = Subunit.AIRPLAY

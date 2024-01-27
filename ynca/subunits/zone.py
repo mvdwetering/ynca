@@ -7,10 +7,10 @@ from ..constants import Subunit
 from ..converters import EnumConverter, FloatConverter, MultiConverter, StrConverter
 from ..function import (
     Cmd,
-    EnumFunction,
-    EnumOrFloatFunction,
-    FloatFunction,
-    StrFunction,
+    EnumFunctionMixin,
+    EnumOrFloatFunctionMixin,
+    FloatFunctionMixin,
+    StrFunctionMixin,
 )
 from ..enums import (
     HdmiOut,
@@ -30,7 +30,7 @@ from ..enums import (
 )
 from ..helpers import number_to_string_with_stepsize
 from ..subunit import SubunitBase
-from . import PlaybackFunction
+from . import PlaybackFunctionMixin
 
 logger = logging.getLogger(__name__)
 
@@ -39,25 +39,25 @@ def raiser(ex: Type[Exception]):
     raise ex
 
 
-class ZoneBase(PlaybackFunction, SubunitBase):
+class ZoneBase(PlaybackFunctionMixin, SubunitBase):
 
     # BASIC gets a lot of attribute like PWR, SLEEP, VOL, MUTE, INP, STRAIGHT, ENHANCER, SOUNDPRG and more
     # Use it to significantly reduce the amount of commands to send
 
-    adaptivedrc = EnumFunction[AdaptiveDrc](AdaptiveDrc)
-    enhancer = EnumFunction[Enhancer](Enhancer)
-    hdmiout = EnumFunction[HdmiOut](HdmiOut)
-    hpbass = FloatFunction(
+    adaptivedrc = EnumFunctionMixin[AdaptiveDrc](AdaptiveDrc)
+    enhancer = EnumFunctionMixin[Enhancer](Enhancer)
+    hdmiout = EnumFunctionMixin[HdmiOut](HdmiOut)
+    hpbass = FloatFunctionMixin(
         converter=FloatConverter(
             to_str=lambda v: number_to_string_with_stepsize(v, 1, 0.5)
         ),
     )
-    hptreble = FloatFunction(
+    hptreble = FloatFunctionMixin(
         converter=FloatConverter(
             to_str=lambda v: number_to_string_with_stepsize(v, 1, 0.5)
         ),
     )
-    initvollvl = EnumOrFloatFunction[InitVolLvl](
+    initvollvl = EnumOrFloatFunctionMixin[InitVolLvl](
         InitVolLvl,
         MultiConverter(
             [
@@ -68,9 +68,9 @@ class ZoneBase(PlaybackFunction, SubunitBase):
             ]
         ),
     )
-    initvolmode = EnumFunction[InitVolMode](InitVolMode)
-    inp = EnumFunction[Input](Input, init="BASIC")
-    maxvol = FloatFunction(
+    initvolmode = EnumFunctionMixin[InitVolMode](InitVolMode)
+    inp = EnumFunctionMixin[Input](Input, init="BASIC")
+    maxvol = FloatFunctionMixin(
         converter=MultiConverter(
             [
                 # Special handling for 16.5 which is valid, but does not fit stepsize of 5
@@ -83,45 +83,45 @@ class ZoneBase(PlaybackFunction, SubunitBase):
             ]
         ),
     )
-    mute = EnumFunction[Mute](Mute, init="BASIC")
-    puredirmode = EnumFunction[PureDirMode](PureDirMode, init="BASIC")
-    pwr = EnumFunction[Pwr](Pwr, init="BASIC")
-    scene1name = StrFunction(Cmd.GET, init="SCENENAME")
-    scene2name = StrFunction(Cmd.GET, init="SCENENAME")
-    scene3name = StrFunction(Cmd.GET, init="SCENENAME")
-    scene4name = StrFunction(Cmd.GET, init="SCENENAME")
-    scene5name = StrFunction(Cmd.GET, init="SCENENAME")
-    scene6name = StrFunction(Cmd.GET, init="SCENENAME")
-    scene7name = StrFunction(Cmd.GET, init="SCENENAME")
-    scene8name = StrFunction(Cmd.GET, init="SCENENAME")
-    scene9name = StrFunction(Cmd.GET, init="SCENENAME")
-    scene10name = StrFunction(Cmd.GET, init="SCENENAME")
-    scene11name = StrFunction(Cmd.GET, init="SCENENAME")
-    scene12name = StrFunction(Cmd.GET, init="SCENENAME")
-    sleep = EnumFunction[Sleep](Sleep)
-    soundprg = EnumFunction[SoundPrg](SoundPrg, init="BASIC")
-    spbass = FloatFunction(
+    mute = EnumFunctionMixin[Mute](Mute, init="BASIC")
+    puredirmode = EnumFunctionMixin[PureDirMode](PureDirMode, init="BASIC")
+    pwr = EnumFunctionMixin[Pwr](Pwr, init="BASIC")
+    scene1name = StrFunctionMixin(Cmd.GET, init="SCENENAME")
+    scene2name = StrFunctionMixin(Cmd.GET, init="SCENENAME")
+    scene3name = StrFunctionMixin(Cmd.GET, init="SCENENAME")
+    scene4name = StrFunctionMixin(Cmd.GET, init="SCENENAME")
+    scene5name = StrFunctionMixin(Cmd.GET, init="SCENENAME")
+    scene6name = StrFunctionMixin(Cmd.GET, init="SCENENAME")
+    scene7name = StrFunctionMixin(Cmd.GET, init="SCENENAME")
+    scene8name = StrFunctionMixin(Cmd.GET, init="SCENENAME")
+    scene9name = StrFunctionMixin(Cmd.GET, init="SCENENAME")
+    scene10name = StrFunctionMixin(Cmd.GET, init="SCENENAME")
+    scene11name = StrFunctionMixin(Cmd.GET, init="SCENENAME")
+    scene12name = StrFunctionMixin(Cmd.GET, init="SCENENAME")
+    sleep = EnumFunctionMixin[Sleep](Sleep)
+    soundprg = EnumFunctionMixin[SoundPrg](SoundPrg, init="BASIC")
+    spbass = FloatFunctionMixin(
         converter=FloatConverter(
             to_str=lambda v: number_to_string_with_stepsize(v, 1, 0.5)
         ),
     )
-    sptreble = FloatFunction(
+    sptreble = FloatFunctionMixin(
         converter=FloatConverter(
             to_str=lambda v: number_to_string_with_stepsize(v, 1, 0.5)
         ),
     )
-    straight = EnumFunction[Straight](Straight, init="BASIC")
-    threedcinema = EnumFunction[ThreeDeeCinema](
+    straight = EnumFunctionMixin[Straight](Straight, init="BASIC")
+    threedcinema = EnumFunctionMixin[ThreeDeeCinema](
         ThreeDeeCinema, name_override="3DCINEMA"
     )
-    twochdecoder = EnumFunction[TwoChDecoder](TwoChDecoder, name_override="2CHDECODER")
-    vol = FloatFunction(
+    twochdecoder = EnumFunctionMixin[TwoChDecoder](TwoChDecoder, name_override="2CHDECODER")
+    vol = FloatFunctionMixin(
         converter=FloatConverter(
             to_str=lambda v: number_to_string_with_stepsize(v, 1, 0.5)
         ),
         init="BASIC",
     )
-    zonename = StrFunction(converter=StrConverter(min_len=0, max_len=9))
+    zonename = StrFunctionMixin(converter=StrConverter(min_len=0, max_len=9))
 
     def scene(self, scene_id: int | str):
         """Recall a scene"""

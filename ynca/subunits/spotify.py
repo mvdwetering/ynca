@@ -2,25 +2,25 @@ from __future__ import annotations
 
 from ..constants import Subunit
 from . import (
-    AlbumFunction,
-    ArtistFunction,
-    PlaybackFunction,
-    PlaybackInfoFunction,
-    RepeatFunction,
-    ShuffleFunction,
+    AlbumFunctionMixin,
+    ArtistFunctionMixin,
+    PlaybackFunctionMixin,
+    PlaybackInfoFunctionMixin,
+    RepeatFunctionMixin,
+    ShuffleFunctionMixin,
     SubunitBase,
-    TrackFunction,
+    TrackFunctionMixin,
 )
 
 
 class Spotify(
-    PlaybackFunction,
-    PlaybackInfoFunction,
-    RepeatFunction,
-    ShuffleFunction,
-    ArtistFunction,
-    AlbumFunction,
-    TrackFunction,
+    PlaybackFunctionMixin,
+    PlaybackInfoFunctionMixin,
+    RepeatFunctionMixin,
+    ShuffleFunctionMixin,
+    ArtistFunctionMixin,
+    AlbumFunctionMixin,
+    TrackFunctionMixin,
     SubunitBase,
 ):
     id = Subunit.SPOTIFY

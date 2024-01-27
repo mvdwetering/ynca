@@ -9,7 +9,7 @@ from typing import Any, Callable, Dict, Set
 from .connection import YncaConnection, YncaProtocol, YncaProtocolStatus
 from .constants import Subunit
 from .errors import YncaInitializationFailedException
-from .function import Cmd, EnumFunction, FunctionBase
+from .function import Cmd, EnumFunctionMixin, FunctionMixinBase
 from .enums import Avail
 
 logger = logging.getLogger(__name__)
@@ -29,7 +29,7 @@ class YncaFunctionHandler:
 
     def __init__(
         self,
-        function: FunctionBase,
+        function: FunctionMixinBase,
     ) -> None:
         self.value = None
         self.function = function
@@ -45,7 +45,7 @@ class SubunitBase(ABC):
 
     id: Subunit  # Just typed, needs to be set in subclasses
 
-    avail = EnumFunction[Avail](Avail, Cmd.GET)
+    avail = EnumFunctionMixin[Avail](Avail, Cmd.GET)
 
     def __init__(self, connection: YncaConnection) -> None:
         self._update_callbacks: Set[Callable[[str, Any], None]] = set()
@@ -57,7 +57,7 @@ class SubunitBase(ABC):
         # Sort the list to have a deterministic/understandable order for easier testing
         for attribute_name in sorted(dir(self.__class__)):
             attribute = getattr(self.__class__, attribute_name)
-            if isinstance(attribute, FunctionBase):
+            if isinstance(attribute, FunctionMixinBase):
                 self.function_handlers[attribute.name] = YncaFunctionHandler(attribute)
 
         self._initialized = False

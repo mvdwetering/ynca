@@ -2,13 +2,13 @@ from __future__ import annotations
 
 from ..constants import Subunit
 from ..subunit import SubunitBase
-from . import PlaybackFunction, PlaybackInfoFunction, StationFunction
+from . import PlaybackFunctionMixin, PlaybackInfoFunctionMixin, StationFunctionMixin
 
 
 class NetRadio(
-    PlaybackFunction,
-    PlaybackInfoFunction,
-    StationFunction,
+    PlaybackFunctionMixin,
+    PlaybackInfoFunctionMixin,
+    StationFunctionMixin,
     SubunitBase,
 ):
     id = Subunit.NETRADIO

@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from ..constants import Subunit
 from ..subunit import SubunitBase
-from . import PlaybackFunction
+from . import PlaybackFunctionMixin
 
 
-class Bt(SubunitBase, PlaybackFunction):
+class Bt(SubunitBase, PlaybackFunctionMixin):
     id = Subunit.BT
