@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from ..constants import Subunit
+from ..subunit import SubunitBase
 from . import (
     AlbumFunctionMixin,
     ArtistFunctionMixin,
@@ -8,7 +9,6 @@ from . import (
     PlaybackInfoFunctionMixin,
     RepeatFunctionMixin,
     ShuffleFunctionMixin,
-    SubunitBase,
     TrackFunctionMixin,
 )
 

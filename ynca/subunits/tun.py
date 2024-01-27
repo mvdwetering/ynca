@@ -9,7 +9,7 @@ from ..subunit import SubunitBase
 from . import FmFreqFunctionMixin
 
 
-class Tun(SubunitBase, FmFreqFunctionMixin):
+class Tun(FmFreqFunctionMixin, SubunitBase):
     id = Subunit.TUN
 
     band = EnumFunctionMixin[BandTun](BandTun)

@@ -13,8 +13,8 @@ from . import (
 
 class Sirius(
     ArtistFunctionMixin,
-    SongFunctionMixin,
     ChNameFunctionMixin,
+    SongFunctionMixin,
     SubunitBase,
 ):
     id = Subunit.SIRIUS
@@ -22,10 +22,10 @@ class Sirius(
 
 class SiriusIr(
     ArtistFunctionMixin,
-    SongFunctionMixin,
     ChNameFunctionMixin,
     PlaybackFunctionMixin,
     PlaybackInfoFunctionMixin,
+    SongFunctionMixin,
     SubunitBase,
 ):
     id = Subunit.SIRIUSIR

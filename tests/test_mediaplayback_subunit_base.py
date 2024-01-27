@@ -1,5 +1,13 @@
 from ynca import Playback, PlaybackInfo, Repeat, Shuffle
-from ynca.subunits import MediaPlaybackMixins
+from ynca.subunits import (
+    AlbumFunctionMixin,
+    ArtistFunctionMixin,
+    PlaybackFunctionMixin,
+    PlaybackInfoFunctionMixin,
+    RepeatFunctionMixin,
+    ShuffleFunctionMixin,
+    SongFunctionMixin,
+)
 from ynca.subunit import SubunitBase
 
 SYS = "SYS"
@@ -47,12 +55,20 @@ INITIALIZE_FULL_RESPONSES = [
 ]
 
 
-class DummyMediaPlaybackSubunit(MediaPlaybackMixins, SubunitBase):
+class DummyMediaPlaybackSubunit(
+    PlaybackFunctionMixin,
+    PlaybackInfoFunctionMixin,
+    RepeatFunctionMixin,
+    ShuffleFunctionMixin,
+    ArtistFunctionMixin,
+    AlbumFunctionMixin,
+    SongFunctionMixin,
+    SubunitBase,
+):
     id = "SUBUNIT"
 
 
 def test_initialize(connection, update_callback):
-
     connection.get_response_list = INITIALIZE_FULL_RESPONSES
 
     dmps = DummyMediaPlaybackSubunit(connection)

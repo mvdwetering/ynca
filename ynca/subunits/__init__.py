@@ -4,7 +4,6 @@ from ..converters import FloatConverter
 from ..function import Cmd, EnumFunctionMixin, FloatFunctionMixin, StrFunctionMixin
 from ..enums import Playback, PlaybackInfo, Repeat, Shuffle
 from ..helpers import number_to_string_with_stepsize
-from ..subunit import SubunitBase
 
 
 class AlbumFunctionMixin:
@@ -17,6 +16,15 @@ class ArtistFunctionMixin:
 
 class ChNameFunctionMixin:
     chname = StrFunctionMixin(Cmd.GET, init="METAINFO")
+
+
+class FmFreqFunctionMixin:
+    fmfreq = FloatFunctionMixin(
+        converter=FloatConverter(
+            to_str=lambda v: number_to_string_with_stepsize(v, 2, 0.2)
+        ),
+    )
+    """Read/write FM frequency. Values will be aligned to a valid stepsize."""
 
 
 class PlaybackFunctionMixin:
@@ -47,26 +55,3 @@ class StationFunctionMixin:
 
 class TrackFunctionMixin:
     track = StrFunctionMixin(Cmd.GET, init="METAINFO")
-
-
-# A number of subunits have the same/similar featureset
-# so make a common base that only needs to be tested once
-class MediaPlaybackMixins(
-    PlaybackFunctionMixin,
-    PlaybackInfoFunctionMixin,
-    RepeatFunctionMixin,
-    ShuffleFunctionMixin,
-    ArtistFunctionMixin,
-    AlbumFunctionMixin,
-    SongFunctionMixin,
-):
-    pass
-
-
-class FmFreqFunctionMixin:
-    fmfreq = FloatFunctionMixin(
-        converter=FloatConverter(
-            to_str=lambda v: number_to_string_with_stepsize(v, 2, 0.2)
-        ),
-    )
-    """Read/write FM frequency. Values will be aligned to a valid stepsize."""

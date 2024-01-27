@@ -14,13 +14,13 @@ from . import (
 
 
 class Pandora(
+    AlbumFunctionMixin,
+    ArtistFunctionMixin,
     PlaybackFunctionMixin,
     PlaybackInfoFunctionMixin,
-    ArtistFunctionMixin,
-    AlbumFunctionMixin,
     SongFunctionMixin,
-    TrackFunctionMixin,  # Pandora seems to use TRACK or SONG for title based on logs. Maybe depends on firmware version?
     StationFunctionMixin,
+    TrackFunctionMixin,  # Pandora seems to use TRACK or SONG for title based on logs. Maybe depends on firmware version?
     SubunitBase,
 ):
     id = Subunit.PANDORA
