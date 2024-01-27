@@ -1,5 +1,6 @@
 from ynca import Playback, PlaybackInfo, Repeat, Shuffle
-from ynca.subunits import MediaPlaybackSubunitBase
+from ynca.subunits import MediaPlaybackMixins
+from ynca.subunit import SubunitBase
 
 SYS = "SYS"
 SUBUNIT = "SUBUNIT"
@@ -46,7 +47,7 @@ INITIALIZE_FULL_RESPONSES = [
 ]
 
 
-class DummyMediaPlaybackSubunit(MediaPlaybackSubunitBase):
+class DummyMediaPlaybackSubunit(MediaPlaybackMixins, SubunitBase):
     id = "SUBUNIT"
 
 

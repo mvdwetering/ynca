@@ -1,8 +1,9 @@
 from __future__ import annotations
 
 from ..constants import Subunit
-from . import MediaPlaybackSubunitBase
+from ..subunit import SubunitBase
+from . import MediaPlaybackMixins
 
 
-class Rhap(MediaPlaybackSubunitBase):
+class Rhap(MediaPlaybackMixins, SubunitBase):
     id = Subunit.RHAP

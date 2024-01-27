@@ -1,8 +1,10 @@
 from __future__ import annotations
 
+
 from ..constants import Subunit
-from . import MediaPlaybackSubunitBase
+from ..subunit import SubunitBase
+from . import MediaPlaybackMixins
 
 
-class Ipod(MediaPlaybackSubunitBase):
+class Ipod(MediaPlaybackMixins, SubunitBase):
     id = Subunit.IPOD

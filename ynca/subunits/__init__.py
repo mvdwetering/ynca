@@ -51,7 +51,7 @@ class TrackFunctionMixin:
 
 # A number of subunits have the same/similar featureset
 # so make a common base that only needs to be tested once
-class MediaPlaybackSubunitBase(
+class MediaPlaybackMixins(
     PlaybackFunctionMixin,
     PlaybackInfoFunctionMixin,
     RepeatFunctionMixin,
@@ -59,7 +59,6 @@ class MediaPlaybackSubunitBase(
     ArtistFunctionMixin,
     AlbumFunctionMixin,
     SongFunctionMixin,
-    SubunitBase,
 ):
     pass
 

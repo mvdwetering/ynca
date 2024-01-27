@@ -1,8 +1,9 @@
 from __future__ import annotations
 
 from ..constants import Subunit
-from . import MediaPlaybackSubunitBase
+from ..subunit import SubunitBase
+from . import MediaPlaybackMixins
 
 
-class Pc(MediaPlaybackSubunitBase):
+class Pc(MediaPlaybackMixins, SubunitBase):
     id = Subunit.PC
