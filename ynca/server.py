@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-from __future__ import annotations
 
 """
 Simple socket server to test without a real YNCA device
@@ -9,6 +8,8 @@ special interactions like return @RESTRICTED when subunit is not available when 
 
 It is intended to be just enough to test without a real device
 """
+
+from __future__ import annotations
 
 import argparse
 import logging
