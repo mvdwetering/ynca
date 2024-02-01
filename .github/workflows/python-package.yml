@@ -19,7 +19,7 @@ jobs:
         python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - if: startsWith(github.ref, 'refs/tags/v')
       # Assume all tags starting with a v are version tags.
       name: Check if versiontag matches setup.py
@@ -28,7 +28,7 @@ jobs:
         echo Version $VERSION_NUMBER extracted from $GITHUB_REF_NAME
         grep version=\"$VERSION_NUMBER\", setup.py
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
         cache: 'pip'
