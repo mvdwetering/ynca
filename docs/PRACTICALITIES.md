@@ -75,7 +75,6 @@ AURO-3D does not seem to be available on RX-1060 and it is unknown how to detect
 
 It is unfortunately unknown if it is possible to derive the 2CHDECODER options from other settings.
 
-
 ## SONG vs TRACK for songtitles
 
 It seems that most sources that support METAINFO for songs use SONG for songtitle.
@@ -93,7 +92,7 @@ There seem to be 2 methods of controlling HDMIOUT status
 
 ### MAIN:HDMIOUT 
 
-This seems to be how older receivers work.
+This seems to be how older receivers work like RX-A810.
 
 MAIN:HDMIOUT is an enum which can have values Off, OUT1, OUT2 and OUT1 + 2. I have only seen it for the MAIN zone, but in theory it could also apply to others
 
@@ -105,7 +104,7 @@ SYS:HDMIOUT# is a boolean that can have values On and Off. This command toggles 
 
 This command has been seen for HDMIOUT 1, 2 and 3.
 
-What makes this command a bit weird is while it is part of the SYS subunit it can _only_ be controlled when the related zone is On. So for example you can only control HDMIOUT1 when the MAIN zone is On. See logging in https://github.com/mvdwetering/yamaha_ynca/discussions/119#discussioncomment-6103924
+What makes this command a bit weird is while it is part of the SYS subunit it can _only_ be controlled when the related zone is On. So for example you can only control HDMIOUT1 when the MAIN zone is On. See logging in [this discussion comment ](https://github.com/mvdwetering/yamaha_ynca/discussions/119#discussioncomment-6103924)
 
 That seems workable for HDMIOUT 1 and 2 since those always seem to be related to the MAIN zone, but HDMIOUT3 is special and can be linked with ZONE2 and ZONE4 on an RX-A4A or RX-A6A according to the manual. It is unknown if/how it is possible to figure out to which zone it is configured. Would need logging when changing that setting.
 
@@ -113,8 +112,8 @@ In RX-A6A logging (see logs directory) it seems like both zones (2 and 4) report
 
 ## AUDIO input
 
-Some receivers have 1 audio input and that input is called AUDIO. Receivers with multiple audio inputs have them called AUDIO1, AUDIO2 etc...
+Some receivers have a single audio input and that input is called AUDIO. Receivers with multiple audio inputs have them called AUDIO1, AUDIO2 etc...
 
-Seen on RX-V475 receiver in #230, but probably also applies to RX-V575/HTR-4066/HTR-5066 as they share the same firmware.
+Seen on RX-V475 receiver in [issue #230](https://github.com/mvdwetering/yamaha_ynca/issues/230), but probably also applies to RX-V575/HTR-4066/HTR-5066 as they share the same firmware.
 
 For some reason this input is _not_ reported when requesting the input names with `@SYS:INPNAME=?` (unlike AUDIO1, AUDIO2 inputs). This makes it impossible to automatically detect if the input is supported by the receiver. The receiver does respond with `@RESTRICTED` when requesting `@SYS:INPNAMEAUDIO1=?` or `@SYS:TRIG1INPAUDIO1=?` instead of `@UNDEFINED`. However these responses are currently not really handled by the library and building support for that will be hard as there is not a guarenteed request/response mechanism due to the asynchronous nature of the protocol.

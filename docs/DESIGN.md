@@ -7,8 +7,7 @@ This file contains some design decisions. Mainly intended for future me.
 The library was initially intended for automation applications, so focused on control, not configuration.
 The scope changed to providing an interface that allows to set/get data using familiar YNCA vocabulary.
 
-However, since the amount of supported functions impacts the `initialize`time functions will only be added when
-someone has a usecase for it and not just all off them.
+Since the amount of supported functions impacts the `initialize`time functions will only be added when someone has a usecase for it and not just all off them.
 
 
 ## API guidelines
@@ -30,6 +29,8 @@ Some guidelines I try to follow when adding functions to the API.
         * All enums will have an "UNKNOWN" field for the case where a receiver responds with an unknown value. In these cases a warning will be logged. This UNKNOWN mapping is to avoid exceptions when mapping to an Enum which would break the code. Unknown values occur because there is no official documentation available and new receivers might support more/different values.
  * These are guidelines, exceptions can be made.
 
+Note:
+While using attributes to read/write values is pretty neat (and was a nice learning on how to use descriptors) it is a bit weird as you can write a value and it might not have been updated yet when you read it fast enough (sending the command and receiving response takes time). I am not planning to change it any time soon as I do like to just write attributes and not have functions for everything which makes the usage look more messy (IMHO).
 
 ## Input detection
 
