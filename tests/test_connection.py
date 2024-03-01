@@ -3,7 +3,6 @@ from contextlib import contextmanager
 from unittest import mock
 
 import pytest
-from flaky import flaky
 from mock_serial import MockSerial
 
 from ynca.connection import YncaConnection, YncaProtocolStatus
@@ -224,10 +223,6 @@ def test_protocol_status(mock_serial):
 def test_get_communication_log_items(mock_serial):
 
     with active_connection(mock_serial, communication_log_size=5) as connection:
-        raw_data = mock_serial.stub(
-            receive_bytes=b"@Subunit:Function=?\r\n", send_bytes=b""
-        )
-
         time.sleep(SHORT_DELAY)
         logitems = connection.get_communication_log_items()
         assert len(logitems) == 4  # Send en received keep-alive
@@ -238,8 +233,6 @@ def test_get_communication_log_items(mock_serial):
         assert len(logitems) == 5  # 1 dropped out due to size limit
 
 
-# Flaky due to multiple threads needing to communicate.
-@flaky(max_runs=5)
 def test_keep_alive(mock_serial):
 
     # Tweak the internal keep-alive interval to keep test short
@@ -252,7 +245,7 @@ def test_keep_alive(mock_serial):
         message_callback = mock.MagicMock()
         connection.register_message_callback(message_callback)
 
-        time.sleep(1)
+        time.sleep(SHORT_DELAY)
         logitems = connection.get_communication_log_items()
         assert len(logitems) == 4  # Send en received keep-alive are logged
 

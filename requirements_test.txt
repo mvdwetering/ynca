@@ -2,5 +2,4 @@
 pytest>=7.0.0
 pytest-mock
 pytest-cov
-flaky==3.7.0
 mock-serial==0.0.1
