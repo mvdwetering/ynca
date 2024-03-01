@@ -35,12 +35,20 @@ class YncaProtocol(serial.threaded.LineReader):
     # YNCA spec says standby timeout is 40 seconds, so use a shorter period to be on the safe side
     KEEP_ALIVE_INTERVAL = 30
 
-    def __init__(self, communication_log_size=0):
+    def __init__(
+        self,
+        message_callback: (
+            Callable[[YncaProtocolStatus, str | None, str | None, str | None], None]
+            | None
+        ) = None,
+        disconnect_callback: Callable[[], None] | None = None,
+        communication_log_size=0,
+    ):
         super().__init__()
-        self.message_callback:Callable[[YncaProtocolStatus, str|None, str|None, str|None], None]
-        self.disconnect_callback:Callable[[], None] | None
-        self._send_queue = None
-        self._send_thread = None
+        self._message_callback = message_callback
+        self._disconnect_callback = disconnect_callback
+        self._send_queue: queue.Queue
+        self._send_thread: threading.Thread
         self._last_sent_command = None
         self.connected = False
         self._keep_alive_pending = False
@@ -81,15 +89,15 @@ class YncaProtocol(serial.threaded.LineReader):
         if self._send_thread:
             self._send_thread.join(2)
 
-        if self.disconnect_callback:
-            self.disconnect_callback()
+        if self._disconnect_callback:
+            self._disconnect_callback()
 
     def handle_line(self, line):
         ignore = False
         status = YncaProtocolStatus.OK
-        subunit:str|None = None
-        function:str|None = None
-        value:str|None = None
+        subunit: str | None = None
+        function: str | None = None
+        value: str | None = None
 
         logger.debug("Recv - %s", line)
         self._communication_log_buffer.add(f"Received: {line}")
@@ -114,8 +122,8 @@ class YncaProtocol(serial.threaded.LineReader):
 
         self._keep_alive_pending = False
 
-        if not ignore and self.message_callback is not None:
-            self.message_callback(status, subunit, function, value)
+        if not ignore and self._message_callback is not None:
+            self._message_callback(status, subunit, function, value)
 
     def _send_keepalive(self):
         if self._send_queue:
@@ -188,21 +196,31 @@ class YncaConnection:
         self._protocol: Optional[YncaProtocol] = None
 
         self._message_callbacks: Set[
-            Callable[[YncaProtocolStatus, str|None, str|None, str|None], None]
+            Callable[[YncaProtocolStatus, str | None, str | None, str | None], None]
         ] = set()
 
     def register_message_callback(
-        self, callback: Callable[[YncaProtocolStatus, str|None, str|None, str|None], None]
+        self,
+        callback: Callable[
+            [YncaProtocolStatus, str | None, str | None, str | None], None
+        ],
     ):
         self._message_callbacks.add(callback)
 
     def unregister_message_callback(
-        self, callback: Callable[[YncaProtocolStatus, str|None, str|None, str|None], None]
+        self,
+        callback: Callable[
+            [YncaProtocolStatus, str | None, str | None, str | None], None
+        ],
     ):
         self._message_callbacks.discard(callback)
 
     def _call_registered_message_callbacks(
-        self, status: YncaProtocolStatus, subunit: str|None, function_: str|None, value: str|None
+        self,
+        status: YncaProtocolStatus,
+        subunit: str | None,
+        function_: str | None,
+        value: str | None,
     ):
         for callback in self._message_callbacks:
             callback(status, subunit, function_, value)
@@ -215,7 +233,12 @@ class YncaConnection:
         try:
             self._serial = serial.serial_for_url(self._port)
             self._readerthread = serial.threaded.ReaderThread(
-                self._serial, lambda: YncaProtocol(communication_log_size)
+                self._serial,
+                lambda: YncaProtocol(
+                    self._call_registered_message_callbacks,
+                    disconnect_callback,
+                    communication_log_size,
+                ),
             )
             self._readerthread.start()
             _, protocol = self._readerthread.connect()
@@ -225,15 +248,11 @@ class YncaConnection:
         except RuntimeError as e:
             raise YncaConnectionFailed(e)
 
-        if self._protocol:
-            self._protocol.message_callback = self._call_registered_message_callbacks
-            self._protocol.disconnect_callback = disconnect_callback
-
     def close(self):
         # Disconnect callback is for unexpected disconnects
         # Don't need it to be called on planned `close()`
         if self._protocol:
-            self._protocol.disconnect_callback = None
+            self._protocol._disconnect_callback = None
 
         if self._readerthread:
             self._readerthread.close()
