@@ -159,13 +159,6 @@ class YncaProtocol(serial.threaded.LineReader):
     def get(self, subunit: str, funcname: str):
         self.put(subunit, funcname, "?")
 
-    def set_communication_log_size(self, size: int):
-        """
-        Set the amount of items to track in the communication log buffer.
-        Setting a new size will discard existing items.
-        """
-        self._communication_log_buffer = LogBuffer(size)
-
     def get_communication_log_items(self) -> List[str]:
         """
         Get a list of logged communication items.
