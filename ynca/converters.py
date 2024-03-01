@@ -45,6 +45,23 @@ class IntConverter(ConverterBase):
         return self._to_str(value)
 
 
+class IntOrNoneConverter(ConverterBase):
+
+    def __init__(self, to_str: Callable[[int], str] | None = None) -> None:
+        self._to_str = to_str or str
+
+    def to_value(self, value_string: str) -> int | None:
+        try:
+            return int(value_string)
+        except ValueError:
+            return None
+
+    def to_str(self, value: int) -> str:
+        # Make sure it is an int compatible types to be usable with MultiConverter
+        int(value)
+        return self._to_str(value)
+
+
 class FloatConverter(ConverterBase):
     def __init__(self, to_str: Callable[[float], str] | None = None) -> None:
         self._to_str = to_str or str

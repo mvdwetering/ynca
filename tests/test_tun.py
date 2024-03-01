@@ -32,6 +32,12 @@ INITIALIZE_FULL_RESPONSES = [
         ],
     ),
     (
+        (SUBUNIT, "PRESET"),
+        [
+            (SUBUNIT, "PRESET", "12"),
+        ],
+    ),
+    (
         (SUBUNIT, "RDSINFO"),
         [
             (SUBUNIT, "RDSPRGTYPE", "RDS PRG TYPE"),
@@ -70,6 +76,7 @@ def test_initialize(connection, update_callback):
     assert tun.band is BandTun.FM
     assert tun.amfreq == 1080
     assert tun.fmfreq == 101.60
+    assert tun.preset == 12
 
 
 def test_am(connection, initialized_tun: Tun):
@@ -106,3 +113,32 @@ def test_rds(connection, initialized_tun: Tun):
 
     connection.send_protocol_message(SUBUNIT, "RDSTXTB", "radiotext b")
     assert initialized_tun.rdstxtb == "radiotext b"
+
+def test_preset(connection, initialized_tun: Tun):
+
+    # Updates from device
+    connection.send_protocol_message(SUBUNIT, "PRESET", "11")
+    assert initialized_tun.preset == 11
+
+    connection.send_protocol_message(SUBUNIT, "PRESET", "No Preset")
+    assert initialized_tun.preset == None
+
+    # Set preset
+    initialized_tun.preset = 10
+    connection.put.assert_called_with(SUBUNIT, "PRESET", "10")
+
+    # Preset Up Down
+    initialized_tun.preset_up()
+    connection.put.assert_called_with(SUBUNIT, "PRESET", "Up")
+
+    initialized_tun.preset_down()
+    connection.put.assert_called_with(SUBUNIT, "PRESET", "Down")
+
+def test_mem(connection, initialized_tun: Tun):
+
+    # Store
+    initialized_tun.mem(10)
+    connection.put.assert_called_with(SUBUNIT, "MEM", "10")
+
+    initialized_tun.mem()
+    connection.put.assert_called_with(SUBUNIT, "MEM", "Auto")

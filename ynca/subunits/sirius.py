@@ -5,8 +5,11 @@ from ..subunit import SubunitBase
 from . import (
     ArtistFunctionMixin,
     ChNameFunctionMixin,
+    MemFunctionMixin,
     PlaybackFunctionMixin,
     PlaybackInfoFunctionMixin,
+    PresetFunctionMixin,
+    PresetUpDownFunctionMixin,
     SongFunctionMixin,
 )
 
@@ -14,6 +17,9 @@ from . import (
 class Sirius(
     ArtistFunctionMixin,
     ChNameFunctionMixin,
+    MemFunctionMixin,
+    PresetFunctionMixin,
+    PresetUpDownFunctionMixin,
     SongFunctionMixin,
     SubunitBase,
 ):
@@ -23,8 +29,10 @@ class Sirius(
 class SiriusIr(
     ArtistFunctionMixin,
     ChNameFunctionMixin,
+    MemFunctionMixin,
     PlaybackFunctionMixin,
     PlaybackInfoFunctionMixin,
+    PresetFunctionMixin,
     SongFunctionMixin,
     SubunitBase,
 ):

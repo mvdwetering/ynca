@@ -6,13 +6,22 @@ from ..function import Cmd, EnumFunctionMixin, IntFunctionMixin, StrFunctionMixi
 from ..enums import BandTun
 from ..helpers import number_to_string_with_stepsize
 from ..subunit import SubunitBase
-from . import FmFreqFunctionMixin
+from . import (
+    FmFreqFunctionMixin,
+    MemFunctionMixin,
+    PresetFunctionMixin,
+    PresetUpDownFunctionMixin,
+)
 
 
-class Tun(FmFreqFunctionMixin, SubunitBase):
+class Tun(
+    FmFreqFunctionMixin,
+    MemFunctionMixin,
+    PresetFunctionMixin,
+    PresetUpDownFunctionMixin,
+    SubunitBase,
+):
     id = Subunit.TUN
-
-    band = EnumFunctionMixin[BandTun](BandTun)
 
     amfreq = IntFunctionMixin(
         converter=IntConverter(
@@ -20,6 +29,8 @@ class Tun(FmFreqFunctionMixin, SubunitBase):
         ),
     )
     """Read/write AM frequency. Values will be aligned to a valid stepsize."""
+
+    band = EnumFunctionMixin[BandTun](BandTun)
 
     rdsprgservice = StrFunctionMixin(Cmd.GET, init="RDSINFO")
     rdsprgtype = StrFunctionMixin(Cmd.GET, init="RDSINFO")

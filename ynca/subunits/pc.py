@@ -5,8 +5,10 @@ from ..subunit import SubunitBase
 from . import (
     AlbumFunctionMixin,
     ArtistFunctionMixin,
+    MemFunctionMixin,
     PlaybackFunctionMixin,
     PlaybackInfoFunctionMixin,
+    PresetFunctionMixin,
     RepeatFunctionMixin,
     ShuffleFunctionMixin,
     SongFunctionMixin,
@@ -16,8 +18,10 @@ from . import (
 class Pc(
     AlbumFunctionMixin,
     ArtistFunctionMixin,
+    MemFunctionMixin,
     PlaybackFunctionMixin,
     PlaybackInfoFunctionMixin,
+    PresetFunctionMixin,
     RepeatFunctionMixin,
     ShuffleFunctionMixin,
     SongFunctionMixin,

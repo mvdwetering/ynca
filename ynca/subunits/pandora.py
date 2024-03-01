@@ -5,8 +5,10 @@ from ..subunit import SubunitBase
 from . import (
     AlbumFunctionMixin,
     ArtistFunctionMixin,
+    MemFunctionMixin,
     PlaybackFunctionMixin,
     PlaybackInfoFunctionMixin,
+    PresetFunctionMixin,
     SongFunctionMixin,
     StationFunctionMixin,
     TrackFunctionMixin,
@@ -16,8 +18,10 @@ from . import (
 class Pandora(
     AlbumFunctionMixin,
     ArtistFunctionMixin,
+    MemFunctionMixin,
     PlaybackFunctionMixin,
     PlaybackInfoFunctionMixin,
+    PresetFunctionMixin,
     SongFunctionMixin,
     StationFunctionMixin,
     TrackFunctionMixin,  # Pandora seems to use TRACK or SONG for title based on logs. Maybe depends on firmware version?
