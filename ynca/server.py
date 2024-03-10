@@ -214,6 +214,11 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
             if len(value) != 8:
                 self.write_line(UNDEFINED)
             return
+        
+        # MEM does not seem to generate a response
+        # assume it was supported for the subunit
+        if function == "MEM":
+            return
 
         if function == "VOL" and value.startswith("Up") or value.startswith("Down"):
             # Need to handle Up/Down as it would otherwise overwrite the VOL value wtih text Up/Down

@@ -7,6 +7,7 @@ logger = logging.getLogger(__name__)
 
 UNKNOWN_STRING = "< UNKNOWN >"
 
+
 @unique
 class AdaptiveDrc(str, Enum):
     OFF = "Off"
@@ -65,9 +66,35 @@ class BandTun(str, Enum):
 
 
 @unique
+class DabPreset(str, Enum):
+    NO_PRESET = "No Preset"
+
+    @classmethod
+    def _missing_(cls, value):
+        logger.warning("Unknown value '%s' in %s", value, cls.__name__)
+        return cls.UNKNOWN
+
+    UNKNOWN = UNKNOWN_STRING
+    """Unknown values in the enum are mapped to UNKNOWN"""
+
+
+@unique
 class Enhancer(str, Enum):
     ON = "On"
     OFF = "Off"
+
+    @classmethod
+    def _missing_(cls, value):
+        logger.warning("Unknown value '%s' in %s", value, cls.__name__)
+        return cls.UNKNOWN
+
+    UNKNOWN = UNKNOWN_STRING
+    """Unknown values in the enum are mapped to UNKNOWN"""
+
+
+@unique
+class FmPreset(str, Enum):
+    NO_PRESET = "No Preset"
 
     @classmethod
     def _missing_(cls, value):
@@ -206,6 +233,7 @@ class Mute(str, Enum):
 
     UNKNOWN = UNKNOWN_STRING
     """Unknown values in the enum are mapped to UNKNOWN"""
+
 
 @unique
 class Party(Enum):
