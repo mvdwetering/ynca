@@ -1,0 +1,33 @@
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/coderabbit-overrides.v2.json
+
+language: "en"
+early_access: false
+reviews:
+  request_changes_workflow: false
+  high_level_summary: true
+  poem: true
+  review_status: true
+  collapse_walkthrough: false
+  path_filters:
+    - "!logs/**"
+  # path_instructions:
+  #   - path: "**/*.js"
+  #     instructions:
+  #       "Review the JavaScript code for conformity with the Google JavaScript
+  #       style guide, highlighting any deviations."
+  #   - path: "tests/**/*"
+  #     instructions: |
+  #       "Assess the unit test code employing the Mocha testing framework. Confirm that:
+  #       - The tests adhere to Mocha's established best practices.
+  #       - Test descriptions are sufficiently detailed to clarify the purpose of each test."
+  auto_review:
+    enabled: true
+    ignore_title_keywords:
+      - "WIP"
+      - "DO NOT MERGE"
+    drafts: true
+    # base_branches:
+    #   - "develop"
+    #   - "feat/.*"
+chat:
+  auto_reply: true
