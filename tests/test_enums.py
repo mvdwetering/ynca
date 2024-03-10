@@ -6,7 +6,9 @@ from ynca.enums import (
     Avail,
     BandDab,
     BandTun,
+    DabPreset,
     Enhancer,
+    FmPreset,
     HdmiOut,
     HdmiOutOnOff,
     InitVolLvl,
@@ -34,7 +36,9 @@ def test_invalid_values_on_enums():
     assert Avail("x") is Avail.UNKNOWN
     assert BandDab("x") is BandDab.UNKNOWN
     assert BandTun("x") is BandTun.UNKNOWN
+    assert DabPreset("x") is DabPreset.UNKNOWN
     assert Enhancer("x") is Enhancer.UNKNOWN
+    assert FmPreset("x") is FmPreset.UNKNOWN
     assert HdmiOut("x") is HdmiOut.UNKNOWN
     assert HdmiOutOnOff("x") is HdmiOutOnOff.UNKNOWN
     assert InitVolLvl("x") is InitVolLvl.UNKNOWN

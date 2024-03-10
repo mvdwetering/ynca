@@ -110,7 +110,7 @@ class EnumFunctionMixin(FunctionMixinBase[E], Generic[E]):
         super().__init__(
             name_override=name_override,
             cmd=cmd,
-            converter=EnumConverter[E](datatype),
+            converter=EnumConverter(datatype),
             init=init,
         )
 
@@ -176,6 +176,23 @@ class EnumOrFloatFunctionMixin(FunctionMixinBase, Generic[E]):
             name_override=name_override,
             cmd=cmd,
             converter=converter
-            or MultiConverter([EnumConverter[E](datatype), FloatConverter()]),
+            or MultiConverter([FloatConverter(), EnumConverter(datatype)]),  # Float first because enum will convert to UNKNOWN
+            init=init,
+        )
+
+class EnumOrIntFunctionMixin(FunctionMixinBase, Generic[E]):
+    def __init__(
+        self,
+        datatype: Type[E],
+        converter: MultiConverter | None = None,
+        cmd: Cmd = Cmd.GET | Cmd.PUT,
+        name_override: str | None = None,
+        init=None,
+    ) -> None:
+        super().__init__(
+            name_override=name_override,
+            cmd=cmd,
+            converter=converter
+            or MultiConverter([IntConverter(), EnumConverter(datatype)]),  # Int first because enum will convert to UNKNOWN
             init=init,
         )

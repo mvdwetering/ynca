@@ -1,6 +1,7 @@
 import pytest
 
 from ynca import BandDab
+from ynca.enums import DabPreset, FmPreset
 from ynca.subunits.dab import Dab
 
 SYS = "SYS"
@@ -20,9 +21,21 @@ INITIALIZE_FULL_RESPONSES = [
         ],
     ),
     (
+        (SUBUNIT, "DABPRESET"),
+        [
+            (SUBUNIT, "DABPRESET", "33"),
+        ],
+    ),
+    (
         (SUBUNIT, "FMFREQ"),
         [
             (SUBUNIT, "FMFREQ", "101.60"),
+        ],
+    ),
+    (
+        (SUBUNIT, "FMPRESET"),
+        [
+            (SUBUNIT, "FMPRESET", "40"),
         ],
     ),
     (
@@ -36,7 +49,7 @@ INITIALIZE_FULL_RESPONSES = [
                 SUBUNIT,
                 "DABDATETIME",
                 "13DEC'22 11:05",
-            ),  # DAB is a bit weird, but it came from a log
+            ),  # DAB is a bit weird, but it came from a log OF RX-V500D
         ],
     ),
     (
@@ -115,8 +128,30 @@ def test_fmrds(connection, initialized_dab: Dab):
     assert initialized_dab.fmrdstxt == "radiotext"
 
 
-def test_fmsignal(connection, initialized_dab: Dab):
+def test_fmfreq(connection, initialized_dab: Dab):
 
     # Set value and test stepsize handling (which is why it becomes 100.00)
     initialized_dab.fmfreq = 100.05
     connection.put.assert_called_with(SUBUNIT, "FMFREQ", "100.00")
+
+
+def test_fmpreset(connection, initialized_dab: Dab):
+
+    assert initialized_dab.fmpreset == 40
+
+    initialized_dab.fmpreset = 12
+    connection.put.assert_called_with(SUBUNIT, "FMPRESET", "12")
+
+    connection.send_protocol_message(SUBUNIT, "FMPRESET", "No Preset")
+    initialized_dab.fmpreset = FmPreset.NO_PRESET
+
+
+def test_dabpreset(connection, initialized_dab: Dab):
+
+    assert initialized_dab.dabpreset == 33
+
+    initialized_dab.dabpreset = 22
+    connection.put.assert_called_with(SUBUNIT, "DABPRESET", "22")
+
+    connection.send_protocol_message(SUBUNIT, "DABPRESET", "No Preset")
+    initialized_dab.dabpreset = DabPreset.NO_PRESET
