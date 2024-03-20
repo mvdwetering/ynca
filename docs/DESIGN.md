@@ -9,7 +9,6 @@ The scope changed to providing an interface that allows to set/get data using fa
 
 Since the amount of supported functions impacts the `initialize`time functions will only be added when someone has a usecase for it and not just all off them.
 
-
 ## API guidelines
 
 Some guidelines I try to follow when adding functions to the API.
@@ -72,3 +71,34 @@ To avoid this keep the connection alive by sending a dummy command when the conn
 
 The `@SYS:MODELNAME=?` command is used for it as it is available on all receivers.
 
+## Future?
+
+Some ideas for future additions or iterations
+
+### Use asyncio
+
+This would make it a better fit for Home Assistant. Might also make communication easier?
+
+There does not seem to be an easy way to wrap the existing API with an asyncio layer in a nice way. So would be an almost complete rewrite?
+Would also need a different API as it is not possible to `await` attributes.
+
+Maybe something like:
+```
+zone.vol.put(12)
+zone.vol.get()  # Would request value at receiver and return value
+zone.vol.get_cached()  # Would return last received value
+zone.vol.is_supported
+```
+
+### Real GET requests
+
+Somehow I made the assumption there was no real request/response. Just send a command and an update will come from the receiver or not.
+
+However this is only true for PUT requests, it wil only send an update when calues actualy change.
+For GET commands there should(==assumption) always be a response. Either the value or an error.
+
+This might also allow for better feature detection. Maybe performing a GET can be used to detect if something is suppported.
+Getting a value is easy, but maybe supported commands will still give an @RESTRICTED on the GET even if it is a PUT only command.
+Need to check for event only updates if they exist.
+
+That might also explain the lists of GET commands found on the internet to indicate what is supported for a device.
