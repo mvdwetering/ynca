@@ -90,6 +90,8 @@ zone.vol.get_cached()  # Would return last received value
 zone.vol.is_supported
 ```
 
+Try and find integrations with similar challenges and see how they solved it.
+
 ### Real GET requests
 
 Somehow I made the assumption there was no real request/response. Just send a command and an update will come from the receiver or not.
@@ -102,3 +104,5 @@ Getting a value is easy, but maybe supported commands will still give an @RESTRI
 Need to check for event only updates if they exist.
 
 That might also explain the lists of GET commands found on the internet to indicate what is supported for a device.
+
+Would allow for an API where attributes are only added when _really_ supported by that specific model and not in general.
