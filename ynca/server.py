@@ -316,7 +316,7 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
                     self.request.shutdown(socket.SHUT_RDWR)
                     self.request.close()
                     return
-                time.sleep(1)
+                time.sleep(0.1)
             else:  # got line
                 if bytes_line == b"":
                     print("--- Client disconnected")
