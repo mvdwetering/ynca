@@ -14,8 +14,13 @@ from __future__ import annotations
 import argparse
 import logging
 import re
+import socket
 import socketserver
+import sys
+import time
 from collections import namedtuple
+from queue import Queue, Empty
+from threading  import Thread
 from typing import Dict, Tuple
 
 from .enums import Input
@@ -282,44 +287,75 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
         commands_received = 0
 
         print(f"--- Client connected from: {self.client_address[0]}")
+
+        thread_should_stop = False
+
+        def enqueue_output(out, queue):
+            while not thread_should_stop:
+                if thread_should_stop:
+                    return
+                line = out.readline()
+                queue.put(line)
+
+        q = Queue()
+        t = Thread(target=enqueue_output, args=(self.rfile, q))
+        t.daemon = True  # thread dies with the program
+        t.start()
+
+        starttime = time.time()
+
         while True:
-            bytes_line = self.rfile.readline()
-            if bytes_line == b"":
-                print("--- Client disconnected")
-                print("--- Waiting for connections")
-                return
+            try:
+                bytes_line = q.get_nowait()  # or q.get(timeout=.1)
+            except Empty:
+                waiting_time = time.time() - starttime
+                if (waiting_time) > 40:
+                    print("--- Disconnecting due to timeout")
+                    print("--- Waiting for connections")
+                    thread_should_stop = True
+                    self.request.shutdown(socket.SHUT_RDWR)
+                    self.request.close()
+                    return
+                time.sleep(1)
+            else:  # got line
+                if bytes_line == b"":
+                    print("--- Client disconnected")
+                    print("--- Waiting for connections")
+                    return
 
-            bytes_line = bytes_line.strip()
-            line = bytes_line.decode(
-                "utf-8"
-            )  # Note that YNCA spec says in some places that text can be ASCII, Latin-1 or UTF-8 without a way to indicate what it is :/ UTF-8 seems to work fine for now
-            print(f"Recv - {line}")
+                bytes_line = bytes_line.strip()
+                line = bytes_line.decode(
+                    "utf-8"
+                )  # Note that YNCA spec says in some places that text can be ASCII, Latin-1 or UTF-8 without a way to indicate what it is :/ UTF-8 seems to work fine for now
+                print(f"Recv - {line}")
 
-            command = line_to_command(line)
-            if command is not None:
-                if command.value == "?":
-                    self.handle_get(command.subunit, command.function)
-                else:
-                    self.handle_put(command.subunit, command.function, command.value)
+                command = line_to_command(line)
+                if command is not None:
+                    if command.value == "?":
+                        self.handle_get(command.subunit, command.function)
+                    else:
+                        self.handle_put(command.subunit, command.function, command.value)
 
-            commands_received += 1
-            if (
-                self.disconnect_after_receiving_num_commands is not None
-                and commands_received >= self.disconnect_after_receiving_num_commands
-            ):
-                print(
-                    f"--- Disconnecting because of `disconnect_after_receiving_num_commands` limit {self.disconnect_after_receiving_num_commands} reached"
-                )
-                return
+                commands_received += 1
+                if (
+                    self.disconnect_after_receiving_num_commands is not None
+                    and commands_received >= self.disconnect_after_receiving_num_commands
+                ):
+                    print(
+                        f"--- Disconnecting because of `disconnect_after_receiving_num_commands` limit {self.disconnect_after_receiving_num_commands} reached"
+                    )
+                    return
 
-            if (
-                self.disconnect_after_sending_num_commands is not None
-                and self._commands_sent >= self.disconnect_after_sending_num_commands
-            ):
-                print(
-                    "--- Disconnecting because of `disconnect_after_sending_num_commands` {self.disconnect_after_sending_num_commands} limit reached"
-                )
-                return
+                if (
+                    self.disconnect_after_sending_num_commands is not None
+                    and self._commands_sent >= self.disconnect_after_sending_num_commands
+                ):
+                    print(
+                        "--- Disconnecting because of `disconnect_after_sending_num_commands` {self.disconnect_after_sending_num_commands} limit reached"
+                    )
+                    return
+
+                starttime = time.time()  # reset timeout clock
 
 
 class YncaServer(socketserver.TCPServer):
