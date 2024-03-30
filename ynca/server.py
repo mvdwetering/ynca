@@ -149,6 +149,8 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
     client.
     """
 
+    timeout = 40  # Receiver disconnects after 40 seconds of no traffic
+
     def __init__(self, request, client_address, server: YncaServer):
         self.store = server.store
         self.disconnect_after_receiving_num_commands = (
@@ -283,9 +285,14 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
 
         print(f"--- Client connected from: {self.client_address[0]}")
         while True:
-            bytes_line = self.rfile.readline()
-            if bytes_line == b"":
-                print("--- Client disconnected")
+            try:
+                bytes_line = self.rfile.readline()
+                if bytes_line == b"":
+                    print("--- Client disconnected")
+                    print("--- Waiting for connections")
+                    return
+            except TimeoutError:
+                print("--- Disconnecting client because of timeout")
                 print("--- Waiting for connections")
                 return
 
