@@ -42,7 +42,7 @@ class MemFunctionMixin:
 class PlaybackFunctionMixin:
     def playback(self, parameter: Playback):
         """Change playback state"""
-        self._put("PLAYBACK", parameter)  # type: ignore
+        self._put("PLAYBACK", parameter.value)  # type: ignore
 
 
 class PlaybackInfoFunctionMixin:
