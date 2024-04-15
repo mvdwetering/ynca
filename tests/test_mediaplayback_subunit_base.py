@@ -65,7 +65,7 @@ class DummyMediaPlaybackSubunit(
     SongFunctionMixin,
     SubunitBase,
 ):
-    id = "SUBUNIT"
+    id = "SUBUNIT" # type: ignore
 
 
 def test_initialize(connection, update_callback):
