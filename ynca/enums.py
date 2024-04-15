@@ -172,6 +172,7 @@ class Input(Enum):
     AUDIO2 = "AUDIO2"
     AUDIO3 = "AUDIO3"
     AUDIO4 = "AUDIO4"
+    AUDIO5 = "AUDIO5"
     AV1 = "AV1"
     AV2 = "AV2"
     AV3 = "AV3"
