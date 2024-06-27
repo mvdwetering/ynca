@@ -106,3 +106,14 @@ Need to check for event only updates if they exist.
 That might also explain the lists of GET commands found on the internet to indicate what is supported for a device.
 
 Would allow for an API where attributes are only added when _really_ supported by that specific model and not in general.
+
+### Better events/updates
+
+Currently events/updates from the receiver are just passed in a callback with everything as strings.
+
+A better version would be nice.
+
+* Typed arguments?
+* Register for specific updates (next to all?)
+* Would still need a raw callback
+
