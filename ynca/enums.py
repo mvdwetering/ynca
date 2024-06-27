@@ -190,6 +190,7 @@ class Input(Enum):
     HDMI7 = "HDMI7"
     MULTICH = "MULTI CH"
     PHONO = "PHONO"
+    TV = "TV"
     VAUX = "V-AUX"
 
     # Inputs provided by subunits
