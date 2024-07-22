@@ -108,6 +108,7 @@ class FmPreset(str, Enum):
 @unique
 class HdmiOut(str, Enum):
     OFF = "Off"
+    OUT = "OUT"     # OUT is on receivers with 1 HDMI, multiple HDMI outputs use OUT1 + OUT 2
     OUT1 = "OUT1"
     OUT2 = "OUT2"
     OUT1_PLUS_2 = "OUT1 + 2"
