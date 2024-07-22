@@ -10,6 +10,7 @@ from ..function import (
     EnumFunctionMixin,
     EnumOrFloatFunctionMixin,
     FloatFunctionMixin,
+    IntFunctionMixin,
     StrFunctionMixin,
 )
 from ..enums import (
@@ -70,6 +71,32 @@ class ZoneBase(PlaybackFunctionMixin, SubunitBase):
     )
     initvolmode = EnumFunctionMixin[InitVolMode](InitVolMode)
     inp = EnumFunctionMixin[Input](Input, init="BASIC")
+
+    lipsynchdmiout1offset = IntFunctionMixin()
+    def lipsynchdmiout1offset_down(self):
+        """
+        Increase by 1 step (=1 ms).
+        """
+        self._put("LIPSYNCHDMIOUT1OFFSET", "Down")
+    def lipsynchdmiout1offset_up(self):
+        """
+        Decrease by 1 step (=1 ms).
+        """
+        self._put("LIPSYNCHDMIOUT1OFFSET", "Up")
+            
+    lipsynchdmiout2offset = IntFunctionMixin()
+    def lipsynchdmiout2offset_down(self):
+        """
+        Increase by 1 step (=1 ms).
+        """
+        self._put("LIPSYNCHDMIOUT2OFFSET", "Down")
+    def lipsynchdmiout2offset_up(self):
+        """
+        Decrease by 1 step (=1 ms).
+        """
+        self._put("LIPSYNCHDMIOUT2OFFSET", "Up")
+                
+
     maxvol = FloatFunctionMixin(
         converter=MultiConverter(
             [
