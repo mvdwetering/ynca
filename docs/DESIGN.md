@@ -117,3 +117,6 @@ A better version would be nice.
 * Register for specific updates (next to all?)
 * Would still need a raw callback
 
+### Other
+
+Now all zones are the same, which is true for most things, but there are some things like @MAIN:HDMIOUT I have only seen on MAIN and does not seem to make much sense on ZONE2 or others. Maybe it would be good to not have them all the same by default? Could save some initialization time... But on the other hand could result in missing features on a Zone because not encountered yet. Now it just-works.

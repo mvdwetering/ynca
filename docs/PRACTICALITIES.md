@@ -92,9 +92,15 @@ There seem to be 2 methods of controlling HDMIOUT status
 
 ### MAIN:HDMIOUT 
 
-This seems to be how older receivers work like RX-A810.
+This seems to be how older receivers work like RX-A810 or RX-V671
 
-MAIN:HDMIOUT is an enum which can have values Off, OUT1, OUT2 and OUT1 + 2. I have only seen it for the MAIN zone, but in theory it could also apply to others
+MAIN:HDMIOUT is an enum which can have values depending on the amount of HDMI outputs.
+
+RX-V671 has 1 HDMI output and supports values Off and OUT
+RX-A810 has 2 HDMI outputs and supports values Off, OUT1, OUT2 and OUT1 + 2. 
+
+I have only seen it for the MAIN zone, but in theory it might also apply to others?
+
 
 ### SYS:HDMIOUT#
 
