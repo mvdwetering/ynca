@@ -400,3 +400,50 @@ def test_initvollvl(connection, initialized_zone: ZoneBase):
     assert initialized_zone.initvollvl == InitVolLvl.MUTE
     connection.send_protocol_message(SUBUNIT, "INITVOLLVL", "-10.5")
     assert initialized_zone.initvollvl == -10.5
+
+
+def test_lipsynchdmioutoffset(connection, initialized_zone: ZoneBase):
+    # Writing to device
+
+    # Values
+    initialized_zone.lipsynchdmiout1offset = 0
+    connection.put.assert_called_with(SUBUNIT, "LIPSYNCHDMIOUT1OFFSET", "0")
+    initialized_zone.lipsynchdmiout2offset = 0
+    connection.put.assert_called_with(SUBUNIT, "LIPSYNCHDMIOUT2OFFSET", "0")
+
+    initialized_zone.lipsynchdmiout1offset = 250
+    connection.put.assert_called_with(SUBUNIT, "LIPSYNCHDMIOUT1OFFSET", "250")
+    initialized_zone.lipsynchdmiout2offset = 250
+    connection.put.assert_called_with(SUBUNIT, "LIPSYNCHDMIOUT2OFFSET", "250")
+
+    initialized_zone.lipsynchdmiout1offset = -250
+    connection.put.assert_called_with(SUBUNIT, "LIPSYNCHDMIOUT1OFFSET", "-250")
+    initialized_zone.lipsynchdmiout2offset = -250
+    connection.put.assert_called_with(SUBUNIT, "LIPSYNCHDMIOUT2OFFSET", "-250")
+
+    # Up
+    initialized_zone.lipsynchdmiout1offset_up()
+    connection.put.assert_called_with(SUBUNIT, "LIPSYNCHDMIOUT1OFFSET", "Up")
+    initialized_zone.lipsynchdmiout2offset_up()
+    connection.put.assert_called_with(SUBUNIT, "LIPSYNCHDMIOUT2OFFSET", "Up")
+
+    # Down
+    initialized_zone.lipsynchdmiout1offset_down()
+    connection.put.assert_called_with(SUBUNIT, "LIPSYNCHDMIOUT1OFFSET", "Down")
+    initialized_zone.lipsynchdmiout2offset_down()
+    connection.put.assert_called_with(SUBUNIT, "LIPSYNCHDMIOUT2OFFSET", "Down")
+
+    # Updates from device
+    connection.send_protocol_message(SUBUNIT, "LIPSYNCHDMIOUT1OFFSET", "0")
+    assert initialized_zone.lipsynchdmiout1offset == 0
+    connection.send_protocol_message(SUBUNIT, "LIPSYNCHDMIOUT1OFFSET", "250")
+    assert initialized_zone.lipsynchdmiout1offset == 250
+    connection.send_protocol_message(SUBUNIT, "LIPSYNCHDMIOUT1OFFSET", "-250")
+    assert initialized_zone.lipsynchdmiout1offset == -250
+
+    connection.send_protocol_message(SUBUNIT, "LIPSYNCHDMIOUT2OFFSET", "0")
+    assert initialized_zone.lipsynchdmiout2offset == 0
+    connection.send_protocol_message(SUBUNIT, "LIPSYNCHDMIOUT2OFFSET", "250")
+    assert initialized_zone.lipsynchdmiout2offset == 250
+    connection.send_protocol_message(SUBUNIT, "LIPSYNCHDMIOUT2OFFSET", "-250")
+    assert initialized_zone.lipsynchdmiout2offset == -250
