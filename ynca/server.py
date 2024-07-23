@@ -175,7 +175,7 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
             sys_values = self.store._store["SYS"]
             for key in sys_values.keys():
                 if key.startswith("INPNAME") and key != "INPNAME":
-                    self.handle_get(subunit, key)
+                    self.handle_get(subunit, key, skip_error_response=True)
             return
         elif response_functions := multiresponse_functions_table.get(function, None):
             before = self._commands_sent
@@ -194,7 +194,7 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
                     and key.endswith("NAME")
                     and key != "SCENENAME"
                 ):
-                    self.handle_get(subunit, key)
+                    self.handle_get(subunit, key, skip_error_response=True)
                     response_sent = True
             if not response_sent:
                 self.write_line(UNDEFINED)
