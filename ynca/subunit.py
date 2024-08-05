@@ -56,7 +56,7 @@ class SubunitBase(ABC):
         # otherwise the YncaFunction descriptors get/set functions would trigger.
         # Sort the list to have a deterministic/understandable order for easier testing
         for attribute_name in sorted(dir(self.__class__)):
-            attribute = getattr(self.__class__, attribute_name)
+            attribute = getattr(self.__class__, attribute_name, None)
             if isinstance(attribute, FunctionMixinBase):
                 self.function_handlers[attribute.name] = YncaFunctionHandler(attribute)
 
