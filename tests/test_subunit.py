@@ -1,6 +1,7 @@
 """Test Zone subunit"""
 
 from unittest import mock
+from unittest.mock import create_autospec
 import pytest
 
 from ynca import Avail
@@ -8,6 +9,7 @@ from ynca.constants import Subunit
 from ynca.subunit import SubunitBase
 from ynca.function import IntFunctionMixin
 from ynca.errors import YncaInitializationFailedException
+from ynca.subunits.system import System
 
 
 SYS = "SYS"
@@ -140,7 +142,21 @@ def test_status_not_ok_ignored(
 
 
 def test_write_function_calls_connection_put(
-    connection, initialized_dummysubunit: SubunitBase, update_callback
+    connection, initialized_dummysubunit: DummySubunit, update_callback
 ):
     initialized_dummysubunit.dummy_function = 123
     connection.put.assert_called_with("UAW", "DUMMY_FUNCTION", "123")
+
+def test_unreadable_attributes_ignored(connection):
+    '''
+    This test is specifically to check handling of unreadable attributes
+    as found with issue https://github.com/mvdwetering/yamaha_ynca/issues/315
+    '''
+
+    class descriptor:
+        def __get__(self, instance, owner):
+            raise AttributeError("unreadable attribute")
+
+    DummySubunit.__provides__ = descriptor()
+    DummySubunit(connection)
+
