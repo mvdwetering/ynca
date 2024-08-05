@@ -1,7 +1,6 @@
 """Test Zone subunit"""
 
 from unittest import mock
-from unittest.mock import create_autospec
 import pytest
 
 from ynca import Avail
@@ -9,7 +8,6 @@ from ynca.constants import Subunit
 from ynca.subunit import SubunitBase
 from ynca.function import IntFunctionMixin
 from ynca.errors import YncaInitializationFailedException
-from ynca.subunits.system import System
 
 
 SYS = "SYS"
