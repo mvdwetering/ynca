@@ -1,7 +1,7 @@
 """Test Zone subunit"""
 
 from unittest import mock
-import pytest
+import pytest  # type: ignore[import]
 
 from ynca import Avail
 from ynca.constants import Subunit
@@ -155,6 +155,6 @@ def test_unreadable_attributes_ignored(connection):
         def __get__(self, instance, owner):
             raise AttributeError("unreadable attribute")
 
-    DummySubunit.__provides__ = descriptor()
+    DummySubunit.__provides__ = descriptor() # type: ignore
     DummySubunit(connection)
 

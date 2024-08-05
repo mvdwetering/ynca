@@ -96,7 +96,7 @@ class YncaApi:
             2 + (num_commands_sent * (YncaProtocol.COMMAND_SPACING * 5))
         ):
             raise YncaInitializationFailedException(
-                f"Subunit availability check failed"
+                "Subunit availability check failed"
             )
 
         connection.unregister_message_callback(self._protocol_message_received)
@@ -179,7 +179,7 @@ class YncaApi:
         If initialize was successful the client should call the `close()`
         method when done with the Ynca API object to cleanup.
         """
-        assert self._connection == None, "Can only initialize once!"
+        assert self._connection is None, "Can only initialize once!"
 
         is_initialized = False
 

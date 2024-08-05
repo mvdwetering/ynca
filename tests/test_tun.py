@@ -1,4 +1,4 @@
-import pytest
+import pytest # type: ignore[import]
 
 from ynca import BandTun
 from ynca.subunits.tun import Tun
@@ -121,7 +121,7 @@ def test_preset(connection, initialized_tun: Tun):
     assert initialized_tun.preset == 11
 
     connection.send_protocol_message(SUBUNIT, "PRESET", "No Preset")
-    assert initialized_tun.preset == None
+    assert initialized_tun.preset is None
 
     # Set preset
     initialized_tun.preset = 10
