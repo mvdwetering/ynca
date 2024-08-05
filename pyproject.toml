@@ -1,0 +1,43 @@
+[build-system]
+requires = ["setuptools>=62.3"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.package-data]
+ynca = ["py.typed"]
+
+[tool.setuptools.packages.find]
+include = ["ynca*"]
+
+
+[project]
+name = "ynca"
+version = "5.16.0"
+description = "Package to control Yamaha receivers that support the YNCA protocol."
+readme = "README.md"
+requires-python = ">=3.8"
+authors = [
+  { name = "Michel van de Wetering", email = "michel.van.de.wetering+ynca@gmail.com" },
+]
+license = {file = "LICENSE.txt"}
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+  "Development Status :: 5 - Production/Stable",
+  "Intended Audience :: Developers",
+  "Topic :: Home Automation",
+  "Topic :: Software Development :: Libraries",
+]
+dependencies = ["pyserial>=3.4,<4"]
+
+urls = { Homepage = "https://github.com/mvdwetering/ynca" }
+
+[project.optional-dependencies]
+test = [
+  "mypy==1.11.0",
+  "ruff==0.5.5",
+  "pytest>=7.0.0",
+  "pytest-mock",
+  "pytest-cov",
+  "mock-serial==0.0.1",
+]
