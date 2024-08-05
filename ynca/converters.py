@@ -109,7 +109,7 @@ class MultiConverter(ConverterBase):
         for converter in self._converters:
             try:
                 return converter.to_value(value_string)
-            except:
+            except:  # noqa: E722
                 pass
         raise ValueError(f"No converter could convert '{value_string}' to value")
 
@@ -117,6 +117,6 @@ class MultiConverter(ConverterBase):
         for converter in self._converters:
             try:
                 return converter.to_str(value)
-            except:
+            except:  # noqa: E722
                 pass
         raise ValueError(f"No converter could convert {value} to string")

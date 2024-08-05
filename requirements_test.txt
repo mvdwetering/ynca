@@ -1,5 +1,0 @@
--r requirements.txt
-pytest>=7.0.0
-pytest-mock
-pytest-cov
-mock-serial==0.0.1

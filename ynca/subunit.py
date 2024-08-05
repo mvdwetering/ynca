@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import logging
 import threading
-from abc import ABC, abstractmethod
+from abc import ABC
 from enum import Flag, auto
 from typing import Any, Callable, Dict, Set
 
