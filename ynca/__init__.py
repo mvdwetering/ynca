@@ -40,4 +40,42 @@ from .enums import (
 )
 from .modelinfo import YncaModelInfo
 
+__all__ = [
+    "YncaApi",
+    "YncaConnectionCheckResult",
+    "YncaConnection",
+    "YncaProtocolStatus",
+    "YncaException",
+    "YncaConnectionError",
+    "YncaConnectionFailed",
+    "YncaInitializationFailedException",
+    "YncaModelInfo",
+    "Avail",
+    "AdaptiveDrc",
+    "BandDab",
+    "BandTun",
+    "DabPreset",
+    "Enhancer",
+    "FmPreset",
+    "HdmiOut",
+    "HdmiOutOnOff",
+    "InitVolLvl",
+    "InitVolMode",
+    "Input",
+    "Mute",
+    "Party",
+    "PartyMute",
+    "Playback",
+    "PlaybackInfo",
+    "PureDirMode",
+    "Pwr",
+    "Repeat",
+    "Shuffle",
+    "Sleep",
+    "SoundPrg",
+    "Straight",
+    "ThreeDeeCinema",
+    "TwoChDecoder",
+]
+
 logging.getLogger(__name__).addHandler(logging.NullHandler())
