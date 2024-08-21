@@ -96,9 +96,13 @@ class YncaDataStore:
 multiresponse_functions_table = {
     "BASIC": [
         "PWR",
+        "PWRB",
         "SLEEP",
         "VOL",
         "MUTE",
+        "ZONEBAVAIL",
+        "ZONEBVOL",
+        "ZONEBMUTE",
         "INP",
         "STRAIGHT",
         "ENHANCER",
@@ -113,6 +117,8 @@ multiresponse_functions_table = {
         "ADAPTIVEDRC",
         "DIALOGUELVL",
         "DTSDIALOGUECONTROL",
+        "SPEAKERA",
+        "SPEAKERB",
     ],
     "METAINFO": ["ARTIST", "ALBUM", "SONG", "TRACK", "CHNAME"],
     "RDSINFO": ["RDSPRGTYPE", "RDSPRGSERVICE", "RDSTXTA", "RDSTXTB", "RDSCLOCK"],
