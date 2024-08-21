@@ -23,11 +23,16 @@ from ..enums import (
     Enhancer,
     PureDirMode,
     Pwr,
+    PwrB,
     Sleep,
     SoundPrg,
+    SpeakerA,
+    SpeakerB,
     Straight,
     ThreeDeeCinema,
     TwoChDecoder,
+    ZoneBAvail,
+    ZoneBMute,
 )
 from ..helpers import number_to_string_with_stepsize
 from ..subunit import SubunitBase
@@ -177,6 +182,22 @@ class ZoneBase(PlaybackFunctionMixin, SubunitBase):
 
 class Main(ZoneBase):
     id = Subunit.MAIN
+
+    # ZoneA/B only exists as "subzones" on the main subunit
+
+    speakera = EnumFunctionMixin[SpeakerA](SpeakerA, init="BASIC")
+    speakerb = EnumFunctionMixin[SpeakerB](SpeakerB, init="BASIC")
+
+    pwrb = EnumFunctionMixin[PwrB](PwrB, init="BASIC")
+
+    zonebavail = EnumFunctionMixin[ZoneBAvail](ZoneBAvail, init="BASIC")
+    zonebmute = EnumFunctionMixin[ZoneBMute](ZoneBMute, init="BASIC")
+    zonebvol = FloatFunctionMixin(
+        converter=FloatConverter(
+            to_str=lambda v: number_to_string_with_stepsize(v, 1, 0.5)
+        ),
+        init="BASIC",
+    )
 
 
 class Zone2(ZoneBase):
