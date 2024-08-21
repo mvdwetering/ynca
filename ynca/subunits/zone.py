@@ -44,6 +44,27 @@ logger = logging.getLogger(__name__)
 def raiser(ex: Type[Exception]):
     raise ex
 
+def do_vol_up(self, step_size: float, function: str):
+    """
+    Increase the volume with given stepsize.
+    Supported stepsizes are: 0.5, 1, 2 and 5
+    """
+    value = "Up"
+    if step_size in [1, 2, 5]:
+        value = "Up {} dB".format(step_size)
+    self._put(function, value)
+
+def do_vol_down(self, step_size: float, function: str):
+    """
+    Decrease the volume with given stepsize.
+    Supported stepsizes are: 0.5, 1, 2 and 5
+    """
+    value = "Down"
+    if step_size in [1, 2, 5]:
+        value = "Down {} dB".format(step_size)
+    self._put(function, value)
+
+
 
 class ZoneBase(PlaybackFunctionMixin, SubunitBase):
 
@@ -160,24 +181,10 @@ class ZoneBase(PlaybackFunctionMixin, SubunitBase):
         self._put("SCENE", f"Scene {scene_id}")
 
     def vol_up(self, step_size: float = 0.5):
-        """
-        Increase the volume with given stepsize.
-        Supported stepsizes are: 0.5, 1, 2 and 5
-        """
-        value = "Up"
-        if step_size in [1, 2, 5]:
-            value = "Up {} dB".format(step_size)
-        self._put("VOL", value)
+        do_vol_up(self, step_size = 0.5, function="VOL")
 
     def vol_down(self, step_size: float = 0.5):
-        """
-        Decrease the volume with given stepsize.
-        Supported stepsizes are: 0.5, 1, 2 and 5
-        """
-        value = "Down"
-        if step_size in [1, 2, 5]:
-            value = "Down {} dB".format(step_size)
-        self._put("VOL", value)
+        do_vol_down(self, step_size, function="VOL")
 
 
 class Main(ZoneBase):
@@ -198,6 +205,12 @@ class Main(ZoneBase):
         ),
         init="BASIC",
     )
+
+    def zonebvol_up(self, step_size: float = 0.5):
+        do_vol_up(self, step_size, function="ZONEBVOL")
+
+    def zonebvol_down(self, step_size: float = 0.5):
+        do_vol_down(self, step_size, function="ZONEBVOL")
 
 
 class Zone2(ZoneBase):
