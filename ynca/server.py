@@ -228,7 +228,8 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
         if function == "MEM":
             return
 
-        if function == "VOL" and value.startswith("Up") or value.startswith("Down"):
+        # Assume ZONEBVOL is independant of VOL
+        if (function == "VOL" or function == "ZONEBVOL") and value.startswith("Up") or value.startswith("Down"):
             # Need to handle Up/Down as it would otherwise overwrite the VOL value wtih text Up/Down
             up = value.startswith("Up")
 
@@ -269,6 +270,9 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
                         result = self.store.put_data(zone, function, value)
                         if result[1]:
                             self.write_line(f"@{zone}:{function}={value}")
+                    result = self.store.put_data(zone, "PWRB", value)
+                    if result[1]:
+                        self.write_line(f"@{zone}:PWRB={value}")
                 elif subunit in ZONES:
                     # Setting PWR on a ZONE can influence SYS overall PWR
                     sys_is_on = False
@@ -276,6 +280,11 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
                         zone_is_on = self.store.get_data(zone, function)
                         if zone_is_on != UNDEFINED:
                             sys_is_on |= zone_is_on == "On"
+
+                    zoneb_is_on = self.store.get_data(zone, function)
+                    if zoneb_is_on != UNDEFINED:
+                        sys_is_on |= zoneb_is_on == "On"
+
                     sys_on_value = "On" if sys_is_on else "Standby"
                     result = self.store.put_data("SYS", function, sys_on_value)
                     if result[1]:
