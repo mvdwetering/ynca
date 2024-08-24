@@ -224,7 +224,7 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
             return
         
         # MEM does not seem to generate a response
-        # assume it was supported for the subunit
+        # assume it was supported for the subunit, so no error message
         if function == "MEM":
             return
 
