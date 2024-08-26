@@ -126,10 +126,11 @@ For some reason this input is _not_ reported when requesting the input names wit
 
 ## Zone A/B receivers
 
+(this section is compiled from findings in https://github.com/mvdwetering/yamaha_ynca/issues/320)
+
 There are receivers that have zones indicated as "A/B". These are different from the usual MAIN, ZONE2, ZONE3 and ZONE4 subunits.
 
-There seem to be 2 variations of it.
-
+There seem to be 2 variations.
 
 ### Speakersets
 
@@ -143,16 +144,17 @@ e.g. RX-V573
 ### Subzone
 
 An other variation seen on RX-V583 is a "subzone" called Zone B. In the AV Controller app it is shown similar to Zone 2.
-This zone can be powered individually from the the MAIN zone (TO BE VERIFIED), but wil always have the same input as the MAIN zone.
+This zone can be powered individually from the the MAIN zone, but wil always have the same input as the MAIN zone.
 
 Reason for calling it a subzone is that it's functions are exposed on the MAIN subunit.
 
-On the API this subzone is controlled by the following functions. It is assumed they support same values as the MAIN zone.
+On the API this subzone is controlled by the following functions. Note that Mute only supports On/Off
 ```
 @MAIN:PWRB
 @MAIN:ZONEBAVAIL
+@MAIN:ZONEBNAME   # Unknown if this can actually be set on the AVR
 @MAIN:ZONEBMUTE
 @MAIN:ZONEBVOL
 ```
 
-Note that this variant also has the `@MAIN:SPEAKERA/B` functions. It is unclear why.
+Note that this variant also has the `@MAIN:SPEAKERA/B` functions. But when controlling the SPEAKERB it will power on/off ZoneB (assumption is that it works the same for SPEAKERA/MAIN zone PWR). So when implementing a client these should probably be hidden/ignored.
