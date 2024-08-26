@@ -199,6 +199,7 @@ class Main(ZoneBase):
 
     zonebavail = EnumFunctionMixin[ZoneBAvail](ZoneBAvail, init="BASIC")
     zonebmute = EnumFunctionMixin[ZoneBMute](ZoneBMute, init="BASIC")
+    zonebname = StrFunctionMixin(converter=StrConverter(min_len=0, max_len=9))
     zonebvol = FloatFunctionMixin(
         converter=FloatConverter(
             to_str=lambda v: number_to_string_with_stepsize(v, 1, 0.5)
