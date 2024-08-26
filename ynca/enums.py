@@ -530,8 +530,6 @@ class ZoneBAvail(str, Enum):
 class ZoneBMute(str, Enum):
     # TODO: Check if all are supported on ZoneB
     ON = "On"
-    ATT_MINUS_20 = "Att -20 dB"
-    ATT_MINUS_40 = "Att -40 dB"
     OFF = "Off"
 
     @classmethod
