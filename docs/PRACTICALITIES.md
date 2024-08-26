@@ -136,19 +136,19 @@ There seem to be 2 variations.
 
 Zone A/B are just "speakersets" where A is the normal set of speakers and B is an additional set. These can be toggled on/off individually. These are part of the MAIN zone.
 
-On the API these are controlled with these functions `@MAIN:SPEAKERA` and `@MAIN:SPEAKERB`.
+On the API, these are controlled with these functions `@MAIN:SPEAKERA` and `@MAIN:SPEAKERB`.
 
 e.g. RX-V573
 
 
 ### Subzone
 
-An other variation seen on RX-V583 is a "subzone" called Zone B. In the AV Controller app it is shown similar to Zone 2.
-This zone can be powered individually from the the MAIN zone, but wil always have the same input as the MAIN zone.
+Another variation seen on RX-V583 is a "subzone" called Zone B. In the AV Controller app it is shown similar to Zone 2.
+This zone can be powered individually from the MAIN zone, but wil always have the same input as the MAIN zone.
 
-Reason for calling it a subzone is that it's functions are exposed on the MAIN subunit.
+Reason for calling it a subzone is that its functions are exposed on the MAIN subunit.
 
-On the API this subzone is controlled by the following functions. Note that Mute only supports On/Off
+On the API, this subzone is controlled by the following functions. Note that Mute only supports On/Off
 ```
 @MAIN:PWRB
 @MAIN:ZONEBAVAIL
