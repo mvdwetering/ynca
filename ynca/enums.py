@@ -528,7 +528,6 @@ class ZoneBAvail(str, Enum):
 
 @unique
 class ZoneBMute(str, Enum):
-    # TODO: Check if all are supported on ZoneB
     ON = "On"
     OFF = "Off"
 
