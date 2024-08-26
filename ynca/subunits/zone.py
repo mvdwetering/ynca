@@ -192,8 +192,9 @@ class Main(ZoneBase):
 
     # ZoneA/B only exists as "subzones" on the main subunit
 
-    speakera = EnumFunctionMixin[SpeakerA](SpeakerA, init="BASIC")
-    speakerb = EnumFunctionMixin[SpeakerB](SpeakerB, init="BASIC")
+    # Speaker A/B are in BASIC on RX-V583, but are not on RX-V573 it seems
+    speakera = EnumFunctionMixin[SpeakerA](SpeakerA) #, init="BASIC")
+    speakerb = EnumFunctionMixin[SpeakerB](SpeakerB) #, init="BASIC")
 
     pwrb = EnumFunctionMixin[PwrB](PwrB, init="BASIC")
 
