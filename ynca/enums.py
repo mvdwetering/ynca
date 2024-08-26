@@ -325,6 +325,19 @@ class Pwr(Enum):
     UNKNOWN = UNKNOWN_STRING
     """Unknown values in the enum are mapped to UNKNOWN"""
 
+@unique
+class PwrB(Enum):
+    ON = "On"
+    STANDBY = "Standby"
+
+    @classmethod
+    def _missing_(cls, value):
+        logger.warning("Unknown value '%s' in %s", value, cls.__name__)
+        return cls.UNKNOWN
+
+    UNKNOWN = UNKNOWN_STRING
+    """Unknown values in the enum are mapped to UNKNOWN"""
+
 
 @unique
 class Repeat(str, Enum):
@@ -414,6 +427,34 @@ class SoundPrg(str, Enum):
 
 
 @unique
+class SpeakerA(Enum):
+    ON = "On"
+    OFF = "Off"
+
+    @classmethod
+    def _missing_(cls, value):
+        logger.warning("Unknown value '%s' in %s", value, cls.__name__)
+        return cls.UNKNOWN
+
+    UNKNOWN = UNKNOWN_STRING
+    """Unknown values in the enum are mapped to UNKNOWN"""
+
+
+@unique
+class SpeakerB(Enum):
+    ON = "On"
+    OFF = "Off"
+
+    @classmethod
+    def _missing_(cls, value):
+        logger.warning("Unknown value '%s' in %s", value, cls.__name__)
+        return cls.UNKNOWN
+
+    UNKNOWN = UNKNOWN_STRING
+    """Unknown values in the enum are mapped to UNKNOWN"""
+
+
+@unique
 class Straight(Enum):
     ON = "On"
     OFF = "Off"
@@ -468,3 +509,33 @@ class TwoChDecoder(str, Enum):
 
     UNKNOWN = UNKNOWN_STRING
     """Unknown values in the enum are mapped to UNKNOWN"""
+
+
+@unique
+class ZoneBAvail(str, Enum):
+    NOT_CONNECTED = "Not Connected"
+    NOT_READY = "Not Ready"
+    READY = "Ready"
+
+    @classmethod
+    def _missing_(cls, value):
+        logger.warning("Unknown value '%s' in %s", value, cls.__name__)
+        return cls.UNKNOWN
+
+    UNKNOWN = UNKNOWN_STRING
+    """Unknown values in the enum are mapped to UNKNOWN"""
+
+
+@unique
+class ZoneBMute(str, Enum):
+    ON = "On"
+    OFF = "Off"
+
+    @classmethod
+    def _missing_(cls, value):
+        logger.warning("Unknown value '%s' in %s", value, cls.__name__)
+        return cls.UNKNOWN
+
+    UNKNOWN = UNKNOWN_STRING
+    """Unknown values in the enum are mapped to UNKNOWN"""
+

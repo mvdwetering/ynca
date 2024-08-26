@@ -30,13 +30,18 @@ from .enums import (
     PlaybackInfo,
     PureDirMode,
     Pwr,
+    PwrB,
     Repeat,
     Shuffle,
     Sleep,
     SoundPrg,
+    SpeakerA,
+    SpeakerB,
     Straight,
     ThreeDeeCinema,
     TwoChDecoder,
+    ZoneBAvail,
+    ZoneBMute,
 )
 from .modelinfo import YncaModelInfo
 
@@ -69,13 +74,18 @@ __all__ = [
     "PlaybackInfo",
     "PureDirMode",
     "Pwr",
+    "PwrB",
     "Repeat",
     "Shuffle",
     "Sleep",
     "SoundPrg",
+    "SpeakerA",
+    "SpeakerB",
     "Straight",
     "ThreeDeeCinema",
     "TwoChDecoder",
+    "ZoneBAvail",
+    "ZoneBMute",
 ]
 
 logging.getLogger(__name__).addHandler(logging.NullHandler())

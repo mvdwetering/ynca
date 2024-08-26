@@ -123,3 +123,38 @@ Some receivers have a single audio input and that input is called AUDIO. Receive
 Seen on RX-V475 receiver in [issue #230](https://github.com/mvdwetering/yamaha_ynca/issues/230), but probably also applies to RX-V575/HTR-4066/HTR-5066 as they share the same firmware.
 
 For some reason this input is _not_ reported when requesting the input names with `@SYS:INPNAME=?` (unlike AUDIO1, AUDIO2 inputs). This makes it impossible to automatically detect if the input is supported by the receiver. The receiver does respond with `@RESTRICTED` when requesting `@SYS:INPNAMEAUDIO1=?` or `@SYS:TRIG1INPAUDIO1=?` instead of `@UNDEFINED`. However these responses are currently not really handled by the library and building support for that will be hard as there is not a guarenteed request/response mechanism due to the asynchronous nature of the protocol.
+
+## Zone A/B receivers
+
+(this section is compiled from findings in https://github.com/mvdwetering/yamaha_ynca/issues/320)
+
+There are receivers that have zones indicated as "A/B". These are different from the usual MAIN, ZONE2, ZONE3 and ZONE4 subunits.
+
+There seem to be 2 variations.
+
+### Speakersets
+
+Zone A/B are just "speakersets" where A is the normal set of speakers and B is an additional set. These can be toggled on/off individually. These are part of the MAIN zone.
+
+On the API, these are controlled with these functions `@MAIN:SPEAKERA` and `@MAIN:SPEAKERB`.
+
+e.g. RX-V573
+
+
+### Subzone
+
+Another variation seen on RX-V583 is a "subzone" called Zone B. In the AV Controller app it is shown similar to Zone 2.
+This zone can be powered individually from the MAIN zone, but will always have the same input as the MAIN zone.
+
+Reason for calling it a subzone is that its functions are exposed on the MAIN subunit.
+
+On the API, this subzone is controlled by the following functions. Note that Mute only supports On/Off
+```
+@MAIN:PWRB
+@MAIN:ZONEBAVAIL
+@MAIN:ZONEBNAME   # Unknown if this can actually be set on the AVR
+@MAIN:ZONEBMUTE
+@MAIN:ZONEBVOL
+```
+
+Note that this variant also has the `@MAIN:SPEAKERA/B` functions. But when controlling the SPEAKERB it will power on/off ZoneB (assumption is that it works the same for SPEAKERA/MAIN zone PWR). So when implementing a client these should probably be hidden/ignored.

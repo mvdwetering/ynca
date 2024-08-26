@@ -23,11 +23,16 @@ from ..enums import (
     Enhancer,
     PureDirMode,
     Pwr,
+    PwrB,
     Sleep,
     SoundPrg,
+    SpeakerA,
+    SpeakerB,
     Straight,
     ThreeDeeCinema,
     TwoChDecoder,
+    ZoneBAvail,
+    ZoneBMute,
 )
 from ..helpers import number_to_string_with_stepsize
 from ..subunit import SubunitBase
@@ -38,6 +43,27 @@ logger = logging.getLogger(__name__)
 
 def raiser(ex: Type[Exception]):
     raise ex
+
+def do_vol_up(self, step_size: float, function: str):
+    """
+    Increase the volume with given stepsize.
+    Supported stepsizes are: 0.5, 1, 2 and 5
+    """
+    value = "Up"
+    if step_size in [1, 2, 5]:
+        value = "Up {} dB".format(step_size)
+    self._put(function, value)
+
+def do_vol_down(self, step_size: float, function: str):
+    """
+    Decrease the volume with given stepsize.
+    Supported stepsizes are: 0.5, 1, 2 and 5
+    """
+    value = "Down"
+    if step_size in [1, 2, 5]:
+        value = "Down {} dB".format(step_size)
+    self._put(function, value)
+
 
 
 class ZoneBase(PlaybackFunctionMixin, SubunitBase):
@@ -155,28 +181,38 @@ class ZoneBase(PlaybackFunctionMixin, SubunitBase):
         self._put("SCENE", f"Scene {scene_id}")
 
     def vol_up(self, step_size: float = 0.5):
-        """
-        Increase the volume with given stepsize.
-        Supported stepsizes are: 0.5, 1, 2 and 5
-        """
-        value = "Up"
-        if step_size in [1, 2, 5]:
-            value = "Up {} dB".format(step_size)
-        self._put("VOL", value)
+        do_vol_up(self, step_size = step_size, function="VOL")
 
     def vol_down(self, step_size: float = 0.5):
-        """
-        Decrease the volume with given stepsize.
-        Supported stepsizes are: 0.5, 1, 2 and 5
-        """
-        value = "Down"
-        if step_size in [1, 2, 5]:
-            value = "Down {} dB".format(step_size)
-        self._put("VOL", value)
+        do_vol_down(self, step_size, function="VOL")
 
 
 class Main(ZoneBase):
     id = Subunit.MAIN
+
+    # ZoneA/B only exists as "subzones" on the main subunit
+
+    # Speaker A/B are in BASIC on RX-V583, but are not on RX-V573 it seems
+    speakera = EnumFunctionMixin[SpeakerA](SpeakerA) #, init="BASIC")
+    speakerb = EnumFunctionMixin[SpeakerB](SpeakerB) #, init="BASIC")
+
+    pwrb = EnumFunctionMixin[PwrB](PwrB, init="BASIC")
+
+    zonebavail = EnumFunctionMixin[ZoneBAvail](ZoneBAvail, init="BASIC")
+    zonebmute = EnumFunctionMixin[ZoneBMute](ZoneBMute, init="BASIC")
+    zonebname = StrFunctionMixin(converter=StrConverter(min_len=0, max_len=9))
+    zonebvol = FloatFunctionMixin(
+        converter=FloatConverter(
+            to_str=lambda v: number_to_string_with_stepsize(v, 1, 0.5)
+        ),
+        init="BASIC",
+    )
+
+    def zonebvol_up(self, step_size: float = 0.5):
+        do_vol_up(self, step_size, function="ZONEBVOL")
+
+    def zonebvol_down(self, step_size: float = 0.5):
+        do_vol_down(self, step_size, function="ZONEBVOL")
 
 
 class Zone2(ZoneBase):
