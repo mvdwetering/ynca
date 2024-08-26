@@ -181,7 +181,7 @@ class ZoneBase(PlaybackFunctionMixin, SubunitBase):
         self._put("SCENE", f"Scene {scene_id}")
 
     def vol_up(self, step_size: float = 0.5):
-        do_vol_up(self, step_size = 0.5, function="VOL")
+        do_vol_up(self, step_size = step_size, function="VOL")
 
     def vol_down(self, step_size: float = 0.5):
         do_vol_down(self, step_size, function="VOL")

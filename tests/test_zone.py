@@ -10,13 +10,15 @@ from ynca import (
     Mute,
     PureDirMode,
     Pwr,
+    PwrB,
     SoundPrg,
+    SpeakerA,
+    SpeakerB,
     Straight,
     TwoChDecoder,
+    ZoneBMute,
 )
 from ynca.subunits.zone import Main, ZoneBase
-
-from .mock_yncaconnection import YncaConnectionMock
 
 SYS = "SYS"
 SUBUNIT = "MAIN"
@@ -33,9 +35,13 @@ INITIALIZE_FULL_RESPONSES = [
         (SUBUNIT, "BASIC"),
         [
             (SUBUNIT, "PWR", "Standby"),
+            (SUBUNIT, "PWRB", "On"),
             (SUBUNIT, "SLEEP", "Off"),
             (SUBUNIT, "VOL", "-30.0"),
             (SUBUNIT, "MUTE", "Off"),
+            (SUBUNIT, "ZONEBAVAIL", "Ready"),
+            (SUBUNIT, "ZONEBVOL", "-20.5"),
+            (SUBUNIT, "ZONEBMUTE", "On"),
             (SUBUNIT, "INP", "HDMI1"),
             (SUBUNIT, "STRAIGHT", "Off"),
             (SUBUNIT, "ENHANCER", "On"),
@@ -45,6 +51,8 @@ INITIALIZE_FULL_RESPONSES = [
             (SUBUNIT, "SPBASS", "4"),
             (SUBUNIT, "SPTREBLE", "-4"),
             (SUBUNIT, "ADAPTIVEDRC", "Off"),
+            (SUBUNIT, "SPEAKERA", "Off"),
+            (SUBUNIT, "SPEAKERB", "On"),
         ],
     ),
     (
@@ -74,6 +82,12 @@ INITIALIZE_FULL_RESPONSES = [
         (SUBUNIT, "2CHDECODER"),
         [
             (SUBUNIT, "2CHDECODER", "Dolby PLIIx Movie"),
+        ],
+    ),
+    (
+        (SUBUNIT, "ZONEBNAME"),
+        [
+            (SUBUNIT, "ZONEBNAME", "ZoneBName"),
         ],
     ),
     (
@@ -172,6 +186,13 @@ def test_initialize_full(connection, update_callback):
     for scene_id in range(1, NUM_SCENES + 1):
         assert getattr(z, f"scene{scene_id}name") == f"Scene name {scene_id}"
 
+    assert z.pwrb is PwrB.ON
+    assert z.zonebmute is ZoneBMute.ON
+    assert z.zonebname == "ZoneBName"
+    assert z.zonebvol == -20.5
+    assert z.speakera is SpeakerA.OFF
+    assert z.speakerb is SpeakerB.ON
+
 
 def test_mute(connection, initialized_zone: ZoneBase):
     # Writing to device
@@ -193,6 +214,20 @@ def test_mute(connection, initialized_zone: ZoneBase):
     assert initialized_zone.mute is Mute.ATT_MINUS_40
     connection.send_protocol_message(SUBUNIT, "MUTE", "Off")
     assert initialized_zone.mute is Mute.OFF
+
+
+def test_zoneb_mute(connection, initialized_zone: Main):
+    # Writing to device
+    initialized_zone.zonebmute = ZoneBMute.ON
+    connection.put.assert_called_with(SUBUNIT, "ZONEBMUTE", "On")
+    initialized_zone.zonebmute = ZoneBMute.OFF
+    connection.put.assert_called_with(SUBUNIT, "ZONEBMUTE", "Off")
+
+    # Updates from device
+    connection.send_protocol_message(SUBUNIT, "ZONEBMUTE", "On")
+    assert initialized_zone.zonebmute is ZoneBMute.ON
+    connection.send_protocol_message(SUBUNIT, "ZONEBMUTE", "Off")
+    assert initialized_zone.zonebmute is ZoneBMute.OFF
 
 
 def test_volume(connection, initialized_zone: ZoneBase):
@@ -247,6 +282,60 @@ def test_volume(connection, initialized_zone: ZoneBase):
     assert initialized_zone.vol == 10
     connection.send_protocol_message(SUBUNIT, "VOL", "-10.0")
     assert initialized_zone.vol == -10
+
+
+def test_zoneb_volume(connection, initialized_zone: Main):
+    # Writing to device
+
+    # Positive with step rounding
+    initialized_zone.zonebvol = 0
+    connection.put.assert_called_with(SUBUNIT, "ZONEBVOL", "0.0")
+    initialized_zone.zonebvol = 0.1
+    connection.put.assert_called_with(SUBUNIT, "ZONEBVOL", "0.0")
+    initialized_zone.zonebvol = 0.4
+    connection.put.assert_called_with(SUBUNIT, "ZONEBVOL", "0.5")
+
+    # Negative with step rounding
+    initialized_zone.zonebvol = -5
+    connection.put.assert_called_with(SUBUNIT, "ZONEBVOL", "-5.0")
+    initialized_zone.zonebvol = -0.5
+    connection.put.assert_called_with(SUBUNIT, "ZONEBVOL", "-0.5")
+    initialized_zone.zonebvol = -0.4
+    connection.put.assert_called_with(SUBUNIT, "ZONEBVOL", "-0.5")
+    initialized_zone.zonebvol = -0.1
+    connection.put.assert_called_with(SUBUNIT, "ZONEBVOL", "0.0")
+
+    # Up
+    initialized_zone.zonebvol_up()
+    connection.put.assert_called_with(SUBUNIT, "ZONEBVOL", "Up")
+    initialized_zone.zonebvol_up(1)
+    connection.put.assert_called_with(SUBUNIT, "ZONEBVOL", "Up 1 dB")
+    initialized_zone.zonebvol_up(2)
+    connection.put.assert_called_with(SUBUNIT, "ZONEBVOL", "Up 2 dB")
+    initialized_zone.zonebvol_up(5)
+    connection.put.assert_called_with(SUBUNIT, "ZONEBVOL", "Up 5 dB")
+    initialized_zone.zonebvol_up(50)
+    connection.put.assert_called_with(SUBUNIT, "ZONEBVOL", "Up")
+
+    # Down
+    initialized_zone.zonebvol_down()
+    connection.put.assert_called_with(SUBUNIT, "ZONEBVOL", "Down")
+    initialized_zone.zonebvol_down(1)
+    connection.put.assert_called_with(SUBUNIT, "ZONEBVOL", "Down 1 dB")
+    initialized_zone.zonebvol_down(2)
+    connection.put.assert_called_with(SUBUNIT, "ZONEBVOL", "Down 2 dB")
+    initialized_zone.zonebvol_down(5)
+    connection.put.assert_called_with(SUBUNIT, "ZONEBVOL", "Down 5 dB")
+    initialized_zone.zonebvol_down(50)
+    connection.put.assert_called_with(SUBUNIT, "ZONEBVOL", "Down")
+
+    # Updates from device
+    connection.send_protocol_message(SUBUNIT, "ZONEBVOL", "0.0")
+    assert initialized_zone.zonebvol == 0
+    connection.send_protocol_message(SUBUNIT, "ZONEBVOL", "10.0")
+    assert initialized_zone.zonebvol == 10
+    connection.send_protocol_message(SUBUNIT, "ZONEBVOL", "-10.0")
+    assert initialized_zone.zonebvol == -10
 
 
 def test_maxvol(connection, initialized_zone: ZoneBase):
@@ -344,6 +433,18 @@ def test_zonename(connection, initialized_zone: ZoneBase):
     # Updates from device
     connection.send_protocol_message(SUBUNIT, "ZONENAME", "updated")
     assert initialized_zone.zonename == "updated"
+
+
+def test_zonebname(connection, initialized_zone: Main):
+    # Writing to device
+    initialized_zone.zonebname = "new name"
+    connection.put.assert_called_with(SUBUNIT, "ZONEBNAME", "new name")
+    with pytest.raises(ValueError):
+        initialized_zone.zonebname = "new name is too long"
+
+    # Updates from device
+    connection.send_protocol_message(SUBUNIT, "ZONEBNAME", "updated")
+    assert initialized_zone.zonebname == "updated"
 
 
 def test_twochdecoder(connection, initialized_zone: ZoneBase):
@@ -447,3 +548,28 @@ def test_lipsynchdmioutoffset(connection, initialized_zone: ZoneBase):
     assert initialized_zone.lipsynchdmiout2offset == 250
     connection.send_protocol_message(SUBUNIT, "LIPSYNCHDMIOUT2OFFSET", "-250")
     assert initialized_zone.lipsynchdmiout2offset == -250
+
+def test_speaker_ab(connection, initialized_zone: Main):
+    # Writing to device
+    initialized_zone.speakera = SpeakerA.ON
+    connection.put.assert_called_with(SUBUNIT, "SPEAKERA", "On")
+    initialized_zone.speakera = SpeakerA.OFF
+    connection.put.assert_called_with(SUBUNIT, "SPEAKERA", "Off")
+
+    # Updates from device
+    connection.send_protocol_message(SUBUNIT, "SPEAKERA", "On")
+    assert initialized_zone.speakera is SpeakerA.ON
+    connection.send_protocol_message(SUBUNIT, "SPEAKERA", "Off")
+    assert initialized_zone.speakera is SpeakerA.OFF
+
+    # Writing to device
+    initialized_zone.speakerb = SpeakerB.ON
+    connection.put.assert_called_with(SUBUNIT, "SPEAKERB", "On")
+    initialized_zone.speakerb = SpeakerB.OFF
+    connection.put.assert_called_with(SUBUNIT, "SPEAKERB", "Off")
+
+    # Updates from device
+    connection.send_protocol_message(SUBUNIT, "SPEAKERB", "On")
+    assert initialized_zone.speakerb is SpeakerB.ON
+    connection.send_protocol_message(SUBUNIT, "SPEAKERB", "Off")
+    assert initialized_zone.speakerb is SpeakerB.OFF
