@@ -13,7 +13,7 @@ There seem to be 2 situations where zones have a fixed volume.
 For the second case the zone still reports the VOL function which can be read and does _not_ give errors when trying to change the volume (I would have expected @RESTRICTED).
 There are no response/updates on trying to change the volume (as it is fixed). It is unknown which setting causes the volume to become fixed.
 
-For reference, the AV Control Android app also shows volume controls for zone2 which do not work.
+For reference, the AV Control Android app also shows volume controls for Zone2 which do not work.
 The webinterface on the receiver however shows the text "FIXED" for the volume on Zone2
 This is based on observations on RX-A810 firmware 1.80/2.01.
 
@@ -32,8 +32,7 @@ See https://github.com/mvdwetering/yamaha_ynca/issues/19 for logs.
 Currently known receivers that behave like this:
 - RX-V475 1.34/2.06 (probably also RX-V575/HTR-4066/HTR-5066 as they share the same firmware
 
-Potential workaround would be to send the remote codes for SCENE1 etc...
-The remote codes works for my receiver, but I have not had feedback from an RX-V475 user.
+As a workaround the remote codes for SCENE1 etc... can be sent. This works at least on RX-V475 based on user feedback.
 
 ## No Zone and Scene names
 
@@ -122,7 +121,7 @@ Some receivers have a single audio input and that input is called AUDIO. Receive
 
 Seen on RX-V475 receiver in [issue #230](https://github.com/mvdwetering/yamaha_ynca/issues/230), but probably also applies to RX-V575/HTR-4066/HTR-5066 as they share the same firmware.
 
-For some reason this input is _not_ reported when requesting the input names with `@SYS:INPNAME=?` (unlike AUDIO1, AUDIO2 inputs). This makes it impossible to automatically detect if the input is supported by the receiver. The receiver does respond with `@RESTRICTED` when requesting `@SYS:INPNAMEAUDIO1=?` or `@SYS:TRIG1INPAUDIO1=?` instead of `@UNDEFINED`. However these responses are currently not really handled by the library and building support for that will be hard as there is not a guarenteed request/response mechanism due to the asynchronous nature of the protocol.
+For some reason this input is _not_ reported when requesting the input names with `@SYS:INPNAME=?` (unlike AUDIO1, AUDIO2 inputs). This makes it impossible to automatically detect if the input is supported by the receiver. The receiver does respond with `@RESTRICTED` when requesting `@SYS:INPNAMEAUDIO1=?` or `@SYS:TRIG1INPAUDIO1=?` instead of `@UNDEFINED`. However these responses are currently not really handled by the library. ~~Building support for that will be hard as there is not a guarenteed request/response mechanism due to the asynchronous nature of the protocol~~ (not true, a GET will result in a response or error).
 
 ## Zone A/B receivers
 
@@ -138,7 +137,7 @@ Zone A/B are just "speakersets" where A is the normal set of speakers and B is a
 
 On the API, these are controlled with these functions `@MAIN:SPEAKERA` and `@MAIN:SPEAKERB`.
 
-e.g. RX-V573
+e.g. RX-V573?
 
 
 ### Subzone
@@ -148,7 +147,7 @@ This zone can be powered individually from the MAIN zone, but will always have t
 
 Reason for calling it a subzone is that its functions are exposed on the MAIN subunit.
 
-On the API, this subzone is controlled by the following functions. Note that Mute only supports On/Off
+On the API, this subzone is controlled by the following functions. Note that Mute only supports On/Off, not the attenuated ones on the main Mute
 ```
 @MAIN:PWRB
 @MAIN:ZONEBAVAIL
@@ -158,3 +157,11 @@ On the API, this subzone is controlled by the following functions. Note that Mut
 ```
 
 Note that this variant also has the `@MAIN:SPEAKERA/B` functions. But when controlling the SPEAKERB it will power on/off ZoneB (assumption is that it works the same for SPEAKERA/MAIN zone PWR). So when implementing a client these should probably be hidden/ignored.
+
+## BASIC Response
+
+The BASIC response returns a lot of values with 1 request which is nice to speed up things.
+However the set of values that comes back is not stable between receivers.
+
+Initially it was assumed that it would always respond with all supported features.
+But at least for PUREDIRMODE this is not the case. It is supported on RX-V1067, but not part of BASIC response.
