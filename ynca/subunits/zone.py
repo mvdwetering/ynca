@@ -137,7 +137,7 @@ class ZoneBase(PlaybackFunctionMixin, SubunitBase):
         ),
     )
     mute = EnumFunctionMixin[Mute](Mute, init="BASIC")
-    puredirmode = EnumFunctionMixin[PureDirMode](PureDirMode, init="BASIC")
+    puredirmode = EnumFunctionMixin[PureDirMode](PureDirMode)  # Not part of BASIC on RX-V1067
     pwr = EnumFunctionMixin[Pwr](Pwr, init="BASIC")
     scene1name = StrFunctionMixin(Cmd.GET, init="SCENENAME")
     scene2name = StrFunctionMixin(Cmd.GET, init="SCENENAME")
