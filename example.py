@@ -2,7 +2,6 @@
 """ Example of basic YncaApi usage"""
 
 import argparse
-import sys
 import time
 import logging
 
@@ -72,7 +71,8 @@ if __name__ == "__main__":
     main.vol_up(2)
     main.mute = Mute.OFF
     main.mute = Mute.ON
-    main.vol = current_volume
+    if current_volume:
+        main.vol = current_volume
 
     print(
         "Wait a bit to see updates coming in as it takes the receiver a while to get it all processed."
