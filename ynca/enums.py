@@ -190,6 +190,8 @@ class Input(Enum):
     HDMI6 = "HDMI6"
     HDMI7 = "HDMI7"
     MULTICH = "MULTI CH"
+    OPTICAL1 = "OPTICAL1"
+    OPTICAL2 = "OPTICAL2"
     PHONO = "PHONO"
     TV = "TV"
     VAUX = "V-AUX"
