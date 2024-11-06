@@ -169,7 +169,7 @@ But at least for PUREDIRMODE this is not the case. It is supported on RX-V1067, 
 ## Pure Direct mode
 
 There seem to be 2 ways to control PureDirect mode.
-Both ways seem to support `On` and `Off`. Unclear why there are 2 ways or to which models it applies.
+Both ways seem to support `On` and `Off`. Unclear why there are 2 ways, or to which models it applies.
 
 ```
 @MAIN:PUREDIRMODE=?  e.g. RX-A810
