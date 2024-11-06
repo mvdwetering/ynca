@@ -28,7 +28,7 @@ classifiers = [
   "Topic :: Home Automation",
   "Topic :: Software Development :: Libraries",
 ]
-dependencies = ["pyserial>=3.4,<4"]
+dependencies = ["pyserial>=3.4"]
 
 urls = { Homepage = "https://github.com/mvdwetering/ynca" }
 
