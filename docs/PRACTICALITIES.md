@@ -166,16 +166,18 @@ However the set of values that comes back is not stable between receivers.
 Initially it was assumed that it would always respond with all supported features.
 But at least for PUREDIRMODE this is not the case. It is supported on RX-V1067, but not part of BASIC response.
 
-## Pure Direct mode
+## (Pure) Direct mode
 
-There seem to be 2 ways to control PureDirect mode.
-Both ways seem to support `On` and `Off`. Unclear why there are 2 ways, or to which models it applies.
+Turns out there are 2 direct modes; Direct and Pure Direct.
+
+These are slightly different. Pure Direct bypasses more signal processing than Direct does.
+It seems Pure Direct is an evolution of Direct because Direct seems to apply to older/lower end models.
+
+Both commands support `On` and `Off`.
 
 ```
 @MAIN:PUREDIRMODE=?  e.g. RX-A810
 @MAIN:DIRMODE=?  e.g. RX-V473
 ```
 
-Both seem to be part of BASIC. Except for RX-V1067 wher PUREDIRMODE is supportec, but not in BASIC.
-
-This was brought up in https://github.com/mvdwetering/yamaha_ynca/discussions/340
+Both seem to be part of BASIC. Except for RX-V1067 where PUREDIRMODE is supported, but not in BASIC.
