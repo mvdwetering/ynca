@@ -8,6 +8,7 @@ from ynca import (
     InitVolMode,
     Input,
     Mute,
+    DirMode,
     PureDirMode,
     Pwr,
     PwrB,
@@ -53,6 +54,7 @@ INITIALIZE_FULL_RESPONSES = [
             (SUBUNIT, "ADAPTIVEDRC", "Off"),
             (SUBUNIT, "SPEAKERA", "Off"),
             (SUBUNIT, "SPEAKERB", "On"),
+            (SUBUNIT, "DIRMODE", "On"),
         ],
     ),
     (
@@ -159,6 +161,7 @@ def test_initialize_minimal(connection, update_callback):
     assert z.soundprg is None
     assert z.twochdecoder is None
     assert z.puredirmode is None
+    assert z.dirmode is None
     for scene_id in range(1, NUM_SCENES + 1):
         assert getattr(z, f"scene{scene_id}name") is None
 
@@ -182,6 +185,7 @@ def test_initialize_full(connection, update_callback):
     assert z.zonename == "ZoneName"
     assert z.twochdecoder is TwoChDecoder.DolbyPl2xMovie
     assert z.puredirmode is PureDirMode.OFF
+    assert z.dirmode is DirMode.ON
 
     for scene_id in range(1, NUM_SCENES + 1):
         assert getattr(z, f"scene{scene_id}name") == f"Scene name {scene_id}"
@@ -473,6 +477,19 @@ def test_puredirmode(connection, initialized_zone: ZoneBase):
     assert initialized_zone.puredirmode == PureDirMode.ON
     connection.send_protocol_message(SUBUNIT, "PUREDIRMODE", "Off")
     assert initialized_zone.puredirmode == PureDirMode.OFF
+
+def test_dirmode(connection, initialized_zone: ZoneBase):
+    # Writing to device
+    initialized_zone.dirmode = DirMode.ON
+    connection.put.assert_called_with(SUBUNIT, "DIRMODE", "On")
+    initialized_zone.dirmode = DirMode.OFF
+    connection.put.assert_called_with(SUBUNIT, "DIRMODE", "Off")
+
+    # Updates from device
+    connection.send_protocol_message(SUBUNIT, "DIRMODE", "On")
+    assert initialized_zone.dirmode == DirMode.ON
+    connection.send_protocol_message(SUBUNIT, "DIRMODE", "Off")
+    assert initialized_zone.dirmode == DirMode.OFF
 
 
 def test_initvolmode(connection, initialized_zone: ZoneBase):

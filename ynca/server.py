@@ -119,6 +119,7 @@ multiresponse_functions_table = {
         "DTSDIALOGUECONTROL",
         "SPEAKERA",
         "SPEAKERB",
+        "DIRMODE",
     ],
     "METAINFO": ["ARTIST", "ALBUM", "SONG", "TRACK", "CHNAME"],
     "RDSINFO": ["RDSPRGTYPE", "RDSPRGSERVICE", "RDSTXTA", "RDSTXTB", "RDSCLOCK"],
