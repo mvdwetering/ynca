@@ -176,6 +176,6 @@ Both ways seem to support `On` and `Off`. Unclear why there are 2 ways or to whi
 @MAIN:DIRMODE=?  e.g. RX-V473
 ```
 
-Both seem to be part of BASIC
+Both seem to be part of BASIC. Except for RX-V1067 wher PUREDIRMODE is supportec, but not in BASIC.
 
 This was brought up in https://github.com/mvdwetering/yamaha_ynca/discussions/340
