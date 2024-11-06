@@ -7,9 +7,7 @@ Package to control Yamaha receivers that support the YNCA protocol.
 
 ## Models
 
-Unfortunately, Yamaha does not mention in the manuals if a model supports the YNCA protocol that this integration uses. 
-
-The list of working models below is based on reports from users and info found on the internet. 
+The list of working models below is based on reports from users and info found on the internet, because Yamaha does not mention in the manuals if a model supports the YNCA protocol that this integration uses. 
 
 Based on this information, receivers in the mentioned series from 2010 onwards are likely to work. So even if your model is not listed, just give it a try. 
 
