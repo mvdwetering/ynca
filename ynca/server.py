@@ -125,6 +125,15 @@ multiresponse_functions_table = {
     "RDSINFO": ["RDSPRGTYPE", "RDSPRGSERVICE", "RDSTXTA", "RDSTXTB", "RDSCLOCK"],
 }
 
+# The following commands are related
+# They report the related command status even when not changed
+# The order is obtained from how it works on RX-A810
+related_functions_table = {
+    "SOUNDPRG": ["STRAIGHT", "SOUNDPRG"],
+    "PUREDIRMODE": ["PUREDIRMODE", "STRAIGHT"],
+    "STRAIGHT": ["STRAIGHT", "SOUNDPRG"],
+    "DIRMODE": ["STRAIGHT"],  # Note that DIRMODE does not report DIRMODE itself, this is how it behaves on RX-V473
+}
 
 INPUT_SUBUNITLIST_MAPPING = [
     (Input.AIRPLAY, ["AIRPLAY"]),
@@ -240,14 +249,15 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
             value = float(self.store.get_data(subunit, function))
             value = str(value + (amount * (1 if up else -1)))
 
+        # Store new value, will handle errors for unsupported functions
         result = self.store.put_data(subunit, function, value)
 
         if result[0].startswith("@"):
             self.write_line(result[0])
         elif result[1]:  # Value change so send a report
 
+            # Response for PLAYBACK is PLAYBACKINFO and other special handling
             if function == "PLAYBACK":
-                # Response is PLAYBACKINFO
                 function = "PLAYBACKINFO"
 
                 # Not for Fwd or others as they are not a state
@@ -262,8 +272,16 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
                         if m[0].value == self.store.get_data(subunit, "INP")
                     ][0]
 
-            self.write_line(f"@{subunit}:{function}={value}")
+            # Send (possibly multiple) responses
+            if response_functions := related_functions_table.get(function, None):
+                for response_function in response_functions:
+                    value = self.store.get_data(subunit, response_function)
+                    if value is not UNDEFINED:
+                        self.write_line(f"@{subunit}:{response_function}={value}")
+            else:
+                self.write_line(f"@{subunit}:{function}={value}")
 
+            # Special handling for PWR
             if function == "PWR":
                 if subunit == "SYS":
                     # Setting PWR on SYS impacts Zone PWR
