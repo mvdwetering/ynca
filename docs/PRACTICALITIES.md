@@ -181,3 +181,6 @@ Both commands support `On` and `Off`.
 ```
 
 Both seem to be part of BASIC. Except for RX-V1067 where PUREDIRMODE is supported, but not in BASIC.
+
+It turns out that DIRMODE does _not_ respond with the new state on state changes. 
+At least on RX-V473 with firmware 1.23/1.04. You still get STRAIGHT updates though which is related to DIRMODE.
