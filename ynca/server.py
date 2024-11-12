@@ -184,7 +184,7 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
         self.wfile.write(line.encode("utf-8"))
         self._commands_sent += 1
 
-    def handle_get(self, subunit, function, skip_error_response=False):
+    def handle_get(self, subunit, function, skip_error_response=False, skip_multiresponse=False):
 
         # Some GET commands result in multple reponses
         if subunit == "SYS" and function == "INPNAME":
@@ -192,14 +192,6 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
             for key in sys_values.keys():
                 if key.startswith("INPNAME") and key != "INPNAME":
                     self.handle_get(subunit, key, skip_error_response=True)
-            return
-        elif response_functions := multiresponse_functions_table.get(function, None):
-            before = self._commands_sent
-            for response_function in response_functions:
-                self.handle_get(subunit, response_function, skip_error_response=True)
-            if self._commands_sent == before:
-                # No responses so apparently not supported
-                self.write_line(UNDEFINED)
             return
         elif function == "SCENENAME":
             response_sent = False
@@ -215,6 +207,16 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
             if not response_sent:
                 self.write_line(UNDEFINED)
             return
+        
+        if not skip_multiresponse:
+            if response_functions := multiresponse_functions_table.get(function, None):
+                before = self._commands_sent
+                for response_function in response_functions:
+                    self.handle_get(subunit, response_function, skip_error_response=True, skip_multiresponse=True)
+                if self._commands_sent == before:
+                    # No responses so apparently not supported
+                    self.write_line(UNDEFINED)
+                return
 
         # Standard handling
         value = self.store.get_data(subunit, function)
