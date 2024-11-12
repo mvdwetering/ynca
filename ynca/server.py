@@ -207,6 +207,12 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
             if not response_sent:
                 self.write_line(UNDEFINED)
             return
+        elif function == "DIRMODE":
+            # DIRMODE is special, it also returns STRAIGHT when it is On (at least on RX-V473)
+            if value := self._send_value(subunit, function, skip_error_response=skip_error_response):
+                if value == "On":
+                    self._send_value(subunit, "STRAIGHT", skip_error_response=skip_error_response)
+                return
         
         if not skip_multiresponse:
             if response_functions := multiresponse_functions_table.get(function, None):
@@ -217,14 +223,19 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
                     # No responses so apparently not supported
                     self.write_line(UNDEFINED)
                 return
+        
+        self._send_value(subunit, function, skip_error_response=skip_error_response)
 
-        # Standard handling
+    def _send_value(self, subunit, function, skip_error_response=False) -> str | None:
+        """ Sends the value that is stored, returns the value or None if it did not exist """
         value = self.store.get_data(subunit, function)
         if value.startswith("@"):
             if not skip_error_response:
                 self.write_line(value)
+            return None
         else:
             self.write_line(f"@{subunit}:{function}={value}")
+            return value
 
     def handle_put(self, subunit, function, value):
 
