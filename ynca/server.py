@@ -178,21 +178,66 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
         self._commands_sent = 0
         super().__init__(request, client_address, server)
 
-    def write_line(self, line: str):
+    def _write_line(self, line: str):
         print(f"Send - {line}")
         line += "\r\n"
         self.wfile.write(line.encode("utf-8"))
         self._commands_sent += 1
 
-    def handle_get(self, subunit, function, skip_error_response=False, skip_multiresponse=False):
+    def _send_stored_value_no_error(self, subunit, function) -> str | None:
+        """ Sends the value that is stored, returns the value or None if it did not exist """
+        return self._send_stored_value_or_error(subunit, function, skip_error_response=True)
 
-        # Some GET commands result in multple reponses
+    def _send_stored_value_or_error(self, subunit, function, skip_error_response=False) -> str | None:
+        """ Sends the value that is stored, returns the value or None if it did not exist """
+        value = self.store.get_data(subunit, function)
+        if value.startswith("@"):
+            if not skip_error_response:
+                self._send_ynca_error(value)
+            return None
+        else:
+            self._send_ynca_value(subunit, function, value)
+            return value
+
+    def _send_ynca_value(self, subunit, function, value):
+        """Just formats and send the value"""
+        self._write_line(f"@{subunit}:{function}={value}")
+
+    def _send_ynca_error(self, error):
+        """Just formats and send the value"""
+        self._write_line(error)
+
+
+    def handle_get(self, subunit, function):
+        """Handles (multi)response(s) for GET"""
+
+        response_functions = multiresponse_functions_table.get(function, None)
+
+        if response_functions is None:
+            self._handle_get(subunit, function, suppress_error_response=False)
+            return
+        
+        # Multiple responses
+        before = self._commands_sent
+        for response_function in response_functions:
+            self._handle_get(subunit, response_function, suppress_error_response=True)
+        if self._commands_sent == before:
+            # No responses so apparently not supported
+            self._send_ynca_error(UNDEFINED)
+
+
+    def _handle_get(self, subunit, function, suppress_error_response=False):
+        """Gets one value and writes the response to the socket"""
+
+        # SYS:INPNAME returns all inputnames
         if subunit == "SYS" and function == "INPNAME":
             sys_values = self.store._store["SYS"]
             for key in sys_values.keys():
                 if key.startswith("INPNAME") and key != "INPNAME":
-                    self.handle_get(subunit, key, skip_error_response=True)
+                    self._send_stored_value_no_error(subunit, key)
+
             return
+        # SCENENAME returns all scenenames
         elif function == "SCENENAME":
             response_sent = False
             subunit_values = self.store._store[subunit]
@@ -202,40 +247,27 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
                     and key.endswith("NAME")
                     and key != "SCENENAME"
                 ):
-                    self.handle_get(subunit, key, skip_error_response=True)
+                    self._send_stored_value_no_error(subunit, key)
                     response_sent = True
             if not response_sent:
-                self.write_line(UNDEFINED)
+                self._send_ynca_error(UNDEFINED)
             return
         elif function == "DIRMODE":
-            # DIRMODE is special, it also returns STRAIGHT when it is On (at least on RX-V473)
-            if value := self._send_value(subunit, function, skip_error_response=skip_error_response):
+            # DIRMODE is special, it also returns STRAIGHT when it is On, but not when Off (at least on RX-V473)
+            if value := self._send_stored_value_or_error(subunit, function, skip_error_response=suppress_error_response):
                 if value == "On":
-                    self._send_value(subunit, "STRAIGHT", skip_error_response=skip_error_response)
+                    # MUST use _handle_get since we need to send the overridden value instead of the real one
+                    self._handle_get(subunit, "STRAIGHT", suppress_error_response=suppress_error_response)
+            return
+        elif function == "STRAIGHT":
+            # STRAIGHT gets overridden to ON when (PURE)DIRMODE is ON
+            # When (PURE)DIRMODE is disabled again the original value is valid again.
+            if self.store.get_data(subunit, "DIRMODE") == "On" or self.store.get_data(subunit, "PUREDIRMODE") == "On":
+                self._send_ynca_value(subunit, function, "On")
                 return
-        
-        if not skip_multiresponse:
-            if response_functions := multiresponse_functions_table.get(function, None):
-                before = self._commands_sent
-                for response_function in response_functions:
-                    self.handle_get(subunit, response_function, skip_error_response=True, skip_multiresponse=True)
-                if self._commands_sent == before:
-                    # No responses so apparently not supported
-                    self.write_line(UNDEFINED)
-                return
-        
-        self._send_value(subunit, function, skip_error_response=skip_error_response)
 
-    def _send_value(self, subunit, function, skip_error_response=False) -> str | None:
-        """ Sends the value that is stored, returns the value or None if it did not exist """
-        value = self.store.get_data(subunit, function)
-        if value.startswith("@"):
-            if not skip_error_response:
-                self.write_line(value)
-            return None
-        else:
-            self.write_line(f"@{subunit}:{function}={value}")
-            return value
+        # Default case for sending response
+        self._send_stored_value_or_error(subunit, function, skip_error_response=suppress_error_response)
 
     def handle_put(self, subunit, function, value):
 
@@ -243,7 +275,7 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
         # unless not supported, but can not really check
         if subunit == "SYS" and function == "REMOTECODE":
             if len(value) != 8:
-                self.write_line(UNDEFINED)
+                self._send_ynca_error(UNDEFINED)
             return
         
         # MEM does not seem to generate a response
@@ -266,7 +298,7 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
         result = self.store.put_data(subunit, function, value)
 
         if result[0].startswith("@"):
-            self.write_line(result[0])
+            self._send_ynca_error(result[0])
         elif result[1]:  # Value change so send a report
 
             # Response for PLAYBACK is PLAYBACKINFO and other special handling
@@ -290,9 +322,9 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
                 for response_function in response_functions:
                     value = self.store.get_data(subunit, response_function)
                     if value is not UNDEFINED:
-                        self.write_line(f"@{subunit}:{response_function}={value}")
+                        self._send_ynca_value(subunit, response_function, value)
             else:
-                self.write_line(f"@{subunit}:{function}={value}")
+                self._send_ynca_value(subunit, function, value)
 
             # Special handling for PWR
             if function == "PWR":
@@ -301,10 +333,10 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
                     for zone in ZONES:
                         result = self.store.put_data(zone, function, value)
                         if result[1]:
-                            self.write_line(f"@{zone}:{function}={value}")
+                            self._send_ynca_value(zone, function, value)
                     result = self.store.put_data(zone, "PWRB", value)
                     if result[1]:
-                        self.write_line(f"@{zone}:PWRB={value}")
+                        self._send_ynca_value(zone, "PWRB", value)
                 elif subunit in ZONES:
                     # Setting PWR on a ZONE can influence SYS overall PWR
                     sys_is_on = False
@@ -320,7 +352,7 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
                     sys_on_value = "On" if sys_is_on else "Standby"
                     result = self.store.put_data("SYS", function, sys_on_value)
                     if result[1]:
-                        self.write_line(f"@SYS:{function}={sys_on_value}")
+                        self._send_ynca_value("SYS", function, sys_on_value)
 
     def handle(self):
         # self.rfile is a file-like object created by the handler;
