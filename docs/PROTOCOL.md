@@ -21,6 +21,8 @@ In YNCA setting a value is referred to as a `PUT` and reading a value as `GET`.
 Both have the same format `@SUBUNIT:FUNCTION=VALUE`
 For a `GET` the `VALUE` will always be '?'
 
+The end of a command is indicated by Carriage Return + Line Feed (a.k.a. CR/LF or \r\n)
+
 The receiver will generate messages when a value changes, when a `GET` command is received or other related events (e.g. turning on a zone will send multiple messages).
 There is no way to tell if a message is because of a `GET` request or the value got changed in another way (e.g. using the remote control or buttons on the device)
 This also means that sending a `PUT` will not always result in a message as messages are usually (not always) only sent when the value changes.
@@ -31,9 +33,9 @@ An easy way to learn about the commands is to connect to the receiver, change so
 
 ## Examples
 
-To set input of subunit MAIN to `HDMI1` use command `@MAIN:INP=HDMI1`
+To set input of subunit MAIN to `HDMI1` use command `@MAIN:INP=HDMI1\r\n`
 
-To get the current volume for subunit `ZONE2` use command `@ZONE2:VOL=?` and the receiver will respond with: `@ZONE2:VOL=12.5` (value obviously depends on current value)
+To get the current volume for subunit `ZONE2` use command `@ZONE2:VOL=?\r\n` and the receiver will respond with: `@ZONE2:VOL=12.5\r\n` (value obviously depends on current value)
 
 ## Errors
 
