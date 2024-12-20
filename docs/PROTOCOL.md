@@ -3,16 +3,14 @@
 This is a short intro to the basics for the YNCA protocol.
 The final source of thruth is how the devices actually respond!
 
-Known receivers that support YNCA (there may be more):
-> HTR-4065, HTR-4071, HTR-6064, RX-A660, RX-A700, RX-A710, RX-A720, RX-A740, RX-A750, RX-A800, RX-A810, RX-A820, RX-A830, RX-A840, RX-A850, RX-A1000, RX-A1010, RX-A1020, RX-A1030, RX-A1040, RX-A2000, RX-A2010, RX-A2020, RX-A2070, RX-A3000, RX-A3010, RX-A3020, RX-A3030, RX-A3070, RX-S600D, RX-V473, RX-V475, RX-V477, RX-V481D, RX-V483, RX-V575, RX-V671, RX-V673, RX-V675, RX-V677, RX-V679, RX-V771, RX-V773, RX-V775, RX-V777, RX-V867, RX-V871, RX-V1067, RX-V1071, RX-V1085, RX-V2067, RX-V2071, RX-V3067, RX-V3071, TSR-700, TSR-7850
-
 ## Description
 
-YNCA is a protocol to control Yamaha receivers.
+YNCA is a protocol to control Yamaha receivers. It seems to be supported on most(?) AV receivers from 2010 onwards at least up to the 2022 models. For a list of reported working receivers see the main README of this package.
+
 The protocol can be transmitted over serial or a TCP/IP socket.
 
 Serial connection parameters: 9600,8,N,1
-TCP port: 50000 (standard, can be customized by user)
+TCP port: 50000 (standard, can be customized by user on some models)
 
 There are other protocols for Yamaha receivers like YNC and Musiccast.
 YNCA is the simpler one it seems, but more limited.
