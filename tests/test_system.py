@@ -1,7 +1,7 @@
 from unittest import mock
 import pytest
 
-from ynca import HdmiOutOnOff, Party, PartyMute, Pwr
+from ynca import HdmiOutOnOff, Party, PartyMute, Pwr, SpPattern
 from ynca.subunits.system import System
 
 SYS = "SYS"
@@ -75,6 +75,12 @@ INITIALIZE_FULL_RESPONSES = [
         (SYS, "PWR"),
         [
             (SYS, "PWR", "Standby"),
+        ],
+    ),
+    (
+        (SYS, "SPPATTERN"),
+        [
+            (SYS, "SPPATTERN", "Pattern 2"),
         ],
     ),
     (
@@ -153,6 +159,7 @@ def test_initialize_minimal(connection, update_callback):
     assert s.inpnamevaux is None
     assert s.pwr is None
     assert s.party is None
+    assert s.sppattern is None
 
 
 def test_initialize_full(connection, update_callback):
@@ -196,8 +203,9 @@ def test_initialize_full(connection, update_callback):
     assert s.inpnameusb == "InputUsb"
     assert s.inpnamevaux == "InputVAux"
 
-    assert s.pwr == Pwr.STANDBY
     assert s.party == Party.ON
+    assert s.pwr == Pwr.STANDBY
+    assert s.sppattern == SpPattern.PATTERN_2
 
 
 def test_hdmiout(connection, initialized_system: System):

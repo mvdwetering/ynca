@@ -3,7 +3,7 @@ import logging
 from ..constants import Subunit
 from ..converters import StrConverter
 from ..function import Cmd, EnumFunctionMixin, FunctionMixinBase, StrFunctionMixin
-from ..enums import HdmiOutOnOff, Party, PartyMute, Pwr
+from ..enums import HdmiOutOnOff, Party, PartyMute, Pwr, SpPattern
 from ..subunit import SubunitBase
 
 logger = logging.getLogger(__name__)
@@ -42,6 +42,7 @@ class System(SubunitBase):
     party = EnumFunctionMixin[Party](Party)
     partymute = EnumFunctionMixin[PartyMute](PartyMute, Cmd.PUT)
     pwr = EnumFunctionMixin[Pwr](Pwr)
+    sppattern = EnumFunctionMixin[SpPattern](SpPattern)
 
     # No_initialize VERSION to avoid it being sent during initialization
     # It is also used behind the scenes for syncing and would interfere
