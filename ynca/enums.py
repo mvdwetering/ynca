@@ -467,6 +467,19 @@ class SpeakerB(Enum):
     UNKNOWN = UNKNOWN_STRING
     """Unknown values in the enum are mapped to UNKNOWN"""
 
+@unique
+class SpPattern(Enum):
+    PATTERN_1 = "Pattern 1"
+    PATTERN_2 = "Pattern 2"
+
+    @classmethod
+    def _missing_(cls, value):
+        logger.warning("Unknown value '%s' in %s", value, cls.__name__)
+        return cls.UNKNOWN
+
+    UNKNOWN = UNKNOWN_STRING
+    """Unknown values in the enum are mapped to UNKNOWN"""
+
 
 @unique
 class Straight(Enum):
