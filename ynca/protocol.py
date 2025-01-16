@@ -17,8 +17,18 @@ logger = logging.getLogger(__name__)
 
 
 class LogBuffer(RingBuffer[str]):
-    pass
 
+    def __init__(self, size: int):
+        super().__init__(size)
+        self._lock = threading.Lock()
+
+    def add(self, item: str):
+        with self._lock:
+            super().add(item)
+
+    def get_buffer(self) -> List[str]:
+        with self._lock:
+            return super().get_buffer()
 
 class YncaProtocolStatus(Enum):
     OK = 0
