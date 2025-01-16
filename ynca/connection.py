@@ -33,6 +33,7 @@ class YncaConnection:
         self._readerthread: Optional[serial.threaded.ReaderThread] = None
         self._protocol: Optional[YncaProtocol] = None
 
+        self._disconnect_callback: Callable[[], None] | None = None
         self._message_callbacks: Set[
             Callable[[YncaProtocolStatus, str | None, str | None, str | None], None]
         ] = set()
@@ -63,18 +64,24 @@ class YncaConnection:
         for callback in self._message_callbacks:
             callback(status, subunit, function_, value)
 
+    def _on_disconnect(self):
+        if self._disconnect_callback:
+            self._disconnect_callback()
+
+
     def connect(
         self,
         disconnect_callback: Callable[[], None] | None = None,
         communication_log_size: int = 0,
     ):
         try:
+            self._disconnect_callback = disconnect_callback
             self._serial = serial.serial_for_url(self._port)
             self._readerthread = serial.threaded.ReaderThread(
                 self._serial,
                 lambda: YncaProtocol(
                     self._call_registered_message_callbacks,
-                    disconnect_callback,
+                    self._on_disconnect,
                     communication_log_size,
                 ),
             )
@@ -89,8 +96,7 @@ class YncaConnection:
     def close(self):
         # Disconnect callback is for unexpected disconnects
         # Don't need it to be called on planned `close()`
-        if self._protocol:
-            self._protocol._disconnect_callback = None
+        self._disconnect_callback = None
 
         if self._readerthread:
             self._readerthread.close()
