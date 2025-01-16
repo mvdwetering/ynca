@@ -5,7 +5,7 @@ The final source of thruth is how the devices actually respond!
 
 ## Description
 
-YNCA is a protocol to control Yamaha receivers. It seems to be supported on most(?) AV receivers from 2010 onwards at least up to the 2022 models. For a list of reported working receivers see the main README of this package.
+YNCA is a protocol to control Yamaha receivers. It seems to be supported on most(?) AV receivers from 2010 onwards at least up to the current (=2022) models. For a list of reported working receivers see the main README of this package.
 
 The protocol can be transmitted over serial or a TCP/IP socket.
 
