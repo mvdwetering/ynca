@@ -107,6 +107,10 @@
     },
     "communication": {
       "initialization": [
+        
+        # This one is added manually to implement the feature
+        @SYS:SPPATTERN=Pattern 2
+
         "Send: @SYS:MODELNAME=?",
         "Received: @SYS:MODELNAME=RX-A6A",
         "Send: @SYS:MODELNAME=?",
