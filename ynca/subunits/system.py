@@ -8,6 +8,8 @@ from ..subunit import SubunitBase
 
 logger = logging.getLogger(__name__)
 
+REMOTE_CODE_LENGTH = 8
+
 
 class System(SubunitBase):
     id = Subunit.SYS
@@ -59,9 +61,7 @@ class System(SubunitBase):
         self._put("PARTYVOL", "Down")
 
     def remotecode(self, value) -> None:
-        if len(value) != 8:
+        if len(value) != REMOTE_CODE_LENGTH:
             msg = f"REMOTECODE value must be of length 8, but length of '{value}' is {len(value)}"
-            raise ValueError(
-                msg
-            )
+            raise ValueError(msg)
         self._put("REMOTECODE", value)

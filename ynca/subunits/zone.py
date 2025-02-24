@@ -3,7 +3,7 @@ from __future__ import annotations
 import logging
 from typing import NoReturn
 
-from ..constants import Subunit
+from ..constants import MAX_VOLUME, Subunit
 from ..converters import EnumConverter, FloatConverter, MultiConverter, StrConverter
 from ..enums import (
     AdaptiveDrc,
@@ -123,7 +123,7 @@ class ZoneBase(PlaybackFunctionMixin, SubunitBase):
             [
                 # Special handling for 16.5 which is valid, but does not fit stepsize of 5
                 FloatConverter(
-                    to_str=lambda v: "16.5" if v == 16.5 else raiser(ValueError)
+                    to_str=lambda v: "16.5" if v == MAX_VOLUME else raiser(ValueError)
                 ),
                 FloatConverter(
                     to_str=lambda v: number_to_string_with_stepsize(v, 1, 5)
