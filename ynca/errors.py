@@ -1,7 +1,7 @@
 """Ynca errors."""
 
 
-class YncaException(Exception):
+class YncaException(Exception):  # noqa: N818
     """Base error for ynca."""
 
 
