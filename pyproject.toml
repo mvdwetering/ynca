@@ -60,6 +60,11 @@ src = ["ynca"]
 ignore = [
   "A005",   # It is just wrong
   "ANN401", # Opiniated warning on disallowing dynamically typed expressions
+  # Ignoring missing docstrings. Most things should be clear and they tend to get out of date which is worse.
+  "D100",   # Missing docstrings for public module
+  "D101",   # Missing docstrings for public classes
+  "D102",   # Missing docstrings for public methods
+  "D103",   # Missing docstrings for public functions
   "D203",   # Conflicts with other rules
   "D213",   # Conflicts with other rules
   "RUF012", # Just broken
