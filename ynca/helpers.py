@@ -34,12 +34,12 @@ T = TypeVar("T")
 
 
 class RingBuffer(Generic[T]):
-    """Simple ringbuffer that hold size amount of items, adding more will discard oldest items"""
+    """Simple ringbuffer that hold size amount of items, adding more will discard oldest items."""
 
-    def __init__(self, size):
+    def __init__(self, size) -> None:
         self._buffer: collections.deque = collections.deque(maxlen=size)
 
-    def add(self, item: T):
+    def add(self, item: T) -> None:
         self._buffer.append(item)
 
     def get_buffer(self) -> list[T]:

@@ -1,10 +1,9 @@
 from __future__ import annotations
 
-from collections.abc import Callable
 from dataclasses import dataclass, field
 import logging
 import threading
-from typing import cast
+from typing import TYPE_CHECKING, cast
 
 from .connection import YncaConnection, YncaProtocol, YncaProtocolStatus
 from .constants import Subunit
@@ -30,6 +29,9 @@ from .subunits.uaw import Uaw
 from .subunits.usb import Usb
 from .subunits.zone import Main, Zone2, Zone3, Zone4
 
+if TYPE_CHECKING:
+    from collections.abc import Callable
+
 logger = logging.getLogger(__name__)
 
 CONNECTION_CHECK_TIMEOUT = 1.5
@@ -47,8 +49,8 @@ class YncaApi:
         serial_url: str,
         disconnect_callback: Callable[[], None] | None = None,
         communication_log_size: int = 0,
-    ):
-        """Create a YNCA API instance
+    ) -> None:
+        """Create a YNCA API instance.
 
         serial_url:
             Can be a devicename (e.g. /dev/ttyUSB0 or COM3),
@@ -75,7 +77,7 @@ class YncaApi:
         # This is the list of instantiated Subunit classes
         self._subunits: dict[Subunit, SubunitBase] = {}
 
-    def _detect_available_subunits(self, connection: YncaConnection):
+    def _detect_available_subunits(self, connection: YncaConnection) -> None:
         logger.info("Subunit availability check begin")
         self._initialized_event.clear()
         connection.register_message_callback(self._protocol_message_received)
@@ -95,7 +97,8 @@ class YncaApi:
         if not self._initialized_event.wait(
             2 + (num_commands_sent * (YncaProtocol.COMMAND_SPACING * 5))
         ):
-            raise YncaInitializationFailedException("Subunit availability check failed")
+            msg = "Subunit availability check failed"
+            raise YncaInitializationFailedException(msg)
 
         connection.unregister_message_callback(self._protocol_message_received)
         logger.info("Subunit availability check end")
@@ -109,8 +112,9 @@ class YncaApi:
             except AttributeError:  # pragma: no cover
                 # Intermediate Subunit classes like ZoneBase don't have an ID
                 pass
+        return None
 
-    def _initialize_available_subunits(self, connection: YncaConnection):
+    def _initialize_available_subunits(self, connection: YncaConnection) -> None:
         # Every receiver has a System subunit
         # It also does not respond to AVAIL=? so it will not end up in _available_subunits
         system = System(connection)
@@ -140,7 +144,7 @@ class YncaApi:
             subunit: str | None,
             function_: str | None,
             value: str | None,
-        ):
+        ) -> None:
             if (
                 subunit == Subunit.SYS
                 and function_ == "MODELNAME"
@@ -163,8 +167,9 @@ class YncaApi:
 
             # Give it a bit of time to receive a response
             if not connection_check_event.wait(CONNECTION_CHECK_TIMEOUT):
+                msg = "Connectioncheck failed, no valid response in time from device"
                 raise YncaConnectionError(
-                    "Connectioncheck failed, no valid response in time from device"
+                    msg
                 )
         finally:
             if connection:
@@ -175,7 +180,7 @@ class YncaApi:
 
         return result
 
-    def initialize(self):
+    def initialize(self) -> None:
         """Sets up a connection to the device and initializes the Ynca API.
         This call takes quite a while (~10 seconds on a simple 2 zone receiver).
 
@@ -204,7 +209,7 @@ class YncaApi:
         subunit: str | None,
         function_: str | None,
         value: str | None,
-    ):
+    ) -> None:
         if function_ == "AVAIL":
             self._available_subunits.add(subunit)
 
@@ -217,14 +222,14 @@ class YncaApi:
             self._connection.get_communication_log_items() if self._connection else []
         )
 
-    def send_raw(self, raw_ynca_data: str):
+    def send_raw(self, raw_ynca_data: str) -> None:
         """Send raw YNCA data
-        Intended for debugging only
+        Intended for debugging only.
         """
         if self._connection:
             self._connection.raw(raw_ynca_data)
 
-    def close(self):
+    def close(self) -> None:
         """Cleanup the internal resources.
         Safe to be called at any time.
 

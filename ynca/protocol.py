@@ -1,27 +1,30 @@
 from __future__ import annotations
 
-from collections.abc import Callable
 from enum import Enum
 import logging
 import queue
 import re
 import threading
 import time
+from typing import TYPE_CHECKING
 
 import serial  # type: ignore
 import serial.threaded  # type: ignore
 
 from .helpers import RingBuffer
 
+if TYPE_CHECKING:
+    from collections.abc import Callable
+
 logger = logging.getLogger(__name__)
 
 
 class LogBuffer(RingBuffer[str]):
-    def __init__(self, size: int):
+    def __init__(self, size: int) -> None:
         super().__init__(size)
         self._lock = threading.Lock()
 
-    def add(self, item: str):
+    def add(self, item: str) -> None:
         with self._lock:
             super().add(item)
 
@@ -51,7 +54,7 @@ class YncaProtocol(serial.threaded.LineReader):
         ) = None,
         disconnect_callback: Callable[[], None] | None = None,
         communication_log_size=0,
-    ):
+    ) -> None:
         super().__init__()
         self._message_callback = message_callback
         self._disconnect_callback = disconnect_callback
@@ -63,7 +66,7 @@ class YncaProtocol(serial.threaded.LineReader):
         self._communication_log_buffer: LogBuffer = LogBuffer(communication_log_size)
         self.num_commands_sent = 0
 
-    def connection_made(self, transport):
+    def connection_made(self, transport) -> None:
         super().connection_made(transport)
 
         logger.debug("Connected")
@@ -80,10 +83,10 @@ class YncaProtocol(serial.threaded.LineReader):
         self._send_keepalive()
         self._send_keepalive()
 
-    def connection_lost(self, exc):
+    def connection_lost(self, exc) -> None:
         self.connected = False
 
-        logger.debug("Connection closed/lost %s" % exc)
+        logger.debug(f"Connection closed/lost {exc}")
 
         if self._send_queue:
             # There seems to be no way to clear a queue so just read all and add the _EXIT command
@@ -100,7 +103,7 @@ class YncaProtocol(serial.threaded.LineReader):
         if self._disconnect_callback:
             self._disconnect_callback()
 
-    def handle_line(self, line):
+    def handle_line(self, line) -> None:
         ignore = False
         status = YncaProtocolStatus.OK
         subunit: str | None = None
@@ -135,11 +138,11 @@ class YncaProtocol(serial.threaded.LineReader):
         if not ignore and self._message_callback is not None:
             self._message_callback(status, subunit, function, value)
 
-    def _send_keepalive(self):
+    def _send_keepalive(self) -> None:
         if self._send_queue:
             self._send_queue.put("_KEEP_ALIVE")
 
-    def _send_handler(self):
+    def _send_handler(self) -> None:
         stop = False
         while not stop and self._send_queue:
             try:
@@ -166,20 +169,19 @@ class YncaProtocol(serial.threaded.LineReader):
                 # To avoid random message being eaten because device goes to sleep, keep it alive
                 self._send_keepalive()
 
-    def raw(self, raw_data: str):
+    def raw(self, raw_data: str) -> None:
         if self._send_queue:
             self._send_queue.put(raw_data)
             self.num_commands_sent += 1
 
-    def put(self, subunit: str, funcname: str, parameter: str):
+    def put(self, subunit: str, funcname: str, parameter: str) -> None:
         if self._send_queue:
             self._send_queue.put(f"@{subunit}:{funcname}={parameter}")
             self.num_commands_sent += 1
 
-    def get(self, subunit: str, funcname: str):
+    def get(self, subunit: str, funcname: str) -> None:
         self.put(subunit, funcname, "?")
 
     def get_communication_log_items(self) -> list[str]:
-        """Get a list of logged communication items.
-        """
+        """Get a list of logged communication items."""
         return self._communication_log_buffer.get_buffer()

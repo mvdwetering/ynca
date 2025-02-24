@@ -50,19 +50,18 @@ class System(SubunitBase):
         converter=StrConverter(), cmd=Cmd.GET, no_initialize=True
     )
 
-    def partyvol_up(self):
-        """Increase the party volume with one step.
-        """
+    def partyvol_up(self) -> None:
+        """Increase the party volume with one step."""
         self._put("PARTYVOL", "Up")
 
-    def partyvol_down(self):
-        """Decrease the party volume with one step.
-        """
+    def partyvol_down(self) -> None:
+        """Decrease the party volume with one step."""
         self._put("PARTYVOL", "Down")
 
-    def remotecode(self, value):
+    def remotecode(self, value) -> None:
         if len(value) != 8:
+            msg = f"REMOTECODE value must be of length 8, but length of '{value}' is {len(value)}"
             raise ValueError(
-                f"REMOTECODE value must be of length 8, but length of '{value}' is {len(value)}"
+                msg
             )
         self._put("REMOTECODE", value)

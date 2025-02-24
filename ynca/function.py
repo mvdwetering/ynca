@@ -83,13 +83,15 @@ class FunctionMixinBase(ABC, Generic[T]):
             return self
 
         if Cmd.GET not in self.cmd:
-            raise AttributeError(f"Function {self.name} does not support GET command")
+            msg = f"Function {self.name} does not support GET command"
+            raise AttributeError(msg)
 
         return instance.function_handlers[self.name].value
 
-    def __set__(self, instance, value: T):
+    def __set__(self, instance, value: T) -> None:
         if Cmd.PUT not in self.cmd:
-            raise AttributeError(f"Function {self.name} does not support PUT command")
+            msg = f"Function {self.name} does not support PUT command"
+            raise AttributeError(msg)
         instance._put(self.name, self.converter.to_str(value))
 
     def __delete__(self, instance: SubunitBase):

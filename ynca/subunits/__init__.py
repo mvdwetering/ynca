@@ -34,14 +34,14 @@ class FmFreqFunctionMixin:
 
 
 class MemFunctionMixin:
-    def mem(self, parameter: int | None = None):
+    def mem(self, parameter: int | None = None) -> None:
         """Store preset in memory slot, parameter is a slot number 1-40 or None to select a slot automatically."""
         self._put("MEM", "Auto" if parameter is None else str(parameter))  # type: ignore
 
 
 class PlaybackFunctionMixin:
-    def playback(self, parameter: Playback):
-        """Change playback state"""
+    def playback(self, parameter: Playback) -> None:
+        """Change playback state."""
         self._put("PLAYBACK", parameter.value)  # type: ignore
 
 
@@ -55,12 +55,12 @@ class PresetFunctionMixin:
 
 
 class PresetUpDownFunctionMixin:
-    def preset_up(self):
-        """Select next available preset"""
+    def preset_up(self) -> None:
+        """Select next available preset."""
         self._put("PRESET", "Up")  # type: ignore
 
-    def preset_down(self):
-        """Select previous available preset"""
+    def preset_down(self) -> None:
+        """Select previous available preset."""
         self._put("PRESET", "Down")  # type: ignore
 
 

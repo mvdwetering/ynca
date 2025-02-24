@@ -1,17 +1,19 @@
 from __future__ import annotations
 
 from abc import ABC
-from collections.abc import Callable
 from enum import Flag, auto
 import logging
 import threading
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from .connection import YncaConnection, YncaProtocol, YncaProtocolStatus
 from .constants import Subunit
 from .enums import Avail
 from .errors import YncaInitializationFailedException
 from .function import Cmd, EnumFunctionMixin, FunctionMixinBase
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
 logger = logging.getLogger(__name__)
 
@@ -34,13 +36,12 @@ class YncaFunctionHandler:
         self.value = None
         self.function = function
 
-    def update(self, value_str: str):
+    def update(self, value_str: str) -> None:
         self.value = self.function.converter.to_value(value_str)
 
 
 class SubunitBase(ABC):
-    """Baseclass for Subunits, should be subclassed do not instantiate manually.
-    """
+    """Baseclass for Subunits, should be subclassed do not instantiate manually."""
 
     id: Subunit  # Just typed, needs to be set in subclasses
 
@@ -65,13 +66,14 @@ class SubunitBase(ABC):
         self._connection: YncaConnection | None = connection
         self._connection.register_message_callback(self._protocol_message_received)
 
-    def initialize(self):
+    def initialize(self) -> None:
         """Initializes the data for the subunit and makes sure to wait until done.
-        This call can take a long time
+        This call can take a long time.
         """
         if not self._connection:
+            msg = "No valid connection"
             raise YncaInitializationFailedException(
-                "No valid connection"
+                msg
             )  # pragma: no cover
 
         logger.info("Subunit %s initialization begin.", self.id)
@@ -105,13 +107,14 @@ class SubunitBase(ABC):
         ):
             self._initialized = True
         else:
+            msg = f"Subunit {self.id} initialization failed"
             raise YncaInitializationFailedException(
-                f"Subunit {self.id} initialization failed"
+                msg
             )
 
         logger.info("Subunit %s initialization end.", self.id)
 
-    def close(self):
+    def close(self) -> None:
         if self._connection:
             self._connection.unregister_message_callback(
                 self._protocol_message_received
@@ -125,7 +128,7 @@ class SubunitBase(ABC):
         subunit: str | None,
         function_name: str | None,
         value_str: str | None,
-    ):
+    ) -> None:
         if status is not YncaProtocolStatus.OK:
             # Can't really handle errors since at this point we can't see to what command it belonged
             return
@@ -149,21 +152,21 @@ class SubunitBase(ABC):
             handler.update(value_str)
             self._call_registered_update_callbacks(function_name, handler.value)
 
-    def _put(self, function_name: str, value: str):
+    def _put(self, function_name: str, value: str) -> None:
         if self._connection:
             self._connection.put(self.id, function_name, value)
 
-    def _get(self, function_name: str):
+    def _get(self, function_name: str) -> None:
         if self._connection:
             self._connection.get(self.id, function_name)
 
-    def register_update_callback(self, callback: Callable[[str, Any], None]):
+    def register_update_callback(self, callback: Callable[[str, Any], None]) -> None:
         self._update_callbacks.add(callback)
 
-    def unregister_update_callback(self, callback: Callable[[str, Any], None]):
+    def unregister_update_callback(self, callback: Callable[[str, Any], None]) -> None:
         self._update_callbacks.remove(callback)
 
-    def _call_registered_update_callbacks(self, function_name: str, value: Any):
+    def _call_registered_update_callbacks(self, function_name: str, value: Any) -> None:
         if self._initialized:
             for callback in self._update_callbacks:
                 callback(function_name, value)

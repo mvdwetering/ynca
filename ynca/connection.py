@@ -1,14 +1,16 @@
 from __future__ import annotations
 
-from collections.abc import Callable
 import logging
-from typing import cast
+from typing import TYPE_CHECKING, cast
 
 import serial  # type: ignore
 import serial.threaded  # type: ignore
 
 from .errors import YncaConnectionError, YncaConnectionFailed
 from .protocol import YncaProtocol, YncaProtocolStatus
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
 logger = logging.getLogger(__name__)
 
@@ -18,8 +20,8 @@ class YncaConnection:
     def create_from_serial_url(cls, serial_url: str):
         return cls(serial_url)
 
-    def __init__(self, serial_url: str):
-        """Instantiate a YncaConnection
+    def __init__(self, serial_url: str) -> None:
+        """Instantiate a YncaConnection.
 
         serial_url:
             Can be a devicename (e.g. /dev/ttyUSB0 or COM3),
@@ -44,7 +46,7 @@ class YncaConnection:
         callback: Callable[
             [YncaProtocolStatus, str | None, str | None, str | None], None
         ],
-    ):
+    ) -> None:
         self._message_callbacks.add(callback)
 
     def unregister_message_callback(
@@ -52,7 +54,7 @@ class YncaConnection:
         callback: Callable[
             [YncaProtocolStatus, str | None, str | None, str | None], None
         ],
-    ):
+    ) -> None:
         self._message_callbacks.discard(callback)
 
     def _call_registered_message_callbacks(
@@ -61,11 +63,11 @@ class YncaConnection:
         subunit: str | None,
         function_: str | None,
         value: str | None,
-    ):
+    ) -> None:
         for callback in self._message_callbacks:
             callback(status, subunit, function_, value)
 
-    def _on_disconnect(self):
+    def _on_disconnect(self) -> None:
         if self._disconnect_callback:
             self._disconnect_callback()
 
@@ -73,7 +75,7 @@ class YncaConnection:
         self,
         disconnect_callback: Callable[[], None] | None = None,
         communication_log_size: int = 0,
-    ):
+    ) -> None:
         try:
             self._disconnect_callback = disconnect_callback
             self._serial = serial.serial_for_url(self._port)
@@ -93,7 +95,7 @@ class YncaConnection:
         except RuntimeError as e:
             raise YncaConnectionFailed(e)
 
-    def close(self):
+    def close(self) -> None:
         # Disconnect callback is for unexpected disconnects
         # Don't need it to be called on planned `close()`
         self._disconnect_callback = None
@@ -101,15 +103,15 @@ class YncaConnection:
         if self._readerthread:
             self._readerthread.close()
 
-    def raw(self, raw_data: str):
+    def raw(self, raw_data: str) -> None:
         if self._protocol:
             self._protocol.raw(raw_data)
 
-    def put(self, subunit: str, funcname: str, parameter: str):
+    def put(self, subunit: str, funcname: str, parameter: str) -> None:
         if self._protocol:
             self._protocol.put(subunit, funcname, parameter)
 
-    def get(self, subunit: str, funcname: str):
+    def get(self, subunit: str, funcname: str) -> None:
         if self._protocol:
             self._protocol.get(subunit, funcname)
 

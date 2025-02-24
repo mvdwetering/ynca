@@ -1,4 +1,4 @@
-"""This file contains info that is specific per model"""
+"""This file contains info that is specific per model."""
 
 from dataclasses import dataclass
 

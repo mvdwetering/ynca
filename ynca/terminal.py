@@ -7,15 +7,15 @@ from .connection import YncaConnection, YncaProtocolStatus
 PROMPT = ">> "
 
 
-def delete_prompt():
+def delete_prompt() -> None:
     print("\b" * len(PROMPT), end="")  # \b is backspace
 
 
-def print_prompt():
+def print_prompt() -> None:
     print(PROMPT, end="", flush=True)
 
 
-def YncaTerminal(serial_url: str):
+def YncaTerminal(serial_url: str) -> None:
     """With the YNCA terminal you can manually send YNCA commands to a receiver.
     This is useful to figure out what a command does.
 
@@ -37,7 +37,7 @@ def YncaTerminal(serial_url: str):
 
     """
 
-    def output_response(status, subunit, function, value):
+    def output_response(status, subunit, function, value) -> None:
         delete_prompt()
 
         if status is YncaProtocolStatus.OK:
@@ -47,7 +47,7 @@ def YncaTerminal(serial_url: str):
 
         print_prompt()
 
-    def disconnected_callback():
+    def disconnected_callback() -> None:
         print("\n *** Connection lost, will attempt to reconnect on next command ***")
         print_prompt()
 

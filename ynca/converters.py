@@ -1,10 +1,12 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from collections.abc import Callable
 from enum import Enum
 import logging
-from typing import Any, Generic, TypeVar, cast
+from typing import TYPE_CHECKING, Any, Generic, TypeVar, cast
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
 logger = logging.getLogger(__name__)
 
@@ -88,9 +90,11 @@ class StrConverter(ConverterBase):
         str(value)
 
         if self._min_len and len(value) < self._min_len:
-            raise ValueError(f"{value} has a minimum length of {self._min_len}")
+            msg = f"{value} has a minimum length of {self._min_len}"
+            raise ValueError(msg)
         if self._max_len and len(value) > self._max_len:
-            raise ValueError(f"{value} has a maxmimum length of {self._max_len}")
+            msg = f"{value} has a maxmimum length of {self._max_len}"
+            raise ValueError(msg)
         return value
 
 
@@ -110,7 +114,8 @@ class MultiConverter(ConverterBase):
                 return converter.to_value(value_string)
             except:  # noqa: E722
                 pass
-        raise ValueError(f"No converter could convert '{value_string}' to value")
+        msg = f"No converter could convert '{value_string}' to value"
+        raise ValueError(msg)
 
     def to_str(self, value: Any) -> str:
         for converter in self._converters:
@@ -118,4 +123,5 @@ class MultiConverter(ConverterBase):
                 return converter.to_str(value)
             except:  # noqa: E722
                 pass
-        raise ValueError(f"No converter could convert {value} to string")
+        msg = f"No converter could convert {value} to string"
+        raise ValueError(msg)

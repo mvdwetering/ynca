@@ -1,4 +1,4 @@
-"""Misc constants"""
+"""Misc constants."""
 
 from enum import Enum, unique
 import logging
@@ -10,7 +10,7 @@ MIN_VOLUME = -80.5  # Minimum volume value for receivers
 
 @unique
 class Subunit(str, Enum):
-    """Known Subunits in YNCA"""
+    """Known Subunits in YNCA."""
 
     SYS = "SYS"
     MAIN = "MAIN"

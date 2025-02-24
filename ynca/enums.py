@@ -1,4 +1,4 @@
-"""Enums used for mapping YNCA values"""
+"""Enums used for mapping YNCA values."""
 
 from enum import Enum, unique
 import logging
