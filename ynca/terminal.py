@@ -15,7 +15,7 @@ def print_prompt() -> None:
     print(PROMPT, end="", flush=True)
 
 
-def YncaTerminal(serial_url: str) -> None:
+def ynca_terminal(serial_url: str) -> None:
     """With the YNCA terminal you can manually send YNCA commands to a receiver.
     This is useful to figure out what a command does.
 
@@ -51,7 +51,7 @@ def YncaTerminal(serial_url: str) -> None:
         print("\n *** Connection lost, will attempt to reconnect on next command ***")
         print_prompt()
 
-    print(YncaTerminal.__doc__)
+    print(ynca_terminal.__doc__)
 
     connection = YncaConnection(serial_url)
     connection.register_message_callback(output_response)
@@ -91,6 +91,6 @@ if __name__ == "__main__":
         print("  socket://192.168.178.21:50000")
         sys.exit(1)
 
-    YncaTerminal(sys.argv[1])
+    ynca_terminal(sys.argv[1])
 
     print("Done")
