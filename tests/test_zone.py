@@ -357,7 +357,7 @@ def test_maxvol(connection, initialized_zone: ZoneBase):
     initialized_zone.maxvol = -5.5
     connection.put.assert_called_with(SUBUNIT, "MAXVOL", "-5.0")
 
-    # 16.5 is special meaning no limit and does not fit normal step size
+    # 16.5 is special as it is valid, but does not fit normal step size
     initialized_zone.maxvol = 16.5
     connection.put.assert_called_with(SUBUNIT, "MAXVOL", "16.5")
 
