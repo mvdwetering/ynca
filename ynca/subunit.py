@@ -1,16 +1,17 @@
 from __future__ import annotations
 
+from abc import ABC
+from collections.abc import Callable
+from enum import Flag, auto
 import logging
 import threading
-from abc import ABC
-from enum import Flag, auto
-from typing import Any, Callable, Dict, Set
+from typing import Any
 
 from .connection import YncaConnection, YncaProtocol, YncaProtocolStatus
 from .constants import Subunit
+from .enums import Avail
 from .errors import YncaInitializationFailedException
 from .function import Cmd, EnumFunctionMixin, FunctionMixinBase
-from .enums import Avail
 
 logger = logging.getLogger(__name__)
 
@@ -21,8 +22,7 @@ class CommandType(Flag):
 
 
 class YncaFunctionHandler:
-    """
-    Keeps a value of a Function and handles conversions from str on updating.
+    """Keeps a value of a Function and handles conversions from str on updating.
     Note that it is not possible to store the value in the YncaFunction since it
     is a class instance which is shared by all instances.
     """
@@ -39,8 +39,7 @@ class YncaFunctionHandler:
 
 
 class SubunitBase(ABC):
-    """
-    Baseclass for Subunits, should be subclassed do not instantiate manually.
+    """Baseclass for Subunits, should be subclassed do not instantiate manually.
     """
 
     id: Subunit  # Just typed, needs to be set in subclasses
@@ -48,9 +47,9 @@ class SubunitBase(ABC):
     avail = EnumFunctionMixin[Avail](Avail, Cmd.GET)
 
     def __init__(self, connection: YncaConnection) -> None:
-        self._update_callbacks: Set[Callable[[str, Any], None]] = set()
+        self._update_callbacks: set[Callable[[str, Any], None]] = set()
 
-        self.function_handlers: Dict[str, YncaFunctionHandler] = {}
+        self.function_handlers: dict[str, YncaFunctionHandler] = {}
 
         # Note that we need to iterate over the _class_
         # otherwise the YncaFunction descriptors get/set functions would trigger.
@@ -67,8 +66,7 @@ class SubunitBase(ABC):
         self._connection.register_message_callback(self._protocol_message_received)
 
     def initialize(self):
-        """
-        Initializes the data for the subunit and makes sure to wait until done.
+        """Initializes the data for the subunit and makes sure to wait until done.
         This call can take a long time
         """
         if not self._connection:

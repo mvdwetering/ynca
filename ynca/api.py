@@ -1,9 +1,10 @@
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import dataclass, field
 import logging
 import threading
-from typing import Callable, Dict, List, Optional, Set, cast
+from typing import cast
 
 from .connection import YncaConnection, YncaProtocol, YncaProtocolStatus
 from .constants import Subunit
@@ -37,7 +38,7 @@ CONNECTION_CHECK_TIMEOUT = 1.5
 @dataclass
 class YncaConnectionCheckResult:
     modelname: str = ""
-    zones: List[str] = field(default_factory=list)
+    zones: list[str] = field(default_factory=list)
 
 
 class YncaApi:
@@ -47,8 +48,7 @@ class YncaApi:
         disconnect_callback: Callable[[], None] | None = None,
         communication_log_size: int = 0,
     ):
-        """
-        Create a YNCA API instance
+        """Create a YNCA API instance
 
         serial_url:
             Can be a devicename (e.g. /dev/ttyUSB0 or COM3),
@@ -66,14 +66,14 @@ class YncaApi:
             Get the logged items with the `get_communication_log_items` method
         """
         self._serial_url = serial_url
-        self._connection: Optional[YncaConnection] = None
-        self._available_subunits: Set = set()
+        self._connection: YncaConnection | None = None
+        self._available_subunits: set = set()
         self._initialized_event = threading.Event()
         self._disconnect_callback = disconnect_callback
         self._communication_log_size = communication_log_size
 
         # This is the list of instantiated Subunit classes
-        self._subunits: Dict[Subunit, SubunitBase] = {}
+        self._subunits: dict[Subunit, SubunitBase] = {}
 
     def _detect_available_subunits(self, connection: YncaConnection):
         logger.info("Subunit availability check begin")
@@ -125,8 +125,7 @@ class YncaApi:
                 self._subunits[subunit_instance.id] = subunit_instance
 
     def connection_check(self) -> YncaConnectionCheckResult:
-        """
-        Does a quick connection check by setting up a connection and requesting some basic info.
+        """Does a quick connection check by setting up a connection and requesting some basic info.
         Connection gets closed again automatically.
 
         This is a fast way to check the connection and if it is a YNCA device
@@ -177,8 +176,7 @@ class YncaApi:
         return result
 
     def initialize(self):
-        """
-        Sets up a connection to the device and initializes the Ynca API.
+        """Sets up a connection to the device and initializes the Ynca API.
         This call takes quite a while (~10 seconds on a simple 2 zone receiver).
 
         If initialize was successful the client should call the `close()`
@@ -213,23 +211,21 @@ class YncaApi:
         if subunit == Subunit.SYS and function_ == "VERSION":
             self._initialized_event.set()
 
-    def get_communication_log_items(self) -> List[str]:
+    def get_communication_log_items(self) -> list[str]:
         """Get a list of logged communication items."""
         return (
             self._connection.get_communication_log_items() if self._connection else []
         )
 
     def send_raw(self, raw_ynca_data: str):
-        """
-        Send raw YNCA data
+        """Send raw YNCA data
         Intended for debugging only
         """
         if self._connection:
             self._connection.raw(raw_ynca_data)
 
     def close(self):
-        """
-        Cleanup the internal resources.
+        """Cleanup the internal resources.
         Safe to be called at any time.
 
         YncaApi object should _not_ be reused after being closed!
@@ -247,93 +243,93 @@ class YncaApi:
     # Also helps with typing compared to using generic SubunitBase types
 
     @property
-    def airplay(self) -> Optional[Airplay]:
+    def airplay(self) -> Airplay | None:
         return cast(Airplay, self._subunits.get(Subunit.AIRPLAY, None))
 
     @property
-    def bt(self) -> Optional[Bt]:
+    def bt(self) -> Bt | None:
         return cast(Bt, self._subunits.get(Subunit.BT, None))
 
     @property
-    def dab(self) -> Optional[Dab]:
+    def dab(self) -> Dab | None:
         return cast(Dab, self._subunits.get(Subunit.DAB, None))
 
     @property
-    def ipod(self) -> Optional[Ipod]:
+    def ipod(self) -> Ipod | None:
         return cast(Ipod, self._subunits.get(Subunit.IPOD, None))
 
     @property
-    def ipodusb(self) -> Optional[IpodUsb]:
+    def ipodusb(self) -> IpodUsb | None:
         return cast(IpodUsb, self._subunits.get(Subunit.IPODUSB, None))
 
     @property
-    def main(self) -> Optional[Main]:
+    def main(self) -> Main | None:
         return cast(Main, self._subunits.get(Subunit.MAIN, None))
 
     @property
-    def napster(self) -> Optional[Napster]:
+    def napster(self) -> Napster | None:
         return cast(Napster, self._subunits.get(Subunit.NAPSTER, None))
 
     @property
-    def netradio(self) -> Optional[NetRadio]:
+    def netradio(self) -> NetRadio | None:
         return cast(NetRadio, self._subunits.get(Subunit.NETRADIO, None))
 
     @property
-    def pandora(self) -> Optional[Pandora]:
+    def pandora(self) -> Pandora | None:
         return cast(Pandora, self._subunits.get(Subunit.PANDORA, None))
 
     @property
-    def pc(self) -> Optional[Pc]:
+    def pc(self) -> Pc | None:
         return cast(Pc, self._subunits.get(Subunit.PC, None))
 
     @property
-    def rhap(self) -> Optional[Rhap]:
+    def rhap(self) -> Rhap | None:
         return cast(Rhap, self._subunits.get(Subunit.RHAP, None))
 
     @property
-    def server(self) -> Optional[Server]:
+    def server(self) -> Server | None:
         return cast(Server, self._subunits.get(Subunit.SERVER, None))
 
     @property
-    def sirius(self) -> Optional[Sirius]:
+    def sirius(self) -> Sirius | None:
         return cast(Sirius, self._subunits.get(Subunit.SIRIUS, None))
 
     @property
-    def siriusir(self) -> Optional[SiriusIr]:
+    def siriusir(self) -> SiriusIr | None:
         return cast(SiriusIr, self._subunits.get(Subunit.SIRIUSIR, None))
 
     @property
-    def siriusxm(self) -> Optional[SiriusXm]:
+    def siriusxm(self) -> SiriusXm | None:
         return cast(SiriusXm, self._subunits.get(Subunit.SIRIUSXM, None))
 
     @property
-    def spotify(self) -> Optional[Spotify]:
+    def spotify(self) -> Spotify | None:
         return cast(Spotify, self._subunits.get(Subunit.SPOTIFY, None))
 
     @property
-    def sys(self) -> Optional[System]:
+    def sys(self) -> System | None:
         return cast(System, self._subunits.get(Subunit.SYS, None))
 
     @property
-    def tun(self) -> Optional[Tun]:
+    def tun(self) -> Tun | None:
         return cast(Tun, self._subunits.get(Subunit.TUN, None))
 
     @property
-    def uaw(self) -> Optional[Uaw]:
+    def uaw(self) -> Uaw | None:
         return cast(Uaw, self._subunits.get(Subunit.UAW, None))
 
     @property
-    def usb(self) -> Optional[Usb]:
+    def usb(self) -> Usb | None:
         return cast(Usb, self._subunits.get(Subunit.USB, None))
 
     @property
-    def zone2(self) -> Optional[Zone2]:
+    def zone2(self) -> Zone2 | None:
         return cast(Zone2, self._subunits.get(Subunit.ZONE2, None))
 
     @property
-    def zone3(self) -> Optional[Zone3]:
+    def zone3(self) -> Zone3 | None:
         return cast(Zone3, self._subunits.get(Subunit.ZONE3, None))
 
     @property
-    def zone4(self) -> Optional[Zone4]:
+    def zone4(self) -> Zone4 | None:
         return cast(Zone4, self._subunits.get(Subunit.ZONE4, None))

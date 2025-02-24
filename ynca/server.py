@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
-"""
-Simple socket server to test without a real YNCA device
+"""Simple socket server to test without a real YNCA device
 
 Note that it just responds to commands and does not implement
 special interactions like return @RESTRICTED when subunit is not available when turned off.
@@ -12,11 +11,10 @@ It is intended to be just enough to test without a real device
 from __future__ import annotations
 
 import argparse
+from collections import namedtuple
 import logging
 import re
 import socketserver
-from collections import namedtuple
-from typing import Dict, Tuple
 
 from .enums import Input
 
@@ -41,7 +39,7 @@ def line_to_command(line):
 
 class YncaDataStore:
     def __init__(self) -> None:
-        self._store: Dict[str, Dict[str, str]] = {}
+        self._store: dict[str, dict[str, str]] = {}
 
     def fill_from_file(self, filename):
         print(f"--- Filling store with data from file: {filename}")
@@ -159,8 +157,7 @@ INPUT_SUBUNITLIST_MAPPING = [
 
 
 class YncaCommandHandler(socketserver.StreamRequestHandler):
-    """
-    The request handler class for our server.
+    """The request handler class for our server.
 
     It is instantiated once per connection to the server, and must
     override the handle() method to implement communication to the
@@ -201,9 +198,8 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
             if not skip_error_response:
                 self._send_ynca_error(value)
             return None
-        else:
-            self._send_ynca_value(subunit, function, value)
-            return value
+        self._send_ynca_value(subunit, function, value)
+        return value
 
     def _send_ynca_value(self, subunit, function, value):
         """Just formats and send the value"""
@@ -215,8 +211,7 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
 
     def handle_get(self, subunit, function):
         """Handles (multi)response(s) for GET"""
-
-        response_functions = multiresponse_functions_table.get(function, None)
+        response_functions = multiresponse_functions_table.get(function)
 
         if response_functions is None:
             self._handle_get(subunit, function, suppress_error_response=False)
@@ -232,7 +227,6 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
 
     def _handle_get(self, subunit, function, suppress_error_response=False):
         """Gets one value and writes the response to the socket"""
-
         # SYS:INPNAME returns all inputnames
         if subunit == "SYS" and function == "INPNAME":
             sys_values = self.store._store["SYS"]
@@ -242,7 +236,7 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
 
             return
         # SCENENAME returns all scenenames
-        elif function == "SCENENAME":
+        if function == "SCENENAME":
             response_sent = False
             subunit_values = self.store._store[subunit]
             for key in subunit_values.keys():
@@ -256,7 +250,7 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
             if not response_sent:
                 self._send_ynca_error(UNDEFINED)
             return
-        elif function == "DIRMODE":
+        if function == "DIRMODE":
             # DIRMODE is special, it also returns STRAIGHT when it is On, but not when Off (at least on RX-V473)
             if value := self._send_stored_value_or_error(
                 subunit, function, skip_error_response=suppress_error_response
@@ -269,7 +263,7 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
                         suppress_error_response=suppress_error_response,
                     )
             return
-        elif function == "STRAIGHT":
+        if function == "STRAIGHT":
             # STRAIGHT gets overridden to ON when (PURE)DIRMODE is ON
             # When (PURE)DIRMODE is disabled again the original value is valid again.
             if (
@@ -298,10 +292,8 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
             return
 
         # Assume ZONEBVOL is independant of VOL
-        if (
-            (function == "VOL" or function == "ZONEBVOL")
-            and value.startswith("Up")
-            or value.startswith("Down")
+        if (function == "VOL" or function == "ZONEBVOL") and (
+            value.startswith("Up") or value.startswith("Down")
         ):
             # Need to handle Up/Down as it would otherwise overwrite the VOL value wtih text Up/Down
             up = value.startswith("Up")
@@ -335,7 +327,7 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
                     ][0]
 
             # Send (possibly multiple) responses
-            if response_functions := related_functions_table.get(function, None):
+            if response_functions := related_functions_table.get(function):
                 for response_function in response_functions:
                     value = self.store.get_data(subunit, response_function)
                     if value is not UNDEFINED:
@@ -428,7 +420,7 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
 class YncaServer(socketserver.TCPServer):
     def __init__(
         self,
-        server_address: Tuple[str, int],
+        server_address: tuple[str, int],
         initfile=None,
         disconnect_after_receiving_num_commands=None,
         disconnect_after_sending_num_commands=None,

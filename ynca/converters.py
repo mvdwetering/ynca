@@ -1,9 +1,10 @@
 from __future__ import annotations
 
-import logging
 from abc import ABC, abstractmethod
+from collections.abc import Callable
 from enum import Enum
-from typing import Any, Callable, Generic, List, Type, TypeVar, cast
+import logging
+from typing import Any, Generic, TypeVar, cast
 
 logger = logging.getLogger(__name__)
 
@@ -22,7 +23,7 @@ class ConverterBase(ABC, Generic[T]):
 
 
 class EnumConverter(ConverterBase, Generic[E]):
-    def __init__(self, datatype: Type[E]) -> None:
+    def __init__(self, datatype: type[E]) -> None:
         self.datatype = datatype
 
     def to_value(self, value_string: str) -> E:
@@ -94,14 +95,13 @@ class StrConverter(ConverterBase):
 
 
 class MultiConverter(ConverterBase):
-    """
-    Multiconverter allows to try multiple converters.
+    """Multiconverter allows to try multiple converters.
     This is sometimes needed as value can be a number or enum.
     MultiConverter will go through the converters in order and the first result will be used.
     Errors have to be indicated by the converters by throwing an exception (any exception is fine).
     """
 
-    def __init__(self, converters: List[ConverterBase]) -> None:
+    def __init__(self, converters: list[ConverterBase]) -> None:
         self._converters = converters
 
     def to_value(self, value_string: str) -> Any:

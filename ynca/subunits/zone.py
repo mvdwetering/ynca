@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import logging
-from typing import Type
 
 from ..constants import Subunit
 from ..converters import EnumConverter, FloatConverter, MultiConverter, StrConverter
@@ -42,29 +41,27 @@ from . import PlaybackFunctionMixin
 logger = logging.getLogger(__name__)
 
 
-def raiser(ex: Type[Exception]):
+def raiser(ex: type[Exception]):
     raise ex
 
 
 def do_vol_up(self, step_size: float, function: str):
-    """
-    Increase the volume with given stepsize.
+    """Increase the volume with given stepsize.
     Supported stepsizes are: 0.5, 1, 2 and 5
     """
     value = "Up"
     if step_size in [1, 2, 5]:
-        value = "Up {} dB".format(step_size)
+        value = f"Up {step_size} dB"
     self._put(function, value)
 
 
 def do_vol_down(self, step_size: float, function: str):
-    """
-    Decrease the volume with given stepsize.
+    """Decrease the volume with given stepsize.
     Supported stepsizes are: 0.5, 1, 2 and 5
     """
     value = "Down"
     if step_size in [1, 2, 5]:
-        value = "Down {} dB".format(step_size)
+        value = f"Down {step_size} dB"
     self._put(function, value)
 
 
@@ -103,28 +100,24 @@ class ZoneBase(PlaybackFunctionMixin, SubunitBase):
     lipsynchdmiout1offset = IntFunctionMixin()
 
     def lipsynchdmiout1offset_down(self):
-        """
-        Increase by 1 step (=1 ms).
+        """Increase by 1 step (=1 ms).
         """
         self._put("LIPSYNCHDMIOUT1OFFSET", "Down")
 
     def lipsynchdmiout1offset_up(self):
-        """
-        Decrease by 1 step (=1 ms).
+        """Decrease by 1 step (=1 ms).
         """
         self._put("LIPSYNCHDMIOUT1OFFSET", "Up")
 
     lipsynchdmiout2offset = IntFunctionMixin()
 
     def lipsynchdmiout2offset_down(self):
-        """
-        Increase by 1 step (=1 ms).
+        """Increase by 1 step (=1 ms).
         """
         self._put("LIPSYNCHDMIOUT2OFFSET", "Down")
 
     def lipsynchdmiout2offset_up(self):
-        """
-        Decrease by 1 step (=1 ms).
+        """Decrease by 1 step (=1 ms).
         """
         self._put("LIPSYNCHDMIOUT2OFFSET", "Up")
 

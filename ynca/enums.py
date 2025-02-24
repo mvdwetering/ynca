@@ -1,7 +1,7 @@
 """Enums used for mapping YNCA values"""
 
-import logging
 from enum import Enum, unique
+import logging
 
 logger = logging.getLogger(__name__)
 

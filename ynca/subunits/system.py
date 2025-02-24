@@ -2,8 +2,8 @@ import logging
 
 from ..constants import Subunit
 from ..converters import StrConverter
-from ..function import Cmd, EnumFunctionMixin, FunctionMixinBase, StrFunctionMixin
 from ..enums import HdmiOutOnOff, Party, PartyMute, Pwr, SpPattern
+from ..function import Cmd, EnumFunctionMixin, FunctionMixinBase, StrFunctionMixin
 from ..subunit import SubunitBase
 
 logger = logging.getLogger(__name__)
@@ -51,14 +51,12 @@ class System(SubunitBase):
     )
 
     def partyvol_up(self):
-        """
-        Increase the party volume with one step.
+        """Increase the party volume with one step.
         """
         self._put("PARTYVOL", "Up")
 
     def partyvol_down(self):
-        """
-        Decrease the party volume with one step.
+        """Decrease the party volume with one step.
         """
         self._put("PARTYVOL", "Down")
 

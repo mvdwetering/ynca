@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-import logging
 from abc import ABC
 from enum import Enum, Flag, auto
-from typing import TYPE_CHECKING, Generic, Type, TypeVar, overload
+import logging
+from typing import TYPE_CHECKING, Generic, TypeVar, overload
 
 if TYPE_CHECKING:  # pragma: no cover
     from .subunit import SubunitBase
@@ -30,8 +30,7 @@ E = TypeVar("E", bound=Enum)
 
 
 class FunctionMixinBase(ABC, Generic[T]):
-    """
-    Provides an easy way to specify all properties needed to handle a YNCA function.
+    """Provides an easy way to specify all properties needed to handle a YNCA function.
 
     The resulting descriptor makes it easy to just read/write to the attributes and
     values will be read from cache or converted and sent to the device.
@@ -47,8 +46,7 @@ class FunctionMixinBase(ABC, Generic[T]):
         init: str | None = None,
         no_initialize: bool = False,
     ) -> None:
-        """
-        converter:
+        """converter:
             Converter to use for value to/from str conversions
         cmd:
             Operations the command supports. PUT and/or GET
@@ -104,7 +102,7 @@ class FunctionMixinBase(ABC, Generic[T]):
 class EnumFunctionMixin(FunctionMixinBase[E], Generic[E]):
     def __init__(
         self,
-        datatype: Type[E],
+        datatype: type[E],
         cmd: Cmd = Cmd.GET | Cmd.PUT,
         name_override: str | None = None,
         init=None,
@@ -168,7 +166,7 @@ class FloatFunctionMixin(FunctionMixinBase[float]):
 class EnumOrFloatFunctionMixin(FunctionMixinBase, Generic[E]):
     def __init__(
         self,
-        datatype: Type[E],
+        datatype: type[E],
         converter: MultiConverter | None = None,
         cmd: Cmd = Cmd.GET | Cmd.PUT,
         name_override: str | None = None,
@@ -188,7 +186,7 @@ class EnumOrFloatFunctionMixin(FunctionMixinBase, Generic[E]):
 class EnumOrIntFunctionMixin(FunctionMixinBase, Generic[E]):
     def __init__(
         self,
-        datatype: Type[E],
+        datatype: type[E],
         converter: MultiConverter | None = None,
         cmd: Cmd = Cmd.GET | Cmd.PUT,
         name_override: str | None = None,

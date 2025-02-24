@@ -1,12 +1,12 @@
 from __future__ import annotations
 
+from collections.abc import Callable
+from enum import Enum
 import logging
 import queue
 import re
 import threading
 import time
-from enum import Enum
-from typing import Callable, List
 
 import serial  # type: ignore
 import serial.threaded  # type: ignore
@@ -25,7 +25,7 @@ class LogBuffer(RingBuffer[str]):
         with self._lock:
             super().add(item)
 
-    def get_buffer(self) -> List[str]:
+    def get_buffer(self) -> list[str]:
         with self._lock:
             return super().get_buffer()
 
@@ -179,8 +179,7 @@ class YncaProtocol(serial.threaded.LineReader):
     def get(self, subunit: str, funcname: str):
         self.put(subunit, funcname, "?")
 
-    def get_communication_log_items(self) -> List[str]:
-        """
-        Get a list of logged communication items.
+    def get_communication_log_items(self) -> list[str]:
+        """Get a list of logged communication items.
         """
         return self._communication_log_buffer.get_buffer()

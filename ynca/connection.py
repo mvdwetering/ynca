@@ -1,11 +1,11 @@
 from __future__ import annotations
 
+from collections.abc import Callable
 import logging
-from typing import Callable, List, Optional, Set, cast
+from typing import cast
 
 import serial  # type: ignore
 import serial.threaded  # type: ignore
-
 
 from .errors import YncaConnectionError, YncaConnectionFailed
 from .protocol import YncaProtocol, YncaProtocolStatus
@@ -31,11 +31,11 @@ class YncaConnection:
         """
         self._port = serial_url
         self._serial = None
-        self._readerthread: Optional[serial.threaded.ReaderThread] = None
-        self._protocol: Optional[YncaProtocol] = None
+        self._readerthread: serial.threaded.ReaderThread | None = None
+        self._protocol: YncaProtocol | None = None
 
         self._disconnect_callback: Callable[[], None] | None = None
-        self._message_callbacks: Set[
+        self._message_callbacks: set[
             Callable[[YncaProtocolStatus, str | None, str | None, str | None], None]
         ] = set()
 
@@ -121,6 +121,6 @@ class YncaConnection:
     def num_commands_sent(self):
         return self._protocol.num_commands_sent if self._protocol else 0
 
-    def get_communication_log_items(self) -> List[str]:
+    def get_communication_log_items(self) -> list[str]:
         """Get a list of logged communication items."""
         return self._protocol.get_communication_log_items() if self._protocol else []

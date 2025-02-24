@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from ..converters import FloatConverter, IntOrNoneConverter
+from ..enums import Playback, PlaybackInfo, Repeat, Shuffle
 from ..function import (
     Cmd,
     EnumFunctionMixin,
@@ -8,7 +9,6 @@ from ..function import (
     IntFunctionMixin,
     StrFunctionMixin,
 )
-from ..enums import Playback, PlaybackInfo, Repeat, Shuffle
 from ..helpers import number_to_string_with_stepsize
 
 
