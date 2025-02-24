@@ -4,7 +4,7 @@ from abc import ABC
 from enum import Flag, auto
 import logging
 import threading
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Protocol
 
 from .connection import YncaConnection, YncaProtocol, YncaProtocolStatus
 from .constants import Subunit
@@ -38,6 +38,13 @@ class YncaFunctionHandler:
 
     def update(self, value_str: str) -> None:
         self.value = self.function.converter.to_value(value_str)
+
+
+class SubunitBaseMixinProtocol(Protocol):
+    """Describes the available methods and attributes that Mixins can use to interact with a SubunitBase instance. This helps out with typing."""
+
+    def _put(self, function_name: str, value: str) -> None:
+        pass
 
 
 class SubunitBase(ABC):
