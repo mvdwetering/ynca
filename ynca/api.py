@@ -95,9 +95,7 @@ class YncaApi:
         if not self._initialized_event.wait(
             2 + (num_commands_sent * (YncaProtocol.COMMAND_SPACING * 5))
         ):
-            raise YncaInitializationFailedException(
-                "Subunit availability check failed"
-            )
+            raise YncaInitializationFailedException("Subunit availability check failed")
 
         connection.unregister_message_callback(self._protocol_message_received)
         logger.info("Subunit availability check end")
@@ -139,10 +137,17 @@ class YncaApi:
         connection_check_event = threading.Event()
 
         def _connection_check_message_received(
-            status: YncaProtocolStatus, subunit: str|None, function_: str|None, value: str|None
+            status: YncaProtocolStatus,
+            subunit: str | None,
+            function_: str | None,
+            value: str | None,
         ):
-            if subunit == Subunit.SYS and function_ == "MODELNAME" and value is not None:
-                result.modelname = value 
+            if (
+                subunit == Subunit.SYS
+                and function_ == "MODELNAME"
+                and value is not None
+            ):
+                result.modelname = value
                 connection_check_event.set()
             if function_ == "AVAIL" and subunit is not None:
                 result.zones.append(subunit)
@@ -196,7 +201,11 @@ class YncaApi:
                 self.close()
 
     def _protocol_message_received(
-        self, status: YncaProtocolStatus, subunit: str|None, function_: str|None, value: str|None
+        self,
+        status: YncaProtocolStatus,
+        subunit: str | None,
+        function_: str | None,
+        value: str | None,
     ):
         if function_ == "AVAIL":
             self._available_subunits.add(subunit)

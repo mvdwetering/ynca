@@ -69,7 +69,9 @@ class FunctionMixinBase(ABC, Generic[T]):
         self._name_override = name_override
 
     @overload
-    def __get__(self, instance: None, owner) -> FunctionMixinBase[T]:  # pragma: no cover
+    def __get__(
+        self, instance: None, owner
+    ) -> FunctionMixinBase[T]:  # pragma: no cover
         ...
 
     @overload
@@ -176,9 +178,12 @@ class EnumOrFloatFunctionMixin(FunctionMixinBase, Generic[E]):
             name_override=name_override,
             cmd=cmd,
             converter=converter
-            or MultiConverter([FloatConverter(), EnumConverter(datatype)]),  # Float first because enum will convert to UNKNOWN
+            or MultiConverter(
+                [FloatConverter(), EnumConverter(datatype)]
+            ),  # Float first because enum will convert to UNKNOWN
             init=init,
         )
+
 
 class EnumOrIntFunctionMixin(FunctionMixinBase, Generic[E]):
     def __init__(
@@ -193,6 +198,8 @@ class EnumOrIntFunctionMixin(FunctionMixinBase, Generic[E]):
             name_override=name_override,
             cmd=cmd,
             converter=converter
-            or MultiConverter([IntConverter(), EnumConverter(datatype)]),  # Int first because enum will convert to UNKNOWN
+            or MultiConverter(
+                [IntConverter(), EnumConverter(datatype)]
+            ),  # Int first because enum will convert to UNKNOWN
             init=init,
         )

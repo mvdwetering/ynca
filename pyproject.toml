@@ -14,7 +14,7 @@ name = "ynca"
 version = "5.19.0"
 description = "Package to control Yamaha receivers that support the YNCA protocol."
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.10"
 authors = [
   { name = "Michel van de Wetering", email = "michel.van.de.wetering+ynca@gmail.com" },
 ]
@@ -33,11 +33,65 @@ dependencies = ["pyserial>=3.4"]
 urls = { Homepage = "https://github.com/mvdwetering/ynca" }
 
 [project.optional-dependencies]
-test = [
-  "mypy==1.11.0",
-  "ruff==0.5.5",
+dev = [
+  "mypy==1.15.0",
+  "ruff==0.9.7",
   "pytest>=7.0.0",
-  "pytest-mock",
   "pytest-cov",
+  "pytest-mock",
   "mock-serial==0.0.1",
+]
+
+[tool.coverage.report]
+exclude_also = [
+  # # TYPE_CHECKING block is only executed while running mypy
+  "if TYPE_CHECKING:",
+]
+
+[tool.pytest.ini_options]
+addopts = "--cov=ynca --cov-report=term-missing --cov-report=html"
+testpaths = ["tests"]
+
+[tool.ruff]
+src = ["ynca"]
+
+[tool.ruff.lint]
+ignore = [
+  "A005",   # It is just wrong
+  "ANN401", # Opiniated warning on disallowing dynamically typed expressions
+  "D203",   # Conflicts with other rules
+  "D213",   # Conflicts with other rules
+  "RUF012", # Just broken
+  "TID252", # Relative imports
+
+  # Formatter conflicts
+  "COM812",
+  "COM819",
+  "D206",
+  "E501",
+  "ISC001",
+  "Q000",
+  "Q001",
+  "Q002",
+  "Q003",
+  "W191",
+]
+select = ["ALL"]
+
+[tool.ruff.lint.isort]
+force-sort-within-sections = true
+known-first-party = ["ynca"]
+combine-as-imports = true
+
+[tool.pylint."MESSAGES CONTROL"]
+# Reasons disabled:
+# format - handled by ruff
+# duplicate-code - unavoidable
+# used-before-assignment - false positives with TYPE_CHECKING structures
+disable = [
+  "abstract-method",
+  "duplicate-code",
+  "format",
+  "unexpected-keyword-arg",
+  "used-before-assignment",
 ]

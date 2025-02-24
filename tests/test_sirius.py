@@ -31,7 +31,6 @@ INITIALIZE_FULL_RESPONSES = [
 
 
 def test_initialize(connection, update_callback):
-
     connection.get_response_list = INITIALIZE_FULL_RESPONSES
 
     sirius = Sirius(connection)

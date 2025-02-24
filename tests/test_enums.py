@@ -1,6 +1,5 @@
 """Test Enums"""
 
-
 from ynca.enums import (
     AdaptiveDrc,
     Avail,
@@ -27,6 +26,7 @@ from ynca.enums import (
     Shuffle,
     Sleep,
     SoundPrg,
+    SpPattern,
     SpeakerA,
     SpeakerB,
     Straight,
@@ -65,9 +65,9 @@ def test_invalid_values_on_enums():
     assert SoundPrg("x") is SoundPrg.UNKNOWN
     assert SpeakerA("x") is SpeakerA.UNKNOWN
     assert SpeakerB("x") is SpeakerB.UNKNOWN
+    assert SpPattern("x") is SpPattern.UNKNOWN
     assert Straight("x") is Straight.UNKNOWN
     assert ThreeDeeCinema("x") is ThreeDeeCinema.UNKNOWN
     assert TwoChDecoder("x") is TwoChDecoder.UNKNOWN
     assert ZoneBAvail("x") is ZoneBAvail.UNKNOWN
     assert ZoneBMute("x") is ZoneBMute.UNKNOWN
-

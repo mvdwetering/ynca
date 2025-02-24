@@ -121,7 +121,6 @@ def initialized_zone(connection) -> ZoneBase:
 
 
 def test_construct(connection, update_callback):
-
     Main(connection)
 
     assert connection.register_message_callback.call_count == 1
@@ -167,7 +166,6 @@ def test_initialize_minimal(connection, update_callback):
 
 
 def test_initialize_full(connection, update_callback):
-
     connection.get_response_list = INITIALIZE_FULL_RESPONSES
 
     z = Main(connection)
@@ -413,7 +411,6 @@ def test_straight(connection, initialized_zone: ZoneBase):
 
 
 def test_scene(connection, initialized_zone: ZoneBase):
-
     initialized_zone.scene(42)
     connection.put.assert_called_with(SUBUNIT, "SCENE", "Scene 42")
     initialized_zone.scene("42")
@@ -421,7 +418,6 @@ def test_scene(connection, initialized_zone: ZoneBase):
 
 
 def test_scenename(connection, initialized_zone: ZoneBase):
-
     # Updates from device
     connection.send_protocol_message(SUBUNIT, "SCENE3NAME", "New Name")
     assert initialized_zone.scene3name == "New Name"
@@ -477,6 +473,7 @@ def test_puredirmode(connection, initialized_zone: ZoneBase):
     assert initialized_zone.puredirmode == PureDirMode.ON
     connection.send_protocol_message(SUBUNIT, "PUREDIRMODE", "Off")
     assert initialized_zone.puredirmode == PureDirMode.OFF
+
 
 def test_dirmode(connection, initialized_zone: ZoneBase):
     # Writing to device
@@ -565,6 +562,7 @@ def test_lipsynchdmioutoffset(connection, initialized_zone: ZoneBase):
     assert initialized_zone.lipsynchdmiout2offset == 250
     connection.send_protocol_message(SUBUNIT, "LIPSYNCHDMIOUT2OFFSET", "-250")
     assert initialized_zone.lipsynchdmiout2offset == -250
+
 
 def test_speaker_ab(connection, initialized_zone: Main):
     # Writing to device

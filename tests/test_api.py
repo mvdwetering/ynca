@@ -207,7 +207,6 @@ def test_construct():
 
 
 def test_check_connection_check_success_all_zones(connection):
-
     with mock.patch.object(
         ynca.api.YncaConnection, "create_from_serial_url"
     ) as create_from_serial_url:
@@ -230,7 +229,6 @@ def test_check_connection_check_success_all_zones(connection):
 
 
 def test_check_connection_check_success_no_zones(connection):
-
     with mock.patch.object(
         ynca.api.YncaConnection, "create_from_serial_url"
     ) as create_from_serial_url:
@@ -249,7 +247,6 @@ def test_check_connection_check_success_no_zones(connection):
 
 
 def test_check_connection_check_fail_connect(connection):
-
     with mock.patch.object(
         ynca.api.YncaConnection, "create_from_serial_url"
     ) as create_from_serial_url:
@@ -267,7 +264,6 @@ def test_check_connection_check_fail_connect(connection):
 
 
 def test_check_connection_check_fail_no_response(connection):
-
     with mock.patch.object(
         ynca.api.YncaConnection, "create_from_serial_url"
     ) as create_from_serial_url:
@@ -284,7 +280,6 @@ def test_check_connection_check_fail_no_response(connection):
 
 
 def test_initialize_minimal(connection):
-
     with mock.patch.object(
         ynca.api.YncaConnection, "create_from_serial_url"
     ) as create_from_serial_url:
@@ -306,7 +301,6 @@ def test_initialize_minimal(connection):
 
 
 def test_close(connection):
-
     with mock.patch.object(
         ynca.api.YncaConnection, "create_from_serial_url"
     ) as create_from_serial_url:
@@ -326,7 +320,6 @@ def test_close(connection):
 
 
 def test_initialize_fail(connection):
-
     with mock.patch.object(
         ynca.api.YncaConnection, "create_from_serial_url"
     ) as create_from_serial_url:
@@ -344,7 +337,6 @@ def test_initialize_fail(connection):
 
 
 def test_disconnect_callback(connection):
-
     with mock.patch.object(
         ynca.api.YncaConnection, "create_from_serial_url"
     ) as create_from_serial_url:
@@ -364,7 +356,6 @@ def test_disconnect_callback(connection):
 
 
 def test_get_communication_log_items(connection):
-
     with mock.patch.object(
         ynca.api.YncaConnection, "create_from_serial_url"
     ) as create_from_serial_url:
@@ -384,7 +375,6 @@ def test_get_communication_log_items(connection):
 
 
 def test_send_raw(connection):
-
     with mock.patch.object(
         ynca.api.YncaConnection, "create_from_serial_url"
     ) as create_from_serial_url:
@@ -402,7 +392,6 @@ def test_send_raw(connection):
 
 
 def test_initialize_full(connection):
-
     with mock.patch.object(
         ynca.api.YncaConnection, "create_from_serial_url"
     ) as create_from_serial_url:

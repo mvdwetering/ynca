@@ -132,7 +132,9 @@ related_functions_table = {
     "SOUNDPRG": ["STRAIGHT", "SOUNDPRG"],
     "PUREDIRMODE": ["PUREDIRMODE", "STRAIGHT"],
     "STRAIGHT": ["STRAIGHT", "SOUNDPRG"],
-    "DIRMODE": ["STRAIGHT"],  # Note that DIRMODE does not report DIRMODE itself, this is how it behaves on RX-V473
+    "DIRMODE": [
+        "STRAIGHT"
+    ],  # Note that DIRMODE does not report DIRMODE itself, this is how it behaves on RX-V473
 }
 
 INPUT_SUBUNITLIST_MAPPING = [
@@ -185,11 +187,15 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
         self._commands_sent += 1
 
     def _send_stored_value_no_error(self, subunit, function) -> str | None:
-        """ Sends the value that is stored, returns the value or None if it did not exist """
-        return self._send_stored_value_or_error(subunit, function, skip_error_response=True)
+        """Sends the value that is stored, returns the value or None if it did not exist"""
+        return self._send_stored_value_or_error(
+            subunit, function, skip_error_response=True
+        )
 
-    def _send_stored_value_or_error(self, subunit, function, skip_error_response=False) -> str | None:
-        """ Sends the value that is stored, returns the value or None if it did not exist """
+    def _send_stored_value_or_error(
+        self, subunit, function, skip_error_response=False
+    ) -> str | None:
+        """Sends the value that is stored, returns the value or None if it did not exist"""
         value = self.store.get_data(subunit, function)
         if value.startswith("@"):
             if not skip_error_response:
@@ -207,7 +213,6 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
         """Just formats and send the value"""
         self._write_line(error)
 
-
     def handle_get(self, subunit, function):
         """Handles (multi)response(s) for GET"""
 
@@ -216,7 +221,7 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
         if response_functions is None:
             self._handle_get(subunit, function, suppress_error_response=False)
             return
-        
+
         # Multiple responses
         before = self._commands_sent
         for response_function in response_functions:
@@ -224,7 +229,6 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
         if self._commands_sent == before:
             # No responses so apparently not supported
             self._send_ynca_error(UNDEFINED)
-
 
     def _handle_get(self, subunit, function, suppress_error_response=False):
         """Gets one value and writes the response to the socket"""
@@ -254,37 +258,51 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
             return
         elif function == "DIRMODE":
             # DIRMODE is special, it also returns STRAIGHT when it is On, but not when Off (at least on RX-V473)
-            if value := self._send_stored_value_or_error(subunit, function, skip_error_response=suppress_error_response):
+            if value := self._send_stored_value_or_error(
+                subunit, function, skip_error_response=suppress_error_response
+            ):
                 if value == "On":
                     # MUST use _handle_get since we need to send the overridden value instead of the real one
-                    self._handle_get(subunit, "STRAIGHT", suppress_error_response=suppress_error_response)
+                    self._handle_get(
+                        subunit,
+                        "STRAIGHT",
+                        suppress_error_response=suppress_error_response,
+                    )
             return
         elif function == "STRAIGHT":
             # STRAIGHT gets overridden to ON when (PURE)DIRMODE is ON
             # When (PURE)DIRMODE is disabled again the original value is valid again.
-            if self.store.get_data(subunit, "DIRMODE") == "On" or self.store.get_data(subunit, "PUREDIRMODE") == "On":
+            if (
+                self.store.get_data(subunit, "DIRMODE") == "On"
+                or self.store.get_data(subunit, "PUREDIRMODE") == "On"
+            ):
                 self._send_ynca_value(subunit, function, "On")
                 return
 
         # Default case for sending response
-        self._send_stored_value_or_error(subunit, function, skip_error_response=suppress_error_response)
+        self._send_stored_value_or_error(
+            subunit, function, skip_error_response=suppress_error_response
+        )
 
     def handle_put(self, subunit, function, value):
-
         # Just eat remote codes as they don't give responses
         # unless not supported, but can not really check
         if subunit == "SYS" and function == "REMOTECODE":
             if len(value) != 8:
                 self._send_ynca_error(UNDEFINED)
             return
-        
+
         # MEM does not seem to generate a response
         # assume it was supported for the subunit, so no error message
         if function == "MEM":
             return
 
         # Assume ZONEBVOL is independant of VOL
-        if (function == "VOL" or function == "ZONEBVOL") and value.startswith("Up") or value.startswith("Down"):
+        if (
+            (function == "VOL" or function == "ZONEBVOL")
+            and value.startswith("Up")
+            or value.startswith("Down")
+        ):
             # Need to handle Up/Down as it would otherwise overwrite the VOL value wtih text Up/Down
             up = value.startswith("Up")
 
@@ -300,7 +318,6 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
         if result[0].startswith("@"):
             self._send_ynca_error(result[0])
         elif result[1]:  # Value change so send a report
-
             # Response for PLAYBACK is PLAYBACKINFO and other special handling
             if function == "PLAYBACK":
                 function = "PLAYBACKINFO"
@@ -468,7 +485,6 @@ def main(args):
 
 
 if __name__ == "__main__":
-
     parser = argparse.ArgumentParser(
         description="YNCA server to emulate a device for testing."
     )

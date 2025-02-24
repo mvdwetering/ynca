@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-""" Example of basic YncaApi usage"""
+"""Example of basic YncaApi usage"""
 
 import argparse
 import time
@@ -11,7 +11,6 @@ ZONE_SUBUNITS = ["main", "zone2", "zone3", "zone4"]
 
 
 if __name__ == "__main__":
-
     parser = argparse.ArgumentParser(
         description="Example application for ynca package."
     )
