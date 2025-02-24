@@ -40,7 +40,7 @@ class YncaFunctionHandler:
         self.value = self.function.converter.to_value(value_str)
 
 
-class SubunitBaseMixinProtocol(Protocol):
+class SubunitBaseMixinProtocol(Protocol):  # pragma: no cover
     """Describes the available methods and attributes that Mixins can use to interact with a SubunitBase instance. This helps out with typing."""
 
     def _put(self, function_name: str, value: str) -> None:

@@ -13,7 +13,7 @@ from ..function import (
 )
 from ..helpers import number_to_string_with_stepsize
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from ..subunit import SubunitBaseMixinProtocol
 
 
