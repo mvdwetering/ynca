@@ -1,4 +1,4 @@
-"""This file contains info that is specific per model."""
+"""Modelinfo pre model for specific receivers."""
 
 from dataclasses import dataclass
 

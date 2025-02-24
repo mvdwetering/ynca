@@ -8,8 +8,8 @@ import threading
 import time
 from typing import TYPE_CHECKING
 
-import serial  # type: ignore
-import serial.threaded  # type: ignore
+import serial  # type: ignore[import-untyped]
+import serial.threaded  # type: ignore[import-untyped]
 
 from .helpers import RingBuffer
 
@@ -86,7 +86,7 @@ class YncaProtocol(serial.threaded.LineReader):
     def connection_lost(self, exc) -> None:
         self.connected = False
 
-        logger.debug(f"Connection closed/lost {exc}")
+        logger.debug("Connection closed/lost %s", exc)
 
         if self._send_queue:
             # There seems to be no way to clear a queue so just read all and add the _EXIT command
@@ -165,7 +165,7 @@ class YncaProtocol(serial.threaded.LineReader):
                     time.sleep(
                         self.COMMAND_SPACING
                     )  # Maintain required command spacing
-            except queue.Empty:
+            except queue.Empty:  # noqa: PERF203
                 # To avoid random message being eaten because device goes to sleep, keep it alive
                 self._send_keepalive()
 

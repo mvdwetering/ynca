@@ -5,7 +5,7 @@ from typing import Generic, TypeVar
 """Misc helper functions"""
 
 
-def number_to_string_with_stepsize(value: float, decimals: int, stepsize: float):
+def number_to_string_with_stepsize(value: float, decimals: int, stepsize: float) -> str:
     negative = value < 0
 
     steps = round(value / stepsize)
@@ -24,7 +24,7 @@ def number_to_string_with_stepsize(value: float, decimals: int, stepsize: float)
 
 
 # From: https://stackoverflow.com/a/3862957/4124648
-def all_subclasses(cls):
+def all_subclasses(cls) -> set:
     return set(cls.__subclasses__()).union(
         [s for c in cls.__subclasses__() for s in all_subclasses(c)]
     )
