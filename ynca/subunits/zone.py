@@ -69,7 +69,6 @@ def do_vol_down(self, step_size: float, function: str):
 
 
 class ZoneBase(PlaybackFunctionMixin, SubunitBase):
-
     # BASIC gets a lot of attribute like PWR, SLEEP, VOL, MUTE, INP, STRAIGHT, ENHANCER, SOUNDPRG and more
     # Use it to significantly reduce the amount of commands to send
 

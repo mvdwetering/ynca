@@ -84,7 +84,6 @@ def YncaTerminal(serial_url: str):
 
 
 if __name__ == "__main__":
-
     if len(sys.argv) <= 1:
         print("Must provide a serial_url parameter like:")
         print("  COM3")

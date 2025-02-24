@@ -17,7 +17,6 @@ logger = logging.getLogger(__name__)
 
 
 class LogBuffer(RingBuffer[str]):
-
     def __init__(self, size: int):
         super().__init__(size)
         self._lock = threading.Lock()
@@ -30,6 +29,7 @@ class LogBuffer(RingBuffer[str]):
         with self._lock:
             return super().get_buffer()
 
+
 class YncaProtocolStatus(Enum):
     OK = 0
     UNDEFINED = 1
@@ -37,7 +37,6 @@ class YncaProtocolStatus(Enum):
 
 
 class YncaProtocol(serial.threaded.LineReader):
-
     # YNCA spec specifies that there should be at least 100 milliseconds between commands
     COMMAND_SPACING = 0.1
 
@@ -154,7 +153,9 @@ class YncaProtocol(serial.threaded.LineReader):
 
                 if not stop:
                     logger.debug("Send - %s", message)
-                    self._communication_log_buffer.add(f"{time.perf_counter():.6f} Send: {message}")
+                    self._communication_log_buffer.add(
+                        f"{time.perf_counter():.6f} Send: {message}"
+                    )
 
                     self._last_sent_command = message
                     self.write_line(message)

@@ -46,7 +46,6 @@ class IntConverter(ConverterBase):
 
 
 class IntOrNoneConverter(ConverterBase):
-
     def __init__(self, to_str: Callable[[int], str] | None = None) -> None:
         self._to_str = to_str or str
 

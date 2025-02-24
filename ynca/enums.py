@@ -77,6 +77,7 @@ class DabPreset(str, Enum):
     UNKNOWN = UNKNOWN_STRING
     """Unknown values in the enum are mapped to UNKNOWN"""
 
+
 @unique
 class DirMode(Enum):
     ON = "On"
@@ -89,6 +90,7 @@ class DirMode(Enum):
 
     UNKNOWN = UNKNOWN_STRING
     """Unknown values in the enum are mapped to UNKNOWN"""
+
 
 @unique
 class Enhancer(str, Enum):
@@ -120,7 +122,9 @@ class FmPreset(str, Enum):
 @unique
 class HdmiOut(str, Enum):
     OFF = "Off"
-    OUT = "OUT"     # OUT is on receivers with 1 HDMI, multiple HDMI outputs use OUT1 + OUT 2
+    OUT = (
+        "OUT"  # OUT is on receivers with 1 HDMI, multiple HDMI outputs use OUT1 + OUT 2
+    )
     OUT1 = "OUT1"
     OUT2 = "OUT2"
     OUT1_PLUS_2 = "OUT1 + 2"
@@ -339,6 +343,7 @@ class Pwr(Enum):
     UNKNOWN = UNKNOWN_STRING
     """Unknown values in the enum are mapped to UNKNOWN"""
 
+
 @unique
 class PwrB(Enum):
     ON = "On"
@@ -467,6 +472,7 @@ class SpeakerB(Enum):
     UNKNOWN = UNKNOWN_STRING
     """Unknown values in the enum are mapped to UNKNOWN"""
 
+
 @unique
 class SpPattern(Enum):
     PATTERN_1 = "Pattern 1"
@@ -565,4 +571,3 @@ class ZoneBMute(str, Enum):
 
     UNKNOWN = UNKNOWN_STRING
     """Unknown values in the enum are mapped to UNKNOWN"""
-

@@ -4,13 +4,14 @@ import logging
 from typing import Callable, List, Optional, Set, cast
 
 import serial  # type: ignore
-import serial.threaded # type: ignore
+import serial.threaded  # type: ignore
 
 
 from .errors import YncaConnectionError, YncaConnectionFailed
 from .protocol import YncaProtocol, YncaProtocolStatus
 
 logger = logging.getLogger(__name__)
+
 
 class YncaConnection:
     @classmethod
@@ -67,7 +68,6 @@ class YncaConnection:
     def _on_disconnect(self):
         if self._disconnect_callback:
             self._disconnect_callback()
-
 
     def connect(
         self,
