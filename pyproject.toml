@@ -83,6 +83,12 @@ force-sort-within-sections = true
 known-first-party = ["ynca"]
 combine-as-imports = true
 
+[tool.ruff.lint.per-file-ignores]
+# Ignore `T201` (print not allowed) in files that are intended to be used from CLI.
+"ynca/terminal.py" = ["T201"]
+"ynca/server.py" = ["T201"]
+
+
 [tool.pylint."MESSAGES CONTROL"]
 # Reasons disabled:
 # format - handled by ruff
