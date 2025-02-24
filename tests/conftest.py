@@ -1,4 +1,5 @@
 """Fixtures for testing."""
+
 from typing import Callable
 from unittest import mock
 

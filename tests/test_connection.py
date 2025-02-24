@@ -15,7 +15,6 @@ SHORT_DELAY = 0.5
 def active_connection(
     serial_mock, delay_after_close: float = SHORT_DELAY, communication_log_size=0
 ):
-
     keep_alive = serial_mock.stub(
         receive_bytes=b"@SYS:MODELNAME=?\r\n",
         send_bytes=b"@SYS:MODELNAME=TESTMODEL\r\n",
@@ -42,7 +41,6 @@ def test_close_uninitialized():
 
 
 def test_connect(mock_serial):
-
     keep_alive = mock_serial.stub(
         receive_bytes=b"@SYS:MODELNAME=?\r\n",
         send_bytes=b"@SYS:MODELNAME=TESTMODEL\r\n",
@@ -71,7 +69,6 @@ def test_connect_invalid_port():
 
 
 def test_connect_runtime_error(mock_serial):
-
     with mock.patch(
         "serial.serial_for_url",
         side_effect=RuntimeError("Runtime error"),
@@ -82,7 +79,6 @@ def test_connect_runtime_error(mock_serial):
 
 
 def test_disconnect():
-
     mock_serial = MockSerial()
     mock_serial.open()
 
@@ -103,7 +99,6 @@ def test_disconnect():
 
 
 def test_send_raw(mock_serial):
-
     with active_connection(mock_serial) as connection:
         raw_data = mock_serial.stub(receive_bytes=b"RAW DATA", send_bytes=b"")
 
@@ -114,7 +109,6 @@ def test_send_raw(mock_serial):
 
 
 def test_send_put(mock_serial):
-
     with active_connection(mock_serial) as connection:
         raw_data = mock_serial.stub(
             receive_bytes=b"@Subunit:Function=Value\r\n", send_bytes=b""
@@ -127,7 +121,6 @@ def test_send_put(mock_serial):
 
 
 def test_send_get(mock_serial):
-
     with active_connection(mock_serial) as connection:
         raw_data = mock_serial.stub(
             receive_bytes=b"@Subunit:Function=?\r\n", send_bytes=b""
@@ -140,7 +133,6 @@ def test_send_get(mock_serial):
 
 
 def test_message_callbacks(mock_serial):
-
     with active_connection(mock_serial) as connection:
         data_1 = mock_serial.stub(
             receive_bytes=b"@RequestSubunit1:RequestFunction1=?\r\n",
@@ -192,7 +184,6 @@ def test_message_callbacks(mock_serial):
 
 
 def test_protocol_status(mock_serial):
-
     with active_connection(mock_serial) as connection:
         undefined = mock_serial.stub(
             receive_bytes=b"@Subunit:Function=Undefined\r\n",
@@ -221,7 +212,6 @@ def test_protocol_status(mock_serial):
 
 
 def test_get_communication_log_items(mock_serial):
-
     with active_connection(mock_serial, communication_log_size=5) as connection:
         time.sleep(SHORT_DELAY)
         logitems = connection.get_communication_log_items()
@@ -234,14 +224,12 @@ def test_get_communication_log_items(mock_serial):
 
 
 def test_keep_alive(mock_serial):
-
     # Tweak the internal keep-alive interval to keep test short
     from ynca.connection import YncaProtocol
 
     YncaProtocol.KEEP_ALIVE_INTERVAL = 2
 
     with active_connection(mock_serial, communication_log_size=100) as connection:
-
         message_callback = mock.MagicMock()
         connection.register_message_callback(message_callback)
 

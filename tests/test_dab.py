@@ -70,7 +70,6 @@ def initialized_dab(connection) -> Dab:
 
 
 def test_initialize(connection, update_callback):
-
     connection.get_response_list = INITIALIZE_FULL_RESPONSES
 
     dab = Dab(connection)
@@ -83,7 +82,6 @@ def test_initialize(connection, update_callback):
 
 
 def test_band(connection, initialized_dab: Dab):
-
     initialized_dab.band = BandDab.DAB
     connection.put.assert_called_with(SUBUNIT, "BAND", "DAB")
 
@@ -98,7 +96,6 @@ def test_band(connection, initialized_dab: Dab):
 
 
 def test_dab(connection, initialized_dab: Dab):
-
     connection.send_protocol_message(SUBUNIT, "DABCHLABEL", "dab ch label")
     assert initialized_dab.dabchlabel == "dab ch label"
 
@@ -116,7 +113,6 @@ def test_dab(connection, initialized_dab: Dab):
 
 
 def test_fmrds(connection, initialized_dab: Dab):
-
     # Updates from device
     connection.send_protocol_message(SUBUNIT, "FMRDSPRGSERVICE", "rds prg service")
     assert initialized_dab.fmrdsprgservice == "rds prg service"
@@ -129,14 +125,12 @@ def test_fmrds(connection, initialized_dab: Dab):
 
 
 def test_fmfreq(connection, initialized_dab: Dab):
-
     # Set value and test stepsize handling (which is why it becomes 100.00)
     initialized_dab.fmfreq = 100.05
     connection.put.assert_called_with(SUBUNIT, "FMFREQ", "100.00")
 
 
 def test_fmpreset(connection, initialized_dab: Dab):
-
     assert initialized_dab.fmpreset == 40
 
     initialized_dab.fmpreset = 12
@@ -147,7 +141,6 @@ def test_fmpreset(connection, initialized_dab: Dab):
 
 
 def test_dabpreset(connection, initialized_dab: Dab):
-
     assert initialized_dab.dabpreset == 33
 
     initialized_dab.dabpreset = 22

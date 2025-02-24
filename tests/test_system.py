@@ -101,7 +101,6 @@ def initialized_system(connection) -> System:
 
 
 def test_construct(connection, update_callback):
-
     r = System(connection)
 
     assert connection.register_message_callback.call_count == 1
@@ -163,7 +162,6 @@ def test_initialize_minimal(connection, update_callback):
 
 
 def test_initialize_full(connection, update_callback):
-
     connection.get_response_list = INITIALIZE_FULL_RESPONSES
 
     s = System(connection)
@@ -261,7 +259,6 @@ def test_remotecode_wrong_length(initialized_system: System):
 
 
 def test_unhandled_function(connection, initialized_system: System):
-
     # Updates from device
     update_callback_1 = mock.MagicMock()
     initialized_system.register_update_callback(update_callback_1)

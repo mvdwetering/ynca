@@ -1,6 +1,5 @@
 """Test function"""
 
-
 import pytest
 
 from ynca.enums import Avail, PartyMute

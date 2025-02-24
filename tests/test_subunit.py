@@ -34,6 +34,7 @@ INITIALIZE_FULL_RESPONSES = [
     ),
 ]
 
+
 # Need a class with an ID to test some of the handling
 class DummySubunit(SubunitBase):
     id = Subunit.UAW
@@ -50,7 +51,6 @@ def initialized_dummysubunit(connection) -> DummySubunit:
 
 
 def test_construct(connection, update_callback):
-
     dsu = DummySubunit(connection)
 
     assert connection.register_message_callback.call_count == 1
@@ -58,7 +58,6 @@ def test_construct(connection, update_callback):
 
 
 def test_initialize_fail(connection, update_callback):
-
     dsu = DummySubunit(connection)
     dsu.register_update_callback(update_callback)
 
@@ -69,7 +68,6 @@ def test_initialize_fail(connection, update_callback):
 
 
 def test_initialize(connection, update_callback):
-
     connection.get_response_list = INITIALIZE_FULL_RESPONSES
 
     dsu = DummySubunit(connection)
@@ -82,7 +80,6 @@ def test_initialize(connection, update_callback):
 
 
 def test_registration(connection, initialized_dummysubunit: SubunitBase):
-
     update_callback_1 = mock.MagicMock()
     update_callback_2 = mock.MagicMock()
 
@@ -112,7 +109,6 @@ def test_registration(connection, initialized_dummysubunit: SubunitBase):
 
 
 def test_close(connection, initialized_dummysubunit: SubunitBase):
-
     initialized_dummysubunit.close()
     connection.unregister_message_callback.assert_called_once()
 
@@ -145,16 +141,16 @@ def test_write_function_calls_connection_put(
     initialized_dummysubunit.dummy_function = 123
     connection.put.assert_called_with("UAW", "DUMMY_FUNCTION", "123")
 
+
 def test_unreadable_attributes_ignored(connection):
-    '''
+    """
     This test is specifically to check handling of unreadable attributes
     as found with issue https://github.com/mvdwetering/yamaha_ynca/issues/315
-    '''
+    """
 
     class descriptor:
         def __get__(self, instance, owner):
             raise AttributeError("unreadable attribute")
 
-    DummySubunit.__provides__ = descriptor() # type: ignore
+    DummySubunit.__provides__ = descriptor()  # type: ignore
     DummySubunit(connection)
-

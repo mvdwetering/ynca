@@ -1,6 +1,5 @@
 """Test Enums"""
 
-
 from ynca.enums import (
     AdaptiveDrc,
     Avail,
@@ -70,4 +69,3 @@ def test_invalid_values_on_enums():
     assert TwoChDecoder("x") is TwoChDecoder.UNKNOWN
     assert ZoneBAvail("x") is ZoneBAvail.UNKNOWN
     assert ZoneBMute("x") is ZoneBMute.UNKNOWN
-

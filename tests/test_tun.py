@@ -1,4 +1,4 @@
-import pytest # type: ignore[import]
+import pytest  # type: ignore[import]
 
 from ynca import BandTun
 from ynca.subunits.tun import Tun
@@ -65,7 +65,6 @@ def initialized_tun(connection) -> Tun:
 
 
 def test_initialize(connection, update_callback):
-
     connection.get_response_list = INITIALIZE_FULL_RESPONSES
 
     tun = Tun(connection)
@@ -80,7 +79,6 @@ def test_initialize(connection, update_callback):
 
 
 def test_am(connection, initialized_tun: Tun):
-
     initialized_tun.band = BandTun.AM
     connection.put.assert_called_with(SUBUNIT, "BAND", "AM")
 
@@ -90,7 +88,6 @@ def test_am(connection, initialized_tun: Tun):
 
 
 def test_fm(connection, initialized_tun: Tun):
-
     initialized_tun.band = BandTun.FM
     connection.put.assert_called_with(SUBUNIT, "BAND", "FM")
 
@@ -100,7 +97,6 @@ def test_fm(connection, initialized_tun: Tun):
 
 
 def test_rds(connection, initialized_tun: Tun):
-
     # Updates from device
     connection.send_protocol_message(SUBUNIT, "RDSPRGSERVICE", "rds prg service")
     assert initialized_tun.rdsprgservice == "rds prg service"
@@ -114,8 +110,8 @@ def test_rds(connection, initialized_tun: Tun):
     connection.send_protocol_message(SUBUNIT, "RDSTXTB", "radiotext b")
     assert initialized_tun.rdstxtb == "radiotext b"
 
-def test_preset(connection, initialized_tun: Tun):
 
+def test_preset(connection, initialized_tun: Tun):
     # Updates from device
     connection.send_protocol_message(SUBUNIT, "PRESET", "11")
     assert initialized_tun.preset == 11
@@ -134,8 +130,8 @@ def test_preset(connection, initialized_tun: Tun):
     initialized_tun.preset_down()
     connection.put.assert_called_with(SUBUNIT, "PRESET", "Down")
 
-def test_mem(connection, initialized_tun: Tun):
 
+def test_mem(connection, initialized_tun: Tun):
     # Store
     initialized_tun.mem(10)
     connection.put.assert_called_with(SUBUNIT, "MEM", "10")
