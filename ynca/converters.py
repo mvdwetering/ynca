@@ -15,6 +15,8 @@ E = TypeVar("E", bound=Enum)
 
 
 class ConverterBase(ABC, Generic[T]):
+    """Base class for converters. Note that converters should be stateless."""
+
     @abstractmethod
     def to_value(self, value_string: str) -> T:  # pragma: no cover
         pass
