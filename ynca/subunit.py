@@ -74,7 +74,7 @@ class SubunitBase(ABC):
         self._connection.register_message_callback(self._protocol_message_received)
 
     def initialize(self) -> None:
-        """Initializes the data for the subunit and makes sure to wait until done.
+        """Initialize the data for the subunit and makes sure to wait until done.
         This call can take a long time.
         """
         if not self._connection:  # pragma: no cover
@@ -92,14 +92,14 @@ class SubunitBase(ABC):
         initialized_function_names = []
         for function_name, handler in self.function_handlers.items():
             if not handler.function.no_initialize:
-                function_name = (
+                function_initializer_name = (
                     handler.function.initializer
                     if handler.function.initializer is not None
                     else function_name
                 )
-                if function_name not in initialized_function_names:
-                    self._get(function_name)
-                    initialized_function_names.append(function_name)
+                if function_initializer_name not in initialized_function_names:
+                    self._get(function_initializer_name)
+                    initialized_function_names.append(function_initializer_name)
 
         # Use SYS:VERSION as a sync since it is available on all receivers
         self._connection.get(Subunit.SYS, "VERSION")
