@@ -9,7 +9,6 @@ def get_commands_from_file(filename):
     commands = {}
     with open(filename) as commandfile:
         for line in commandfile:
-
             line = re.sub(r"#.*", "", line)
             line = line.strip()
 
@@ -29,7 +28,6 @@ def get_commands_from_file(filename):
 
 
 if __name__ == "__main__":
-
     parser = argparse.ArgumentParser(
         description="Compare 2 files containing YNCA commands, output will be the commands not available in reference."
     )

@@ -10,7 +10,6 @@ from ynca import YncaConnection, YncaProtocolStatus
 
 
 if __name__ == "__main__":
-
     parser = argparse.ArgumentParser(description="Execute YNCA commands from a file.")
 
     parser.add_argument(
