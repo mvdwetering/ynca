@@ -89,7 +89,7 @@ if __name__ == "__main__":
         print("  COM3")
         print("  /dev/ttyUSB0")
         print("  socket://192.168.178.21:50000")
-        exit(1)
+        sys.exit(1)
 
     YncaTerminal(sys.argv[1])
 

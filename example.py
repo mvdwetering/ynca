@@ -2,6 +2,7 @@
 """Example of basic YncaApi usage"""
 
 import argparse
+import sys
 import time
 import logging
 
@@ -41,7 +42,7 @@ if __name__ == "__main__":
         print(f"-- Exception class: {type(e).__name__}")
         print(f"-- Description: {e.__doc__}")
         print(f"-- Details: {e}")
-        exit(1)
+        sys.exit(1)
 
     def updated_sys(function, value):
         print(f"- Update SYS {function}, {value}")

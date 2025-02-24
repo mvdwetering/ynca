@@ -5,6 +5,7 @@ import logging
 import re
 import threading
 import time
+import sys
 
 from ynca import YncaConnection, YncaProtocolStatus
 
@@ -48,7 +49,7 @@ if __name__ == "__main__":
         connection.connect(on_disconnect)
     except Exception as e:
         print(f"** Connection error: {e}")
-        exit(1)
+        sys.exit(1)
     connection.register_message_callback(message_received)
 
     time.sleep(1)
