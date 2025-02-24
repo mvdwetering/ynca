@@ -13,7 +13,7 @@ import serial.threaded  # type: ignore
 
 from .helpers import RingBuffer
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from collections.abc import Callable
 
 logger = logging.getLogger(__name__)

@@ -45,6 +45,7 @@ dev = [
 [tool.coverage.report]
 exclude_also = [
   # TYPE_CHECKING block is only executed while running mypy
+  # Note that this does not seem to work, unclear why
   "if TYPE_CHECKING:",
 ]
 

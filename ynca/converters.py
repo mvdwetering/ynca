@@ -5,7 +5,7 @@ from enum import Enum
 import logging
 from typing import TYPE_CHECKING, Any, Generic, TypeVar, cast
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from collections.abc import Callable
 
 logger = logging.getLogger(__name__)

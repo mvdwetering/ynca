@@ -12,7 +12,7 @@ from .enums import Avail
 from .errors import YncaInitializationFailedException
 from .function import Cmd, EnumFunctionMixin, FunctionMixinBase
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from collections.abc import Callable
 
 logger = logging.getLogger(__name__)
@@ -70,11 +70,9 @@ class SubunitBase(ABC):
         """Initializes the data for the subunit and makes sure to wait until done.
         This call can take a long time.
         """
-        if not self._connection:
+        if not self._connection:  # pragma: no cover
             msg = "No valid connection"
-            raise YncaInitializationFailedException(
-                msg
-            )  # pragma: no cover
+            raise YncaInitializationFailedException(msg)
 
         logger.info("Subunit %s initialization begin.", self.id)
 
@@ -108,9 +106,7 @@ class SubunitBase(ABC):
             self._initialized = True
         else:
             msg = f"Subunit {self.id} initialization failed"
-            raise YncaInitializationFailedException(
-                msg
-            )
+            raise YncaInitializationFailedException(msg)
 
         logger.info("Subunit %s initialization end.", self.id)
 

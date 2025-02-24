@@ -29,7 +29,7 @@ from .subunits.uaw import Uaw
 from .subunits.usb import Usb
 from .subunits.zone import Main, Zone2, Zone3, Zone4
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from collections.abc import Callable
 
 logger = logging.getLogger(__name__)
@@ -112,7 +112,8 @@ class YncaApi:
             except AttributeError:  # pragma: no cover
                 # Intermediate Subunit classes like ZoneBase don't have an ID
                 pass
-        return None
+
+        return None  # pragma: no cover
 
     def _initialize_available_subunits(self, connection: YncaConnection) -> None:
         # Every receiver has a System subunit
@@ -168,9 +169,7 @@ class YncaApi:
             # Give it a bit of time to receive a response
             if not connection_check_event.wait(CONNECTION_CHECK_TIMEOUT):
                 msg = "Connectioncheck failed, no valid response in time from device"
-                raise YncaConnectionError(
-                    msg
-                )
+                raise YncaConnectionError(msg)
         finally:
             if connection:
                 connection.unregister_message_callback(

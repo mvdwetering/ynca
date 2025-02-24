@@ -9,7 +9,7 @@ import serial.threaded  # type: ignore
 from .errors import YncaConnectionError, YncaConnectionFailed
 from .protocol import YncaProtocol, YncaProtocolStatus
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from collections.abc import Callable
 
 logger = logging.getLogger(__name__)
