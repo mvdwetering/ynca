@@ -44,9 +44,12 @@ class FunctionMixinBase(ABC, Generic[T]):
         cmd: Cmd = Cmd.GET | Cmd.PUT,
         name_override: str | None = None,
         init: str | None = None,
+        *,
         no_initialize: bool = False,
     ) -> None:
-        """converter:
+        """Instantiate a Function descriptor object.
+
+        converter:
             Converter to use for value to/from str conversions
         cmd:
             Operations the command supports. PUT and/or GET
@@ -79,6 +82,7 @@ class FunctionMixinBase(ABC, Generic[T]):
     def __get__(
         self, instance: SubunitBase | None, owner
     ) -> T | None | FunctionMixinBase[T]:
+        """Return function value from cache."""
         if instance is None:
             return self
 
@@ -89,15 +93,18 @@ class FunctionMixinBase(ABC, Generic[T]):
         return instance.function_handlers[self.name].value
 
     def __set__(self, instance, value: T) -> None:
+        """Send command with provided value to receiver."""
         if Cmd.PUT not in self.cmd:
             msg = f"Function {self.name} does not support PUT command"
             raise AttributeError(msg)
-        instance._put(self.name, self.converter.to_str(value))
+        instance._put(self.name, self.converter.to_str(value))  # noqa: SLF001
 
-    def __delete__(self, instance: SubunitBase):
+    def __delete__(self, instance: SubunitBase) -> None:
+        """Remove function handler from cache."""
         del instance.function_handlers[self.name]
 
-    def __set_name__(self, owner, name):
+    def __set_name__(self, owner, name) -> None:
+        """Initialize the function name attribute."""
         self.name = name.upper() if not self._name_override else self._name_override
 
 
@@ -121,14 +128,14 @@ class StrFunctionMixin(FunctionMixinBase[str]):
     def __init__(
         self,
         cmd: Cmd = Cmd.GET | Cmd.PUT,
-        converter: ConverterBase = StrConverter(),
+        converter: ConverterBase | None = None,
         name_override: str | None = None,
         init=None,
     ) -> None:
         super().__init__(
             name_override=name_override,
             cmd=cmd,
-            converter=converter,
+            converter=converter or StrConverter(),
             init=init,
         )
 
@@ -137,14 +144,14 @@ class IntFunctionMixin(FunctionMixinBase[int]):
     def __init__(
         self,
         command_type: Cmd = Cmd.GET | Cmd.PUT,
-        converter: ConverterBase = IntConverter(),
+        converter: ConverterBase | None = None,
         name_override: str | None = None,
         init=None,
     ) -> None:
         super().__init__(
             name_override=name_override,
             cmd=command_type,
-            converter=converter,
+            converter=converter or IntConverter(),
             init=init,
         )
 
@@ -153,14 +160,14 @@ class FloatFunctionMixin(FunctionMixinBase[float]):
     def __init__(
         self,
         cmd: Cmd = Cmd.GET | Cmd.PUT,
-        converter: ConverterBase = FloatConverter(),
+        converter: ConverterBase | None = None,
         name_override: str | None = None,
         init=None,
     ) -> None:
         super().__init__(
             name_override=name_override,
             cmd=cmd,
-            converter=converter,
+            converter=converter or FloatConverter(),
             init=init,
         )
 
