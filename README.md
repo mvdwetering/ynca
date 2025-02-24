@@ -81,7 +81,7 @@ It is technically not really related to the protocol, but since there seems to b
 The YNCA Terminal provides an interactive terminal for manually sending YNCA commands. It is only intended for manual debugging.
 It can be started with commands like below.
 
-```
+```bash
 python3 -m ynca.terminal /dev/ttyUSB0
 python3 -m ynca.terminal socket://192.168.178.21:50000
 ```
@@ -95,12 +95,11 @@ Filling the server can be done by providing it with YNCA logging of a real devic
 
 It has some additional commandline options for using different ports, binding to a specific host or testing disconnects
 
-```
+```bash
 python3 -m ynca.server <ynca_repo>/logs/RX-A810.txt
 python3 -m ynca.server --host localhost --port 12345 <ynca_repo>/logs/RX-A810.txt
 python3 -m ynca.server --help
 ```
-
 
 ## Example usage
 
