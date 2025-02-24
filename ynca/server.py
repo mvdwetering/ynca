@@ -11,23 +11,30 @@ It is intended to be just enough to test without a real device
 from __future__ import annotations
 
 import argparse
-from collections import namedtuple
 import logging
+from pathlib import Path
 import re
 import socketserver
+from typing import NamedTuple
 
 from .enums import Input
+from .subunits.system import REMOTE_CODE_LENGTH
 
 RESTRICTED = "@RESTRICTED"
 UNDEFINED = "@UNDEFINED"
 OK = "OK"
 
-YncaCommand = namedtuple("YncaCommand", ["subunit", "function", "value"])
+
+class YncaCommand(NamedTuple):
+    subunit: str
+    function: str
+    value: str
+
 
 ZONES = ["MAIN", "ZONE2", "ZONE3", "ZONE4"]
 
 
-def line_to_command(line):
+def line_to_command(line) -> YncaCommand | None:
     match = re.search(r"@(?P<subunit>.+?):(?P<function>.+?)=(?P<value>.*)", line)
     if match is not None:
         subunit = match.group("subunit")
@@ -44,7 +51,7 @@ class YncaDataStore:
     def fill_from_file(self, filename) -> None:
         print(f"--- Filling store with data from file: {filename}")
         command = None
-        with open(filename) as file:
+        with Path(filename).open() as file:
             for line in file:
                 line = line.strip()
                 line = line.rstrip(
@@ -71,14 +78,14 @@ class YncaDataStore:
             self._store[subunit] = {}
         self._store[subunit][function] = value
 
-    def get_data(self, subunit, function):
+    def get_data(self, subunit, function) -> str:
         try:
             value = self._store[subunit][function]
         except KeyError:
             return UNDEFINED
         return value
 
-    def put_data(self, subunit, function, new_value):
+    def put_data(self, subunit, function, new_value) -> tuple[str, bool]:
         """Write new value, returns tuple with result and if value changed in case of OK."""
         try:
             if subunit in self._store:
@@ -184,7 +191,7 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
         self._commands_sent += 1
 
     def _send_stored_value_no_error(self, subunit, function) -> str | None:
-        """Sends the value that is stored, returns the value or None if it did not exist."""
+        """Send the value that is stored, returns the value or None if it did not exist."""
         return self._send_stored_value_or_error(
             subunit, function, skip_error_response=True
         )
@@ -192,7 +199,7 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
     def _send_stored_value_or_error(
         self, subunit, function, skip_error_response=False
     ) -> str | None:
-        """Sends the value that is stored, returns the value or None if it did not exist."""
+        """Send the value that is stored, returns the value or None if it did not exist."""
         value = self.store.get_data(subunit, function)
         if value.startswith("@"):
             if not skip_error_response:
@@ -210,7 +217,7 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
         self._write_line(error)
 
     def handle_get(self, subunit, function) -> None:
-        """Handles (multi)response(s) for GET."""
+        """Handle (multi)response(s) for GET."""
         response_functions = multiresponse_functions_table.get(function)
 
         if response_functions is None:
@@ -226,7 +233,7 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
             self._send_ynca_error(UNDEFINED)
 
     def _handle_get(self, subunit, function, suppress_error_response=False) -> None:
-        """Gets one value and writes the response to the socket."""
+        """Get one value and writes the response to the socket."""
         # SYS:INPNAME returns all inputnames
         if subunit == "SYS" and function == "INPNAME":
             sys_values = self.store._store["SYS"]
@@ -282,7 +289,7 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
         # Just eat remote codes as they don't give responses
         # unless not supported, but can not really check
         if subunit == "SYS" and function == "REMOTECODE":
-            if len(value) != 8:
+            if len(value) != REMOTE_CODE_LENGTH:
                 self._send_ynca_error(UNDEFINED)
             return
 
@@ -292,9 +299,7 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
             return
 
         # Assume ZONEBVOL is independant of VOL
-        if (function in ("VOL", "ZONEBVOL")) and (
-            value.startswith(("Up", "Down"))
-        ):
+        if (function in ("VOL", "ZONEBVOL")) and (value.startswith(("Up", "Down"))):
             # Need to handle Up/Down as it would otherwise overwrite the VOL value wtih text Up/Down
             up = value.startswith("Up")
 
@@ -489,7 +494,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--host",
         help="Host interface to bind to, default is 0.0.0.0 for all interfaces",
-        default="0.0.0.0",
+        default="0.0.0.0",  # noqa: S104
     )
     parser.add_argument(
         "--port",

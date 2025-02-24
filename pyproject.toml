@@ -92,7 +92,16 @@ combine-as-imports = true
 [tool.ruff.lint.per-file-ignores]
 # Ignore `T201` (print not allowed) in files that are intended to be used from CLI.
 "ynca/terminal.py" = ["T201"]
-"ynca/server.py" = ["T201"]
+# server.py started out as a bit of a quick hack and needs some work to get it right, until then disable some rules
+"ynca/server.py" = [
+  "C901",
+  "FBT002",
+  "PLR0912",
+  "PLW2901",
+  "SIM102",
+  "SLF001",
+  "T201",
+]
 
 
 [tool.pylint."MESSAGES CONTROL"]
