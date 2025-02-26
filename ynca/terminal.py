@@ -16,7 +16,9 @@ def print_prompt() -> None:
 
 
 def ynca_terminal(serial_url: str) -> None:
-    """With the YNCA terminal you can manually send YNCA commands to a receiver.
+    """YNCA Terminal.
+
+    With the YNCA terminal you can manually send YNCA commands to a receiver.
     This is useful to figure out what a command does.
 
     Note that a receiver only allows 1 YNCA connection at the time!

@@ -102,6 +102,7 @@ class StrConverter(ConverterBase):
 
 class MultiConverter(ConverterBase):
     """Multiconverter allows to try multiple converters.
+
     This is sometimes needed as value can be a number or enum.
     MultiConverter will go through the converters in order and the first result will be used.
     Errors have to be indicated by the converters by throwing an exception (any exception is fine).

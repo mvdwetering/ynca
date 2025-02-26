@@ -47,9 +47,7 @@ def raiser(ex: type[Exception]) -> NoReturn:
 
 
 def do_vol_up(self, step_size: float, function: str) -> None:
-    """Increase the volume with given stepsize.
-    Supported stepsizes are: 0.5, 1, 2 and 5.
-    """
+    """Increase the volume with given stepsize. Supported stepsizes are: 0.5, 1, 2 and 5."""
     value = "Up"
     if step_size in [1, 2, 5]:
         value = f"Up {step_size} dB"
@@ -57,9 +55,7 @@ def do_vol_up(self, step_size: float, function: str) -> None:
 
 
 def do_vol_down(self, step_size: float, function: str) -> None:
-    """Decrease the volume with given stepsize.
-    Supported stepsizes are: 0.5, 1, 2 and 5.
-    """
+    """Decrease the volume with given stepsize. Supported stepsizes are: 0.5, 1, 2 and 5."""
     value = "Down"
     if step_size in [1, 2, 5]:
         value = f"Down {step_size} dB"

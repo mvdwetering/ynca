@@ -24,7 +24,9 @@ class CommandType(Flag):
 
 
 class YncaFunctionHandler:
-    """Keeps a value of a Function and handles conversions from str on updating.
+    """YNCA Function Handler.
+
+    Keeps a value of a Function and handles conversions from str on updating.
     Note that it is not possible to store the value in the YncaFunction since it
     is a class instance which is shared by all instances.
     """
@@ -74,9 +76,7 @@ class SubunitBase(ABC):
         self._connection.register_message_callback(self._protocol_message_received)
 
     def initialize(self) -> None:
-        """Initialize the data for the subunit and makes sure to wait until done.
-        This call can take a long time.
-        """
+        """Initialize the data for the subunit and makes sure to wait until done. This call can take a long time."""
         if not self._connection:  # pragma: no cover
             msg = "No valid connection"
             raise YncaInitializationFailedException(msg)

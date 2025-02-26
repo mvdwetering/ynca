@@ -126,8 +126,7 @@ class YncaApi:
                 self._subunits[subunit_instance.id] = subunit_instance
 
     def connection_check(self) -> YncaConnectionCheckResult:
-        """Perform a quick connection check by setting up a connection and requesting some basic info.
-        Connection gets closed again automatically.
+        """Perform a quick connection check by setting up a connection and requesting some basic info. Connection gets closed again automatically.
 
         This is a fast way to check the connection and if it is a YNCA device
         without executing the timeconsuming `initialize()` method.
@@ -177,6 +176,7 @@ class YncaApi:
 
     def initialize(self) -> None:
         """Set up a connection to the device and initializes the Ynca API.
+
         This call takes quite a while (~10 seconds on a simple 2 zone receiver).
 
         If initialize was successful the client should call the `close()`
@@ -220,18 +220,12 @@ class YncaApi:
         )
 
     def send_raw(self, raw_ynca_data: str) -> None:
-        """Send raw YNCA data
-        Intended for debugging only.
-        """
+        """Send raw YNCA data. Intended for debugging only."""
         if self._connection:
             self._connection.raw(raw_ynca_data)
 
     def close(self) -> None:
-        """Cleanup the internal resources.
-        Safe to be called at any time.
-
-        YncaApi object should _not_ be reused after being closed!
-        """
+        """Close connection and cleanup the internal resources. Safe to be called at any time. YncaApi object should _not_ be reused after being closed."""
         # Convert to list to avoid issues when deleting while iterating
         for key in list(self._subunits.keys()):
             subunit = self._subunits.pop(key)
