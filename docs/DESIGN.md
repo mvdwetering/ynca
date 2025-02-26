@@ -14,7 +14,7 @@ Since the amount of supported functions impacts the `initialize`time functions w
 Some guidelines I try to follow when adding functions to the API.
 
 * YNCA functions supporting GET are modelled as attributes
-  * If the function also support PUT for the value this attribute will also be writable
+  * If the function also supports PUT for the value this attribute will also be writable
 * YNCA functions that _only_ support PUT are modelled as methods
   * While it is possible to create write only attributes they felt weird to use.
 * YNCA functions that perform actions are modelled as methods
@@ -25,7 +25,7 @@ Some guidelines I try to follow when adding functions to the API.
   * Numbers become integers or floats
   * Multiple options are mapped to Enums
     * Each function will have its own Enum even though values are the same. On multiple occasions it has turned out that possible values have changed between receivers. Having individual Enums allows to just extend the impacted one without impacting other attributes.
-    * All enums will have an "UNKNOWN" field for the case where a receiver responds with an unknown value. In these cases a warning will be logged. This UNKNOWN mapping is to avoid exceptions when mapping to an Enum which would break the code. Unknown values occur because there is no official documentation available and new receivers might support more/different values.
+    * All enums will have an "UNKNOWN" field for the case where a receiver responds with an unknown value. In these cases, a warning will be logged. This UNKNOWN mapping is to avoid exceptions when mapping to an Enum which would break the code. Unknown values occur because there is no official documentation available and new receivers might support more/different values.
 * These are guidelines, exceptions can be made.
 
 Note:
