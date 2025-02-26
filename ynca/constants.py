@@ -37,5 +37,5 @@ class Subunit(str, Enum):
     UAW = "UAW"
     USB = "USB"
 
-    def __format__(self, spec) -> str:
+    def __str__(self) -> str:
         return self.value
