@@ -6,7 +6,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 MIN_VOLUME = -80.5  # Minimum volume value for receivers
-MAX_VOLUME = 16.5  # Maxcimum volume value for receivers
+MAX_VOLUME = 16.5  # Maximum volume value for receivers
 
 
 @unique
