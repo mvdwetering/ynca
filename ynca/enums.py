@@ -1,7 +1,7 @@
-"""Enums used for mapping YNCA values"""
+"""Enums used for mapping YNCA values."""
 
-import logging
 from enum import Enum, unique
+import logging
 
 logger = logging.getLogger(__name__)
 
@@ -14,7 +14,7 @@ class AdaptiveDrc(str, Enum):
     AUTO = "Auto"
 
     @classmethod
-    def _missing_(cls, value):
+    def _missing_(cls, value: object):
         logger.warning("Unknown value '%s' in %s", value, cls.__name__)
         return cls.UNKNOWN
 
@@ -29,7 +29,7 @@ class Avail(str, Enum):
     READY = "Ready"
 
     @classmethod
-    def _missing_(cls, value):
+    def _missing_(cls, value: object):
         logger.warning("Unknown value '%s' in %s", value, cls.__name__)
         return cls.UNKNOWN
 
@@ -43,7 +43,7 @@ class BandDab(str, Enum):
     FM = "FM"
 
     @classmethod
-    def _missing_(cls, value):
+    def _missing_(cls, value: object):
         logger.warning("Unknown value '%s' in %s", value, cls.__name__)
         return cls.UNKNOWN
 
@@ -57,7 +57,7 @@ class BandTun(str, Enum):
     FM = "FM"
 
     @classmethod
-    def _missing_(cls, value):
+    def _missing_(cls, value: object):
         logger.warning("Unknown value '%s' in %s", value, cls.__name__)
         return cls.UNKNOWN
 
@@ -70,7 +70,7 @@ class DabPreset(str, Enum):
     NO_PRESET = "No Preset"
 
     @classmethod
-    def _missing_(cls, value):
+    def _missing_(cls, value: object):
         logger.warning("Unknown value '%s' in %s", value, cls.__name__)
         return cls.UNKNOWN
 
@@ -84,7 +84,7 @@ class DirMode(Enum):
     OFF = "Off"
 
     @classmethod
-    def _missing_(cls, value):
+    def _missing_(cls, value: object):
         logger.warning("Unknown value '%s' in %s", value, cls.__name__)
         return cls.UNKNOWN
 
@@ -98,7 +98,7 @@ class Enhancer(str, Enum):
     OFF = "Off"
 
     @classmethod
-    def _missing_(cls, value):
+    def _missing_(cls, value: object):
         logger.warning("Unknown value '%s' in %s", value, cls.__name__)
         return cls.UNKNOWN
 
@@ -111,7 +111,7 @@ class FmPreset(str, Enum):
     NO_PRESET = "No Preset"
 
     @classmethod
-    def _missing_(cls, value):
+    def _missing_(cls, value: object):
         logger.warning("Unknown value '%s' in %s", value, cls.__name__)
         return cls.UNKNOWN
 
@@ -130,7 +130,7 @@ class HdmiOut(str, Enum):
     OUT1_PLUS_2 = "OUT1 + 2"
 
     @classmethod
-    def _missing_(cls, value):
+    def _missing_(cls, value: object):
         logger.warning("Unknown value '%s' in %s", value, cls.__name__)
         return cls.UNKNOWN
 
@@ -144,7 +144,7 @@ class HdmiOutOnOff(Enum):
     OFF = "Off"
 
     @classmethod
-    def _missing_(cls, value):
+    def _missing_(cls, value: object):
         logger.warning("Unknown value '%s' in %s", value, cls.__name__)
         return cls.UNKNOWN
 
@@ -159,7 +159,7 @@ class InitVolLvl(str, Enum):
     """Only some receivers report Off, most seem to use InitVolMode to indicate On/Off"""
 
     @classmethod
-    def _missing_(cls, value):
+    def _missing_(cls, value: object):
         logger.warning("Unknown value '%s' in %s", value, cls.__name__)
         return cls.UNKNOWN
 
@@ -173,7 +173,7 @@ class InitVolMode(str, Enum):
     OFF = "Off"
 
     @classmethod
-    def _missing_(cls, value):
+    def _missing_(cls, value: object):
         logger.warning("Unknown value '%s' in %s", value, cls.__name__)
         return cls.UNKNOWN
 
@@ -232,7 +232,7 @@ class Input(Enum):
     USB = "USB"
 
     @classmethod
-    def _missing_(cls, value):
+    def _missing_(cls, value: object):
         logger.warning("Unknown value '%s' in %s", value, cls.__name__)
         return cls.UNKNOWN
 
@@ -248,7 +248,7 @@ class Mute(str, Enum):
     OFF = "Off"
 
     @classmethod
-    def _missing_(cls, value):
+    def _missing_(cls, value: object):
         logger.warning("Unknown value '%s' in %s", value, cls.__name__)
         return cls.UNKNOWN
 
@@ -262,7 +262,7 @@ class Party(Enum):
     OFF = "Off"
 
     @classmethod
-    def _missing_(cls, value):
+    def _missing_(cls, value: object):
         logger.warning("Unknown value '%s' in %s", value, cls.__name__)
         return cls.UNKNOWN
 
@@ -276,7 +276,7 @@ class PartyMute(Enum):
     OFF = "Off"
 
     @classmethod
-    def _missing_(cls, value):
+    def _missing_(cls, value: object):
         logger.warning("Unknown value '%s' in %s", value, cls.__name__)
         return cls.UNKNOWN
 
@@ -293,7 +293,7 @@ class Playback(str, Enum):
     SKIP_FWD = "Skip Fwd"
 
     @classmethod
-    def _missing_(cls, value):
+    def _missing_(cls, value: object):
         logger.warning("Unknown value '%s' in %s", value, cls.__name__)
         return cls.UNKNOWN
 
@@ -308,7 +308,7 @@ class PlaybackInfo(str, Enum):
     PLAY = "Play"
 
     @classmethod
-    def _missing_(cls, value):
+    def _missing_(cls, value: object):
         logger.warning("Unknown value '%s' in %s", value, cls.__name__)
         return cls.UNKNOWN
 
@@ -322,7 +322,7 @@ class PureDirMode(Enum):
     OFF = "Off"
 
     @classmethod
-    def _missing_(cls, value):
+    def _missing_(cls, value: object):
         logger.warning("Unknown value '%s' in %s", value, cls.__name__)
         return cls.UNKNOWN
 
@@ -336,7 +336,7 @@ class Pwr(Enum):
     STANDBY = "Standby"
 
     @classmethod
-    def _missing_(cls, value):
+    def _missing_(cls, value: object):
         logger.warning("Unknown value '%s' in %s", value, cls.__name__)
         return cls.UNKNOWN
 
@@ -350,7 +350,7 @@ class PwrB(Enum):
     STANDBY = "Standby"
 
     @classmethod
-    def _missing_(cls, value):
+    def _missing_(cls, value: object):
         logger.warning("Unknown value '%s' in %s", value, cls.__name__)
         return cls.UNKNOWN
 
@@ -365,7 +365,7 @@ class Repeat(str, Enum):
     ALL = "All"
 
     @classmethod
-    def _missing_(cls, value):
+    def _missing_(cls, value: object):
         logger.warning("Unknown value '%s' in %s", value, cls.__name__)
         return cls.UNKNOWN
 
@@ -379,7 +379,7 @@ class Shuffle(str, Enum):
     OFF = "Off"
 
     @classmethod
-    def _missing_(cls, value):
+    def _missing_(cls, value: object):
         logger.warning("Unknown value '%s' in %s", value, cls.__name__)
         return cls.UNKNOWN
 
@@ -396,7 +396,7 @@ class Sleep(str, Enum):
     ONEHUNDREDTWENTY_MIN = "120 min"
 
     @classmethod
-    def _missing_(cls, value):
+    def _missing_(cls, value: object):
         logger.warning("Unknown value '%s' in %s", value, cls.__name__)
         return cls.UNKNOWN
 
@@ -437,7 +437,7 @@ class SoundPrg(str, Enum):
     ENHANCED = "Enhanced"
 
     @classmethod
-    def _missing_(cls, value):
+    def _missing_(cls, value: object):
         logger.warning("Unknown value '%s' in %s", value, cls.__name__)
         return cls.UNKNOWN
 
@@ -451,7 +451,7 @@ class SpeakerA(Enum):
     OFF = "Off"
 
     @classmethod
-    def _missing_(cls, value):
+    def _missing_(cls, value: object):
         logger.warning("Unknown value '%s' in %s", value, cls.__name__)
         return cls.UNKNOWN
 
@@ -465,7 +465,7 @@ class SpeakerB(Enum):
     OFF = "Off"
 
     @classmethod
-    def _missing_(cls, value):
+    def _missing_(cls, value: object):
         logger.warning("Unknown value '%s' in %s", value, cls.__name__)
         return cls.UNKNOWN
 
@@ -479,7 +479,7 @@ class SpPattern(Enum):
     PATTERN_2 = "Pattern 2"
 
     @classmethod
-    def _missing_(cls, value):
+    def _missing_(cls, value: object):
         logger.warning("Unknown value '%s' in %s", value, cls.__name__)
         return cls.UNKNOWN
 
@@ -493,7 +493,7 @@ class Straight(Enum):
     OFF = "Off"
 
     @classmethod
-    def _missing_(cls, value):
+    def _missing_(cls, value: object):
         logger.warning("Unknown value '%s' in %s", value, cls.__name__)
         return cls.UNKNOWN
 
@@ -507,7 +507,7 @@ class ThreeDeeCinema(str, Enum):
     AUTO = "Auto"
 
     @classmethod
-    def _missing_(cls, value):
+    def _missing_(cls, value: object):
         logger.warning("Unknown value '%s' in %s", value, cls.__name__)
         return cls.UNKNOWN
 
@@ -536,7 +536,7 @@ class TwoChDecoder(str, Enum):
     Auro3d = "AURO-3D"  # Seen on RX-A6A
 
     @classmethod
-    def _missing_(cls, value):
+    def _missing_(cls, value: object):
         logger.warning("Unknown value '%s' in %s", value, cls.__name__)
         return cls.UNKNOWN
 
@@ -551,7 +551,7 @@ class ZoneBAvail(str, Enum):
     READY = "Ready"
 
     @classmethod
-    def _missing_(cls, value):
+    def _missing_(cls, value: object):
         logger.warning("Unknown value '%s' in %s", value, cls.__name__)
         return cls.UNKNOWN
 
@@ -565,7 +565,7 @@ class ZoneBMute(str, Enum):
     OFF = "Off"
 
     @classmethod
-    def _missing_(cls, value):
+    def _missing_(cls, value: object):
         logger.warning("Unknown value '%s' in %s", value, cls.__name__)
         return cls.UNKNOWN
 

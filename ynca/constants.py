@@ -1,16 +1,17 @@
-"""Misc constants"""
+"""Misc constants."""
 
-import logging
 from enum import Enum, unique
+import logging
 
 logger = logging.getLogger(__name__)
 
 MIN_VOLUME = -80.5  # Minimum volume value for receivers
+MAX_VOLUME = 16.5  # Maximum volume value for receivers
 
 
 @unique
 class Subunit(str, Enum):
-    """Known Subunits in YNCA"""
+    """Known Subunits in YNCA."""
 
     SYS = "SYS"
     MAIN = "MAIN"
@@ -36,5 +37,5 @@ class Subunit(str, Enum):
     UAW = "UAW"
     USB = "USB"
 
-    def __format__(self, spec) -> str:
+    def __str__(self) -> str:
         return self.value

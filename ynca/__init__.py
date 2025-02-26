@@ -1,18 +1,11 @@
 import logging
 
 # Import intended API so it is easily accessible through `from  ynca import Something`
-
 from .api import YncaApi, YncaConnectionCheckResult
 from .connection import YncaConnection, YncaProtocolStatus
-from .errors import (
-    YncaConnectionError,
-    YncaConnectionFailed,
-    YncaException,
-    YncaInitializationFailedException,
-)
 from .enums import (
-    Avail,
     AdaptiveDrc,
+    Avail,
     BandDab,
     BandTun,
     DabPreset,
@@ -45,20 +38,17 @@ from .enums import (
     ZoneBAvail,
     ZoneBMute,
 )
+from .errors import (
+    YncaConnectionError,
+    YncaConnectionFailed,
+    YncaException,
+    YncaInitializationFailedException,
+)
 from .modelinfo import YncaModelInfo
 
 __all__ = [
-    "YncaApi",
-    "YncaConnectionCheckResult",
-    "YncaConnection",
-    "YncaProtocolStatus",
-    "YncaException",
-    "YncaConnectionError",
-    "YncaConnectionFailed",
-    "YncaInitializationFailedException",
-    "YncaModelInfo",
-    "Avail",
     "AdaptiveDrc",
+    "Avail",
     "BandDab",
     "BandTun",
     "DabPreset",
@@ -82,12 +72,21 @@ __all__ = [
     "Shuffle",
     "Sleep",
     "SoundPrg",
+    "SpPattern",
     "SpeakerA",
     "SpeakerB",
-    "SpPattern",
     "Straight",
     "ThreeDeeCinema",
     "TwoChDecoder",
+    "YncaApi",
+    "YncaConnection",
+    "YncaConnectionCheckResult",
+    "YncaConnectionError",
+    "YncaConnectionFailed",
+    "YncaException",
+    "YncaInitializationFailedException",
+    "YncaModelInfo",
+    "YncaProtocolStatus",
     "ZoneBAvail",
     "ZoneBMute",
 ]

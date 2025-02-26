@@ -1,11 +1,11 @@
 import collections
 from math import modf
-from typing import Deque, Generic, List, TypeVar
+from typing import Generic, TypeVar
 
 """Misc helper functions"""
 
 
-def number_to_string_with_stepsize(value: float, decimals: int, stepsize: float):
+def number_to_string_with_stepsize(value: float, decimals: int, stepsize: float) -> str:
     negative = value < 0
 
     steps = round(value / stepsize)
@@ -24,7 +24,7 @@ def number_to_string_with_stepsize(value: float, decimals: int, stepsize: float)
 
 
 # From: https://stackoverflow.com/a/3862957/4124648
-def all_subclasses(cls):
+def all_subclasses(cls) -> set:  # noqa: ANN001
     return set(cls.__subclasses__()).union(
         [s for c in cls.__subclasses__() for s in all_subclasses(c)]
     )
@@ -34,13 +34,13 @@ T = TypeVar("T")
 
 
 class RingBuffer(Generic[T]):
-    """Simple ringbuffer that hold size amount of items, adding more will discard oldest items"""
+    """Simple ringbuffer that hold size amount of items, adding more will discard oldest items."""
 
-    def __init__(self, size):
-        self._buffer: Deque = collections.deque(maxlen=size)
+    def __init__(self, size: int) -> None:
+        self._buffer: collections.deque = collections.deque(maxlen=size)
 
-    def add(self, item: T):
+    def add(self, item: T) -> None:
         self._buffer.append(item)
 
-    def get_buffer(self) -> List[T]:
+    def get_buffer(self) -> list[T]:
         return list(self._buffer)

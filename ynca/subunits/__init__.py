@@ -1,6 +1,9 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from ..converters import FloatConverter, IntOrNoneConverter
+from ..enums import Playback, PlaybackInfo, Repeat, Shuffle
 from ..function import (
     Cmd,
     EnumFunctionMixin,
@@ -8,8 +11,10 @@ from ..function import (
     IntFunctionMixin,
     StrFunctionMixin,
 )
-from ..enums import Playback, PlaybackInfo, Repeat, Shuffle
 from ..helpers import number_to_string_with_stepsize
+
+if TYPE_CHECKING:  # pragma: no cover
+    from ..subunit import SubunitBaseMixinProtocol
 
 
 class AlbumFunctionMixin:
@@ -34,15 +39,17 @@ class FmFreqFunctionMixin:
 
 
 class MemFunctionMixin:
-    def mem(self, parameter: int | None = None):
+
+    def mem(self: SubunitBaseMixinProtocol, parameter: int | None = None) -> None:
         """Store preset in memory slot, parameter is a slot number 1-40 or None to select a slot automatically."""
-        self._put("MEM", "Auto" if parameter is None else str(parameter))  # type: ignore
+        self._put("MEM", "Auto" if parameter is None else str(parameter))
 
 
 class PlaybackFunctionMixin:
-    def playback(self, parameter: Playback):
-        """Change playback state"""
-        self._put("PLAYBACK", parameter.value)  # type: ignore
+
+    def playback(self: SubunitBaseMixinProtocol, parameter: Playback) -> None:
+        """Change playback state."""
+        self._put("PLAYBACK", parameter.value)
 
 
 class PlaybackInfoFunctionMixin:
@@ -55,13 +62,14 @@ class PresetFunctionMixin:
 
 
 class PresetUpDownFunctionMixin:
-    def preset_up(self):
-        """Select next available preset"""
-        self._put("PRESET", "Up")  # type: ignore
 
-    def preset_down(self):
-        """Select previous available preset"""
-        self._put("PRESET", "Down")  # type: ignore
+    def preset_up(self: SubunitBaseMixinProtocol) -> None:
+        """Select next available preset."""
+        self._put("PRESET", "Up")
+
+    def preset_down(self: SubunitBaseMixinProtocol) -> None:
+        """Select previous available preset."""
+        self._put("PRESET", "Down")
 
 
 class RepeatFunctionMixin:

@@ -44,7 +44,8 @@ dev = [
 
 [tool.coverage.report]
 exclude_also = [
-  # # TYPE_CHECKING block is only executed while running mypy
+  # TYPE_CHECKING block is only executed while running mypy
+  # Note that this does not seem to work, unclear why
   "if TYPE_CHECKING:",
 ]
 
@@ -57,8 +58,16 @@ src = ["ynca"]
 
 [tool.ruff.lint]
 ignore = [
-  "A005",   # It is just wrong
+  "A005", # It is just wrong
   "ANN401", # Opiniated warning on disallowing dynamically typed expressions
+  # Ignoring missing docstrings. Most things should be clear and they tend to get out of date which is worse.
+  "D100",   # Missing docstrings for public module
+  "D101",   # Missing docstrings for public classes
+  "D102",   # Missing docstrings for public methods
+  "D103",   # Missing docstrings for public functions
+  "D104",   # Missing docstrings in public package
+  "D105",   # Missing docstrings in magic method
+  "D107",   # Missing docstrings in __init__
   "D203",   # Conflicts with other rules
   "D213",   # Conflicts with other rules
   "RUF012", # Just broken
@@ -82,6 +91,24 @@ select = ["ALL"]
 force-sort-within-sections = true
 known-first-party = ["ynca"]
 combine-as-imports = true
+
+[tool.ruff.lint.per-file-ignores]
+# Ignore `T201` (print not allowed) in files that are intended to be used from CLI.
+"ynca/terminal.py" = ["T201"]
+# server.py started out as a quick hack and needs some work to get it right, until then disable some rules
+"ynca/server.py" = [
+  "ANN001",
+  "C901",
+  "FBT002",
+  "PLR0912",
+  "PLW2901",
+  "SIM102",
+  "SLF001",
+  "T201",
+]
+"ynca/enums.py" = [
+  "ANN206",
+] # Complains about missing return type annotation for _missing_ but can't figure out what it should be
 
 [tool.pylint."MESSAGES CONTROL"]
 # Reasons disabled:

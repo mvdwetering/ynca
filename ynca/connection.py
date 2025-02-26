@@ -1,25 +1,27 @@
 from __future__ import annotations
 
 import logging
-from typing import Callable, List, Optional, Set, cast
+from typing import TYPE_CHECKING, cast
 
-import serial  # type: ignore
-import serial.threaded  # type: ignore
-
+import serial  # type: ignore[import-untyped]
+import serial.threaded  # type: ignore[import-untyped]
 
 from .errors import YncaConnectionError, YncaConnectionFailed
 from .protocol import YncaProtocol, YncaProtocolStatus
+
+if TYPE_CHECKING:  # pragma: no cover
+    from collections.abc import Callable
 
 logger = logging.getLogger(__name__)
 
 
 class YncaConnection:
     @classmethod
-    def create_from_serial_url(cls, serial_url: str):
+    def create_from_serial_url(cls, serial_url: str) -> YncaConnection:
         return cls(serial_url)
 
-    def __init__(self, serial_url: str):
-        """Instantiate a YncaConnection
+    def __init__(self, serial_url: str) -> None:
+        """Instantiate a YncaConnection.
 
         serial_url:
             Can be a devicename (e.g. /dev/ttyUSB0 or COM3),
@@ -31,11 +33,11 @@ class YncaConnection:
         """
         self._port = serial_url
         self._serial = None
-        self._readerthread: Optional[serial.threaded.ReaderThread] = None
-        self._protocol: Optional[YncaProtocol] = None
+        self._readerthread: serial.threaded.ReaderThread | None = None
+        self._protocol: YncaProtocol | None = None
 
         self._disconnect_callback: Callable[[], None] | None = None
-        self._message_callbacks: Set[
+        self._message_callbacks: set[
             Callable[[YncaProtocolStatus, str | None, str | None, str | None], None]
         ] = set()
 
@@ -44,7 +46,7 @@ class YncaConnection:
         callback: Callable[
             [YncaProtocolStatus, str | None, str | None, str | None], None
         ],
-    ):
+    ) -> None:
         self._message_callbacks.add(callback)
 
     def unregister_message_callback(
@@ -52,7 +54,7 @@ class YncaConnection:
         callback: Callable[
             [YncaProtocolStatus, str | None, str | None, str | None], None
         ],
-    ):
+    ) -> None:
         self._message_callbacks.discard(callback)
 
     def _call_registered_message_callbacks(
@@ -61,11 +63,11 @@ class YncaConnection:
         subunit: str | None,
         function_: str | None,
         value: str | None,
-    ):
+    ) -> None:
         for callback in self._message_callbacks:
             callback(status, subunit, function_, value)
 
-    def _on_disconnect(self):
+    def _on_disconnect(self) -> None:
         if self._disconnect_callback:
             self._disconnect_callback()
 
@@ -73,7 +75,7 @@ class YncaConnection:
         self,
         disconnect_callback: Callable[[], None] | None = None,
         communication_log_size: int = 0,
-    ):
+    ) -> None:
         try:
             self._disconnect_callback = disconnect_callback
             self._serial = serial.serial_for_url(self._port)
@@ -89,11 +91,11 @@ class YncaConnection:
             _, protocol = self._readerthread.connect()
             self._protocol = cast(YncaProtocol, protocol)
         except serial.SerialException as e:
-            raise YncaConnectionError(e)
+            raise YncaConnectionError from e
         except RuntimeError as e:
-            raise YncaConnectionFailed(e)
+            raise YncaConnectionFailed from e
 
-    def close(self):
+    def close(self) -> None:
         # Disconnect callback is for unexpected disconnects
         # Don't need it to be called on planned `close()`
         self._disconnect_callback = None
@@ -101,26 +103,26 @@ class YncaConnection:
         if self._readerthread:
             self._readerthread.close()
 
-    def raw(self, raw_data: str):
+    def raw(self, raw_data: str) -> None:
         if self._protocol:
             self._protocol.raw(raw_data)
 
-    def put(self, subunit: str, funcname: str, parameter: str):
+    def put(self, subunit: str, funcname: str, parameter: str) -> None:
         if self._protocol:
             self._protocol.put(subunit, funcname, parameter)
 
-    def get(self, subunit: str, funcname: str):
+    def get(self, subunit: str, funcname: str) -> None:
         if self._protocol:
             self._protocol.get(subunit, funcname)
 
     @property
-    def connected(self):
+    def connected(self) -> bool:
         return self._protocol.connected if self._protocol else False
 
     @property
-    def num_commands_sent(self):
+    def num_commands_sent(self) -> int:
         return self._protocol.num_commands_sent if self._protocol else 0
 
-    def get_communication_log_items(self) -> List[str]:
+    def get_communication_log_items(self) -> list[str]:
         """Get a list of logged communication items."""
         return self._protocol.get_communication_log_items() if self._protocol else []

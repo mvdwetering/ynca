@@ -7,16 +7,17 @@ from .connection import YncaConnection, YncaProtocolStatus
 PROMPT = ">> "
 
 
-def delete_prompt():
+def delete_prompt() -> None:
     print("\b" * len(PROMPT), end="")  # \b is backspace
 
 
-def print_prompt():
+def print_prompt() -> None:
     print(PROMPT, end="", flush=True)
 
 
-def YncaTerminal(serial_url: str):
-    """
+def ynca_terminal(serial_url: str) -> None:
+    """YNCA Terminal.
+
     With the YNCA terminal you can manually send YNCA commands to a receiver.
     This is useful to figure out what a command does.
 
@@ -35,9 +36,15 @@ def YncaTerminal(serial_url: str):
     Examples:
       @SYS:MODELNAME=?
       @MAIN:VOL=-24
+
     """
 
-    def output_response(status, subunit, function, value):
+    def output_response(
+        status: YncaProtocolStatus,
+        subunit: str | None,
+        function: str | None,
+        value: str | None,
+    ) -> None:
         delete_prompt()
 
         if status is YncaProtocolStatus.OK:
@@ -47,11 +54,11 @@ def YncaTerminal(serial_url: str):
 
         print_prompt()
 
-    def disconnected_callback():
+    def disconnected_callback() -> None:
         print("\n *** Connection lost, will attempt to reconnect on next command ***")
         print_prompt()
 
-    print(YncaTerminal.__doc__)
+    print(ynca_terminal.__doc__)
 
     connection = YncaConnection(serial_url)
     connection.register_message_callback(output_response)
@@ -89,8 +96,8 @@ if __name__ == "__main__":
         print("  COM3")
         print("  /dev/ttyUSB0")
         print("  socket://192.168.178.21:50000")
-        exit(1)
+        sys.exit(1)
 
-    YncaTerminal(sys.argv[1])
+    ynca_terminal(sys.argv[1])
 
     print("Done")

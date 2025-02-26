@@ -300,23 +300,23 @@ def test_initialize_minimal(connection):
         disconnect_callback.assert_not_called()
 
 
-def test_close(connection):
+def test_initialize_twice(connection):
     with mock.patch.object(
         ynca.api.YncaConnection, "create_from_serial_url"
     ) as create_from_serial_url:
         create_from_serial_url.return_value = connection
         connection.get_response_list = INITIALIZE_MINIMAL_RESPONSES
 
-        y = ynca.YncaApi("serial_url")
-        y.close()
+        disconnect_callback = mock.MagicMock()
+
+        y = ynca.YncaApi("serial_url", disconnect_callback)
         y.initialize()
 
-        y.close()
-        connection.close.assert_called_once()
+        assert isinstance(y.sys, System)
+        assert y.sys.version == "Version"
 
-        # Should be safe to call multiple times
-        y.close()
-        connection.close.assert_called_once()
+        with pytest.raises(YncaInitializationFailedException):
+            y.initialize()
 
 
 def test_initialize_fail(connection):
@@ -334,6 +334,25 @@ def test_initialize_fail(connection):
 
         connection.close.assert_called_once()
         disconnect_callback.assert_not_called()
+
+
+def test_close(connection):
+    with mock.patch.object(
+        ynca.api.YncaConnection, "create_from_serial_url"
+    ) as create_from_serial_url:
+        create_from_serial_url.return_value = connection
+        connection.get_response_list = INITIALIZE_MINIMAL_RESPONSES
+
+        y = ynca.YncaApi("serial_url")
+        y.close()
+        y.initialize()
+
+        y.close()
+        connection.close.assert_called_once()
+
+        # Should be safe to call multiple times
+        y.close()
+        connection.close.assert_called_once()
 
 
 def test_disconnect_callback(connection):

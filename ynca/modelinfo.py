@@ -1,17 +1,16 @@
-"""This file contains info that is specific per model"""
+"""Modelinfo pre model for specific receivers."""
 
 from dataclasses import dataclass
-from typing import List, Optional
 
 from .enums import SoundPrg
 
 
 @dataclass
 class ModelInfo:
-    soundprg: List[SoundPrg]
+    soundprg: list[SoundPrg]
 
 
-BasicSoundPrgList: List[SoundPrg] = [
+BasicSoundPrgList: list[SoundPrg] = [
     SoundPrg.HALL_IN_MUNICH,
     SoundPrg.HALL_IN_VIENNA,
     SoundPrg.CHAMBER,
@@ -32,7 +31,7 @@ BasicSoundPrgList: List[SoundPrg] = [
     SoundPrg.SURROUND_DECODER,
 ]
 
-ExtendedSoundPrgList: List[SoundPrg] = list(BasicSoundPrgList)
+ExtendedSoundPrgList: list[SoundPrg] = list(BasicSoundPrgList)
 ExtendedSoundPrgList.extend(
     [
         SoundPrg.HALL_IN_AMSTERDAM,
@@ -45,19 +44,19 @@ ExtendedSoundPrgList.extend(
 )
 
 
-BasicSoundPrgFiveChannel: List[SoundPrg] = list(BasicSoundPrgList)
+BasicSoundPrgFiveChannel: list[SoundPrg] = list(BasicSoundPrgList)
 BasicSoundPrgFiveChannel.append(SoundPrg.FIVE_CH_STEREO)
 
-BasicSoundPrgSevenChannel: List[SoundPrg] = list(BasicSoundPrgList)
+BasicSoundPrgSevenChannel: list[SoundPrg] = list(BasicSoundPrgList)
 BasicSoundPrgSevenChannel.append(SoundPrg.SEVEN_CH_STEREO)
 
-ExtendedSoundPrgSevenChannel: List[SoundPrg] = list(ExtendedSoundPrgList)
+ExtendedSoundPrgSevenChannel: list[SoundPrg] = list(ExtendedSoundPrgList)
 ExtendedSoundPrgSevenChannel.append(SoundPrg.SEVEN_CH_STEREO)
 
-ExtendedSoundPrgNineChannel: List[SoundPrg] = list(ExtendedSoundPrgList)
+ExtendedSoundPrgNineChannel: list[SoundPrg] = list(ExtendedSoundPrgList)
 ExtendedSoundPrgNineChannel.append(SoundPrg.NINE_CH_STEREO)
 
-ExtendedSoundPrgAllChannel: List[SoundPrg] = list(ExtendedSoundPrgList)
+ExtendedSoundPrgAllChannel: list[SoundPrg] = list(ExtendedSoundPrgList)
 ExtendedSoundPrgAllChannel.append(SoundPrg.ALL_CH_STEREO)
 ExtendedSoundPrgAllChannel.append(SoundPrg.ENHANCED)
 
@@ -91,5 +90,5 @@ MODELINFO = {
 
 class YncaModelInfo:
     @staticmethod
-    def get(modelname: str) -> Optional[ModelInfo]:
-        return MODELINFO.get(modelname, None)
+    def get(modelname: str) -> ModelInfo | None:
+        return MODELINFO.get(modelname)

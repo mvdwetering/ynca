@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from ..constants import Subunit
 from ..converters import IntConverter
-from ..function import Cmd, EnumFunctionMixin, IntFunctionMixin, StrFunctionMixin
 from ..enums import BandTun
+from ..function import Cmd, EnumFunctionMixin, IntFunctionMixin, StrFunctionMixin
 from ..helpers import number_to_string_with_stepsize
 from ..subunit import SubunitBase
 from . import (

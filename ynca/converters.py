@@ -1,9 +1,12 @@
 from __future__ import annotations
 
-import logging
 from abc import ABC, abstractmethod
 from enum import Enum
-from typing import Any, Callable, Generic, List, Type, TypeVar, cast
+import logging
+from typing import TYPE_CHECKING, Any, Generic, TypeVar, cast
+
+if TYPE_CHECKING:  # pragma: no cover
+    from collections.abc import Callable
 
 logger = logging.getLogger(__name__)
 
@@ -12,6 +15,8 @@ E = TypeVar("E", bound=Enum)
 
 
 class ConverterBase(ABC, Generic[T]):
+    """Base class for converters. Note that converters should be stateless."""
+
     @abstractmethod
     def to_value(self, value_string: str) -> T:  # pragma: no cover
         pass
@@ -22,7 +27,7 @@ class ConverterBase(ABC, Generic[T]):
 
 
 class EnumConverter(ConverterBase, Generic[E]):
-    def __init__(self, datatype: Type[E]) -> None:
+    def __init__(self, datatype: type[E]) -> None:
         self.datatype = datatype
 
     def to_value(self, value_string: str) -> E:
@@ -87,35 +92,39 @@ class StrConverter(ConverterBase):
         str(value)
 
         if self._min_len and len(value) < self._min_len:
-            raise ValueError(f"{value} has a minimum length of {self._min_len}")
+            msg = f"{value} has a minimum length of {self._min_len}"
+            raise ValueError(msg)
         if self._max_len and len(value) > self._max_len:
-            raise ValueError(f"{value} has a maxmimum length of {self._max_len}")
+            msg = f"{value} has a maxmimum length of {self._max_len}"
+            raise ValueError(msg)
         return value
 
 
 class MultiConverter(ConverterBase):
-    """
-    Multiconverter allows to try multiple converters.
+    """Multiconverter allows to try multiple converters.
+
     This is sometimes needed as value can be a number or enum.
     MultiConverter will go through the converters in order and the first result will be used.
     Errors have to be indicated by the converters by throwing an exception (any exception is fine).
     """
 
-    def __init__(self, converters: List[ConverterBase]) -> None:
+    def __init__(self, converters: list[ConverterBase]) -> None:
         self._converters = converters
 
     def to_value(self, value_string: str) -> Any:
         for converter in self._converters:
             try:
                 return converter.to_value(value_string)
-            except:  # noqa: E722
+            except:  # noqa: E722, PERF203, S110
                 pass
-        raise ValueError(f"No converter could convert '{value_string}' to value")
+        msg = f"No converter could convert '{value_string}' to value"
+        raise ValueError(msg)
 
     def to_str(self, value: Any) -> str:
         for converter in self._converters:
             try:
                 return converter.to_str(value)
-            except:  # noqa: E722
+            except:  # noqa: E722, PERF203, S110
                 pass
-        raise ValueError(f"No converter could convert {value} to string")
+        msg = f"No converter could convert {value} to string"
+        raise ValueError(msg)

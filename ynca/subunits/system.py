@@ -2,11 +2,13 @@ import logging
 
 from ..constants import Subunit
 from ..converters import StrConverter
-from ..function import Cmd, EnumFunctionMixin, FunctionMixinBase, StrFunctionMixin
 from ..enums import HdmiOutOnOff, Party, PartyMute, Pwr, SpPattern
+from ..function import Cmd, EnumFunctionMixin, FunctionMixinBase, StrFunctionMixin
 from ..subunit import SubunitBase
 
 logger = logging.getLogger(__name__)
+
+REMOTE_CODE_LENGTH = 8
 
 
 class System(SubunitBase):
@@ -50,21 +52,16 @@ class System(SubunitBase):
         converter=StrConverter(), cmd=Cmd.GET, no_initialize=True
     )
 
-    def partyvol_up(self):
-        """
-        Increase the party volume with one step.
-        """
+    def partyvol_up(self) -> None:
+        """Increase the party volume with one step."""
         self._put("PARTYVOL", "Up")
 
-    def partyvol_down(self):
-        """
-        Decrease the party volume with one step.
-        """
+    def partyvol_down(self) -> None:
+        """Decrease the party volume with one step."""
         self._put("PARTYVOL", "Down")
 
-    def remotecode(self, value):
-        if len(value) != 8:
-            raise ValueError(
-                f"REMOTECODE value must be of length 8, but length of '{value}' is {len(value)}"
-            )
+    def remotecode(self, value: str) -> None:
+        if len(value) != REMOTE_CODE_LENGTH:
+            msg = f"REMOTECODE value must be of length 8, but length of '{value}' is {len(value)}"
+            raise ValueError(msg)
         self._put("REMOTECODE", value)

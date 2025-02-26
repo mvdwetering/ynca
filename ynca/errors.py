@@ -1,7 +1,7 @@
 """Ynca errors."""
 
 
-class YncaException(Exception):
+class YncaException(Exception):  # noqa: N818
     """Base error for ynca."""
 
 
@@ -15,6 +15,8 @@ class YncaConnectionFailed(YncaException):
 
 class YncaInitializationFailedException(YncaException):
     """Initialization of Zone failed.
+
     Several possible causes, for example:
     * connecting to a device that already has the YNCA port occupied
-    * bug in the ynca component > enable debug logging for more info"""
+    * bug in the ynca component > enable debug logging for more info.
+    """

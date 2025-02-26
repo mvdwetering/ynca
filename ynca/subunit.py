@@ -1,16 +1,19 @@
 from __future__ import annotations
 
-import logging
-import threading
 from abc import ABC
 from enum import Flag, auto
-from typing import Any, Callable, Dict, Set
+import logging
+import threading
+from typing import TYPE_CHECKING, Any, Protocol
 
 from .connection import YncaConnection, YncaProtocol, YncaProtocolStatus
 from .constants import Subunit
+from .enums import Avail
 from .errors import YncaInitializationFailedException
 from .function import Cmd, EnumFunctionMixin, FunctionMixinBase
-from .enums import Avail
+
+if TYPE_CHECKING:  # pragma: no cover
+    from collections.abc import Callable
 
 logger = logging.getLogger(__name__)
 
@@ -21,7 +24,8 @@ class CommandType(Flag):
 
 
 class YncaFunctionHandler:
-    """
+    """YNCA Function Handler.
+
     Keeps a value of a Function and handles conversions from str on updating.
     Note that it is not possible to store the value in the YncaFunction since it
     is a class instance which is shared by all instances.
@@ -34,23 +38,28 @@ class YncaFunctionHandler:
         self.value = None
         self.function = function
 
-    def update(self, value_str: str):
+    def update(self, value_str: str) -> None:
         self.value = self.function.converter.to_value(value_str)
 
 
+class SubunitBaseMixinProtocol(Protocol):  # pragma: no cover
+    """Describes the available methods and attributes that Mixins can use to interact with a SubunitBase instance. This helps out with typing."""
+
+    def _put(self, function_name: str, value: str) -> None:
+        pass
+
+
 class SubunitBase(ABC):
-    """
-    Baseclass for Subunits, should be subclassed do not instantiate manually.
-    """
+    """Baseclass for Subunits, should be subclassed do not instantiate manually."""
 
     id: Subunit  # Just typed, needs to be set in subclasses
 
     avail = EnumFunctionMixin[Avail](Avail, Cmd.GET)
 
     def __init__(self, connection: YncaConnection) -> None:
-        self._update_callbacks: Set[Callable[[str, Any], None]] = set()
+        self._update_callbacks: set[Callable[[str, Any], None]] = set()
 
-        self.function_handlers: Dict[str, YncaFunctionHandler] = {}
+        self.function_handlers: dict[str, YncaFunctionHandler] = {}
 
         # Note that we need to iterate over the _class_
         # otherwise the YncaFunction descriptors get/set functions would trigger.
@@ -66,15 +75,11 @@ class SubunitBase(ABC):
         self._connection: YncaConnection | None = connection
         self._connection.register_message_callback(self._protocol_message_received)
 
-    def initialize(self):
-        """
-        Initializes the data for the subunit and makes sure to wait until done.
-        This call can take a long time
-        """
-        if not self._connection:
-            raise YncaInitializationFailedException(
-                "No valid connection"
-            )  # pragma: no cover
+    def initialize(self) -> None:
+        """Initialize the data for the subunit and makes sure to wait until done. This call can take a long time."""
+        if not self._connection:  # pragma: no cover
+            msg = "No valid connection"
+            raise YncaInitializationFailedException(msg)
 
         logger.info("Subunit %s initialization begin.", self.id)
 
@@ -87,14 +92,14 @@ class SubunitBase(ABC):
         initialized_function_names = []
         for function_name, handler in self.function_handlers.items():
             if not handler.function.no_initialize:
-                function_name = (
+                function_initializer_name = (
                     handler.function.initializer
                     if handler.function.initializer is not None
                     else function_name
                 )
-                if function_name not in initialized_function_names:
-                    self._get(function_name)
-                    initialized_function_names.append(function_name)
+                if function_initializer_name not in initialized_function_names:
+                    self._get(function_initializer_name)
+                    initialized_function_names.append(function_initializer_name)
 
         # Use SYS:VERSION as a sync since it is available on all receivers
         self._connection.get(Subunit.SYS, "VERSION")
@@ -107,13 +112,12 @@ class SubunitBase(ABC):
         ):
             self._initialized = True
         else:
-            raise YncaInitializationFailedException(
-                f"Subunit {self.id} initialization failed"
-            )
+            msg = f"Subunit {self.id} initialization failed"
+            raise YncaInitializationFailedException(msg)
 
         logger.info("Subunit %s initialization end.", self.id)
 
-    def close(self):
+    def close(self) -> None:
         if self._connection:
             self._connection.unregister_message_callback(
                 self._protocol_message_received
@@ -127,7 +131,7 @@ class SubunitBase(ABC):
         subunit: str | None,
         function_name: str | None,
         value_str: str | None,
-    ):
+    ) -> None:
         if status is not YncaProtocolStatus.OK:
             # Can't really handle errors since at this point we can't see to what command it belonged
             return
@@ -151,21 +155,21 @@ class SubunitBase(ABC):
             handler.update(value_str)
             self._call_registered_update_callbacks(function_name, handler.value)
 
-    def _put(self, function_name: str, value: str):
+    def _put(self, function_name: str, value: str) -> None:
         if self._connection:
             self._connection.put(self.id, function_name, value)
 
-    def _get(self, function_name: str):
+    def _get(self, function_name: str) -> None:
         if self._connection:
             self._connection.get(self.id, function_name)
 
-    def register_update_callback(self, callback: Callable[[str, Any], None]):
+    def register_update_callback(self, callback: Callable[[str, Any], None]) -> None:
         self._update_callbacks.add(callback)
 
-    def unregister_update_callback(self, callback: Callable[[str, Any], None]):
+    def unregister_update_callback(self, callback: Callable[[str, Any], None]) -> None:
         self._update_callbacks.remove(callback)
 
-    def _call_registered_update_callbacks(self, function_name: str, value: Any):
+    def _call_registered_update_callbacks(self, function_name: str, value: Any) -> None:
         if self._initialized:
             for callback in self._update_callbacks:
                 callback(function_name, value)

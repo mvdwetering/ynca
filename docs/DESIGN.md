@@ -14,19 +14,19 @@ Since the amount of supported functions impacts the `initialize`time functions w
 Some guidelines I try to follow when adding functions to the API.
 
 * YNCA functions supporting GET are modelled as attributes
-    * If the function also support PUT for the value this attribute will also be writable
+  * If the function also supports PUT for the value this attribute will also be writable
 * YNCA functions that _only_ support PUT are modelled as methods
-    * While it is possible to create write only attributes they felt weird to use.
+  * While it is possible to create write only attributes they felt weird to use.
 * YNCA functions that perform actions are modelled as methods
 * Attribute names on the API follow naming as used in YNCA but in lowercase; except where not possible due to Python limitations. E.g. "2chdecoder" becomes "twochdecoder"
 * Method names on the API follow naming as used on YNCA but in lowercase with the "action" postfixed. E.g. "vol_up()" or "remote_send()"
 * While all values on YNCA are transmitted as strings these are converted to Python types
-    * Strings stay strings
-    * Numbers become integers or floats
-    * Multiple options are mapped to Enums
-        * Each function will have its own Enum even though values are the same. On multiple occasions it has turned out that possible values have changed between receivers. Having individual Enums allows to just extend the impacted one without impacting other attributes.
-        * All enums will have an "UNKNOWN" field for the case where a receiver responds with an unknown value. In these cases a warning will be logged. This UNKNOWN mapping is to avoid exceptions when mapping to an Enum which would break the code. Unknown values occur because there is no official documentation available and new receivers might support more/different values.
- * These are guidelines, exceptions can be made.
+  * Strings stay strings
+  * Numbers become integers or floats
+  * Multiple options are mapped to Enums
+    * Each function will have its own Enum even though values are the same. On multiple occasions it has turned out that possible values have changed between receivers. Having individual Enums allows to just extend the impacted one without impacting other attributes.
+    * All enums will have an "UNKNOWN" field for the case where a receiver responds with an unknown value. In these cases, a warning will be logged. This UNKNOWN mapping is to avoid exceptions when mapping to an Enum which would break the code. Unknown values occur because there is no official documentation available and new receivers might support more/different values.
+* These are guidelines, exceptions can be made.
 
 Note:
 While using attributes to read/write values is pretty neat (and was a nice learning on how to use descriptors) it is a bit weird as you can write a value and it might not have been updated yet when you read it fast enough (sending the command and receiving response takes time). I am not planning to change it any time soon as I do like to just write attributes and not have functions for everything which makes the usage look more messy (IMHO).
@@ -36,18 +36,17 @@ While using attributes to read/write values is pretty neat (and was a nice learn
 There is no explicit way to check which inputs are supported on the unit or per subunit.
 However it can be derived with some logic.
 
-
 ### Detection of inputs on the unit
 
 The availability of a subset of inputs can be deduced in 2 ways:
- * Get the `INPUTNAMES` this returns inputs that can be renamed
- * Use the `AVAIL` command to check for subunits that are inputs
+
+* Get the `INPUTNAMES` this returns inputs that can be renamed
+* Use the `AVAIL` command to check for subunits that are inputs
 
 The first method gives all inputs that can be renamed which seems to be all inputs that have a physical connection.
 The second method can be used to detect available subunits (e.g. `TUN`) and then know that the `TUNER` input is available.
 
 The combination of both should give all inputs.
-
 
 ### Detection of the inputs on the zone
 
@@ -57,11 +56,9 @@ The `MAIN` zone seems to have all inputs. Other zones have less. Mainly the vide
 
 For now lets not attempt to detect the exact supported inputs on a zone.
 
-
 ## Zone detection
 
 Since there is no explicit command for supported zones, just check availability by checking all known zone subunits (`MAIN`, `ZONE2`, `ZONE3` and `ZONE4`), if they respond properly to `AVAIL` then they are on the device.
-
 
 ## Keep alive
 
@@ -83,10 +80,11 @@ There does not seem to be an easy way to wrap the existing API with an asyncio l
 Would also need a different API as it is not possible to `await` attributes.
 
 Maybe something like:
-```
-zone.vol.put(12)
-zone.vol.get()  # Would request value at receiver and return value
-zone.vol.get_cached()  # Would return last received value
+
+```python
+zone.vol.put(12)  # Send command to receiver
+zone.vol.get()    # Would request value at receiver and return value
+zone.vol.value()  # Would return last received value from cache
 zone.vol.is_supported
 ```
 
