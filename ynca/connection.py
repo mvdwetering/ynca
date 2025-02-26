@@ -3,8 +3,8 @@ from __future__ import annotations
 import logging
 from typing import TYPE_CHECKING, cast
 
-import serial  # type: ignore
-import serial.threaded  # type: ignore
+import serial  # type: ignore[import-untyped]
+import serial.threaded  # type: ignore[import-untyped]
 
 from .errors import YncaConnectionError, YncaConnectionFailed
 from .protocol import YncaProtocol, YncaProtocolStatus
@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 class YncaConnection:
     @classmethod
-    def create_from_serial_url(cls, serial_url: str):
+    def create_from_serial_url(cls, serial_url: str) -> YncaConnection:
         return cls(serial_url)
 
     def __init__(self, serial_url: str) -> None:
@@ -91,9 +91,9 @@ class YncaConnection:
             _, protocol = self._readerthread.connect()
             self._protocol = cast(YncaProtocol, protocol)
         except serial.SerialException as e:
-            raise YncaConnectionError(e)
+            raise YncaConnectionError from e
         except RuntimeError as e:
-            raise YncaConnectionFailed(e)
+            raise YncaConnectionFailed from e
 
     def close(self) -> None:
         # Disconnect callback is for unexpected disconnects
@@ -116,11 +116,11 @@ class YncaConnection:
             self._protocol.get(subunit, funcname)
 
     @property
-    def connected(self):
+    def connected(self) -> bool:
         return self._protocol.connected if self._protocol else False
 
     @property
-    def num_commands_sent(self):
+    def num_commands_sent(self) -> int:
         return self._protocol.num_commands_sent if self._protocol else 0
 
     def get_communication_log_items(self) -> list[str]:
