@@ -103,15 +103,11 @@ class YncaApi:
         connection.unregister_message_callback(self._protocol_message_received)
         logger.info("Subunit availability check end")
 
-    def _get_subunit_class(self, subunit_id):
+    def _get_subunit_class(self, subunit_id) -> type[SubunitBase] | None:
         subunit_classes = all_subclasses(SubunitBase)
         for subunit_class in subunit_classes:
-            try:
-                if subunit_class.id == subunit_id:
-                    return subunit_class
-            except AttributeError:  # pragma: no cover
-                # Intermediate Subunit classes like ZoneBase don't have an ID
-                pass
+            if hasattr(subunit_class, "id") and subunit_class.id == subunit_id:
+                return subunit_class
 
         return None  # pragma: no cover
 
@@ -130,7 +126,7 @@ class YncaApi:
                 self._subunits[subunit_instance.id] = subunit_instance
 
     def connection_check(self) -> YncaConnectionCheckResult:
-        """Does a quick connection check by setting up a connection and requesting some basic info.
+        """Perform a quick connection check by setting up a connection and requesting some basic info.
         Connection gets closed again automatically.
 
         This is a fast way to check the connection and if it is a YNCA device
@@ -141,7 +137,7 @@ class YncaApi:
         connection_check_event = threading.Event()
 
         def _connection_check_message_received(
-            status: YncaProtocolStatus,
+            _status: YncaProtocolStatus,
             subunit: str | None,
             function_: str | None,
             value: str | None,
@@ -180,13 +176,15 @@ class YncaApi:
         return result
 
     def initialize(self) -> None:
-        """Sets up a connection to the device and initializes the Ynca API.
+        """Set up a connection to the device and initializes the Ynca API.
         This call takes quite a while (~10 seconds on a simple 2 zone receiver).
 
         If initialize was successful the client should call the `close()`
         method when done with the Ynca API object to cleanup.
         """
-        assert self._connection is None, "Can only initialize once!"
+        if self._connection is not None:
+            msg = "Can only initialize once!"
+            raise YncaInitializationFailedException(msg)
 
         is_initialized = False
 
@@ -204,10 +202,10 @@ class YncaApi:
 
     def _protocol_message_received(
         self,
-        status: YncaProtocolStatus,
+        _status: YncaProtocolStatus,
         subunit: str | None,
         function_: str | None,
-        value: str | None,
+        _value: str | None,
     ) -> None:
         if function_ == "AVAIL":
             self._available_subunits.add(subunit)
@@ -235,8 +233,8 @@ class YncaApi:
         YncaApi object should _not_ be reused after being closed!
         """
         # Convert to list to avoid issues when deleting while iterating
-        for id in list(self._subunits.keys()):
-            subunit = self._subunits.pop(id)
+        for key in list(self._subunits.keys()):
+            subunit = self._subunits.pop(key)
             subunit.close()
         if self._connection:
             self._connection.close()
