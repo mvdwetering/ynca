@@ -53,7 +53,7 @@ class YncaProtocol(serial.threaded.LineReader):
             | None
         ) = None,
         disconnect_callback: Callable[[], None] | None = None,
-        communication_log_size=0,
+        communication_log_size: int = 0,
     ) -> None:
         super().__init__()
         self._message_callback = message_callback
@@ -66,7 +66,7 @@ class YncaProtocol(serial.threaded.LineReader):
         self._communication_log_buffer: LogBuffer = LogBuffer(communication_log_size)
         self.num_commands_sent = 0
 
-    def connection_made(self, transport) -> None:
+    def connection_made(self, transport) -> None:  # noqa: ANN001
         super().connection_made(transport)
 
         logger.debug("Connected")
@@ -83,7 +83,7 @@ class YncaProtocol(serial.threaded.LineReader):
         self._send_keepalive()
         self._send_keepalive()
 
-    def connection_lost(self, exc) -> None:
+    def connection_lost(self, exc: Exception) -> None:
         self.connected = False
 
         logger.debug("Connection closed/lost %s", exc)
@@ -103,7 +103,7 @@ class YncaProtocol(serial.threaded.LineReader):
         if self._disconnect_callback:
             self._disconnect_callback()
 
-    def handle_line(self, line) -> None:
+    def handle_line(self, line: str) -> None:
         ignore = False
         status = YncaProtocolStatus.OK
         subunit: str | None = None

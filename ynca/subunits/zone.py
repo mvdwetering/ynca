@@ -36,7 +36,7 @@ from ..function import (
     StrFunctionMixin,
 )
 from ..helpers import number_to_string_with_stepsize
-from ..subunit import SubunitBase
+from ..subunit import SubunitBase, SubunitBaseMixinProtocol
 from . import PlaybackFunctionMixin
 
 logger = logging.getLogger(__name__)
@@ -46,18 +46,20 @@ def raiser(ex: type[Exception]) -> NoReturn:
     raise ex
 
 
-def do_vol_up(self, step_size: float, function: str) -> None:
+def do_vol_up(self: SubunitBaseMixinProtocol, step_size: float, function: str) -> None:
     """Increase the volume with given stepsize. Supported stepsizes are: 0.5, 1, 2 and 5."""
     value = "Up"
-    if step_size in [1, 2, 5]:
+    if int(step_size) in [1, 2, 5]:
         value = f"Up {step_size} dB"
     self._put(function, value)
 
 
-def do_vol_down(self, step_size: float, function: str) -> None:
+def do_vol_down(
+    self: SubunitBaseMixinProtocol, step_size: float, function: str
+) -> None:
     """Decrease the volume with given stepsize. Supported stepsizes are: 0.5, 1, 2 and 5."""
     value = "Down"
-    if step_size in [1, 2, 5]:
+    if int(step_size) in [1, 2, 5]:
         value = f"Down {step_size} dB"
     self._put(function, value)
 

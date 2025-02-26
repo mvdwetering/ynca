@@ -103,7 +103,7 @@ class YncaApi:
         connection.unregister_message_callback(self._protocol_message_received)
         logger.info("Subunit availability check end")
 
-    def _get_subunit_class(self, subunit_id) -> type[SubunitBase] | None:
+    def _get_subunit_class(self, subunit_id: str) -> type[SubunitBase] | None:
         subunit_classes = all_subclasses(SubunitBase)
         for subunit_class in subunit_classes:
             if hasattr(subunit_class, "id") and subunit_class.id == subunit_id:

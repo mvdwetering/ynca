@@ -60,7 +60,7 @@ class System(SubunitBase):
         """Decrease the party volume with one step."""
         self._put("PARTYVOL", "Down")
 
-    def remotecode(self, value) -> None:
+    def remotecode(self, value: str) -> None:
         if len(value) != REMOTE_CODE_LENGTH:
             msg = f"REMOTECODE value must be of length 8, but length of '{value}' is {len(value)}"
             raise ValueError(msg)

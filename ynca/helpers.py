@@ -24,7 +24,7 @@ def number_to_string_with_stepsize(value: float, decimals: int, stepsize: float)
 
 
 # From: https://stackoverflow.com/a/3862957/4124648
-def all_subclasses(cls) -> set:
+def all_subclasses(cls) -> set:  # noqa: ANN001
     return set(cls.__subclasses__()).union(
         [s for c in cls.__subclasses__() for s in all_subclasses(c)]
     )
@@ -36,7 +36,7 @@ T = TypeVar("T")
 class RingBuffer(Generic[T]):
     """Simple ringbuffer that hold size amount of items, adding more will discard oldest items."""
 
-    def __init__(self, size) -> None:
+    def __init__(self, size: int) -> None:
         self._buffer: collections.deque = collections.deque(maxlen=size)
 
     def add(self, item: T) -> None:

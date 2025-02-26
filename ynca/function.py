@@ -71,12 +71,14 @@ class FunctionMixinBase(ABC, Generic[T]):
 
     @overload
     def __get__(
-        self, instance: None, owner
+        self, instance: None, owner: type
     ) -> FunctionMixinBase[T]:  # pragma: no cover
         ...
 
     @overload
-    def __get__(self, instance: SubunitBase, owner) -> T | None:  # pragma: no cover
+    def __get__(
+        self, instance: SubunitBase, owner: type
+    ) -> T | None:  # pragma: no cover
         ...
 
     def __get__(
@@ -92,7 +94,7 @@ class FunctionMixinBase(ABC, Generic[T]):
 
         return instance.function_handlers[self.name].value
 
-    def __set__(self, instance, value: T) -> None:
+    def __set__(self, instance: SubunitBase, value: T) -> None:
         """Send command with provided value to receiver."""
         if Cmd.PUT not in self.cmd:
             msg = f"Function {self.name} does not support PUT command"
@@ -103,18 +105,19 @@ class FunctionMixinBase(ABC, Generic[T]):
         """Remove function handler from cache."""
         del instance.function_handlers[self.name]
 
-    def __set_name__(self, owner, name) -> None:
+    def __set_name__(self, _owner: type, name: str) -> None:
         """Initialize the function name attribute."""
         self.name = name.upper() if not self._name_override else self._name_override
 
 
 class EnumFunctionMixin(FunctionMixinBase[E], Generic[E]):
+
     def __init__(
         self,
         datatype: type[E],
         cmd: Cmd = Cmd.GET | Cmd.PUT,
         name_override: str | None = None,
-        init=None,
+        init: str | None = None,
     ) -> None:
         super().__init__(
             name_override=name_override,
@@ -125,12 +128,13 @@ class EnumFunctionMixin(FunctionMixinBase[E], Generic[E]):
 
 
 class StrFunctionMixin(FunctionMixinBase[str]):
+
     def __init__(
         self,
         cmd: Cmd = Cmd.GET | Cmd.PUT,
         converter: ConverterBase | None = None,
         name_override: str | None = None,
-        init=None,
+        init: str | None = None,
     ) -> None:
         super().__init__(
             name_override=name_override,
@@ -141,12 +145,13 @@ class StrFunctionMixin(FunctionMixinBase[str]):
 
 
 class IntFunctionMixin(FunctionMixinBase[int]):
+
     def __init__(
         self,
         command_type: Cmd = Cmd.GET | Cmd.PUT,
         converter: ConverterBase | None = None,
         name_override: str | None = None,
-        init=None,
+        init: str | None = None,
     ) -> None:
         super().__init__(
             name_override=name_override,
@@ -157,12 +162,13 @@ class IntFunctionMixin(FunctionMixinBase[int]):
 
 
 class FloatFunctionMixin(FunctionMixinBase[float]):
+
     def __init__(
         self,
         cmd: Cmd = Cmd.GET | Cmd.PUT,
         converter: ConverterBase | None = None,
         name_override: str | None = None,
-        init=None,
+        init: str | None = None,
     ) -> None:
         super().__init__(
             name_override=name_override,
@@ -173,13 +179,14 @@ class FloatFunctionMixin(FunctionMixinBase[float]):
 
 
 class EnumOrFloatFunctionMixin(FunctionMixinBase, Generic[E]):
+
     def __init__(
         self,
         datatype: type[E],
         converter: MultiConverter | None = None,
         cmd: Cmd = Cmd.GET | Cmd.PUT,
         name_override: str | None = None,
-        init=None,
+        init: str | None = None,
     ) -> None:
         super().__init__(
             name_override=name_override,
@@ -199,7 +206,7 @@ class EnumOrIntFunctionMixin(FunctionMixinBase, Generic[E]):
         converter: MultiConverter | None = None,
         cmd: Cmd = Cmd.GET | Cmd.PUT,
         name_override: str | None = None,
-        init=None,
+        init: str | None = None,
     ) -> None:
         super().__init__(
             name_override=name_override,

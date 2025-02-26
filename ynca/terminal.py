@@ -39,7 +39,12 @@ def ynca_terminal(serial_url: str) -> None:
 
     """
 
-    def output_response(status, subunit, function, value) -> None:
+    def output_response(
+        status: YncaProtocolStatus,
+        subunit: str | None,
+        function: str | None,
+        value: str | None,
+    ) -> None:
         delete_prompt()
 
         if status is YncaProtocolStatus.OK:
