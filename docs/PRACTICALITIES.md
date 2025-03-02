@@ -2,35 +2,35 @@
 
 This document describes some notes on weirdness/unexpected behaviour and other practicalities found when working with devices using the YNCA protocol.
 
-
 ## Fixed volume
 
-There seem to be 2 situations where zones have a fixed volume.
-
- * No volume control at all. This is clearly indicated by the absence of a VOL function, e.g Zone 4 on RX-A6A
- * No volume control related to some specific configuration/setup.
-
-For the second case the zone still reports the VOL function which can be read and does _not_ give errors when trying to change the volume (I would have expected @RESTRICTED).
-There are no response/updates on trying to change the volume (as it is fixed). It is unknown which setting causes the volume to become fixed.
+Sometimes zones report values for volume and allow setting it, but it does not take effect.
+There are also no response/updates on trying to change the volume (as it is fixed).
 
 For reference, the AV Control Android app also shows volume controls for Zone2 which do not work.
 The webinterface on the receiver however shows the text "FIXED" for the volume on Zone2
 This is based on observations on RX-A810 firmware 1.80/2.01.
 
-Tried to derive from MAXVOL availability, but not available on all non-fixed zones, e.g. RX-V475 1.34/2.06
+This is most likely related to the speakerconfiguration indicated by the `@SYS:SPPATTERN1AMP` function (or `@SYS:SPPATTERN2AMP` if the receiver supports multiple speaker patterns).
+This function can have values like `Basic`, `ZoneB`, `7ch +1ZONE`, `5ch BI-AMP` and many more.
+My initial guess was that when `+1ZONE` is there that means that actual speakers for Zone2 are connected and on the `Basic` case you are supposed to use the preout connections for Zone2.
+And with a `+2ZONE` it would be Zone 2 and Zone 3, however it is a bit more subtle. For example the RX-A2010 manual tells the following about `7ch +1ZONE` configuration.
 
-It is most likely related to the speakerconfiguration indicated by the `@SYS:SPPATTERN1AMP` command which can have values like `Basic`, `7ch +1ZONE`, `5ch BI-AMP` and many more.
-My guess would be that when `+1ZONE` is there that means that actual speakers for Zone2 are connected and on the `Basic` case you are supposed to use the preout connections for Zone2.
+> Select this when you use 7-channel speakers in the main zone and Zone2 (or Zone3) speakers (p.24).
+> You can select a zone to be assigned to the EXTRA SP1 jacks (default: Zone2).
 
-This needs some more research/data to make a solid conclusion
+I could not find a function that indicates which Zone is assigned and I don't have a receiver with this feature to experiment with.
+
+Next to that there is `ZoneB` which is a configuration with additional speakers with their own volume control, but same input as Main zone.
 
 ## Scene activation not working
 
 For some receivers activating scenes does not work and they answer with @RESTRICTED.
-See https://github.com/mvdwetering/yamaha_ynca/issues/19 for logs.
+See <https://github.com/mvdwetering/yamaha_ynca/issues/19> for logs.
 
 Currently known receivers that behave like this:
-- RX-V475 1.34/2.06 (probably also RX-V575/HTR-4066/HTR-5066 as they share the same firmware
+
+* RX-V475 1.34/2.06 (probably also RX-V575/HTR-4066/HTR-5066 as they share the same firmware
 
 As a workaround the remote codes for SCENE1 etc... can be sent. This works at least on RX-V475 based on user feedback.
 
@@ -38,11 +38,12 @@ As a workaround the remote codes for SCENE1 etc... can be sent. This works at le
 
 Some receivers respond with @UNDEFINED for ZONENAME and SCENENAME requests.
 Strange part is that the user seems to be able to change names on the receiver (or only in the app?), but that info is not available through YNCA.
-See https://github.com/mvdwetering/yamaha_ynca/issues/8 for logs
+See <https://github.com/mvdwetering/yamaha_ynca/issues/8> for logs
 
 Currently known receivers that behave like this:
-- TSR-700 1.53/3.12
-- RX-A6A 1.80/3.12
+
+* TSR-700 1.53/3.12
+* RX-A6A 1.80/3.12
 
 ## INITVOLLVL variations
 
@@ -56,7 +57,8 @@ So assumed functionality is:
 * number = Enabled with specific level
 
 Currently known receivers that can report "Off":
-- RX-V477 1.28/1.4
+
+* RX-V477 1.28/1.4
 
 ## 2CHDECODER
 
@@ -64,10 +66,11 @@ It looks like the 2CHDECODER values completely changed on newer models of receiv
 The older models have support for Dolby Prologic and DTS:Neo settings, while newer models seem to have diffent values.
 
 Values seen until now:
+
 * "AURO-3D" Seen on RX-A6A
 * "DTS Neural:X" Seen on RX-A1060 and RX-A3070
 
-From a quick look at the product manuals those models do not support the older surround decoder values. 
+From a quick look at the product manuals those models do not support the older surround decoder values.
 However the RX-A3070 does... it supports the DTS:NEO presets and Auto, Dolby Surround, Neural X.
 
 AURO-3D does not seem to be available on RX-1060 and it is unknown how to detect AURO-3D support.
@@ -89,19 +92,18 @@ SONG only seen on internet without mention of receiver or firmware version
 
 There seem to be 2 methods of controlling HDMIOUT status
 
-### MAIN:HDMIOUT 
+### MAIN:HDMIOUT
 
 This seems to be how older receivers work like RX-A810 or RX-V671
 
 MAIN:HDMIOUT is an enum which can have values depending on the amount of HDMI outputs.
 
 RX-V671 has 1 HDMI output and supports values Off and OUT
-RX-A810 has 2 HDMI outputs and supports values Off, OUT1, OUT2 and OUT1 + 2. 
+RX-A810 has 2 HDMI outputs and supports values Off, OUT1, OUT2 and OUT1 + 2.
 
 I have only seen it for the MAIN zone, but in theory it might also apply to others?
 
-
-### SYS:HDMIOUT#
+### SYS:HDMIOUT #
 
 This seems to be for newer receivers like TSR-700 and RX-A6A
 
@@ -109,7 +111,7 @@ SYS:HDMIOUT# is a boolean that can have values On and Off. This command toggles 
 
 This command has been seen for HDMIOUT 1, 2 and 3.
 
-What makes this command a bit weird is while it is part of the SYS subunit it can _only_ be controlled when the related zone is On. So for example you can only control HDMIOUT1 when the MAIN zone is On. See logging in [this discussion comment ](https://github.com/mvdwetering/yamaha_ynca/discussions/119#discussioncomment-6103924)
+What makes this command a bit weird is while it is part of the SYS subunit it can _only_ be controlled when the related zone is On. So for example you can only control HDMIOUT1 when the MAIN zone is On. See logging in [this discussion comment](https://github.com/mvdwetering/yamaha_ynca/discussions/119#discussioncomment-6103924)
 
 That seems workable for HDMIOUT 1 and 2 since those always seem to be related to the MAIN zone, but HDMIOUT3 is special and can be linked with ZONE2 and ZONE4 on an RX-A4A or RX-A6A according to the manual. It is unknown if/how it is possible to figure out to which zone it is configured. Would need logging when changing that setting.
 
@@ -125,7 +127,7 @@ For some reason this input is _not_ reported when requesting the input names wit
 
 ## Zone A/B receivers
 
-(this section is compiled from findings in https://github.com/mvdwetering/yamaha_ynca/issues/320)
+(this section is compiled from findings in <https://github.com/mvdwetering/yamaha_ynca/issues/320>)
 
 There are receivers that have zones indicated as "A/B". These are different from the usual MAIN, ZONE2, ZONE3 and ZONE4 subunits.
 
@@ -139,7 +141,6 @@ On the API, these are controlled with these functions `@MAIN:SPEAKERA` and `@MAI
 
 e.g. RX-V573?
 
-
 ### Subzone
 
 Another variation seen on RX-V583 is a "subzone" called Zone B. In the AV Controller app it is shown similar to Zone 2.
@@ -148,6 +149,7 @@ This zone can be powered individually from the MAIN zone, but will always have t
 Reason for calling it a subzone is that its functions are exposed on the MAIN subunit.
 
 On the API, this subzone is controlled by the following functions. Note that Mute only supports On/Off, not the attenuated ones on the main Mute
+
 ```
 @MAIN:PWRB
 @MAIN:ZONEBAVAIL
@@ -182,5 +184,5 @@ Both commands support `On` and `Off`.
 
 Both seem to be part of BASIC. Except for RX-V1067 where PUREDIRMODE is supported, but not in BASIC.
 
-It turns out that DIRMODE does _not_ respond with the new state on state changes. 
+It turns out that DIRMODE does _not_ respond with the new state on state changes.
 At least on RX-V473 with firmware 1.23/1.04. You still get STRAIGHT updates though which is related to DIRMODE.
