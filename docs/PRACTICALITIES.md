@@ -103,7 +103,7 @@ RX-A810 has 2 HDMI outputs and supports values Off, OUT1, OUT2 and OUT1 + 2.
 
 I have only seen it for the MAIN zone, but in theory it might also apply to others?
 
-### SYS:HDMIOUT #
+### SYS:HDMIOUT1/2/3
 
 This seems to be for newer receivers like TSR-700 and RX-A6A
 
@@ -150,7 +150,7 @@ Reason for calling it a subzone is that its functions are exposed on the MAIN su
 
 On the API, this subzone is controlled by the following functions. Note that Mute only supports On/Off, not the attenuated ones on the main Mute
 
-```
+```text
 @MAIN:PWRB
 @MAIN:ZONEBAVAIL
 @MAIN:ZONEBNAME   # Unknown if this can actually be set on the AVR
@@ -177,7 +177,7 @@ It seems Pure Direct is an evolution of Direct because Direct seems to apply to 
 
 Both commands support `On` and `Off`.
 
-```
+```text
 @MAIN:PUREDIRMODE=?  e.g. RX-A810
 @MAIN:DIRMODE=?  e.g. RX-V473
 ```
