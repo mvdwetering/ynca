@@ -58,7 +58,7 @@ src = ["ynca"]
 
 [tool.ruff.lint]
 ignore = [
-  "A005", # It is just wrong
+  "A005",   # It is just wrong
   "ANN401", # Opiniated warning on disallowing dynamically typed expressions
   # Ignoring missing docstrings. Most things should be clear and they tend to get out of date which is worse.
   "D100",   # Missing docstrings for public module
@@ -109,6 +109,7 @@ combine-as-imports = true
 "ynca/enums.py" = [
   "ANN206",
 ] # Complains about missing return type annotation for _missing_ but can't figure out what it should be
+"tests/*" = ["S101"] # Asserts in tests are fine
 
 [tool.pylint."MESSAGES CONTROL"]
 # Reasons disabled:
