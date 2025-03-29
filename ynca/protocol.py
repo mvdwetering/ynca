@@ -62,7 +62,7 @@ class YncaProtocol(serial.threaded.LineReader):
         self._send_thread: threading.Thread
         self._last_sent_command = None
         self.connected = False
-        self._keep_alive_pending = False
+        self._keep_alive_pending: threading.Event = threading.Event()
         self._communication_log_buffer: LogBuffer = LogBuffer(communication_log_size)
         self.num_commands_sent = 0
 
@@ -76,7 +76,7 @@ class YncaProtocol(serial.threaded.LineReader):
         self._send_thread.start()
 
         self.connected = True
-        self._keep_alive_pending = False
+        self._keep_alive_pending.clear()
 
         # When the device is in low power mode the first command is to wake up and gets lost
         # So send a dummy keep-alive on connect and a real one to make sure keep-alive administration is up-to-date
@@ -127,13 +127,13 @@ class YncaProtocol(serial.threaded.LineReader):
             value = match.group("value")
 
             if (
-                self._keep_alive_pending
+                self._keep_alive_pending.is_set()
                 and subunit == "SYS"
                 and function == "MODELNAME"
             ):
                 ignore = True
 
-        self._keep_alive_pending = False
+        self._keep_alive_pending.clear()
 
         if not ignore and self._message_callback is not None:
             self._message_callback(status, subunit, function, value)
@@ -152,7 +152,7 @@ class YncaProtocol(serial.threaded.LineReader):
                     stop = True
                 elif message == "_KEEP_ALIVE":
                     message = "@SYS:MODELNAME=?"  # This message is suggested by YNCA spec for keep-alive
-                    self._keep_alive_pending = True
+                    self._keep_alive_pending.set()
 
                 if not stop:
                     logger.debug("Send - %s", message)
