@@ -60,11 +60,14 @@ class YncaProtocol(serial.threaded.LineReader):
         self._disconnect_callback = disconnect_callback
         self._send_queue: queue.Queue
         self._send_thread: threading.Thread
-        self._last_sent_command = None
-        self.connected = False
+        self._connected = False
         self._keep_alive_pending: threading.Event = threading.Event()
         self._communication_log_buffer: LogBuffer = LogBuffer(communication_log_size)
         self.num_commands_sent = 0
+
+    @property
+    def connected(self) -> bool:
+        return self._connected
 
     def connection_made(self, transport) -> None:  # noqa: ANN001
         super().connection_made(transport)
@@ -75,7 +78,7 @@ class YncaProtocol(serial.threaded.LineReader):
         self._send_thread = threading.Thread(target=self._send_handler)
         self._send_thread.start()
 
-        self.connected = True
+        self._connected = True
         self._keep_alive_pending.clear()
 
         # When the device is in low power mode the first command is to wake up and gets lost
@@ -84,7 +87,7 @@ class YncaProtocol(serial.threaded.LineReader):
         self._send_keepalive()
 
     def connection_lost(self, exc: Exception) -> None:
-        self.connected = False
+        self._connected = False
 
         logger.debug("Connection closed/lost %s", exc)
 
@@ -151,7 +154,7 @@ class YncaProtocol(serial.threaded.LineReader):
                 if message == "_EXIT":
                     stop = True
                 elif message == "_KEEP_ALIVE":
-                    message = "@SYS:MODELNAME=?"  # This message is suggested by YNCA spec for keep-alive
+                    message = "@SYS:MODELNAME=?"  # Use MODELNAME as keep-alive, supported by all
                     self._keep_alive_pending.set()
 
                 if not stop:
@@ -160,12 +163,11 @@ class YncaProtocol(serial.threaded.LineReader):
                         f"{time.perf_counter():.6f} Send: {message}"
                     )
 
-                    self._last_sent_command = message
                     self.write_line(message)
                     time.sleep(
                         self.COMMAND_SPACING
                     )  # Maintain required command spacing
-            except queue.Empty:  # noqa: PERF203
+            except queue.Empty:
                 # To avoid random message being eaten because device goes to sleep, keep it alive
                 self._send_keepalive()
 
