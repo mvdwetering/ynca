@@ -72,6 +72,35 @@ The `@SYS:MODELNAME=?` command is used for it as it is available on all receiver
 
 Some ideas for future additions or iterations
 
+### Detect protocol versions
+
+The VERSION reported by a receiver has 2 parts. E.g. 1.80/2.01. The first one apparently is the firmware version. You can also see that number mentioned when downloading firmware for your receiver. The second part apparently is the protocol version.
+
+It is unclear what the version differences are, but with enough data it might be possible to use that version to decide which features are supported and rely less on guessing.
+
+Seen versions in logs:
+
+```txt
+RX-V473, 1.23/1.04
+
+RX-V584, 2.78/1.81
+
+RX-A810, 1.80/2.01
+RX-V1067, 3.70/2.01
+RX-V2067, 3.70/2.01
+
+R-N500, 1.17/2.06
+RX-V500D, 1.20/2.06
+RX-V475, 1.34/2.06
+RX-A3020, 1.41/2.06
+
+TSR-700, 1.53/3.12
+RX-A6A, 1.80/3.12
+
+RX-A2A, 1.67/3.14
+RX-V685, 2.13/3.14
+```
+
 ### Use asyncio
 
 This would make it a better fit for Home Assistant. Might also make communication easier?
