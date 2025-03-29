@@ -1,4 +1,6 @@
 from ynca import Playback, PlaybackInfo, Repeat, Shuffle
+from ynca.constants import Subunit
+from ynca.subunit import SubunitBase
 from ynca.subunits import (
     AlbumFunctionMixin,
     ArtistFunctionMixin,
@@ -8,10 +10,9 @@ from ynca.subunits import (
     ShuffleFunctionMixin,
     SongFunctionMixin,
 )
-from ynca.subunit import SubunitBase
 
 SYS = "SYS"
-SUBUNIT = "SUBUNIT"
+SUBUNIT = "UAW"  # Use UAW as a dummy subunit
 
 INITIALIZE_FULL_RESPONSES = [
     (
@@ -65,7 +66,7 @@ class DummyMediaPlaybackSubunit(
     SongFunctionMixin,
     SubunitBase,
 ):
-    id = "SUBUNIT"  # type: ignore
+    id = Subunit.UAW
 
 
 def test_initialize(connection, update_callback):
