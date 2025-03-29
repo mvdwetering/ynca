@@ -1,6 +1,6 @@
 """Enums used for mapping YNCA values."""
 
-from enum import Enum, unique
+from enum import StrEnum, unique
 import logging
 
 logger = logging.getLogger(__name__)
@@ -9,7 +9,7 @@ UNKNOWN_STRING = "< UNKNOWN >"
 
 
 @unique
-class AdaptiveDrc(str, Enum):
+class AdaptiveDrc(StrEnum):
     OFF = "Off"
     AUTO = "Auto"
 
@@ -23,7 +23,7 @@ class AdaptiveDrc(str, Enum):
 
 
 @unique
-class Avail(str, Enum):
+class Avail(StrEnum):
     NOT_CONNECTED = "Not Connected"
     NOT_READY = "Not Ready"
     READY = "Ready"
@@ -38,7 +38,7 @@ class Avail(str, Enum):
 
 
 @unique
-class BandDab(str, Enum):
+class BandDab(StrEnum):
     DAB = "DAB"
     FM = "FM"
 
@@ -52,7 +52,7 @@ class BandDab(str, Enum):
 
 
 @unique
-class BandTun(str, Enum):
+class BandTun(StrEnum):
     AM = "AM"
     FM = "FM"
 
@@ -66,7 +66,7 @@ class BandTun(str, Enum):
 
 
 @unique
-class DabPreset(str, Enum):
+class DabPreset(StrEnum):
     NO_PRESET = "No Preset"
 
     @classmethod
@@ -79,7 +79,7 @@ class DabPreset(str, Enum):
 
 
 @unique
-class DirMode(Enum):
+class DirMode(StrEnum):
     ON = "On"
     OFF = "Off"
 
@@ -93,7 +93,7 @@ class DirMode(Enum):
 
 
 @unique
-class Enhancer(str, Enum):
+class Enhancer(StrEnum):
     ON = "On"
     OFF = "Off"
 
@@ -107,7 +107,7 @@ class Enhancer(str, Enum):
 
 
 @unique
-class FmPreset(str, Enum):
+class FmPreset(StrEnum):
     NO_PRESET = "No Preset"
 
     @classmethod
@@ -120,7 +120,7 @@ class FmPreset(str, Enum):
 
 
 @unique
-class HdmiOut(str, Enum):
+class HdmiOut(StrEnum):
     OFF = "Off"
     OUT = (
         "OUT"  # OUT is on receivers with 1 HDMI, multiple HDMI outputs use OUT1 + OUT 2
@@ -139,7 +139,7 @@ class HdmiOut(str, Enum):
 
 
 @unique
-class HdmiOutOnOff(Enum):
+class HdmiOutOnOff(StrEnum):
     ON = "On"
     OFF = "Off"
 
@@ -153,7 +153,7 @@ class HdmiOutOnOff(Enum):
 
 
 @unique
-class InitVolLvl(str, Enum):
+class InitVolLvl(StrEnum):
     MUTE = "Mute"
     OFF = "Off"
     """Only some receivers report Off, most seem to use InitVolMode to indicate On/Off"""
@@ -168,7 +168,7 @@ class InitVolLvl(str, Enum):
 
 
 @unique
-class InitVolMode(str, Enum):
+class InitVolMode(StrEnum):
     ON = "On"
     OFF = "Off"
 
@@ -182,7 +182,7 @@ class InitVolMode(str, Enum):
 
 
 @unique
-class Input(Enum):
+class Input(StrEnum):
     # Inputs with connectors on the receiver
     AUDIO = "AUDIO"  # This input is kind of weird since it is not reported by INPNAME=?
     AUDIO1 = "AUDIO1"
@@ -241,7 +241,7 @@ class Input(Enum):
 
 
 @unique
-class Mute(str, Enum):
+class Mute(StrEnum):
     ON = "On"
     ATT_MINUS_20 = "Att -20 dB"
     ATT_MINUS_40 = "Att -40 dB"
@@ -257,7 +257,7 @@ class Mute(str, Enum):
 
 
 @unique
-class Party(Enum):
+class Party(StrEnum):
     ON = "On"
     OFF = "Off"
 
@@ -271,7 +271,7 @@ class Party(Enum):
 
 
 @unique
-class PartyMute(Enum):
+class PartyMute(StrEnum):
     ON = "On"
     OFF = "Off"
 
@@ -285,7 +285,7 @@ class PartyMute(Enum):
 
 
 @unique
-class Playback(str, Enum):
+class Playback(StrEnum):
     STOP = "Stop"
     PAUSE = "Pause"
     PLAY = "Play"
@@ -302,7 +302,7 @@ class Playback(str, Enum):
 
 
 @unique
-class PlaybackInfo(str, Enum):
+class PlaybackInfo(StrEnum):
     STOP = "Stop"
     PAUSE = "Pause"
     PLAY = "Play"
@@ -317,7 +317,7 @@ class PlaybackInfo(str, Enum):
 
 
 @unique
-class PureDirMode(Enum):
+class PureDirMode(StrEnum):
     ON = "On"
     OFF = "Off"
 
@@ -331,7 +331,7 @@ class PureDirMode(Enum):
 
 
 @unique
-class Pwr(Enum):
+class Pwr(StrEnum):
     ON = "On"
     STANDBY = "Standby"
 
@@ -345,7 +345,7 @@ class Pwr(Enum):
 
 
 @unique
-class PwrB(Enum):
+class PwrB(StrEnum):
     ON = "On"
     STANDBY = "Standby"
 
@@ -359,7 +359,7 @@ class PwrB(Enum):
 
 
 @unique
-class Repeat(str, Enum):
+class Repeat(StrEnum):
     OFF = "Off"
     SINGLE = "Single"
     ALL = "All"
@@ -374,7 +374,7 @@ class Repeat(str, Enum):
 
 
 @unique
-class Shuffle(str, Enum):
+class Shuffle(StrEnum):
     ON = "On"
     OFF = "Off"
 
@@ -388,7 +388,7 @@ class Shuffle(str, Enum):
 
 
 @unique
-class Sleep(str, Enum):
+class Sleep(StrEnum):
     OFF = "Off"
     THIRTY_MIN = "30 min"
     SIXTY_MIN = "60 min"
@@ -405,7 +405,7 @@ class Sleep(str, Enum):
 
 
 @unique
-class SoundPrg(str, Enum):
+class SoundPrg(StrEnum):
     HALL_IN_MUNICH = "Hall in Munich"
     HALL_IN_VIENNA = "Hall in Vienna"
     HALL_IN_AMSTERDAM = "Hall in Amsterdam"
@@ -446,7 +446,7 @@ class SoundPrg(str, Enum):
 
 
 @unique
-class SpeakerA(Enum):
+class SpeakerA(StrEnum):
     ON = "On"
     OFF = "Off"
 
@@ -460,7 +460,7 @@ class SpeakerA(Enum):
 
 
 @unique
-class SpeakerB(Enum):
+class SpeakerB(StrEnum):
     ON = "On"
     OFF = "Off"
 
@@ -474,7 +474,7 @@ class SpeakerB(Enum):
 
 
 @unique
-class SpPattern(Enum):
+class SpPattern(StrEnum):
     PATTERN_1 = "Pattern 1"
     PATTERN_2 = "Pattern 2"
 
@@ -488,7 +488,7 @@ class SpPattern(Enum):
 
 
 @unique
-class Straight(Enum):
+class Straight(StrEnum):
     ON = "On"
     OFF = "Off"
 
@@ -502,7 +502,7 @@ class Straight(Enum):
 
 
 @unique
-class ThreeDeeCinema(str, Enum):
+class ThreeDeeCinema(StrEnum):
     OFF = "Off"
     AUTO = "Auto"
 
@@ -516,7 +516,7 @@ class ThreeDeeCinema(str, Enum):
 
 
 @unique
-class TwoChDecoder(str, Enum):
+class TwoChDecoder(StrEnum):
     # Older models support Dolby Prologic and DTS:Neo settings
     DolbyPl = "Dolby PL"
     DolbyPl2Movie = "Dolby PLII Movie"
@@ -545,7 +545,7 @@ class TwoChDecoder(str, Enum):
 
 
 @unique
-class ZoneBAvail(str, Enum):
+class ZoneBAvail(StrEnum):
     NOT_CONNECTED = "Not Connected"
     NOT_READY = "Not Ready"
     READY = "Ready"
@@ -560,7 +560,7 @@ class ZoneBAvail(str, Enum):
 
 
 @unique
-class ZoneBMute(str, Enum):
+class ZoneBMute(StrEnum):
     ON = "On"
     OFF = "Off"
 

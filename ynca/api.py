@@ -69,7 +69,7 @@ class YncaApi:
         """
         self._serial_url = serial_url
         self._connection: YncaConnection | None = None
-        self._available_subunits: set = set()
+        self._available_subunits: set[str] = set()
         self._initialized_event = threading.Event()
         self._disconnect_callback = disconnect_callback
         self._communication_log_size = communication_log_size
@@ -85,8 +85,8 @@ class YncaApi:
         # Figure out what subunits are available
         num_commands_sent_start = connection.num_commands_sent
         self._available_subunits = set()
-        for subunit_id in Subunit:
-            connection.get(subunit_id, "AVAIL")
+        for subunit in Subunit:
+            connection.get(subunit, "AVAIL")
 
         # Use @SYS:VERSION=? as end marker (even though this is not the SYS subunit)
         connection.get(Subunit.SYS, "VERSION")
@@ -104,7 +104,7 @@ class YncaApi:
         logger.info("Subunit availability check end")
 
     def _get_subunit_class(self, subunit_id: str) -> type[SubunitBase] | None:
-        subunit_classes = all_subclasses(SubunitBase)
+        subunit_classes: set[type[SubunitBase]] = all_subclasses(SubunitBase)
         for subunit_class in subunit_classes:
             if hasattr(subunit_class, "id") and subunit_class.id == subunit_id:
                 return subunit_class
@@ -207,7 +207,7 @@ class YncaApi:
         function_: str | None,
         _value: str | None,
     ) -> None:
-        if function_ == "AVAIL":
+        if subunit and function_ == "AVAIL":
             self._available_subunits.add(subunit)
 
         if subunit == Subunit.SYS and function_ == "VERSION":

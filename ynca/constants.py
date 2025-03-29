@@ -1,6 +1,6 @@
 """Misc constants."""
 
-from enum import Enum, unique
+from enum import StrEnum, unique
 import logging
 
 logger = logging.getLogger(__name__)
@@ -10,7 +10,7 @@ MAX_VOLUME = 16.5  # Maximum volume value for receivers
 
 
 @unique
-class Subunit(str, Enum):
+class Subunit(StrEnum):
     """Known Subunits in YNCA."""
 
     SYS = "SYS"
@@ -36,6 +36,3 @@ class Subunit(str, Enum):
     TUN = "TUN"
     UAW = "UAW"
     USB = "USB"
-
-    def __str__(self) -> str:
-        return self.value
