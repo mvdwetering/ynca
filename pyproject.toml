@@ -14,7 +14,7 @@ name = "ynca"
 version = "5.19.0"
 description = "Package to control Yamaha receivers that support the YNCA protocol."
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 authors = [
   { name = "Michel van de Wetering", email = "michel.van.de.wetering+ynca@gmail.com" },
 ]
