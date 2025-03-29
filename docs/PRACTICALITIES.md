@@ -7,21 +7,22 @@ This document describes some notes on weirdness/unexpected behaviour and other p
 Sometimes zones report values for volume and allow setting it, but it does not take effect.
 There are also no response/updates on trying to change the volume (as it is fixed).
 
-For reference, the AV Control Android app also shows volume controls for Zone2 which do not work.
+For reference, on my RX-A810 with firmware 1.80/2.01, the AV Control Android app also shows volume controls for Zone2 which do not work.
 The webinterface on the receiver however shows the text "FIXED" for the volume on Zone2
-This is based on observations on RX-A810 firmware 1.80/2.01.
 
 This is most likely related to the speakerconfiguration indicated by the `@SYS:SPPATTERN1AMP` function (or `@SYS:SPPATTERN2AMP` if the receiver supports multiple speaker patterns).
 This function can have values like `Basic`, `ZoneB`, `7ch +1ZONE`, `5ch BI-AMP` and many more.
 My initial guess was that when `+1ZONE` is there that means that actual speakers for Zone2 are connected and on the `Basic` case you are supposed to use the preout connections for Zone2.
-And with a `+2ZONE` it would be Zone 2 and Zone 3, however it is a bit more subtle. For example the RX-A2010 manual tells the following about `7ch +1ZONE` configuration.
+And with a `+2ZONE` it would be Zone 2 and Zone 3.
+
+However it is a bit more subtle. For example the RX-A2010 manual tells the following about `7ch +1ZONE` configuration:
 
 > Select this when you use 7-channel speakers in the main zone and Zone2 (or Zone3) speakers (p.24).
 > You can select a zone to be assigned to the EXTRA SP1 jacks (default: Zone2).
 
 I could not find a function that indicates which Zone is assigned and I don't have a receiver with this feature to experiment with.
 
-Next to that there is `ZoneB` which is a configuration with additional speakers with their own volume control, but same input as Main zone.
+Next to that there is `ZoneB` which is a configuration with additional speakers with their own volume control, but same input as Main zone. So not +1ZONE in the name, but does have actual volume control. But then again ZoneB is not a real zone, it is a "subzone" of MAIN.
 
 ## Scene activation not working
 
@@ -186,3 +187,14 @@ Both seem to be part of BASIC. Except for RX-V1067 where PUREDIRMODE is supporte
 
 It turns out that DIRMODE does _not_ respond with the new state on state changes.
 At least on RX-V473 with firmware 1.23/1.04. You still get STRAIGHT updates though which is related to DIRMODE.
+
+## Presets
+
+Which subunits support Presets varies by model.
+
+All models seem to support Preset for the tuner subunit (AM/FM/DAB).
+Other, seemingly older (pre 2012?), models like my RX-A810 supports them also for most other subunits like Napster, Netradio, Pandora, PC, Rhapsody, Sirius, SiriusIR and USB.
+
+Another thing to note is that for the limited models doing a GET for PRESET results in @RESTRICTED on subunits that do not support it. Which is expected.
+On my RX-A810 the receiver does not respond at all on that command.I would guess that this is because the additional subunits don't have actual numerical preset values.
+More details see <https://github.com/mvdwetering/yamaha_ynca/issues/379>

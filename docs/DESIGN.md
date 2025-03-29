@@ -94,8 +94,9 @@ Try and find integrations with similar challenges and see how they solved it.
 
 Somehow I made the assumption there was no real request/response. Just send a command and an update will come from the receiver or not.
 
-However this is only true for PUT requests, it wil only send an update when calues actualy change.
+However this is only true for PUT requests, it wil only send an update when values actualy change.
 For GET commands there should(==assumption) always be a response. Either the value or an error.
+Note that there is of course at least one exception. This is the PRESET function which returns nothing for some subunits on older models. See [PRACTICALITIES.md](PRACTICALITIES.md#presets) for more details.
 
 This might also allow for better feature detection. Maybe performing a GET can be used to detect if something is suppported.
 Getting a value is easy, but maybe supported commands will still give an @RESTRICTED on the GET even if it is a PUT only command.
