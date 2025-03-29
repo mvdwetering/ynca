@@ -13,9 +13,7 @@ class YncaConnectionMock(mock.MagicMock):
 
     @property
     def num_commands_sent(self):
-        resp = self._num_commands_sent
-        self._num_commands_sent += 10
-        return resp
+        return self._num_commands_sent
 
     def setup_responses(self):
         # Need to separate from __init__ otherwise it would run into infinite
@@ -23,7 +21,9 @@ class YncaConnectionMock(mock.MagicMock):
         self.get.side_effect = self._get_response
         self._get_response_list_offset = 0
 
-    def _get_response(self, subunit, function):
+    def _get_response(self, subunit: str, function: str):
+        self._num_commands_sent += 1
+
         print(f"mock: get_response({subunit}, {function})")
         try:
             (next_request, responses) = self.get_response_list[
