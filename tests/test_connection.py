@@ -110,26 +110,26 @@ def test_send_raw(mock_serial):
 
 def test_send_put(mock_serial):
     with active_connection(mock_serial) as connection:
-        raw_data = mock_serial.stub(
+        put_data = mock_serial.stub(
             receive_bytes=b"@Subunit:Function=Value\r\n", send_bytes=b""
         )
 
         connection.put("Subunit", "Function", "Value")
         assert connection.num_commands_sent == 1
 
-    assert raw_data.calls == 1
+    assert put_data.calls == 1
 
 
 def test_send_get(mock_serial):
     with active_connection(mock_serial) as connection:
-        raw_data = mock_serial.stub(
+        get_data = mock_serial.stub(
             receive_bytes=b"@Subunit:Function=?\r\n", send_bytes=b""
         )
 
         connection.get("Subunit", "Function")
         assert connection.num_commands_sent == 1
 
-    assert raw_data.calls == 1
+    assert get_data.calls == 1
 
 
 def test_message_callbacks(mock_serial):
