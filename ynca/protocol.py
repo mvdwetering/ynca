@@ -164,12 +164,15 @@ class YncaProtocol(serial.threaded.LineReader):
                     )
 
                     self.write_line(message)
-                    time.sleep(
-                        self.COMMAND_SPACING
-                    )  # Maintain required command spacing
+
+                    # Maintain required command spacing
+                    time.sleep(self.COMMAND_SPACING)
             except queue.Empty:
                 # To avoid random message being eaten because device goes to sleep, keep it alive
                 self._send_keepalive()
+            except serial.SerialException:  # pragma: no cover
+                logger.exception("Serial error while writing, stopping thread")
+                stop = True
 
     def raw(self, raw_data: str) -> None:
         if self._send_queue:
