@@ -95,7 +95,7 @@ class StrConverter(ConverterBase):
             msg = f"'{value}' is too short, minimum length is {self._min_len}"
             raise ValueError(msg)
         if self._max_len and len(value) > self._max_len:
-            msg = f"'{value}' is too long, maxmimum length is {self._max_len}"
+            msg = f"'{value}' is too long, maximum length is {self._max_len}"
             raise ValueError(msg)
         return value
 

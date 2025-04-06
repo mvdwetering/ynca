@@ -1,4 +1,4 @@
-"""Test Zone subunit."""
+"""Test converters."""
 
 from enum import Enum
 
@@ -19,7 +19,7 @@ def test_strconverter() -> None:
     assert c.to_str("123456") == "123456"
     with pytest.raises(ValueError, match="is too short, minimum length is 3"):
         c.to_str("12")
-    with pytest.raises(ValueError, match="is too long, maxmimum length is 6"):
+    with pytest.raises(ValueError, match="is too long, maximum length is 6"):
         c.to_str("1234567")
 
     assert c.to_value("test") == "test"
