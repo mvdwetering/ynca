@@ -11,7 +11,7 @@ Since the amount of supported functions impacts the `initialize`time functions w
 
 ## API guidelines
 
-Some guidelines I try to follow when adding functions to the API.
+Some guidelines I try to follow when adding functionality to the API.
 
 * YNCA functions supporting GET are modelled as attributes
   * If the function also supports PUT for the value this attribute will also be writable
@@ -47,6 +47,7 @@ The first method gives all inputs that can be renamed which seems to be all inpu
 The second method can be used to detect available subunits (e.g. `TUN`) and then know that the `TUNER` input is available.
 
 The combination of both should give all inputs.
+Note that newer models don't seem to respond to `INPUTNAMES` and there are receivers that are missing AUDIO (a single audio input). See <PRACTICALITIES.md> for more details
 
 ### Detection of the inputs on the zone
 
