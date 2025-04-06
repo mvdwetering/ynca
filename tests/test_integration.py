@@ -1,26 +1,29 @@
+from mock_serial import MockSerial
+
 import ynca
 
 
-def test_basic_end_to_end_connection_check(mock_serial):
-    """A sanity check everything integerated end-to-end"""
-
-    keep_alive = mock_serial.stub(
+def test_basic_end_to_end_connection_check(mock_serial: MockSerial) -> None:
+    """A sanity check with everything integrated end-to-end."""
+    # Keep alive
+    mock_serial.stub(
         receive_bytes=b"@SYS:MODELNAME=?\r\n",
         send_bytes=b"@SYS:MODELNAME=TESTMODEL\r\n",
     )
-
-    main = mock_serial.stub(
+    # Main
+    mock_serial.stub(
         receive_bytes=b"@MAIN:AVAIL=?\r\n", send_bytes=b"@MAIN:AVAIL=Ready\r\n"
     )
-    zone2 = mock_serial.stub(
+    # Zone2
+    mock_serial.stub(
         receive_bytes=b"@ZONE2:AVAIL=?\r\n", send_bytes=b"@ZONE2:AVAIL=Ready\r\n"
     )
-    zone3 = mock_serial.stub(
+    # Zone 3
+    mock_serial.stub(
         receive_bytes=b"@ZONE3:AVAIL=?\r\n", send_bytes=b"@ZONE3:AVAIL=Not Ready\r\n"
     )
-    zone4 = mock_serial.stub(
-        receive_bytes=b"@ZONE4:AVAIL=?\r\n", send_bytes=b"@RESTRICTED\r\n"
-    )
+    # Zone 4
+    mock_serial.stub(receive_bytes=b"@ZONE4:AVAIL=?\r\n", send_bytes=b"@RESTRICTED\r\n")
 
     y = ynca.YncaApi(mock_serial.port)
 

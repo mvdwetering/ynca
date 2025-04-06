@@ -1,4 +1,8 @@
-from ynca import PlaybackInfo, Playback
+from collections.abc import Callable
+from typing import Any
+
+from tests.mock_yncaconnection import YncaConnectionMock
+from ynca import Playback, PlaybackInfo
 from ynca.subunits.sirius import SiriusIr
 
 SYS = "SYS"
@@ -37,7 +41,9 @@ INITIALIZE_FULL_RESPONSES = [
 ]
 
 
-def test_initialize(connection, update_callback):
+def test_initialize(
+    connection: YncaConnectionMock, update_callback: Callable[[str, Any], None]
+) -> None:
     connection.get_response_list = INITIALIZE_FULL_RESPONSES
 
     siriusir = SiriusIr(connection)

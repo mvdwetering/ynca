@@ -1,3 +1,7 @@
+from collections.abc import Callable
+from typing import Any
+
+from tests.mock_yncaconnection import YncaConnectionMock
 from ynca import Playback
 from ynca.subunits.bt import Bt
 
@@ -20,7 +24,9 @@ INITIALIZE_FULL_RESPONSES = [
 ]
 
 
-def test_initialize(connection, update_callback):
+def test_initialize(
+    connection: YncaConnectionMock, update_callback: Callable[[str, Any], None]
+) -> None:
     connection.get_response_list = INITIALIZE_FULL_RESPONSES
 
     bt = Bt(connection)

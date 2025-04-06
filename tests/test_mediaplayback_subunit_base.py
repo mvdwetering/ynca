@@ -1,3 +1,7 @@
+from collections.abc import Callable
+from typing import Any
+
+from tests.mock_yncaconnection import YncaConnectionMock
 from ynca import Playback, PlaybackInfo, Repeat, Shuffle
 from ynca.constants import Subunit
 from ynca.subunit import SubunitBase
@@ -69,7 +73,9 @@ class DummyMediaPlaybackSubunit(
     id = Subunit.UAW
 
 
-def test_initialize(connection, update_callback):
+def test_initialize(
+    connection: YncaConnectionMock, update_callback: Callable[[str, Any], None]
+) -> None:
     connection.get_response_list = INITIALIZE_FULL_RESPONSES
 
     dmps = DummyMediaPlaybackSubunit(connection)

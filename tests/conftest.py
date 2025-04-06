@@ -1,6 +1,6 @@
 """Fixtures for testing."""
 
-from typing import Callable
+from collections.abc import Callable
 from unittest import mock
 
 import pytest
@@ -9,7 +9,7 @@ from .mock_yncaconnection import YncaConnectionMock
 
 
 @pytest.fixture
-def connection():
+def connection() -> YncaConnectionMock:
     c = YncaConnectionMock()
     c.setup_responses()
     return c

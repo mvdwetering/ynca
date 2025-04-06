@@ -1,24 +1,25 @@
-"""Test function"""
+"""Test function."""
 
 import pytest
 
-from ynca.enums import Avail, PartyMute
+from tests.mock_yncaconnection import YncaConnectionMock
+from ynca.enums import PartyMute
 from ynca.subunits.system import System
 
 SUBUNIT = "SYS"
 
 
-def test_yncafunction_put_only(connection):
+def test_yncafunction_put_only(connection: YncaConnectionMock) -> None:
     subunit = System(connection)
 
     subunit.partymute = PartyMute.OFF
     connection.put.assert_called_with(SUBUNIT, "PARTYMUTE", "Off")
 
     with pytest.raises(AttributeError):
-        value = subunit.partymute
+        value = subunit.partymute  # noqa: F841
 
 
-def test_yncafunction_get_only(connection):
+def test_yncafunction_get_only(connection: YncaConnectionMock) -> None:
     subunit = System(connection)
 
     subunit.function_handlers["MODELNAME"].value = "TEST VALUE"
@@ -28,7 +29,7 @@ def test_yncafunction_get_only(connection):
         subunit.modelname = "NEW NAME"
 
 
-def test_yncafunction_delete(connection):
+def test_yncafunction_delete(connection: YncaConnectionMock) -> None:
     subunit = System(connection)
 
     assert "MODELNAME" in subunit.function_handlers

@@ -1,5 +1,9 @@
+from collections.abc import Callable
+from typing import Any
+
 import pytest
 
+from tests.mock_yncaconnection import YncaConnectionMock
 from ynca import BandDab
 from ynca.enums import DabPreset, FmPreset
 from ynca.subunits.dab import Dab
@@ -62,14 +66,18 @@ INITIALIZE_FULL_RESPONSES = [
 
 
 @pytest.fixture
-def initialized_dab(connection) -> Dab:
+def initialized_dab(
+    connection: YncaConnectionMock,
+) -> Dab:
     connection.get_response_list = INITIALIZE_FULL_RESPONSES
     dab = Dab(connection)
     dab.initialize()
     return dab
 
 
-def test_initialize(connection, update_callback):
+def test_initialize(
+    connection: YncaConnectionMock, update_callback: Callable[[str, Any], None]
+) -> None:
     connection.get_response_list = INITIALIZE_FULL_RESPONSES
 
     dab = Dab(connection)
@@ -81,7 +89,7 @@ def test_initialize(connection, update_callback):
     assert dab.fmfreq == 101.60
 
 
-def test_band(connection, initialized_dab: Dab):
+def test_band(connection: YncaConnectionMock, initialized_dab: Dab) -> None:
     initialized_dab.band = BandDab.DAB
     connection.put.assert_called_with(SUBUNIT, "BAND", "DAB")
 
@@ -95,7 +103,7 @@ def test_band(connection, initialized_dab: Dab):
     assert initialized_dab.band is BandDab.DAB
 
 
-def test_dab(connection, initialized_dab: Dab):
+def test_dab(connection: YncaConnectionMock, initialized_dab: Dab) -> None:
     connection.send_protocol_message(SUBUNIT, "DABCHLABEL", "dab ch label")
     assert initialized_dab.dabchlabel == "dab ch label"
 
@@ -112,7 +120,7 @@ def test_dab(connection, initialized_dab: Dab):
     assert initialized_dab.dabservicelabel == "dab service label"
 
 
-def test_fmrds(connection, initialized_dab: Dab):
+def test_fmrds(connection: YncaConnectionMock, initialized_dab: Dab) -> None:
     # Updates from device
     connection.send_protocol_message(SUBUNIT, "FMRDSPRGSERVICE", "rds prg service")
     assert initialized_dab.fmrdsprgservice == "rds prg service"
@@ -124,13 +132,13 @@ def test_fmrds(connection, initialized_dab: Dab):
     assert initialized_dab.fmrdstxt == "radiotext"
 
 
-def test_fmfreq(connection, initialized_dab: Dab):
+def test_fmfreq(connection: YncaConnectionMock, initialized_dab: Dab) -> None:
     # Set value and test stepsize handling (which is why it becomes 100.00)
     initialized_dab.fmfreq = 100.05
     connection.put.assert_called_with(SUBUNIT, "FMFREQ", "100.00")
 
 
-def test_fmpreset(connection, initialized_dab: Dab):
+def test_fmpreset(connection: YncaConnectionMock, initialized_dab: Dab) -> None:
     assert initialized_dab.fmpreset == 40
 
     initialized_dab.fmpreset = 12
@@ -140,7 +148,7 @@ def test_fmpreset(connection, initialized_dab: Dab):
     initialized_dab.fmpreset = FmPreset.NO_PRESET
 
 
-def test_dabpreset(connection, initialized_dab: Dab):
+def test_dabpreset(connection: YncaConnectionMock, initialized_dab: Dab) -> None:
     assert initialized_dab.dabpreset == 33
 
     initialized_dab.dabpreset = 22
