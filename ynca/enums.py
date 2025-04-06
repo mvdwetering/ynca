@@ -502,6 +502,20 @@ class Straight(StrEnum):
 
 
 @unique
+class SurroundAI(StrEnum):
+    ON = "On"
+    OFF = "Off"
+
+    @classmethod
+    def _missing_(cls, value: object):
+        logger.warning("Unknown value '%s' in %s", value, cls.__name__)
+        return cls.UNKNOWN
+
+    UNKNOWN = UNKNOWN_STRING
+    """Unknown values in the enum are mapped to UNKNOWN"""
+
+
+@unique
 class ThreeDeeCinema(StrEnum):
     OFF = "Off"
     AUTO = "Auto"

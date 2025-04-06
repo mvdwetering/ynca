@@ -26,10 +26,11 @@ from ynca.enums import (
     Shuffle,
     Sleep,
     SoundPrg,
-    SpPattern,
     SpeakerA,
     SpeakerB,
+    SpPattern,
     Straight,
+    SurroundAI,
     ThreeDeeCinema,
     TwoChDecoder,
     ZoneBAvail,
@@ -37,7 +38,7 @@ from ynca.enums import (
 )
 
 
-def test_invalid_values_on_enums():
+def test_invalid_values_on_enums() -> None:
     assert AdaptiveDrc("x") is AdaptiveDrc.UNKNOWN
     assert Avail("x") is Avail.UNKNOWN
     assert BandDab("x") is BandDab.UNKNOWN
@@ -67,6 +68,7 @@ def test_invalid_values_on_enums():
     assert SpeakerB("x") is SpeakerB.UNKNOWN
     assert SpPattern("x") is SpPattern.UNKNOWN
     assert Straight("x") is Straight.UNKNOWN
+    assert SurroundAI("x") is SurroundAI.UNKNOWN
     assert ThreeDeeCinema("x") is ThreeDeeCinema.UNKNOWN
     assert TwoChDecoder("x") is TwoChDecoder.UNKNOWN
     assert ZoneBAvail("x") is ZoneBAvail.UNKNOWN
