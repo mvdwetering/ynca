@@ -92,10 +92,10 @@ class StrConverter(ConverterBase):
         str(value)
 
         if self._min_len and len(value) < self._min_len:
-            msg = f"{value} has a minimum length of {self._min_len}"
+            msg = f"'{value}' is too short, minimum length is {self._min_len}"
             raise ValueError(msg)
         if self._max_len and len(value) > self._max_len:
-            msg = f"{value} has a maxmimum length of {self._max_len}"
+            msg = f"'{value}' is too long, maxmimum length is {self._max_len}"
             raise ValueError(msg)
         return value
 
@@ -126,5 +126,5 @@ class MultiConverter(ConverterBase):
                 return converter.to_str(value)
             except:  # noqa: E722, S110
                 pass
-        msg = f"No converter could convert {value} to string"
+        msg = f"No converter could convert '{value}' to string"
         raise ValueError(msg)

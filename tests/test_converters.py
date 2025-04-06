@@ -1,4 +1,4 @@
-"""Test Zone subunit"""
+"""Test Zone subunit."""
 
 from enum import Enum
 
@@ -13,19 +13,19 @@ from ynca.converters import (
 )
 
 
-def test_strconverter():
+def test_strconverter() -> None:
     c = StrConverter(min_len=3, max_len=6)
     assert c.to_str("123") == "123"
     assert c.to_str("123456") == "123456"
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="is too short, minimum length is 3"):
         c.to_str("12")
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="is too long, maxmimum length is 6"):
         c.to_str("1234567")
 
     assert c.to_value("test") == "test"
 
 
-def test_intconverter():
+def test_intconverter() -> None:
     c = IntConverter()
     assert c.to_str(123) == "123"
     assert c.to_value("123") == 123
@@ -35,7 +35,7 @@ def test_intconverter():
     assert c.to_value("123") == 123
 
 
-def test_floatconverter():
+def test_floatconverter() -> None:
     c = FloatConverter()
     assert c.to_str(1.23) == "1.23"
     assert c.to_value("1.23") == 1.23
@@ -45,7 +45,7 @@ def test_floatconverter():
     assert c.to_value("1.23") == 1.23
 
 
-def test_enumconverter():
+def test_enumconverter() -> None:
     class TestEnum(Enum):
         ONE = "One"
         TWO = "Two"
@@ -55,7 +55,7 @@ def test_enumconverter():
     assert c.to_value("Two") == TestEnum.TWO
 
 
-def test_multiconverter():
+def test_multiconverter() -> None:
     class TestEnum(Enum):
         ONE = "One"
         TWO = "Two"
@@ -65,10 +65,10 @@ def test_multiconverter():
     )
     assert c.to_str(TestEnum.ONE) == "One"
     assert c.to_str(1.23) == "2.46"
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="No converter could convert"):
         c.to_str("Invalid")
 
     assert c.to_value("Two") == TestEnum.TWO
     assert c.to_value("1.23") == 1.23
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="No converter could convert"):
         c.to_value("Invalid")

@@ -109,7 +109,10 @@ combine-as-imports = true
 "ynca/enums.py" = [
   "ANN206",
 ] # Complains about missing return type annotation for _missing_ but can't figure out what it should be
-"tests/*" = ["S101"] # Asserts in tests are fine
+"tests/*" = [
+  "S101",    # Asserts in tests is ok
+  "PLR2004", # Magic values in tests is ok(-ish)
+]
 
 [tool.pylint."MESSAGES CONTROL"]
 # Reasons disabled:

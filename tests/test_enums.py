@@ -1,4 +1,4 @@
-"""Test Enums"""
+"""Test Enums."""
 
 from ynca.enums import (
     AdaptiveDrc,

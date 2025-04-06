@@ -1,14 +1,16 @@
-from typing import Callable
+from collections.abc import Callable
+from typing import Any
 from unittest import mock
 
 import pytest
 
+from tests.mock_yncaconnection import YncaConnectionMock
 from ynca import (
+    DirMode,
     InitVolLvl,
     InitVolMode,
     Input,
     Mute,
-    DirMode,
     PureDirMode,
     Pwr,
     PwrB,
@@ -114,21 +116,27 @@ def update_callback() -> Callable[[], None]:
 
 
 @pytest.fixture
-def initialized_zone(connection) -> ZoneBase:
+def initialized_zone(
+    connection: YncaConnectionMock,
+) -> ZoneBase:
     connection.get_response_list = INITIALIZE_FULL_RESPONSES
     z = Main(connection)
     z.initialize()
     return z
 
 
-def test_construct(connection, update_callback):
+def test_construct(
+    connection: YncaConnectionMock, update_callback: Callable[[str, Any], None]
+) -> None:
     Main(connection)
 
     assert connection.register_message_callback.call_count == 1
     assert update_callback.call_count == 0
 
 
-def test_initialize_minimal(connection, update_callback):
+def test_initialize_minimal(
+    connection: YncaConnectionMock, update_callback: Callable[[str, Any], None]
+) -> None:
     connection.get_response_list = [
         (
             (SUBUNIT, "ZONENAME"),
@@ -166,7 +174,9 @@ def test_initialize_minimal(connection, update_callback):
         assert getattr(z, f"scene{scene_id}name") is None
 
 
-def test_initialize_full(connection, update_callback):
+def test_initialize_full(
+    connection: YncaConnectionMock, update_callback: Callable[[str, Any], None]
+) -> None:
     connection.get_response_list = INITIALIZE_FULL_RESPONSES
 
     z = Main(connection)
@@ -197,7 +207,7 @@ def test_initialize_full(connection, update_callback):
     assert z.speakerb is SpeakerB.ON
 
 
-def test_mute(connection, initialized_zone: ZoneBase):
+def test_mute(connection: YncaConnectionMock, initialized_zone: ZoneBase) -> None:
     # Writing to device
     initialized_zone.mute = Mute.ON
     connection.put.assert_called_with(SUBUNIT, "MUTE", "On")
@@ -219,7 +229,7 @@ def test_mute(connection, initialized_zone: ZoneBase):
     assert initialized_zone.mute is Mute.OFF
 
 
-def test_zoneb_mute(connection, initialized_zone: Main):
+def test_zoneb_mute(connection: YncaConnectionMock, initialized_zone: Main) -> None:
     # Writing to device
     initialized_zone.zonebmute = ZoneBMute.ON
     connection.put.assert_called_with(SUBUNIT, "ZONEBMUTE", "On")
@@ -233,7 +243,7 @@ def test_zoneb_mute(connection, initialized_zone: Main):
     assert initialized_zone.zonebmute is ZoneBMute.OFF
 
 
-def test_volume(connection, initialized_zone: ZoneBase):
+def test_volume(connection: YncaConnectionMock, initialized_zone: ZoneBase) -> None:
     # Writing to device
 
     # Positive with step rounding
@@ -287,7 +297,7 @@ def test_volume(connection, initialized_zone: ZoneBase):
     assert initialized_zone.vol == -10
 
 
-def test_zoneb_volume(connection, initialized_zone: Main):
+def test_zoneb_volume(connection: YncaConnectionMock, initialized_zone: Main) -> None:
     # Writing to device
 
     # Positive with step rounding
@@ -341,7 +351,7 @@ def test_zoneb_volume(connection, initialized_zone: Main):
     assert initialized_zone.zonebvol == -10
 
 
-def test_maxvol(connection, initialized_zone: ZoneBase):
+def test_maxvol(connection: YncaConnectionMock, initialized_zone: ZoneBase) -> None:
     # Writing to device
 
     # Positive with step rounding
@@ -371,7 +381,7 @@ def test_maxvol(connection, initialized_zone: ZoneBase):
     assert initialized_zone.maxvol == -10
 
 
-def test_input(connection, initialized_zone: ZoneBase):
+def test_input(connection: YncaConnectionMock, initialized_zone: ZoneBase) -> None:
     # Writing to device
     initialized_zone.inp = Input.RHAPSODY
     connection.put.assert_called_with(SUBUNIT, "INP", "Rhapsody")
@@ -384,7 +394,7 @@ def test_input(connection, initialized_zone: ZoneBase):
     assert initialized_zone.inp == Input.UNKNOWN
 
 
-def test_soundprg(connection, initialized_zone: ZoneBase):
+def test_soundprg(connection: YncaConnectionMock, initialized_zone: ZoneBase) -> None:
     # Writing to device
     initialized_zone.soundprg = SoundPrg.THE_ROXY_THEATRE
     connection.put.assert_called_with(SUBUNIT, "SOUNDPRG", "The Roxy Theatre")
@@ -397,7 +407,7 @@ def test_soundprg(connection, initialized_zone: ZoneBase):
     assert initialized_zone.soundprg == SoundPrg.UNKNOWN
 
 
-def test_straight(connection, initialized_zone: ZoneBase):
+def test_straight(connection: YncaConnectionMock, initialized_zone: ZoneBase) -> None:
     # Writing to device
     initialized_zone.straight = Straight.ON
     connection.put.assert_called_with(SUBUNIT, "STRAIGHT", "On")
@@ -411,7 +421,7 @@ def test_straight(connection, initialized_zone: ZoneBase):
     assert initialized_zone.straight == Straight.OFF
 
 
-def test_surroundai(connection, initialized_zone: ZoneBase):
+def test_surroundai(connection: YncaConnectionMock, initialized_zone: ZoneBase) -> None:
     # Writing to device
     initialized_zone.surroundai = SurroundAI.ON
     connection.put.assert_called_with(SUBUNIT, "SURROUNDAI", "On")
@@ -425,44 +435,46 @@ def test_surroundai(connection, initialized_zone: ZoneBase):
     assert initialized_zone.surroundai == SurroundAI.OFF
 
 
-def test_scene(connection, initialized_zone: ZoneBase):
+def test_scene(connection: YncaConnectionMock, initialized_zone: ZoneBase) -> None:
     initialized_zone.scene(42)
     connection.put.assert_called_with(SUBUNIT, "SCENE", "Scene 42")
     initialized_zone.scene("42")
     connection.put.assert_called_with(SUBUNIT, "SCENE", "Scene 42")
 
 
-def test_scenename(connection, initialized_zone: ZoneBase):
+def test_scenename(connection: YncaConnectionMock, initialized_zone: ZoneBase) -> None:
     # Updates from device
     connection.send_protocol_message(SUBUNIT, "SCENE3NAME", "New Name")
     assert initialized_zone.scene3name == "New Name"
 
 
-def test_zonename(connection, initialized_zone: ZoneBase):
+def test_zonename(connection: YncaConnectionMock, initialized_zone: ZoneBase) -> None:
     # Writing to device
     initialized_zone.zonename = "new name"
     connection.put.assert_called_with(SUBUNIT, "ZONENAME", "new name")
-    with pytest.raises(ValueError):
-        initialized_zone.zonename = "new name is too long"
+    with pytest.raises(ValueError, match="is too long"):
+        initialized_zone.zonename = "new name is very long"
 
     # Updates from device
     connection.send_protocol_message(SUBUNIT, "ZONENAME", "updated")
     assert initialized_zone.zonename == "updated"
 
 
-def test_zonebname(connection, initialized_zone: Main):
+def test_zonebname(connection: YncaConnectionMock, initialized_zone: Main) -> None:
     # Writing to device
     initialized_zone.zonebname = "new name"
     connection.put.assert_called_with(SUBUNIT, "ZONEBNAME", "new name")
-    with pytest.raises(ValueError):
-        initialized_zone.zonebname = "new name is too long"
+    with pytest.raises(ValueError, match="is too long"):
+        initialized_zone.zonebname = "new name is very long"
 
     # Updates from device
     connection.send_protocol_message(SUBUNIT, "ZONEBNAME", "updated")
     assert initialized_zone.zonebname == "updated"
 
 
-def test_twochdecoder(connection, initialized_zone: ZoneBase):
+def test_twochdecoder(
+    connection: YncaConnectionMock, initialized_zone: ZoneBase
+) -> None:
     # Writing to device
     initialized_zone.twochdecoder = TwoChDecoder.DolbyPl
     connection.put.assert_called_with(SUBUNIT, "2CHDECODER", "Dolby PL")
@@ -476,7 +488,9 @@ def test_twochdecoder(connection, initialized_zone: ZoneBase):
     assert initialized_zone.twochdecoder is TwoChDecoder.UNKNOWN
 
 
-def test_puredirmode(connection, initialized_zone: ZoneBase):
+def test_puredirmode(
+    connection: YncaConnectionMock, initialized_zone: ZoneBase
+) -> None:
     # Writing to device
     initialized_zone.puredirmode = PureDirMode.ON
     connection.put.assert_called_with(SUBUNIT, "PUREDIRMODE", "On")
@@ -490,7 +504,7 @@ def test_puredirmode(connection, initialized_zone: ZoneBase):
     assert initialized_zone.puredirmode == PureDirMode.OFF
 
 
-def test_dirmode(connection, initialized_zone: ZoneBase):
+def test_dirmode(connection: YncaConnectionMock, initialized_zone: ZoneBase) -> None:
     # Writing to device
     initialized_zone.dirmode = DirMode.ON
     connection.put.assert_called_with(SUBUNIT, "DIRMODE", "On")
@@ -504,7 +518,9 @@ def test_dirmode(connection, initialized_zone: ZoneBase):
     assert initialized_zone.dirmode == DirMode.OFF
 
 
-def test_initvolmode(connection, initialized_zone: ZoneBase):
+def test_initvolmode(
+    connection: YncaConnectionMock, initialized_zone: ZoneBase
+) -> None:
     # Writing to device
     initialized_zone.initvolmode = InitVolMode.ON
     connection.put.assert_called_with(SUBUNIT, "INITVOLMODE", "On")
@@ -518,7 +534,7 @@ def test_initvolmode(connection, initialized_zone: ZoneBase):
     assert initialized_zone.initvolmode == InitVolMode.OFF
 
 
-def test_initvollvl(connection, initialized_zone: ZoneBase):
+def test_initvollvl(connection: YncaConnectionMock, initialized_zone: ZoneBase) -> None:
     # Writing to device
     initialized_zone.initvollvl = InitVolLvl.MUTE
     connection.put.assert_called_with(SUBUNIT, "INITVOLLVL", "Mute")
@@ -532,7 +548,9 @@ def test_initvollvl(connection, initialized_zone: ZoneBase):
     assert initialized_zone.initvollvl == -10.5
 
 
-def test_lipsynchdmioutoffset(connection, initialized_zone: ZoneBase):
+def test_lipsynchdmioutoffset(
+    connection: YncaConnectionMock, initialized_zone: ZoneBase
+) -> None:
     # Writing to device
 
     # Values
@@ -579,7 +597,7 @@ def test_lipsynchdmioutoffset(connection, initialized_zone: ZoneBase):
     assert initialized_zone.lipsynchdmiout2offset == -250
 
 
-def test_speaker_ab(connection, initialized_zone: Main):
+def test_speaker_ab(connection: YncaConnectionMock, initialized_zone: Main) -> None:
     # Writing to device
     initialized_zone.speakera = SpeakerA.ON
     connection.put.assert_called_with(SUBUNIT, "SPEAKERA", "On")

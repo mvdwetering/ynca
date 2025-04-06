@@ -1,12 +1,13 @@
 from unittest import mock
-from ynca import Playback
 
+from ynca import Playback
 from ynca.subunits import (
     PlaybackFunctionMixin,
 )
 
 
-def test_playback():
+# ruff: noqa: SLF001
+def test_playback() -> None:
     class WithPlaybackFunction(PlaybackFunctionMixin, mock.Mock):
         pass
 

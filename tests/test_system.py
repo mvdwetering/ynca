@@ -1,6 +1,10 @@
+from collections.abc import Callable
+from typing import Any
 from unittest import mock
+
 import pytest
 
+from tests.mock_yncaconnection import YncaConnectionMock
 from ynca import HdmiOutOnOff, Party, PartyMute, Pwr, SpPattern
 from ynca.subunits.system import System
 
@@ -93,21 +97,25 @@ INITIALIZE_FULL_RESPONSES = [
 
 
 @pytest.fixture
-def initialized_system(connection) -> System:
+def initialized_system(connection: YncaConnectionMock) -> System:
     connection.get_response_list = INITIALIZE_FULL_RESPONSES
     r = System(connection)
     r.initialize()
     return r
 
 
-def test_construct(connection, update_callback):
-    r = System(connection)
+def test_construct(
+    connection: YncaConnectionMock, update_callback: Callable[[str, Any], None]
+) -> None:
+    System(connection)
 
     assert connection.register_message_callback.call_count == 1
     assert update_callback.call_count == 0
 
 
-def test_initialize_minimal(connection, update_callback):
+def test_initialize_minimal(
+    connection: YncaConnectionMock, update_callback: Callable[[str, Any], None]
+) -> None:
     connection.get_response_list = [
         (
             (SYS, "AVAIL"),
@@ -161,7 +169,9 @@ def test_initialize_minimal(connection, update_callback):
     assert s.sppattern is None
 
 
-def test_initialize_full(connection, update_callback):
+def test_initialize_full(
+    connection: YncaConnectionMock, update_callback: Callable[[str, Any], None]
+) -> None:
     connection.get_response_list = INITIALIZE_FULL_RESPONSES
 
     s = System(connection)
@@ -206,7 +216,7 @@ def test_initialize_full(connection, update_callback):
     assert s.sppattern == SpPattern.PATTERN_2
 
 
-def test_hdmiout(connection, initialized_system: System):
+def test_hdmiout(connection: YncaConnectionMock, initialized_system: System) -> None:
     # Writing to device
     initialized_system.hdmiout1 = HdmiOutOnOff.ON
     connection.put.assert_called_with(SYS, "HDMIOUT1", "On")
@@ -214,7 +224,7 @@ def test_hdmiout(connection, initialized_system: System):
     connection.put.assert_called_with(SYS, "HDMIOUT2", "Off")
 
 
-def test_party(connection, initialized_system: System):
+def test_party(connection: YncaConnectionMock, initialized_system: System) -> None:
     # Writing to device
     initialized_system.party = Party.ON
     connection.put.assert_called_with(SYS, "PARTY", "On")
@@ -222,7 +232,7 @@ def test_party(connection, initialized_system: System):
     connection.put.assert_called_with(SYS, "PARTY", "Off")
 
 
-def test_partymute(connection, initialized_system: System):
+def test_partymute(connection: YncaConnectionMock, initialized_system: System) -> None:
     # Writing to device
     initialized_system.partymute = PartyMute.ON
     connection.put.assert_called_with(SYS, "PARTYMUTE", "On")
@@ -230,7 +240,7 @@ def test_partymute(connection, initialized_system: System):
     connection.put.assert_called_with(SYS, "PARTYMUTE", "Off")
 
 
-def test_partyvol(connection, initialized_system: System):
+def test_partyvol(connection: YncaConnectionMock, initialized_system: System) -> None:
     # Writing to device
     initialized_system.partyvol_up()
     connection.put.assert_called_with(SYS, "PARTYVOL", "Up")
@@ -238,7 +248,9 @@ def test_partyvol(connection, initialized_system: System):
     connection.put.assert_called_with(SYS, "PARTYVOL", "Down")
 
 
-def test_partyvol_method(connection, initialized_system: System):
+def test_partyvol_method(
+    connection: YncaConnectionMock, initialized_system: System
+) -> None:
     # Writing to device
     initialized_system.partyvol_up()
     connection.put.assert_called_with(SYS, "PARTYVOL", "Up")
@@ -246,19 +258,21 @@ def test_partyvol_method(connection, initialized_system: System):
     connection.put.assert_called_with(SYS, "PARTYVOL", "Down")
 
 
-def test_remotecode(connection, initialized_system: System):
+def test_remotecode(connection: YncaConnectionMock, initialized_system: System) -> None:
     initialized_system.remotecode("code1234")
     connection.put.assert_called_with(SYS, "REMOTECODE", "code1234")
 
 
-def test_remotecode_wrong_length(initialized_system: System):
-    with pytest.raises(ValueError):
+def test_remotecode_wrong_length(initialized_system: System) -> None:
+    with pytest.raises(ValueError, match="REMOTECODE value must be of length 8"):
         initialized_system.remotecode("7777777")
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="REMOTECODE value must be of length 8"):
         initialized_system.remotecode("999999999")
 
 
-def test_unhandled_function(connection, initialized_system: System):
+def test_unhandled_function(
+    connection: YncaConnectionMock, initialized_system: System
+) -> None:
     # Updates from device
     update_callback_1 = mock.MagicMock()
     initialized_system.register_update_callback(update_callback_1)
