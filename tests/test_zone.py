@@ -19,6 +19,7 @@ from ynca import (
     TwoChDecoder,
     ZoneBMute,
 )
+from ynca.enums import SurroundAI
 from ynca.subunits.zone import Main, ZoneBase
 
 SYS = "SYS"
@@ -408,6 +409,20 @@ def test_straight(connection, initialized_zone: ZoneBase):
     assert initialized_zone.straight == Straight.ON
     connection.send_protocol_message(SUBUNIT, "STRAIGHT", "Off")
     assert initialized_zone.straight == Straight.OFF
+
+
+def test_surroundai(connection, initialized_zone: ZoneBase):
+    # Writing to device
+    initialized_zone.surroundai = SurroundAI.ON
+    connection.put.assert_called_with(SUBUNIT, "SURROUNDAI", "On")
+    initialized_zone.surroundai = SurroundAI.OFF
+    connection.put.assert_called_with(SUBUNIT, "SURROUNDAI", "Off")
+
+    # Updates from device
+    connection.send_protocol_message(SUBUNIT, "SURROUNDAI", "On")
+    assert initialized_zone.surroundai == SurroundAI.ON
+    connection.send_protocol_message(SUBUNIT, "SURROUNDAI", "Off")
+    assert initialized_zone.surroundai == SurroundAI.OFF
 
 
 def test_scene(connection, initialized_zone: ZoneBase):

@@ -22,6 +22,7 @@ from ..enums import (
     SpeakerA,
     SpeakerB,
     Straight,
+    SurroundAI,
     ThreeDeeCinema,
     TwoChDecoder,
     ZoneBAvail,
@@ -159,6 +160,7 @@ class ZoneBase(PlaybackFunctionMixin, SubunitBase):
         ),
     )
     straight = EnumFunctionMixin[Straight](Straight, init="BASIC")
+    surroundai = EnumFunctionMixin[SurroundAI](SurroundAI)
     threedcinema = EnumFunctionMixin[ThreeDeeCinema](
         ThreeDeeCinema, name_override="3DCINEMA"
     )
