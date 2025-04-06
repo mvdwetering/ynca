@@ -1,17 +1,17 @@
-"""Test Zone subunit"""
+"""Test Zone subunit."""
 
 from collections.abc import Callable
 from typing import Any
 from unittest import mock
+
 import pytest  # type: ignore[import]
 
 from tests.mock_yncaconnection import YncaConnectionMock
 from ynca import Avail
 from ynca.constants import Subunit
-from ynca.subunit import SubunitBase
-from ynca.function import IntFunctionMixin
 from ynca.errors import YncaInitializationFailedException
-
+from ynca.function import IntFunctionMixin
+from ynca.subunit import SubunitBase
 
 SYS = "SYS"
 SUBUNIT = "UAW"

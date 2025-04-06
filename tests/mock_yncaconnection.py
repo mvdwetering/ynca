@@ -1,10 +1,11 @@
+from typing import Any
 from unittest import mock
 
 from ynca.connection import YncaProtocolStatus
 
 
 class YncaConnectionMock(mock.MagicMock):
-    def __init__(self, *args, **kwargs) -> None:
+    def __init__(self, *args: Any, **kwargs: dict[str, Any]) -> None:
         # Would like to have a MagicMock with `spec=YncaConnection`, but then
         # I can not add the response logic to the mock :/
         super().__init__(*args, **kwargs)
@@ -12,16 +13,17 @@ class YncaConnectionMock(mock.MagicMock):
         self.get_response_list = []
 
     @property
-    def num_commands_sent(self):
+    def num_commands_sent(self) -> int:
         return self._num_commands_sent
 
-    def setup_responses(self):
+    def setup_responses(self) -> None:
         # Need to separate from __init__ otherwise it would run into infinite
         # recursion when executing `self.get.side_effect = xyz`
         self.get.side_effect = self._get_response
         self._get_response_list_offset = 0
 
-    def _get_response(self, subunit: str, function: str):
+    # ruff: noqa: T201
+    def _get_response(self, subunit: str, function: str) -> None:
         self._num_commands_sent += 1
 
         print(f"mock: get_response({subunit}, {function})")
@@ -31,7 +33,7 @@ class YncaConnectionMock(mock.MagicMock):
             ]
             print(f"mock:   next_request={next_request}, responses={responses}")
             if not (next_request[0] == subunit and next_request[1] == function):
-                print(f"mock:   no match return @UNDEFINED")
+                print("mock:   no match return @UNDEFINED")
                 self.send_protocol_error("@UNDEFINED")
                 return
 
@@ -42,13 +44,15 @@ class YncaConnectionMock(mock.MagicMock):
                 else:
                     self.send_protocol_message(response[0], response[1], response[2])
 
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001
             print(f"Skipping: {subunit}, {function} because of {e}")
 
-    def send_protocol_message(self, subunit, function, value=None):
+    def send_protocol_message(
+        self, subunit: str, function: str, value: str | None = None
+    ) -> None:
         for callback in self.register_message_callback.call_args.args:
             callback(YncaProtocolStatus.OK, subunit, function, value)
 
-    def send_protocol_error(self, error):
+    def send_protocol_error(self, error: str) -> None:
         for callback in self.register_message_callback.call_args.args:
             callback(YncaProtocolStatus[error[1:]], None, None, None)
