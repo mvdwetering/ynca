@@ -1,13 +1,15 @@
 [build-system]
-requires = ["setuptools>=62.3"]
+requires = ["setuptools>=64.0"]
 build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
 
 [tool.setuptools.package-data]
 ynca = ["py.typed"]
-
-[tool.setuptools.packages.find]
-include = ["ynca*"]
-
 
 [project]
 name = "ynca"
