@@ -3,6 +3,10 @@
 
 name: Upload Python Package
 
+permissions:
+  contents: read
+  packages: write
+
 on:
   release:
     types: [prereleased, released]
