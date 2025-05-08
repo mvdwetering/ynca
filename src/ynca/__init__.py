@@ -64,7 +64,7 @@ from .subunits.system import System
 from .subunits.tun import Tun
 from .subunits.uaw import Uaw
 from .subunits.usb import Usb
-from .subunits.zone import ZoneBase
+from .subunits.zone import Main, Zone2, Zone3, Zone4, ZoneBase
 
 __all__ = [
     "AdaptiveDrc",
@@ -85,6 +85,7 @@ __all__ = [
     "Input",
     "Ipod",
     "IpodUsb",
+    "Main",
     "Mute",
     "Napster",
     "NetRadio",
@@ -128,6 +129,9 @@ __all__ = [
     "YncaInitializationFailedException",
     "YncaModelInfo",
     "YncaProtocolStatus",
+    "Zone2",
+    "Zone3",
+    "Zone4",
     "ZoneBAvail",
     "ZoneBMute",
     "ZoneBase",
