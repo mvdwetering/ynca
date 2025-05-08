@@ -2,13 +2,13 @@
 
 import argparse
 import logging
+from pathlib import Path
 import re
+import sys
 import threading
 import time
-import sys
 
 from ynca import YncaConnection, YncaProtocolStatus
-
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Execute YNCA commands from a file.")
@@ -35,39 +35,42 @@ if __name__ == "__main__":
 
     sem = threading.Semaphore(0)
 
-    def on_disconnect():
+    def on_disconnect() -> None:
         sem.release()
 
     def message_received(
-        status: YncaProtocolStatus, subunit: str, function_: str, value: str
-    ):
+        _status: YncaProtocolStatus,
+        _subunit: str | None,
+        function_: str | None,
+        _value: str | None,
+    ) -> None:
         if function_ == "VERSION":
             sem.release()
 
     connection = YncaConnection.create_from_serial_url(args.serial_url)
     try:
         connection.connect(on_disconnect)
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001
         print(f"** Connection error: {e}")
         sys.exit(1)
     connection.register_message_callback(message_received)
 
     time.sleep(1)
-    print("")
+    print()
     print("*" * 30)
     print("Submitting commands")
     print(
         "Note that there is 100ms inbetween commands, with lots of commands it can take a while"
     )
     print("*" * 30)
-    print("")
+    print()
     time.sleep(1)
 
     commands_sent = 0
-    with open(args.commandfile) as commandfile:
+    with Path(args.commandfile).open() as commandfile:
         for line in commandfile:
-            line = re.sub(r"#.*", "", line)
-            line = line.strip()
+            line = re.sub(r"#.*", "", line)  # noqa: PLW2901
+            line = line.strip()  # noqa: PLW2901
 
             match = re.match(r"@(?P<subunit>.+?):(?P<function>.+?)=(?P<value>.*)", line)
             if match is not None:

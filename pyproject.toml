@@ -96,6 +96,8 @@ combine-as-imports = true
 
 [tool.ruff.lint.per-file-ignores]
 # Ignore `T201` (print not allowed) in files that are intended to be used from CLI.
+"dumper.py" = ["T201"]
+# Ignore `T201` (print not allowed) in files that are intended to be used from CLI.
 "ynca/terminal.py" = ["T201"]
 # server.py started out as a quick hack and needs some work to get it right, until then disable some rules
 "ynca/server.py" = [
