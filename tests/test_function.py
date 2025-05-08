@@ -22,7 +22,7 @@ def test_yncafunction_put_only(connection: YncaConnectionMock) -> None:
 def test_yncafunction_get_only(connection: YncaConnectionMock) -> None:
     subunit = System(connection)
 
-    subunit.function_handlers["MODELNAME"].value = "TEST VALUE"
+    connection.send_protocol_message("SYS", "MODELNAME", "TEST VALUE")
     assert subunit.modelname == "TEST VALUE"
 
     with pytest.raises(AttributeError):

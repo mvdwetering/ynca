@@ -1,7 +1,5 @@
 """Test Zone subunit."""
 
-from collections.abc import Callable
-from typing import Any
 from unittest import mock
 
 import pytest  # type: ignore[import]
@@ -54,7 +52,8 @@ def initialized_dummysubunit(connection: YncaConnectionMock) -> DummySubunit:
 
 
 def test_construct(
-    connection: YncaConnectionMock, update_callback: Callable[[str, Any], None]
+    connection: YncaConnectionMock,
+    update_callback: mock.Mock,
 ) -> None:
     DummySubunit(connection)
 
@@ -63,7 +62,8 @@ def test_construct(
 
 
 def test_initialize_fail(
-    connection: YncaConnectionMock, update_callback: Callable[[str, Any], None]
+    connection: YncaConnectionMock,
+    update_callback: mock.Mock,
 ) -> None:
     dsu = DummySubunit(connection)
     dsu.register_update_callback(update_callback)
@@ -75,7 +75,8 @@ def test_initialize_fail(
 
 
 def test_initialize(
-    connection: YncaConnectionMock, update_callback: Callable[[str, Any], None]
+    connection: YncaConnectionMock,
+    update_callback: mock.Mock,
 ) -> None:
     connection.get_response_list = INITIALIZE_FULL_RESPONSES
 
@@ -132,7 +133,7 @@ def test_close(
 def test_unknown_functions_ignored(
     connection: YncaConnectionMock,
     initialized_dummysubunit: SubunitBase,
-    update_callback: Callable[[str, Any], None],
+    update_callback: mock.Mock,
 ) -> None:
     initialized_dummysubunit.register_update_callback(update_callback)
     connection.send_protocol_message(SUBUNIT, "UnknownFunction", "Value")
@@ -142,7 +143,7 @@ def test_unknown_functions_ignored(
 def test_status_not_ok_ignored(
     connection: YncaConnectionMock,
     initialized_dummysubunit: SubunitBase,
-    update_callback: Callable[[str, Any], None],
+    update_callback: mock.Mock,
 ) -> None:
     initialized_dummysubunit.register_update_callback(update_callback)
     connection.send_protocol_error("@UNDEFINED")

@@ -125,9 +125,7 @@ def initialized_zone(
     return z
 
 
-def test_construct(
-    connection: YncaConnectionMock, update_callback: Callable[[str, Any], None]
-) -> None:
+def test_construct(connection: YncaConnectionMock, update_callback: mock.Mock) -> None:
     Main(connection)
 
     assert connection.register_message_callback.call_count == 1
@@ -135,7 +133,7 @@ def test_construct(
 
 
 def test_initialize_minimal(
-    connection: YncaConnectionMock, update_callback: Callable[[str, Any], None]
+    connection: YncaConnectionMock, update_callback: mock.Mock
 ) -> None:
     connection.get_response_list = [
         (

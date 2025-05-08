@@ -10,7 +10,9 @@ class YncaConnectionMock(mock.MagicMock):
         # I can not add the response logic to the mock :/
         super().__init__(*args, **kwargs)
         self._num_commands_sent = 10
-        self.get_response_list = []
+        self.get_response_list: list[
+            tuple[tuple[str, str], list[tuple[str, str, str]]]
+        ] = []
 
     @property
     def num_commands_sent(self) -> int:

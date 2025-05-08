@@ -3,7 +3,7 @@ from contextlib import contextmanager
 import time
 from unittest import mock
 
-from mock_serial import MockSerial
+from mock_serial import MockSerial  # type: ignore[import]
 import pytest
 
 from ynca.connection import YncaConnection, YncaProtocolStatus

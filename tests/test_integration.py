@@ -1,4 +1,4 @@
-from mock_serial import MockSerial
+from mock_serial import MockSerial  # type: ignore[import]
 
 import ynca
 

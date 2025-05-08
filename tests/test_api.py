@@ -84,7 +84,7 @@ INITIALIZE_FULL_RESPONSES = [
     (
         (SYS, "AVAIL"),
         [
-            (RESTRICTED, None, None),
+            (RESTRICTED, "", ""),
         ],
     ),
     (
@@ -96,7 +96,7 @@ INITIALIZE_FULL_RESPONSES = [
     (
         (ZONE4, "AVAIL"),
         [
-            (RESTRICTED, None, None),
+            (RESTRICTED, "", ""),
         ],
     ),
     (
@@ -122,7 +122,7 @@ INITIALIZE_FULL_RESPONSES = [
     (
         (SYS, "AVAIL"),
         [
-            (RESTRICTED, None, None),
+            (RESTRICTED, "", ""),
         ],
     ),
     (

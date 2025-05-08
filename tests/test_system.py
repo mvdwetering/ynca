@@ -104,9 +104,7 @@ def initialized_system(connection: YncaConnectionMock) -> System:
     return r
 
 
-def test_construct(
-    connection: YncaConnectionMock, update_callback: Callable[[str, Any], None]
-) -> None:
+def test_construct(connection: YncaConnectionMock, update_callback: mock.Mock) -> None:
     System(connection)
 
     assert connection.register_message_callback.call_count == 1
@@ -170,7 +168,7 @@ def test_initialize_minimal(
 
 
 def test_initialize_full(
-    connection: YncaConnectionMock, update_callback: Callable[[str, Any], None]
+    connection: YncaConnectionMock, update_callback: mock.Mock
 ) -> None:
     connection.get_response_list = INITIALIZE_FULL_RESPONSES
 
