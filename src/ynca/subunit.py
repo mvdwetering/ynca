@@ -72,7 +72,7 @@ class SubunitBase(ABC):
         self._initialized = False
         self._initialized_event = threading.Event()
 
-        self._connection: YncaConnection | None = connection
+        self._connection = connection
         self._connection.register_message_callback(self._protocol_message_received)
 
     def initialize(self) -> None:
@@ -122,7 +122,6 @@ class SubunitBase(ABC):
             self._connection.unregister_message_callback(
                 self._protocol_message_received
             )
-            self._connection = None
             self._update_callbacks = set()
 
     def _protocol_message_received(

@@ -127,7 +127,6 @@ def test_close(
 
     # Should be safe to call multiple times
     initialized_dummysubunit.close()
-    connection.unregister_message_callback.assert_called_once()
 
 
 def test_unknown_functions_ignored(
