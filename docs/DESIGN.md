@@ -146,6 +146,11 @@ A better version would be nice.
 * Register for specific updates (next to all?)
 * Would still need a raw callback
 
+### Typing
+
+Now all subunits are like `Type|None`. This is a pain with typehints, especially for subunits that should always be there where additional checks, and with that tests, are needed.
+It might have been more convenient to just always have the type and an `is_supported()` method on it.
+
 ### Other
 
 Now all zones are the same, which is true for most things, but there are some things like @MAIN:HDMIOUT I have only seen on MAIN and does not seem to make much sense on ZONE2 or others. Maybe it would be good to not have them all the same by default? Could save some initialization time... But on the other hand could result in missing features on a Zone because not encountered yet. Now it just-works.
