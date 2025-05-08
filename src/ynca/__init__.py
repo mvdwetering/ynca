@@ -46,12 +46,34 @@ from .errors import (
     YncaInitializationFailedException,
 )
 from .modelinfo import YncaModelInfo
+from .subunit import SubunitBase
+from .subunits.airplay import Airplay
+from .subunits.bt import Bt
+from .subunits.dab import Dab
+from .subunits.ipod import Ipod
+from .subunits.ipodusb import IpodUsb
+from .subunits.napster import Napster
+from .subunits.netradio import NetRadio
+from .subunits.pandora import Pandora
+from .subunits.pc import Pc
+from .subunits.rhap import Rhap
+from .subunits.server import Server
+from .subunits.sirius import Sirius, SiriusIr, SiriusXm
+from .subunits.spotify import Spotify
+from .subunits.system import System
+from .subunits.tun import Tun
+from .subunits.uaw import Uaw
+from .subunits.usb import Usb
+from .subunits.zone import ZoneBase
 
 __all__ = [
     "AdaptiveDrc",
+    "Airplay",
     "Avail",
     "BandDab",
     "BandTun",
+    "Bt",
+    "Dab",
     "DabPreset",
     "DirMode",
     "Enhancer",
@@ -61,25 +83,42 @@ __all__ = [
     "InitVolLvl",
     "InitVolMode",
     "Input",
+    "Ipod",
+    "IpodUsb",
     "Mute",
+    "Napster",
+    "NetRadio",
+    "Pandora",
     "Party",
     "PartyMute",
+    "Pc",
     "Playback",
     "PlaybackInfo",
     "PureDirMode",
     "Pwr",
     "PwrB",
     "Repeat",
+    "Rhap",
+    "Server",
     "Shuffle",
+    "Sirius",
+    "SiriusIr",
+    "SiriusXm",
     "Sleep",
     "SoundPrg",
     "SpPattern",
     "SpeakerA",
     "SpeakerB",
+    "Spotify",
     "Straight",
+    "SubunitBase",
     "SurroundAI",
+    "System",
     "ThreeDeeCinema",
+    "Tun",
     "TwoChDecoder",
+    "Uaw",
+    "Usb",
     "YncaApi",
     "YncaConnection",
     "YncaConnectionCheckResult",
@@ -91,6 +130,7 @@ __all__ = [
     "YncaProtocolStatus",
     "ZoneBAvail",
     "ZoneBMute",
+    "ZoneBase",
 ]
 
 logging.getLogger(__name__).addHandler(logging.NullHandler())
