@@ -34,7 +34,7 @@ class YncaCommand(NamedTuple):
 ZONES = ["MAIN", "ZONE2", "ZONE3", "ZONE4"]
 
 
-def line_to_command(line) -> YncaCommand | None:
+def line_to_command(line: str) -> YncaCommand | None:
     match = re.search(r"@(?P<subunit>.+?):(?P<function>.+?)=(?P<value>.*)", line)
     if match is not None:
         subunit = match.group("subunit")
@@ -48,7 +48,7 @@ class YncaDataStore:
     def __init__(self) -> None:
         self._store: dict[str, dict[str, str]] = {}
 
-    def fill_from_file(self, filename) -> None:
+    def fill_from_file(self, filename: str) -> None:
         print(f"--- Filling store with data from file: {filename}")
         command = None
         with Path(filename).open() as file:
