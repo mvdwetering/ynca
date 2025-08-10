@@ -99,9 +99,8 @@ combine-as-imports = true
 # Ignore `T201` (print not allowed) in files that are intended to be used from CLI.
 "dumper.py" = ["T201"]
 # Ignore `T201` (print not allowed) in files that are intended to be used from CLI.
-"ynca/terminal.py" = ["T201"]
-# server.py started out as a quick hack and needs some work to get it right, until then disable some rules
-"ynca/server.py" = [
+"src/ynca/terminal.py" = ["T201"]
+"src/ynca/server.py" = [
   "ANN001",
   "C901",
   "FBT002",
@@ -111,9 +110,7 @@ combine-as-imports = true
   "SLF001",
   "T201",
 ]
-"ynca/enums.py" = [
-  "ANN206",
-] # Complains about missing return type annotation for _missing_ but can't figure out what it should be
+# server.py started out as a quick hack and needs some work to get it right, until then disable some rule
 "tests/*" = [
   "S101",    # Asserts in tests is ok
   "PLR2004", # Magic values in tests is ok(-ish)
