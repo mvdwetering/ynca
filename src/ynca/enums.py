@@ -432,6 +432,7 @@ class SoundPrg(StrEnum):
     FIVE_CH_STEREO = "5ch Stereo"
     SEVEN_CH_STEREO = "7ch Stereo"
     NINE_CH_STEREO = "9ch Stereo"
+    ELEVEN_CH_STEREO = "11ch Stereo"
     SURROUND_DECODER = "Surround Decoder"
     ALL_CH_STEREO = "All-Ch Stereo"
     ENHANCED = "Enhanced"
