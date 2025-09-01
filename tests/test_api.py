@@ -4,7 +4,11 @@ import pytest
 
 from tests.mock_yncaconnection import YncaConnectionMock
 import ynca
-from ynca.errors import YncaConnectionError, YncaInitializationFailedException
+from ynca.errors import (
+    YncaConnectionError,
+    YncaException,
+    YncaInitializationFailedException,
+)
 from ynca.subunits.bt import Bt
 from ynca.subunits.system import System
 from ynca.subunits.usb import Usb
@@ -430,6 +434,27 @@ def test_send_raw(
 
         y.send_raw("raw data")
         connection.raw.assert_called_with("raw data")
+
+        y.close()
+
+
+def test_get_connection(
+    connection: YncaConnectionMock,
+) -> None:
+    with mock.patch.object(
+        ynca.api.YncaConnection, "create_from_serial_url"
+    ) as create_from_serial_url:
+        create_from_serial_url.return_value = connection
+        connection.get_response_list = INITIALIZE_MINIMAL_RESPONSES
+
+        y = ynca.YncaApi("serial_url")
+
+        with pytest.raises(YncaException):
+            y.get_raw_connection()
+
+        y.initialize()
+
+        assert y.get_raw_connection() is connection
 
         y.close()
 

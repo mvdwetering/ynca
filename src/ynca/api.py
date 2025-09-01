@@ -7,7 +7,11 @@ from typing import TYPE_CHECKING, cast
 
 from .connection import YncaConnection, YncaProtocol, YncaProtocolStatus
 from .constants import Subunit
-from .errors import YncaConnectionError, YncaInitializationFailedException
+from .errors import (
+    YncaConnectionError,
+    YncaException,
+    YncaInitializationFailedException,
+)
 from .helpers import all_subclasses
 from .subunit import SubunitBase
 from .subunits.airplay import Airplay
@@ -223,6 +227,19 @@ class YncaApi:
         """Send raw YNCA data. Intended for debugging only."""
         if self._connection:
             self._connection.raw(raw_ynca_data)
+
+    def get_raw_connection(self) -> YncaConnection:
+        """Get the raw underlying connection object.
+
+        Note that this is intended for exceptional cases!
+        Do _not_ close the connection; it is still managed by the YncaApi.
+        Raises exception if not initialized.
+        """
+        if not self._connection:
+            msg = "Not initialized, no connection available"
+            raise YncaException(msg)
+
+        return self._connection
 
     def close(self) -> None:
         """Close connection and cleanup the internal resources. Safe to be called at any time. YncaApi object should _not_ be reused after being closed."""
