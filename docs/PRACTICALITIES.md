@@ -193,8 +193,8 @@ At least on RX-V473 with firmware 1.23/1.04. You still get STRAIGHT updates thou
 Which subunits support Presets varies by model.
 
 All models seem to support Preset for the tuner subunit (AM/FM/DAB).
-Other, seemingly older (pre 2012?), models like my RX-A810 supports them also for most other subunits like Napster, Netradio, Pandora, PC, Rhapsody, Sirius, SiriusIR and USB.
 
-Another thing to note is that for the limited models doing a GET for PRESET results in @RESTRICTED on subunits that do not support it. Which is expected.
-On my RX-A810 the receiver does not respond at all on that command.I would guess that this is because the additional subunits don't have actual numerical preset values.
+Some, seemingly older (pre 2012?), models like my RX-A810 supports them also for several other subunits like Napster, Netradio, Pandora, PC, Rhapsody, Sirius, SiriusIR and USB.
+Newer(?) models don't seem to support presets for those subunits. Doing a GET for PRESET results in @RESTRICTED on subunits that do not support it (which is expected, but impossible to relate to the GET in current architecture).
+On my RX-A810 the receiver does not respond at all on that command.I guess that this is because the additional subunits don't have actual numerical preset values.
 More details see <https://github.com/mvdwetering/yamaha_ynca/issues/379>
