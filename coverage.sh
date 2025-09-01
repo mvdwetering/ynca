@@ -1,3 +1,3 @@
 #!/bin/sh
 pytest --cov=ynca tests/ --cov-report term-missing --cov-report html
-mypy ynca --check-untyped-defs
+mypy src/ynca --check-untyped-defs
