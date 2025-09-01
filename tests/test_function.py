@@ -33,5 +33,9 @@ def test_yncafunction_delete(connection: YncaConnectionMock) -> None:
     subunit = System(connection)
 
     assert "MODELNAME" in subunit.function_handlers
+    assert hasattr(subunit, "modelname")
+
     delattr(subunit, "modelname")
+
     assert "MODELNAME" not in subunit.function_handlers
+    assert hasattr(subunit, "modelname") is False

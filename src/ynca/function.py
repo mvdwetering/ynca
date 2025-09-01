@@ -88,8 +88,8 @@ class FunctionMixinBase(ABC, Generic[T]):
         if instance is None:
             return self
 
-        if Cmd.GET not in self.cmd:
-            msg = f"Function {self.name} does not support GET command"
+        if Cmd.GET not in self.cmd or self.name not in instance.function_handlers:
+            msg = f"Function {self.name} does not support GET command or does not exist"
             raise AttributeError(msg)
 
         return instance.function_handlers[self.name].value
