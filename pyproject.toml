@@ -13,7 +13,7 @@ ynca = ["py.typed"]
 
 [project]
 name = "ynca"
-version = "5.22.0"
+version = "5.23.0"
 description = "Package to control Yamaha receivers that support the YNCA protocol."
 readme = "README.md"
 requires-python = ">=3.11"
