@@ -206,6 +206,7 @@ class Input(StrEnum):
     HDMI5 = "HDMI5"
     HDMI6 = "HDMI6"
     HDMI7 = "HDMI7"
+    MAIN_ZONE_SYNC = "Main Zone Sync"
     MULTICH = "MULTI CH"
     OPTICAL1 = "OPTICAL1"
     OPTICAL2 = "OPTICAL2"
