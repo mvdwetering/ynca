@@ -50,6 +50,7 @@ from .subunit import SubunitBase
 from .subunits.airplay import Airplay
 from .subunits.bt import Bt
 from .subunits.dab import Dab
+from .subunits.deezer import Deezer
 from .subunits.ipod import Ipod
 from .subunits.ipodusb import IpodUsb
 from .subunits.napster import Napster
@@ -76,6 +77,7 @@ __all__ = [
     "Bt",
     "Dab",
     "DabPreset",
+    "Deezer",
     "DirMode",
     "Enhancer",
     "FmPreset",

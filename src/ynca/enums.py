@@ -217,6 +217,7 @@ class Input(StrEnum):
     # Inputs provided by subunits
     AIRPLAY = "AirPlay"
     BLUETOOTH = "Bluetooth"
+    DEEZER = "Deezer"
     IPOD = "iPod"
     IPOD_USB = "iPod (USB)"
     NAPSTER = "Napster"

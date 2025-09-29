@@ -17,6 +17,7 @@ from .subunit import SubunitBase
 from .subunits.airplay import Airplay
 from .subunits.bt import Bt
 from .subunits.dab import Dab
+from .subunits.deezer import Deezer
 from .subunits.ipod import Ipod
 from .subunits.ipodusb import IpodUsb
 from .subunits.napster import Napster
@@ -267,6 +268,10 @@ class YncaApi:
     @property
     def dab(self) -> Dab | None:
         return cast(Dab, self._subunits.get(Subunit.DAB, None))
+
+    @property
+    def deezer(self) -> Deezer | None:
+        return cast(Deezer, self._subunits.get(Subunit.DEEZER, None))
 
     @property
     def ipod(self) -> Ipod | None:

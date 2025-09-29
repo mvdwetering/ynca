@@ -21,6 +21,7 @@ class Subunit(StrEnum):
     AIRPLAY = "AIRPLAY"
     BT = "BT"
     DAB = "DAB"
+    DEEZER = "DEEZER"
     IPOD = "IPOD"
     IPODUSB = "IPODUSB"
     NAPSTER = "NAPSTER"
