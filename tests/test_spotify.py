@@ -2,7 +2,7 @@ from collections.abc import Callable
 from typing import Any
 
 from tests.mock_yncaconnection import YncaConnectionMock
-from ynca import Playback, PlaybackInfo
+from ynca import Playback, PlaybackInfo, Repeat, Shuffle
 from ynca.subunits.spotify import Spotify
 
 SYS = "SYS"
@@ -64,6 +64,8 @@ def test_initialize(
     assert spotify.artist == "Artist"
     assert spotify.track == "Track"
     assert spotify.playbackinfo is PlaybackInfo.PAUSE
+    assert spotify.repeat == Repeat.SINGLE
+    assert spotify.shuffle == Shuffle.ON
 
     spotify.playback(Playback.PLAY)
     connection.put.assert_called_with(SUBUNIT, "PLAYBACK", "Play")
