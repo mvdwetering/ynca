@@ -1,4 +1,5 @@
 from collections.abc import Callable
+from datetime import timedelta
 from typing import Any
 
 from tests.mock_yncaconnection import YncaConnectionMock
@@ -24,6 +25,12 @@ INITIALIZE_FULL_RESPONSES = [
         ],
     ),
     (
+        (SUBUNIT, "ELAPSEDTIME"),
+        [
+            (SUBUNIT, "ELAPSEDTIME", ""),
+        ],
+    ),
+    (
         (SUBUNIT, "PLAYBACKINFO"),
         [
             (SUBUNIT, "PLAYBACKINFO", "Pause"),
@@ -39,6 +46,12 @@ INITIALIZE_FULL_RESPONSES = [
         (SUBUNIT, "SHUFFLE"),
         [
             (SUBUNIT, "SHUFFLE", "On"),
+        ],
+    ),
+    (
+        (SUBUNIT, "TOTALTIME"),
+        [
+            (SUBUNIT, "TOTALTIME", "1:23"),
         ],
     ),
     (
@@ -66,6 +79,8 @@ def test_initialize(
     assert tidal.playbackinfo is PlaybackInfo.PAUSE
     assert tidal.repeat == Repeat.SINGLE
     assert tidal.shuffle == Shuffle.ON
+    assert tidal.elapsedtime is None
+    assert tidal.totaltime == timedelta(minutes=1, seconds=23)
 
     tidal.playback(Playback.PLAY)
     connection.put.assert_called_with(SUBUNIT, "PLAYBACK", "Play")

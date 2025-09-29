@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from ..converters import FloatConverter, IntOrNoneConverter
+from ..converters import FloatConverter, IntOrNoneConverter, TimedeltaOrNoneConverter
 from ..enums import Playback, PlaybackInfo, Repeat, Shuffle
 from ..function import (
     Cmd,
@@ -10,6 +10,7 @@ from ..function import (
     FloatFunctionMixin,
     IntFunctionMixin,
     StrFunctionMixin,
+    TimedeltaFunctionMixin,
 )
 from ..helpers import number_to_string_with_stepsize
 
@@ -27,6 +28,10 @@ class ArtistFunctionMixin:
 
 class ChNameFunctionMixin:
     chname = StrFunctionMixin(Cmd.GET, init="METAINFO")
+
+
+class ElapsedTimeFunctionMixin:
+    elapsedtime = TimedeltaFunctionMixin(Cmd.GET, converter=TimedeltaOrNoneConverter())
 
 
 class FmFreqFunctionMixin:
@@ -86,6 +91,10 @@ class SongFunctionMixin:
 
 class StationFunctionMixin:
     station = StrFunctionMixin(Cmd.GET)
+
+
+class TotalTimeFunctionMixin:
+    totaltime = TimedeltaFunctionMixin(Cmd.GET, converter=TimedeltaOrNoneConverter())
 
 
 class TrackFunctionMixin:

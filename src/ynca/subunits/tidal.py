@@ -5,10 +5,12 @@ from ..subunit import SubunitBase
 from . import (
     AlbumFunctionMixin,
     ArtistFunctionMixin,
+    ElapsedTimeFunctionMixin,
     PlaybackFunctionMixin,
     PlaybackInfoFunctionMixin,
     RepeatFunctionMixin,
     ShuffleFunctionMixin,
+    TotalTimeFunctionMixin,
     TrackFunctionMixin,
 )
 
@@ -16,10 +18,12 @@ from . import (
 class Tidal(
     AlbumFunctionMixin,
     ArtistFunctionMixin,
+    ElapsedTimeFunctionMixin,
     PlaybackFunctionMixin,
     PlaybackInfoFunctionMixin,
     RepeatFunctionMixin,
     ShuffleFunctionMixin,
+    TotalTimeFunctionMixin,
     TrackFunctionMixin,
     SubunitBase,
 ):

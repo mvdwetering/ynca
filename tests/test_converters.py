@@ -1,5 +1,6 @@
 """Test converters."""
 
+from datetime import timedelta
 from enum import Enum
 
 import pytest
@@ -10,6 +11,7 @@ from ynca.converters import (
     IntConverter,
     MultiConverter,
     StrConverter,
+    TimedeltaOrNoneConverter,
 )
 
 
@@ -23,6 +25,7 @@ def test_strconverter() -> None:
         c.to_str("1234567")
 
     assert c.to_value("test") == "test"
+    assert c.to_value("des ann\u00e9es 80") == "des années 80"
 
 
 def test_intconverter() -> None:
@@ -72,3 +75,17 @@ def test_multiconverter() -> None:
     assert c.to_value("1.23") == 1.23
     with pytest.raises(ValueError, match="No converter could convert"):
         c.to_value("Invalid")
+
+
+def test_timedeltaornoneconverter() -> None:
+
+    c = TimedeltaOrNoneConverter()
+    assert c.to_str(None) == ""
+    assert c.to_str(timedelta(seconds=1)) == "0:01"
+    assert c.to_str(timedelta(minutes=1, seconds=23)) == "1:23"
+    assert c.to_str(timedelta(minutes=123, seconds=45)) == "123:45"
+
+    assert c.to_value("") is None
+    assert c.to_value("0:01") == timedelta(seconds=1)
+    assert c.to_value("1:23") == timedelta(minutes=1, seconds=23)
+    assert c.to_value("123:45") == timedelta(minutes=123, seconds=45)

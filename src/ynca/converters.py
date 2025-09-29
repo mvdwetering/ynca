@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
+from datetime import timedelta
 from enum import Enum
 import logging
 from typing import TYPE_CHECKING, Any, Generic, TypeVar, cast
@@ -98,6 +99,23 @@ class StrConverter(ConverterBase):
             msg = f"'{value}' is too long, maximum length is {self._max_len}"
             raise ValueError(msg)
         return value
+
+
+class TimedeltaOrNoneConverter(ConverterBase):
+    def to_value(self, value_string: str) -> timedelta | None:
+        try:
+            minutes, seconds = map(int, value_string.split(":"))
+            return timedelta(minutes=minutes, seconds=seconds)
+        except (ValueError, TypeError, OverflowError):
+            return None
+
+    def to_str(self, value: timedelta | None) -> str:
+        if value is None:
+            return ""
+
+        total_seconds = int(value.total_seconds())
+        minutes, seconds = divmod(total_seconds, 60)
+        return f"{minutes}:{seconds:02d}"
 
 
 class MultiConverter(ConverterBase):

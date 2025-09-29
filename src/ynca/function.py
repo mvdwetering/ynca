@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC
+from datetime import timedelta
 from enum import Enum, Flag, auto
 import logging
 from typing import TYPE_CHECKING, Generic, TypeVar, overload
@@ -15,6 +16,7 @@ from .converters import (
     IntConverter,
     MultiConverter,
     StrConverter,
+    TimedeltaOrNoneConverter,
 )
 
 logger = logging.getLogger(__name__)
@@ -215,5 +217,22 @@ class EnumOrIntFunctionMixin(FunctionMixinBase, Generic[E]):
             or MultiConverter(
                 [IntConverter(), EnumConverter(datatype)]
             ),  # Int first because enum will convert to UNKNOWN
+            init=init,
+        )
+
+
+class TimedeltaFunctionMixin(FunctionMixinBase[timedelta]):
+
+    def __init__(
+        self,
+        cmd: Cmd = Cmd.GET | Cmd.PUT,
+        converter: ConverterBase | None = None,
+        name_override: str | None = None,
+        init: str | None = None,
+    ) -> None:
+        super().__init__(
+            name_override=name_override,
+            cmd=cmd,
+            converter=converter or TimedeltaOrNoneConverter(),
             init=init,
         )
