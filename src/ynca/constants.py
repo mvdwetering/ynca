@@ -33,6 +33,7 @@ class Subunit(StrEnum):
     SIRIUSXM = "SIRIUSXM"
     SERVER = "SERVER"
     SPOTIFY = "SPOTIFY"
+    TIDAL = "TIDAL"
     TUN = "TUN"
     UAW = "UAW"
     USB = "USB"
