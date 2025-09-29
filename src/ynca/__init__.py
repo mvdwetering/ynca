@@ -61,6 +61,7 @@ from .subunits.server import Server
 from .subunits.sirius import Sirius, SiriusIr, SiriusXm
 from .subunits.spotify import Spotify
 from .subunits.system import System
+from .subunits.tidal import Tidal
 from .subunits.tun import Tun
 from .subunits.uaw import Uaw
 from .subunits.usb import Usb
@@ -116,6 +117,7 @@ __all__ = [
     "SurroundAI",
     "System",
     "ThreeDeeCinema",
+    "Tidal",
     "Tun",
     "TwoChDecoder",
     "Uaw",

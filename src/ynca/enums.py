@@ -229,6 +229,7 @@ class Input(StrEnum):
     SIRIUS_IR = "SIRIUS InternetRadio"
     SIRIUS_XM = "SiriusXM"
     SPOTIFY = "Spotify"
+    TIDAL = "TIDAL"
     TUNER = "TUNER"  # AM/FM tuner (@TUN) or DAB/FM tuner (@DAB)
     UAW = "UAW"
     USB = "USB"

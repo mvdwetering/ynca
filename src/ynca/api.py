@@ -28,6 +28,7 @@ from .subunits.server import Server
 from .subunits.sirius import Sirius, SiriusIr, SiriusXm
 from .subunits.spotify import Spotify
 from .subunits.system import System
+from .subunits.tidal import Tidal
 from .subunits.tun import Tun
 from .subunits.uaw import Uaw
 from .subunits.usb import Usb
@@ -322,6 +323,10 @@ class YncaApi:
     @property
     def sys(self) -> System | None:
         return cast(System, self._subunits.get(Subunit.SYS, None))
+
+    @property
+    def tidal(self) -> Tidal | None:
+        return cast(Tidal, self._subunits.get(Subunit.TIDAL, None))
 
     @property
     def tun(self) -> Tun | None:
