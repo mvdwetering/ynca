@@ -48,64 +48,81 @@ def line_to_command(line: str) -> YncaCommand | None:
 class YncaDataStore:
     def __init__(self) -> None:
         self._store: dict[str, dict[str, str]] = {}
+        self._lock = threading.Lock()
 
     def fill_from_file(self, filename: str) -> None:
-        print(f"--- Filling store with data from file: {filename}")
-        command = None
-        with Path(filename).open() as file:
-            for line in file:
-                line = line.strip()
-                line = line.rstrip(
-                    '",'
-                )  # Strip to be able to use diagnostics output directly
+        with self._lock:
+            print(f"--- Filling store with data from file: {filename}")
+            command = None
+            with Path(filename).open() as file:
+                for line in file:
+                    line = line.strip()
+                    line = line.rstrip(
+                        '",'
+                    )  # Strip to be able to use diagnostics output directly
 
-                # Error values are stored based on command sent on previous line
-                if command and (RESTRICTED in line or UNDEFINED in line):
-                    # Only set RESTRICTED or UNDEFINED for non existing entries
-                    # Avoids "removal" of valid values that were already stored
-                    if self.get_data(command.subunit, command.function) == UNDEFINED:
-                        self.add_data(
-                            command.subunit,
-                            command.function,
-                            RESTRICTED if RESTRICTED in line else UNDEFINED,
-                        )
-                else:
-                    command = line_to_command(line)
-                    if command is not None and command.value != "?":
-                        logging.debug("Adding from file: %s", command)
-                        self.add_data(command.subunit, command.function, command.value)
+                    # Error values are stored based on command sent on previous line
+                    if command and (RESTRICTED in line or UNDEFINED in line):
+                        # Only set RESTRICTED or UNDEFINED for non existing entries
+                        # Avoids "removal" of valid values that were already stored
+                        if (
+                            self._get_data(command.subunit, command.function)
+                            == UNDEFINED
+                        ):
+                            self._add_data(
+                                command.subunit,
+                                command.function,
+                                RESTRICTED if RESTRICTED in line else UNDEFINED,
+                            )
+                    else:
+                        command = line_to_command(line)
+                        if command is not None and command.value != "?":
+                            logging.debug("Adding from file: %s", command)
+                            self._add_data(
+                                command.subunit, command.function, command.value
+                            )
 
-    def add_data(self, subunit, function, value) -> None:
+    def _add_data(self, subunit, function, value) -> None:
         if subunit not in self._store:
             self._store[subunit] = {}
         self._store[subunit][function] = value
 
-    def get_data(self, subunit, function) -> str:
+    def _get_data(self, subunit, function) -> str:
         try:
             value = self._store[subunit][function]
         except KeyError:
             return UNDEFINED
         return value
 
+    def add_data(self, subunit, function, value) -> None:
+        with self._lock:
+            return self._add_data(subunit, function, value)
+
+    def get_data(self, subunit, function) -> str:
+        with self._lock:
+            return self._get_data(subunit, function)
+
     def get_subunit_functions(self, subunit) -> list[str] | None:
-        try:
-            functions = [f for f in self._store[subunit] if not f.startswith("@")]
-        except KeyError:
-            return None
-        else:
-            return functions
+        with self._lock:
+            try:
+                functions = [f for f in self._store[subunit] if not f.startswith("@")]
+            except KeyError:
+                return None
+            else:
+                return functions
 
     def put_data(self, subunit, function, new_value) -> tuple[str, bool]:
         """Write new value, returns tuple with result and if value changed in case of OK."""
-        try:
-            if subunit in self._store:
-                old_value = self._store[subunit][function]
-                if old_value is None or new_value not in [UNDEFINED, RESTRICTED]:
-                    self._store[subunit][function] = new_value
-                return (OK, old_value != new_value)
-        except KeyError:
-            return (UNDEFINED, False)
-        return (RESTRICTED, False)
+        with self._lock:
+            try:
+                if subunit in self._store:
+                    old_value = self._store[subunit][function]
+                    if old_value is None or new_value not in [UNDEFINED, RESTRICTED]:
+                        self._store[subunit][function] = new_value
+                    return (OK, old_value != new_value)
+            except KeyError:
+                return (UNDEFINED, False)
+            return (RESTRICTED, False)
 
 
 multiresponse_functions_table = {
