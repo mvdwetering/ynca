@@ -406,7 +406,7 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
                 self._send_ynca_value(subunit, function, value)
 
             # Special handling for PWR
-            if function == "PWR":
+            if function in ("PWR", "PWRB"):
                 self._handle_power_change(subunit, function, value)
 
             # When changing inputs send updates for new input
@@ -453,9 +453,9 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
                 result = self.store.put_data(zone, function, value)
                 if result[1]:
                     self._send_ynca_value(zone, function, value)
-            result = self.store.put_data(zone, "PWRB", value)
+            result = self.store.put_data("MAIN", "PWRB", value)
             if result[1]:
-                self._send_ynca_value(zone, "PWRB", value)
+                self._send_ynca_value("MAIN", "PWRB", value)
         elif subunit in ZONES:
             # Setting PWR on a ZONE can influence SYS overall PWR
             sys_is_on = False
@@ -464,7 +464,7 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
                 if zone_is_on != UNDEFINED:
                     sys_is_on |= zone_is_on == "On"
 
-            zoneb_is_on = self.store.get_data(zone, function)
+            zoneb_is_on = self.store.get_data("MAIN", function)
             if zoneb_is_on != UNDEFINED:
                 sys_is_on |= zoneb_is_on == "On"
 
