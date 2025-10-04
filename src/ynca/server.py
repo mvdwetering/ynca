@@ -1,4 +1,17 @@
 #!/usr/bin/env python3
+from __future__ import annotations
+
+import argparse
+import logging
+from pathlib import Path
+import re
+import socketserver
+import threading
+import time
+from typing import NamedTuple
+
+from .enums import Input
+from .subunits.system import REMOTE_CODE_LENGTH
 
 """Simple socket server to test without a real YNCA device.
 
@@ -7,18 +20,6 @@ special interactions like return @RESTRICTED when subunit is not available when 
 
 It is intended to be just enough to test without a real device
 """
-
-from __future__ import annotations
-
-import argparse
-import logging
-from pathlib import Path
-import re
-import socketserver
-from typing import NamedTuple
-
-from .enums import Input
-from .subunits.system import REMOTE_CODE_LENGTH
 
 RESTRICTED = "@RESTRICTED"
 UNDEFINED = "@UNDEFINED"
@@ -56,7 +57,7 @@ class YncaDataStore:
                 line = line.strip()
                 line = line.rstrip(
                     '",'
-                )  # Strip to be able to use diagnotics output directly
+                )  # Strip to be able to use diagnostics output directly
 
                 # Error values are stored based on command sent on previous line
                 if command and (RESTRICTED in line or UNDEFINED in line):
@@ -71,6 +72,7 @@ class YncaDataStore:
                 else:
                     command = line_to_command(line)
                     if command is not None and command.value != "?":
+                        logging.debug("Adding from file: %s", command)
                         self.add_data(command.subunit, command.function, command.value)
 
     def add_data(self, subunit, function, value) -> None:
@@ -192,7 +194,59 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
             server.disconnect_after_sending_num_commands
         )
         self._commands_sent = 0
+        self._elapsedtime_thread: threading.Thread | None = None
+        self._elapsedtime_thread_stop = threading.Event()
         super().__init__(request, client_address, server)
+
+    def _start_elapsedtime_thread(self) -> None:
+        self._elapsedtime_thread_stop.clear()
+        thread = threading.Thread(target=self._elapsedtime_worker)
+        thread.daemon = True
+        thread.start()
+        self._elapsedtime_thread = thread
+
+    def _stop_elapsedtime_thread(self) -> None:
+        self._elapsedtime_thread_stop.set()
+        if self._elapsedtime_thread:
+            self._elapsedtime_thread.join(timeout=2)
+        self._elapsedtime_thread = None
+
+    def _elapsedtime_worker(self) -> None:
+        while not self._elapsedtime_thread_stop.is_set():
+            time.sleep(1)
+            for zone in ZONES:
+                input_subunit = self.get_active_input_subunit_for_zone(zone)
+                if input_subunit:
+                    elapsedtime = self.store.get_data(input_subunit, "ELAPSEDTIME")
+                    if elapsedtime and not elapsedtime.startswith(
+                        "@"
+                    ):  # Only update if valid
+                        try:
+                            mins, secs = map(int, elapsedtime.split(":"))
+                            elapsed_seconds = mins * 60 + secs + 1
+                        except ValueError:
+                            logging.exception("Error parsing elapsedtime")
+                            continue
+                        totaltime = self.store.get_data(input_subunit, "TOTALTIME")
+                        if totaltime and not totaltime.startswith("@"):
+                            try:
+                                mins, secs = map(int, totaltime.split(":"))
+                                totaltime_seconds = mins * 60 + secs
+                            except ValueError:
+                                logging.exception("Error parsing totaltime")
+                                totaltime_seconds = None
+                        else:
+                            totaltime_seconds = None
+                        if (
+                            totaltime_seconds is not None
+                            and elapsed_seconds >= totaltime_seconds
+                        ):
+                            elapsed_seconds = 0
+                        new_elapsed = (
+                            f"{elapsed_seconds // 60}:{elapsed_seconds % 60:02d}"
+                        )
+                        self.store.put_data(input_subunit, "ELAPSEDTIME", new_elapsed)
+                        self._send_ynca_value(input_subunit, "ELAPSEDTIME", new_elapsed)
 
     def _write_line(self, line: str) -> None:
         print(f"Send - {line}")
@@ -429,6 +483,7 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
             return None
 
     def handle(self) -> None:
+        self._start_elapsedtime_thread()
         # self.rfile is a file-like object created by the handler;
         # we can now use e.g. readline() instead of raw recv() calls
         #
@@ -443,9 +498,11 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
                 if bytes_line == b"":
                     print("--- Client disconnected")
                     print("--- Waiting for connections")
+                    self._stop_elapsedtime_thread()
                     return
             except TimeoutError:
                 print("--- Disconnecting client because of timeout")
+                self._stop_elapsedtime_thread()
                 print("--- Waiting for connections")
                 return
 
@@ -470,6 +527,7 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
                 print(
                     f"--- Disconnecting because of `disconnect_after_receiving_num_commands` limit {self.disconnect_after_receiving_num_commands} reached"
                 )
+                self._stop_elapsedtime_thread()
                 return
 
             if (
@@ -479,6 +537,7 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
                 print(
                     "--- Disconnecting because of `disconnect_after_sending_num_commands` {self.disconnect_after_sending_num_commands} limit reached"
                 )
+                self._stop_elapsedtime_thread()
                 return
 
 
