@@ -348,43 +348,47 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
 
             # Special handling for PWR
             if function == "PWR":
-                if subunit == "SYS":
-                    # Setting PWR on SYS impacts Zone PWR
-                    for zone in ZONES:
-                        result = self.store.put_data(zone, function, value)
-                        if result[1]:
-                            self._send_ynca_value(zone, function, value)
-                    result = self.store.put_data(zone, "PWRB", value)
-                    if result[1]:
-                        self._send_ynca_value(zone, "PWRB", value)
-                elif subunit in ZONES:
-                    # Setting PWR on a ZONE can influence SYS overall PWR
-                    sys_is_on = False
-                    for zone in ZONES:
-                        zone_is_on = self.store.get_data(zone, function)
-                        if zone_is_on != UNDEFINED:
-                            sys_is_on |= zone_is_on == "On"
-
-                    zoneb_is_on = self.store.get_data(zone, function)
-                    if zoneb_is_on != UNDEFINED:
-                        sys_is_on |= zoneb_is_on == "On"
-
-                    sys_on_value = "On" if sys_is_on else "Standby"
-                    result = self.store.put_data("SYS", function, sys_on_value)
-                    if result[1]:
-                        self._send_ynca_value("SYS", function, sys_on_value)
+                self._handle_power_change(subunit, function, value)
 
             # When changing inputs send updates for new input
             if function == "INP":
-                if subunit in ZONES:
-                    input_subunit = self.get_active_input_subunit_for_zone(subunit)
-                    if subunit_functions := self.store.get_subunit_functions(
-                        input_subunit
-                    ):
-                        for function in subunit_functions:
-                            value = self.store.get_data(input_subunit, function)
-                            if not value.startswith("@"):  # Errors start with @
-                                self._send_ynca_value(input_subunit, function, value)
+                self._handle_input_change(subunit)
+
+    def _handle_input_change(self, subunit) -> None:
+        if subunit in ZONES:
+            input_subunit = self.get_active_input_subunit_for_zone(subunit)
+            if subunit_functions := self.store.get_subunit_functions(input_subunit):
+                for subunit_function in subunit_functions:
+                    value = self.store.get_data(input_subunit, subunit_function)
+                    if not value.startswith("@"):  # Errors start with @
+                        self._send_ynca_value(input_subunit, subunit_function, value)
+
+    def _handle_power_change(self, subunit, function, value) -> None:
+        if subunit == "SYS":
+            # Setting PWR on SYS impacts Zone PWR
+            for zone in ZONES:
+                result = self.store.put_data(zone, function, value)
+                if result[1]:
+                    self._send_ynca_value(zone, function, value)
+            result = self.store.put_data(zone, "PWRB", value)
+            if result[1]:
+                self._send_ynca_value(zone, "PWRB", value)
+        elif subunit in ZONES:
+            # Setting PWR on a ZONE can influence SYS overall PWR
+            sys_is_on = False
+            for zone in ZONES:
+                zone_is_on = self.store.get_data(zone, function)
+                if zone_is_on != UNDEFINED:
+                    sys_is_on |= zone_is_on == "On"
+
+            zoneb_is_on = self.store.get_data(zone, function)
+            if zoneb_is_on != UNDEFINED:
+                sys_is_on |= zoneb_is_on == "On"
+
+            sys_on_value = "On" if sys_is_on else "Standby"
+            result = self.store.put_data("SYS", function, sys_on_value)
+            if result[1]:
+                self._send_ynca_value("SYS", function, sys_on_value)
 
     def get_active_input_subunit_for_zone(self, zone_subunit) -> str | None:
         try:
