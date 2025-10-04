@@ -85,6 +85,14 @@ class YncaDataStore:
             return UNDEFINED
         return value
 
+    def get_subunit_functions(self, subunit) -> list[str] | None:
+        try:
+            functions = [f for f in self._store[subunit] if not f.startswith("@")]
+        except KeyError:
+            return None
+        else:
+            return functions
+
     def put_data(self, subunit, function, new_value) -> tuple[str, bool]:
         """Write new value, returns tuple with result and if value changed in case of OK."""
         try:
@@ -325,11 +333,7 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
 
                 # When received on a Zone the response is on INP subunit
                 if subunit in ZONES:
-                    subunit = next(
-                        m[1][0]
-                        for m in INPUT_SUBUNITLIST_MAPPING
-                        if m[0].value == self.store.get_data(subunit, "INP")
-                    )
+                    subunit = self.get_active_input_subunit_for_zone(subunit)
 
             # Send (possibly multiple) responses
             if response_functions := related_functions_table.get(function):
@@ -367,6 +371,28 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
                     result = self.store.put_data("SYS", function, sys_on_value)
                     if result[1]:
                         self._send_ynca_value("SYS", function, sys_on_value)
+
+            # When changing inputs send updates for new input
+            if function == "INP":
+                if subunit in ZONES:
+                    input_subunit = self.get_active_input_subunit_for_zone(subunit)
+                    if subunit_functions := self.store.get_subunit_functions(
+                        input_subunit
+                    ):
+                        for function in subunit_functions:
+                            value = self.store.get_data(input_subunit, function)
+                            if not value.startswith("@"):  # Errors start with @
+                                self._send_ynca_value(input_subunit, function, value)
+
+    def get_active_input_subunit_for_zone(self, zone_subunit) -> str | None:
+        try:
+            return next(
+                m[1][0]
+                for m in INPUT_SUBUNITLIST_MAPPING
+                if m[0].value == self.store.get_data(zone_subunit, "INP")
+            )
+        except StopIteration:
+            return None
 
     def handle(self) -> None:
         # self.rfile is a file-like object created by the handler;
