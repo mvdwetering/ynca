@@ -257,7 +257,7 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
                             totaltime_seconds = None
                         if (
                             totaltime_seconds is not None
-                            and elapsed_seconds >= totaltime_seconds
+                            and elapsed_seconds > totaltime_seconds
                         ):
                             elapsed_seconds = 0
                         new_elapsed = (
