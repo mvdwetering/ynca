@@ -144,6 +144,7 @@ multiresponse_functions_table = {
 # They report the related command status even when not changed
 # The order is obtained from how it works on RX-A810
 related_functions_table = {
+    "INP": ["AUDSEL", "DECODERSEL", "ENHANCER", "STRAIGHT", "SOUNDPRG"],
     "SOUNDPRG": ["STRAIGHT", "SOUNDPRG"],
     "PUREDIRMODE": ["PUREDIRMODE", "STRAIGHT"],
     "STRAIGHT": ["STRAIGHT", "SOUNDPRG"],
