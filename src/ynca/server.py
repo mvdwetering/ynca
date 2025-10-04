@@ -1,4 +1,17 @@
 #!/usr/bin/env python3
+from __future__ import annotations
+
+import argparse
+import logging
+from pathlib import Path
+import re
+import socketserver
+import threading
+import time
+from typing import NamedTuple
+
+from .enums import Input
+from .subunits.system import REMOTE_CODE_LENGTH
 
 """Simple socket server to test without a real YNCA device.
 
@@ -7,18 +20,6 @@ special interactions like return @RESTRICTED when subunit is not available when 
 
 It is intended to be just enough to test without a real device
 """
-
-from __future__ import annotations
-
-import argparse
-import logging
-from pathlib import Path
-import re
-import socketserver
-from typing import NamedTuple
-
-from .enums import Input
-from .subunits.system import REMOTE_CODE_LENGTH
 
 RESTRICTED = "@RESTRICTED"
 UNDEFINED = "@UNDEFINED"
@@ -47,55 +48,81 @@ def line_to_command(line: str) -> YncaCommand | None:
 class YncaDataStore:
     def __init__(self) -> None:
         self._store: dict[str, dict[str, str]] = {}
+        self._lock = threading.Lock()
 
     def fill_from_file(self, filename: str) -> None:
-        print(f"--- Filling store with data from file: {filename}")
-        command = None
-        with Path(filename).open() as file:
-            for line in file:
-                line = line.strip()
-                line = line.rstrip(
-                    '",'
-                )  # Strip to be able to use diagnotics output directly
+        with self._lock:
+            print(f"--- Filling store with data from file: {filename}")
+            command = None
+            with Path(filename).open() as file:
+                for line in file:
+                    line = line.strip()
+                    line = line.rstrip(
+                        '",'
+                    )  # Strip to be able to use diagnostics output directly
 
-                # Error values are stored based on command sent on previous line
-                if command and (RESTRICTED in line or UNDEFINED in line):
-                    # Only set RESTRICTED or UNDEFINED for non existing entries
-                    # Avoids "removal" of valid values that were already stored
-                    if self.get_data(command.subunit, command.function) == UNDEFINED:
-                        self.add_data(
-                            command.subunit,
-                            command.function,
-                            RESTRICTED if RESTRICTED in line else UNDEFINED,
-                        )
-                else:
-                    command = line_to_command(line)
-                    if command is not None and command.value != "?":
-                        self.add_data(command.subunit, command.function, command.value)
+                    # Error values are stored based on command sent on previous line
+                    if command and (RESTRICTED in line or UNDEFINED in line):
+                        # Only set RESTRICTED or UNDEFINED for non existing entries
+                        # Avoids "removal" of valid values that were already stored
+                        if (
+                            self._get_data(command.subunit, command.function)
+                            == UNDEFINED
+                        ):
+                            self._add_data(
+                                command.subunit,
+                                command.function,
+                                RESTRICTED if RESTRICTED in line else UNDEFINED,
+                            )
+                    else:
+                        command = line_to_command(line)
+                        if command is not None and command.value != "?":
+                            logging.debug("Adding from file: %s", command)
+                            self._add_data(
+                                command.subunit, command.function, command.value
+                            )
 
-    def add_data(self, subunit, function, value) -> None:
+    def _add_data(self, subunit, function, value) -> None:
         if subunit not in self._store:
             self._store[subunit] = {}
         self._store[subunit][function] = value
 
-    def get_data(self, subunit, function) -> str:
+    def _get_data(self, subunit, function) -> str:
         try:
             value = self._store[subunit][function]
         except KeyError:
             return UNDEFINED
         return value
 
+    def add_data(self, subunit, function, value) -> None:
+        with self._lock:
+            return self._add_data(subunit, function, value)
+
+    def get_data(self, subunit, function) -> str:
+        with self._lock:
+            return self._get_data(subunit, function)
+
+    def get_subunit_functions(self, subunit) -> list[str] | None:
+        with self._lock:
+            try:
+                functions = [f for f in self._store[subunit] if not f.startswith("@")]
+            except KeyError:
+                return None
+            else:
+                return functions
+
     def put_data(self, subunit, function, new_value) -> tuple[str, bool]:
         """Write new value, returns tuple with result and if value changed in case of OK."""
-        try:
-            if subunit in self._store:
-                old_value = self._store[subunit][function]
-                if old_value is None or new_value not in [UNDEFINED, RESTRICTED]:
-                    self._store[subunit][function] = new_value
-                return (OK, old_value != new_value)
-        except KeyError:
-            return (UNDEFINED, False)
-        return (RESTRICTED, False)
+        with self._lock:
+            try:
+                if subunit in self._store:
+                    old_value = self._store[subunit][function]
+                    if old_value is None or new_value not in [UNDEFINED, RESTRICTED]:
+                        self._store[subunit][function] = new_value
+                    return (OK, old_value != new_value)
+            except KeyError:
+                return (UNDEFINED, False)
+            return (RESTRICTED, False)
 
 
 multiresponse_functions_table = {
@@ -134,6 +161,7 @@ multiresponse_functions_table = {
 # They report the related command status even when not changed
 # The order is obtained from how it works on RX-A810
 related_functions_table = {
+    "INP": ["AUDSEL", "DECODERSEL", "ENHANCER", "STRAIGHT", "SOUNDPRG"],
     "SOUNDPRG": ["STRAIGHT", "SOUNDPRG"],
     "PUREDIRMODE": ["PUREDIRMODE", "STRAIGHT"],
     "STRAIGHT": ["STRAIGHT", "SOUNDPRG"],
@@ -145,6 +173,7 @@ related_functions_table = {
 INPUT_SUBUNITLIST_MAPPING = [
     (Input.AIRPLAY, ["AIRPLAY"]),
     (Input.BLUETOOTH, ["BT"]),
+    (Input.DEEZER, ["DEEZER"]),
     (Input.IPOD, ["IPOD"]),
     (Input.IPOD_USB, ["IPODUSB"]),
     (Input.NAPSTER, ["NAPSTER"]),
@@ -157,6 +186,7 @@ INPUT_SUBUNITLIST_MAPPING = [
     (Input.SIRIUS_IR, ["SIRIUSIR"]),
     (Input.SIRIUS_XM, ["SIRIUSXM"]),
     (Input.SPOTIFY, ["SPOTIFY"]),
+    (Input.TIDAL, ["TIDAL"]),
     (Input.TUNER, ["TUN", "DAB"]),
     (Input.UAW, ["UAW"]),
     (Input.USB, ["USB"]),
@@ -182,7 +212,59 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
             server.disconnect_after_sending_num_commands
         )
         self._commands_sent = 0
+        self._elapsedtime_thread: threading.Thread | None = None
+        self._elapsedtime_thread_stop = threading.Event()
         super().__init__(request, client_address, server)
+
+    def _start_elapsedtime_thread(self) -> None:
+        self._elapsedtime_thread_stop.clear()
+        thread = threading.Thread(target=self._elapsedtime_worker)
+        thread.daemon = True
+        thread.start()
+        self._elapsedtime_thread = thread
+
+    def _stop_elapsedtime_thread(self) -> None:
+        self._elapsedtime_thread_stop.set()
+        if self._elapsedtime_thread:
+            self._elapsedtime_thread.join(timeout=2)
+        self._elapsedtime_thread = None
+
+    def _elapsedtime_worker(self) -> None:
+        while not self._elapsedtime_thread_stop.is_set():
+            time.sleep(1)
+            for zone in ZONES:
+                input_subunit = self.get_active_input_subunit_for_zone(zone)
+                if input_subunit:
+                    elapsedtime = self.store.get_data(input_subunit, "ELAPSEDTIME")
+                    if elapsedtime and not elapsedtime.startswith(
+                        "@"
+                    ):  # Only update if valid
+                        try:
+                            mins, secs = map(int, elapsedtime.split(":"))
+                            elapsed_seconds = mins * 60 + secs + 1
+                        except ValueError:
+                            logging.exception("Error parsing elapsedtime")
+                            continue
+                        totaltime = self.store.get_data(input_subunit, "TOTALTIME")
+                        if totaltime and not totaltime.startswith("@"):
+                            try:
+                                mins, secs = map(int, totaltime.split(":"))
+                                totaltime_seconds = mins * 60 + secs
+                            except ValueError:
+                                logging.exception("Error parsing totaltime")
+                                totaltime_seconds = None
+                        else:
+                            totaltime_seconds = None
+                        if (
+                            totaltime_seconds is not None
+                            and elapsed_seconds >= totaltime_seconds
+                        ):
+                            elapsed_seconds = 0
+                        new_elapsed = (
+                            f"{elapsed_seconds // 60}:{elapsed_seconds % 60:02d}"
+                        )
+                        self.store.put_data(input_subunit, "ELAPSEDTIME", new_elapsed)
+                        self._send_ynca_value(input_subunit, "ELAPSEDTIME", new_elapsed)
 
     def _write_line(self, line: str) -> None:
         print(f"Send - {line}")
@@ -325,50 +407,101 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
 
                 # When received on a Zone the response is on INP subunit
                 if subunit in ZONES:
-                    subunit = next(
-                        m[1][0]
-                        for m in INPUT_SUBUNITLIST_MAPPING
-                        if m[0].value == self.store.get_data(subunit, "INP")
-                    )
+                    subunit = self.get_active_input_subunit_for_zone(subunit)
 
             # Send (possibly multiple) responses
             if response_functions := related_functions_table.get(function):
                 for response_function in response_functions:
-                    value = self.store.get_data(subunit, response_function)
-                    if value is not UNDEFINED:
-                        self._send_ynca_value(subunit, response_function, value)
+                    related_response_value = self.store.get_data(
+                        subunit, response_function
+                    )
+                    if related_response_value is not UNDEFINED:
+                        self._send_ynca_value(
+                            subunit, response_function, related_response_value
+                        )
             else:
                 self._send_ynca_value(subunit, function, value)
 
             # Special handling for PWR
-            if function == "PWR":
-                if subunit == "SYS":
-                    # Setting PWR on SYS impacts Zone PWR
-                    for zone in ZONES:
-                        result = self.store.put_data(zone, function, value)
-                        if result[1]:
-                            self._send_ynca_value(zone, function, value)
-                    result = self.store.put_data(zone, "PWRB", value)
-                    if result[1]:
-                        self._send_ynca_value(zone, "PWRB", value)
-                elif subunit in ZONES:
-                    # Setting PWR on a ZONE can influence SYS overall PWR
-                    sys_is_on = False
-                    for zone in ZONES:
-                        zone_is_on = self.store.get_data(zone, function)
-                        if zone_is_on != UNDEFINED:
-                            sys_is_on |= zone_is_on == "On"
+            if function in ("PWR", "PWRB"):
+                self._handle_power_change(subunit, function, value)
 
-                    zoneb_is_on = self.store.get_data(zone, function)
-                    if zoneb_is_on != UNDEFINED:
-                        sys_is_on |= zoneb_is_on == "On"
+            # When changing inputs send updates for new input
+            if function == "INP":
+                self._handle_input_change(subunit, value)
 
-                    sys_on_value = "On" if sys_is_on else "Standby"
-                    result = self.store.put_data("SYS", function, sys_on_value)
-                    if result[1]:
-                        self._send_ynca_value("SYS", function, sys_on_value)
+    def _handle_input_change(self, subunit, value) -> None:
+        if subunit not in ZONES:
+            return
+
+        input_already_active = False
+        for zone in ZONES:
+            if zone != subunit and self.store.get_data(zone, "INP") == value:
+                input_already_active = True
+
+        logging.debug(
+            "Input changed on %s changed to %s, already active %s",
+            subunit,
+            value,
+            input_already_active,
+        )
+
+        # Real receiver only sends update when input is not active at all
+        # So it is not really when input changes but when subunit becomes active
+        # TODO: Add handling of AVAIL for subunits and use that to trigger updates
+        if not input_already_active:
+            input_subunit = self.get_active_input_subunit_for_zone(subunit)
+            logging.debug("Input changed, input_subunit is now: %s", input_subunit)
+
+            if subunit_functions := self.store.get_subunit_functions(input_subunit):
+                logging.debug(
+                    "Input changed, send update for subunit functions: %s",
+                    subunit_functions,
+                )
+                for subunit_function in subunit_functions:
+                    value = self.store.get_data(input_subunit, subunit_function)
+                    if not value.startswith("@"):  # Errors start with @
+                        self._send_ynca_value(input_subunit, subunit_function, value)
+
+    def _handle_power_change(self, subunit, function, value) -> None:
+        if subunit == "SYS":
+            # Setting PWR on SYS impacts Zone PWR
+            for zone in ZONES:
+                result = self.store.put_data(zone, function, value)
+                if result[1]:
+                    self._send_ynca_value(zone, function, value)
+            result = self.store.put_data("MAIN", "PWRB", value)
+            if result[1]:
+                self._send_ynca_value("MAIN", "PWRB", value)
+        elif subunit in ZONES:
+            # Setting PWR on a ZONE can influence SYS overall PWR
+            sys_is_on = False
+            for zone in ZONES:
+                zone_is_on = self.store.get_data(zone, function)
+                if zone_is_on != UNDEFINED:
+                    sys_is_on |= zone_is_on == "On"
+
+            zoneb_is_on = self.store.get_data("MAIN", function)
+            if zoneb_is_on != UNDEFINED:
+                sys_is_on |= zoneb_is_on == "On"
+
+            sys_on_value = "On" if sys_is_on else "Standby"
+            result = self.store.put_data("SYS", function, sys_on_value)
+            if result[1]:
+                self._send_ynca_value("SYS", function, sys_on_value)
+
+    def get_active_input_subunit_for_zone(self, zone_subunit) -> str | None:
+        try:
+            return next(
+                m[1][0]
+                for m in INPUT_SUBUNITLIST_MAPPING
+                if m[0].value == self.store.get_data(zone_subunit, "INP")
+            )
+        except StopIteration:
+            return None
 
     def handle(self) -> None:
+        self._start_elapsedtime_thread()
         # self.rfile is a file-like object created by the handler;
         # we can now use e.g. readline() instead of raw recv() calls
         #
@@ -383,9 +516,11 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
                 if bytes_line == b"":
                     print("--- Client disconnected")
                     print("--- Waiting for connections")
+                    self._stop_elapsedtime_thread()
                     return
             except TimeoutError:
                 print("--- Disconnecting client because of timeout")
+                self._stop_elapsedtime_thread()
                 print("--- Waiting for connections")
                 return
 
@@ -410,6 +545,7 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
                 print(
                     f"--- Disconnecting because of `disconnect_after_receiving_num_commands` limit {self.disconnect_after_receiving_num_commands} reached"
                 )
+                self._stop_elapsedtime_thread()
                 return
 
             if (
@@ -419,6 +555,7 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
                 print(
                     "--- Disconnecting because of `disconnect_after_sending_num_commands` {self.disconnect_after_sending_num_commands} limit reached"
                 )
+                self._stop_elapsedtime_thread()
                 return
 
 
