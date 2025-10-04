@@ -340,9 +340,13 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
             # Send (possibly multiple) responses
             if response_functions := related_functions_table.get(function):
                 for response_function in response_functions:
-                    value = self.store.get_data(subunit, response_function)
-                    if value is not UNDEFINED:
-                        self._send_ynca_value(subunit, response_function, value)
+                    related_response_value = self.store.get_data(
+                        subunit, response_function
+                    )
+                    if related_response_value is not UNDEFINED:
+                        self._send_ynca_value(
+                            subunit, response_function, related_response_value
+                        )
             else:
                 self._send_ynca_value(subunit, function, value)
 
@@ -352,12 +356,36 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
 
             # When changing inputs send updates for new input
             if function == "INP":
-                self._handle_input_change(subunit)
+                self._handle_input_change(subunit, value)
 
-    def _handle_input_change(self, subunit) -> None:
-        if subunit in ZONES:
+    def _handle_input_change(self, subunit, value) -> None:
+        if subunit not in ZONES:
+            return
+
+        input_already_active = False
+        for zone in ZONES:
+            if zone != subunit and self.store.get_data(zone, "INP") == value:
+                input_already_active = True
+
+        logging.debug(
+            "Input changed on %s changed to %s, already active %s",
+            subunit,
+            value,
+            input_already_active,
+        )
+
+        # Real receiver only sends update when input is not active at all
+        # So it is not really when input changes but when subunit becomes active
+        # TODO: Add handling of AVAIL for subunits and use that to trigger updates
+        if not input_already_active:
             input_subunit = self.get_active_input_subunit_for_zone(subunit)
+            logging.debug("Input changed, input_subunit is now: %s", input_subunit)
+
             if subunit_functions := self.store.get_subunit_functions(input_subunit):
+                logging.debug(
+                    "Input changed, send update for subunit functions: %s",
+                    subunit_functions,
+                )
                 for subunit_function in subunit_functions:
                     value = self.store.get_data(input_subunit, subunit_function)
                     if not value.startswith("@"):  # Errors start with @
