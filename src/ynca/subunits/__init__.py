@@ -32,6 +32,7 @@ class ChNameFunctionMixin:
 
 class ElapsedTimeFunctionMixin:
     elapsedtime = TimedeltaFunctionMixin(Cmd.GET, converter=TimedeltaOrNoneConverter())
+    """Elapsed time of current track/station. Note that this data is updated from the receiver every second while playing."""
 
 
 class FmFreqFunctionMixin:

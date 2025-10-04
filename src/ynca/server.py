@@ -153,6 +153,7 @@ related_functions_table = {
 INPUT_SUBUNITLIST_MAPPING = [
     (Input.AIRPLAY, ["AIRPLAY"]),
     (Input.BLUETOOTH, ["BT"]),
+    (Input.DEEZER, ["DEEZER"]),
     (Input.IPOD, ["IPOD"]),
     (Input.IPOD_USB, ["IPODUSB"]),
     (Input.NAPSTER, ["NAPSTER"]),
@@ -165,6 +166,7 @@ INPUT_SUBUNITLIST_MAPPING = [
     (Input.SIRIUS_IR, ["SIRIUSIR"]),
     (Input.SIRIUS_XM, ["SIRIUSXM"]),
     (Input.SPOTIFY, ["SPOTIFY"]),
+    (Input.TIDAL, ["TIDAL"]),
     (Input.TUNER, ["TUN", "DAB"]),
     (Input.UAW, ["UAW"]),
     (Input.USB, ["USB"]),
