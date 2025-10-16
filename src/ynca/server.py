@@ -408,6 +408,11 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
 
             result = self.store.put_data(subunit, function, value)
 
+        if (function in ("SHUFFLE", "REPEAT")) and (subunit in ("TIDAL", "Deezer")):
+            # TIDAL and probably Deezer (on CX-A5100 at least) does not return response for Shuffle or Repeat changes
+            # See logs in https://github.com/mvdwetering/yamaha_ynca/issues/441
+            return
+
         if result[0].startswith("@"):
             self._send_ynca_error(result[0])
         elif result[1]:  # Value change so send a report
