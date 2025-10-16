@@ -198,3 +198,9 @@ Some, seemingly older (pre 2012?), models like my RX-A810 supports them also for
 Newer(?) models don't seem to support presets for those subunits. Doing a GET for PRESET results in @RESTRICTED on subunits that do not support it (which is expected, but impossible to relate to the GET in current architecture).
 On my RX-A810 the receiver does not respond at all on that command.I guess that this is because the additional subunits don't have actual numerical preset values.
 More details see <https://github.com/mvdwetering/yamaha_ynca/issues/379>
+
+## Shuffle and repeat updates
+
+Normally when setting a value different to its current value an event is generated from the receiver. However this is not the case for TIDAL (and probably Deezer) source on CX-A5100 where no update is sent. When changing shuffle/repeat from TIDAL side there are updates being sent. I am assuming that it is a bug in the receiver, either just for these sources or that model.
+
+See the logs in <https://github.com/mvdwetering/yamaha_ynca/issues/441> for more details.
