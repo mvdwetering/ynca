@@ -394,20 +394,23 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
         # Store new value, will handle errors for unsupported functions
         result = self.store.put_data(subunit, function, value)
 
+        # Response for PLAYBACK is PLAYBACKINFO and other special handling
+        if function == "PLAYBACK":
+            function = "PLAYBACKINFO"
+
+            # Not for Fwd or others as they are not a state
+            if value not in ["Play", "Pause", "Stop"]:
+                return
+
+            # When received on a Zone the response is on INP subunit
+            if subunit in ZONES:
+                subunit = self.get_active_input_subunit_for_zone(subunit)
+
+            result = self.store.put_data(subunit, function, value)
+
         if result[0].startswith("@"):
             self._send_ynca_error(result[0])
         elif result[1]:  # Value change so send a report
-            # Response for PLAYBACK is PLAYBACKINFO and other special handling
-            if function == "PLAYBACK":
-                function = "PLAYBACKINFO"
-
-                # Not for Fwd or others as they are not a state
-                if value not in ["Play", "Pause", "Stop"]:
-                    return
-
-                # When received on a Zone the response is on INP subunit
-                if subunit in ZONES:
-                    subunit = self.get_active_input_subunit_for_zone(subunit)
 
             # Send (possibly multiple) responses
             if response_functions := related_functions_table.get(function):
