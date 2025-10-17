@@ -89,10 +89,9 @@ class YncaDataStore:
 
     def _get_data(self, subunit, function) -> str:
         try:
-            value = self._store[subunit][function]
+            return self._store[subunit][function]
         except KeyError:
             return UNDEFINED
-        return value
 
     def add_data(self, subunit, function, value) -> None:
         with self._lock:
@@ -237,35 +236,78 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
                 input_subunit = self.get_active_input_subunit_for_zone(zone)
                 if input_subunit:
                     elapsedtime = self.store.get_data(input_subunit, "ELAPSEDTIME")
-                    if elapsedtime and not elapsedtime.startswith(
+                    if not elapsedtime.startswith(
                         "@"
-                    ):  # Only update if valid
-                        try:
-                            mins, secs = map(int, elapsedtime.split(":"))
-                            elapsed_seconds = mins * 60 + secs + 1
-                        except ValueError:
-                            logging.exception("Error parsing elapsedtime")
-                            continue
-                        totaltime = self.store.get_data(input_subunit, "TOTALTIME")
-                        if totaltime and not totaltime.startswith("@"):
-                            try:
-                                mins, secs = map(int, totaltime.split(":"))
-                                totaltime_seconds = mins * 60 + secs
-                            except ValueError:
-                                logging.exception("Error parsing totaltime")
-                                totaltime_seconds = None
-                        else:
-                            totaltime_seconds = None
-                        if (
-                            totaltime_seconds is not None
-                            and elapsed_seconds > totaltime_seconds
-                        ):
-                            elapsed_seconds = 0
-                        new_elapsed = (
-                            f"{elapsed_seconds // 60}:{elapsed_seconds % 60:02d}"
+                    ):  # Only update if elapsedtime is supported
+
+                        elapsedtime_changed = False
+                        totaltime_changed = False
+
+                        playbackinfo = self.store.get_data(
+                            input_subunit, "PLAYBACKINFO"
                         )
-                        self.store.put_data(input_subunit, "ELAPSEDTIME", new_elapsed)
-                        self._send_ynca_value(input_subunit, "ELAPSEDTIME", new_elapsed)
+                        totaltime = self.store.get_data(input_subunit, "TOTALTIME")
+
+                        # Make sure there are valid formatted values
+                        # previous playback mode could been something that did/did not have elapsed time
+                        if playbackinfo == "Play":
+                            if totaltime != UNDEFINED:
+                                totaltime_changed = totaltime == ""
+                                totaltime = totaltime or "2:34"
+                            elapsedtime_changed = elapsedtime == ""
+                            elapsedtime = elapsedtime or "0:00"
+                        elif playbackinfo == "Pause":
+                            if totaltime != UNDEFINED:
+                                totaltime_changed = totaltime == ""
+                                totaltime = totaltime or "2:34"
+                            elapsedtime_changed = elapsedtime == ""
+                            elapsedtime = elapsedtime or "1:23"
+                        elif totaltime != UNDEFINED:  # Stop
+                            totaltime_changed = totaltime != ""
+                            totaltime = ""
+                            elapsedtime_changed = elapsedtime != ""
+                            elapsedtime = ""
+
+                        if elapsedtime and playbackinfo == "Play":
+                            try:
+                                mins, secs = map(int, elapsedtime.split(":"))
+                                elapsedtime_changed = True
+                                elapsed_seconds = mins * 60 + secs + 1
+                            except ValueError:
+                                logging.exception("Error parsing elapsedtime")
+                                continue
+
+                            if totaltime and not totaltime.startswith("@"):
+                                try:
+                                    mins, secs = map(int, totaltime.split(":"))
+                                    totaltime_seconds = mins * 60 + secs
+                                except ValueError:
+                                    logging.exception("Error parsing totaltime")
+                                    totaltime_seconds = None
+                            else:
+                                totaltime_seconds = None
+
+                            if (
+                                totaltime_seconds is not None
+                                and elapsed_seconds > totaltime_seconds
+                            ):
+                                elapsed_seconds = 0
+
+                            elapsedtime = (
+                                f"{elapsed_seconds // 60}:{elapsed_seconds % 60:02d}"
+                            )
+
+                        if elapsedtime_changed:
+                            self.store.put_data(
+                                input_subunit, "ELAPSEDTIME", elapsedtime
+                            )
+                            self._send_ynca_value(
+                                input_subunit, "ELAPSEDTIME", elapsedtime
+                            )
+
+                        if totaltime_changed:
+                            self.store.put_data(input_subunit, "TOTALTIME", totaltime)
+                            self._send_ynca_value(input_subunit, "TOTALTIME", totaltime)
 
     def _write_line(self, line: str) -> None:
         print(f"Send - {line}")
