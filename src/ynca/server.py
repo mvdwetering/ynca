@@ -236,78 +236,47 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
                 input_subunit = self.get_active_input_subunit_for_zone(zone)
                 if input_subunit:
                     elapsedtime = self.store.get_data(input_subunit, "ELAPSEDTIME")
-                    if not elapsedtime.startswith(
-                        "@"
-                    ):  # Only update if elapsedtime is supported
+                    playbackinfo = self.store.get_data(input_subunit, "PLAYBACKINFO")
 
-                        elapsedtime_changed = False
-                        totaltime_changed = False
+                    # Only update if playing and elapsedtime is supported
+                    if (
+                        playbackinfo != "Play"
+                        or elapsedtime == ""
+                        or elapsedtime.startswith("@")
+                    ):
+                        continue
 
-                        playbackinfo = self.store.get_data(
-                            input_subunit, "PLAYBACKINFO"
-                        )
-                        totaltime = self.store.get_data(input_subunit, "TOTALTIME")
+                    try:
+                        mins, secs = map(int, elapsedtime.split(":"))
+                        elapsed_seconds = mins * 60 + secs + 1
+                    except ValueError:
+                        logging.exception("Error parsing elapsedtime")
+                        continue
 
-                        # Make sure there are valid formatted values
-                        # previous playback mode could been something that did/did not have elapsed time
-                        if playbackinfo == "Play":
-                            if totaltime != UNDEFINED:
-                                totaltime_changed = totaltime == ""
-                                totaltime = totaltime or "2:34"
-                            elapsedtime_changed = elapsedtime == ""
-                            elapsedtime = elapsedtime or "0:00"
-                        elif playbackinfo == "Pause":
-                            if totaltime != UNDEFINED:
-                                totaltime_changed = totaltime == ""
-                                totaltime = totaltime or "2:34"
-                            elapsedtime_changed = elapsedtime == ""
-                            elapsedtime = elapsedtime or "1:23"
-                        elif totaltime != UNDEFINED:  # Stop
-                            totaltime_changed = totaltime != ""
-                            totaltime = ""
-                            elapsedtime_changed = elapsedtime != ""
-                            elapsedtime = ""
+                    totaltime = self.store.get_data(input_subunit, "TOTALTIME")
+                    if totaltime and not totaltime.startswith("@"):
+                        try:
+                            mins, secs = map(int, totaltime.split(":"))
+                            totaltime_seconds = mins * 60 + secs
+                        except ValueError:
+                            logging.exception("Error parsing totaltime")
+                            totaltime_seconds = None
+                    else:
+                        totaltime_seconds = None
 
-                        if elapsedtime and playbackinfo == "Play":
-                            try:
-                                mins, secs = map(int, elapsedtime.split(":"))
-                                elapsedtime_changed = True
-                                elapsed_seconds = mins * 60 + secs + 1
-                            except ValueError:
-                                logging.exception("Error parsing elapsedtime")
-                                continue
+                    if (
+                        totaltime_seconds is not None
+                        and elapsed_seconds > totaltime_seconds
+                    ):
+                        elapsed_seconds = 0
 
-                            if totaltime and not totaltime.startswith("@"):
-                                try:
-                                    mins, secs = map(int, totaltime.split(":"))
-                                    totaltime_seconds = mins * 60 + secs
-                                except ValueError:
-                                    logging.exception("Error parsing totaltime")
-                                    totaltime_seconds = None
-                            else:
-                                totaltime_seconds = None
+                    elapsedtime = f"{elapsed_seconds // 60}:{elapsed_seconds % 60:02d}"
 
-                            if (
-                                totaltime_seconds is not None
-                                and elapsed_seconds > totaltime_seconds
-                            ):
-                                elapsed_seconds = 0
-
-                            elapsedtime = (
-                                f"{elapsed_seconds // 60}:{elapsed_seconds % 60:02d}"
-                            )
-
-                        if elapsedtime_changed:
-                            self.store.put_data(
-                                input_subunit, "ELAPSEDTIME", elapsedtime
-                            )
-                            self._send_ynca_value(
-                                input_subunit, "ELAPSEDTIME", elapsedtime
-                            )
-
-                        if totaltime_changed:
-                            self.store.put_data(input_subunit, "TOTALTIME", totaltime)
-                            self._send_ynca_value(input_subunit, "TOTALTIME", totaltime)
+                    (_, changed) = self.store.put_data(
+                        input_subunit, "ELAPSEDTIME", elapsedtime
+                    )
+                    if changed:
+                        self._send_ynca_value(input_subunit, "ELAPSEDTIME", elapsedtime)
 
     def _write_line(self, line: str) -> None:
         print(f"Send - {line}")
@@ -484,6 +453,31 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
             # When changing inputs send updates for new input
             if function == "INP":
                 self._handle_input_change(subunit, value, previous_input)
+
+            if function == "PLAYBACKINFO":
+                self._handle_playbackinfo_change(subunit, value)
+
+    def _handle_playbackinfo_change(self, subunit, new_playbackinfo_value) -> None:
+        # Make sure there is reasonable metadata when changing playback state
+        if subunit in ZONES:
+            subunit = self.get_active_input_subunit_for_zone(subunit)
+
+        def update_function(function, fallback_value) -> None:
+            value = self.store.get_data(subunit, function)
+            if value != UNDEFINED:
+                value = (
+                    "" if new_playbackinfo_value == "Stop" else value or fallback_value
+                )
+                (_, changed) = self.store.put_data(subunit, function, value)
+                if changed:
+                    self._send_ynca_value(subunit, function, value)
+
+        update_function("ALBUM", "Album Title")
+        update_function("ARTIST", "Artist Name")
+        update_function("SONG", "Song Title")
+        update_function("TRACK", "Track Title")
+        update_function("ELAPSEDTIME", "0:00")
+        update_function("TOTALTIME", "1:23")
 
     def _handle_input_change(
         self, zone_subunit, new_input_value, previous_input_value
