@@ -69,7 +69,7 @@ awk -v newver="$NEW_VERSION" '
 ' "$PYPROJECT" > "$PYPROJECT.tmp" && mv "$PYPROJECT.tmp" "$PYPROJECT"
 
 git add "$PYPROJECT"
-git commit -m "Bump ynca version from $CURRENT_VERSION to $NEW_VERSION"
+git commit -m "Bump ynca version to $NEW_VERSION"
 
 TAG="v$NEW_VERSION"
 echo "Creating git tag $TAG"
