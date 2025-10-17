@@ -519,53 +519,57 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
         commands_received = 0
 
         print(f"--- Client connected from: {self.client_address[0]}")
-        while True:
-            try:
-                bytes_line = self.rfile.readline()
-                if bytes_line == b"":
-                    print("--- Client disconnected")
-                    print("--- Waiting for connections")
-                    self._stop_elapsedtime_thread()
+        try:
+            while True:
+                try:
+                    bytes_line = self.rfile.readline()
+                    if bytes_line == b"":
+                        print("--- Client disconnected")
+                        return
+                except TimeoutError:
+                    print("--- Disconnecting client because of timeout")
                     return
-            except TimeoutError:
-                print("--- Disconnecting client because of timeout")
-                self._stop_elapsedtime_thread()
-                print("--- Waiting for connections")
-                return
 
-            bytes_line = bytes_line.strip()
-            line = bytes_line.decode(
-                "utf-8"
-            )  # Note that YNCA spec says in some places that text can be ASCII, Latin-1 or UTF-8 without a way to indicate what it is :/ UTF-8 seems to work fine for now
-            print(f"Recv - {line}")
+                bytes_line = bytes_line.strip()
+                line = bytes_line.decode(
+                    "utf-8"
+                )  # Note that YNCA spec says in some places that text can be ASCII, Latin-1 or UTF-8 without a way to indicate what it is :/ UTF-8 seems to work fine for now
+                print(f"Recv - {line}")
 
-            command = line_to_command(line)
-            if command is not None:
-                if command.value == "?":
-                    self.handle_get(command.subunit, command.function)
-                else:
-                    self.handle_put(command.subunit, command.function, command.value)
+                command = line_to_command(line)
+                if command is not None:
+                    if command.value == "?":
+                        self.handle_get(command.subunit, command.function)
+                    else:
+                        self.handle_put(
+                            command.subunit, command.function, command.value
+                        )
 
-            commands_received += 1
-            if (
-                self.disconnect_after_receiving_num_commands is not None
-                and commands_received >= self.disconnect_after_receiving_num_commands
-            ):
-                print(
-                    f"--- Disconnecting because of `disconnect_after_receiving_num_commands` limit {self.disconnect_after_receiving_num_commands} reached"
-                )
-                self._stop_elapsedtime_thread()
-                return
+                commands_received += 1
+                if (
+                    self.disconnect_after_receiving_num_commands is not None
+                    and commands_received
+                    >= self.disconnect_after_receiving_num_commands
+                ):
+                    print(
+                        f"--- Disconnecting because of `disconnect_after_receiving_num_commands` limit {self.disconnect_after_receiving_num_commands} reached"
+                    )
+                    return
 
-            if (
-                self.disconnect_after_sending_num_commands is not None
-                and self._commands_sent >= self.disconnect_after_sending_num_commands
-            ):
-                print(
-                    "--- Disconnecting because of `disconnect_after_sending_num_commands` {self.disconnect_after_sending_num_commands} limit reached"
-                )
-                self._stop_elapsedtime_thread()
-                return
+                if (
+                    self.disconnect_after_sending_num_commands is not None
+                    and self._commands_sent
+                    >= self.disconnect_after_sending_num_commands
+                ):
+                    print(
+                        "--- Disconnecting because of `disconnect_after_sending_num_commands` {self.disconnect_after_sending_num_commands} limit reached"
+                    )
+                    return
+        finally:
+            self._stop_elapsedtime_thread()
+            # While not technically already waiting for connections
+            # it is nice to have a print indicating the server is ready
+            print("--- Waiting for connections")
 
 
 class YncaServer(socketserver.TCPServer):
