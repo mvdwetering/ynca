@@ -20,6 +20,7 @@ from .subunits.dab import Dab
 from .subunits.deezer import Deezer
 from .subunits.ipod import Ipod
 from .subunits.ipodusb import IpodUsb
+from .subunits.mclink import McLink
 from .subunits.napster import Napster
 from .subunits.netradio import NetRadio
 from .subunits.pandora import Pandora
@@ -284,6 +285,10 @@ class YncaApi:
     @property
     def main(self) -> Main | None:
         return cast(Main, self._subunits.get(Subunit.MAIN, None))
+
+    @property
+    def mclink(self) -> McLink | None:
+        return cast(McLink, self._subunits.get(Subunit.MCLINK, None))
 
     @property
     def napster(self) -> Napster | None:

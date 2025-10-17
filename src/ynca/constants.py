@@ -24,6 +24,7 @@ class Subunit(StrEnum):
     DEEZER = "DEEZER"
     IPOD = "IPOD"
     IPODUSB = "IPODUSB"
+    MCLINK = "MCLINK"
     NAPSTER = "NAPSTER"
     NETRADIO = "NETRADIO"
     PANDORA = "PANDORA"

@@ -487,8 +487,10 @@ def test_initialize_full(
 
         assert y.airplay is None
         assert y.dab is None
+        assert y.deezer is None
         assert y.ipod is None
         assert y.ipodusb is None
+        assert y.mclink is None
         assert y.napster is None
         assert y.netradio is None
         assert y.pandora is None
@@ -499,6 +501,7 @@ def test_initialize_full(
         assert y.siriusir is None
         assert y.siriusxm is None
         assert y.spotify is None
+        assert y.tidal is None
         assert y.tun is None
         assert y.uaw is None
 

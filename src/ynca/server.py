@@ -176,6 +176,7 @@ INPUT_SUBUNITLIST_MAPPING = [
     (Input.DEEZER, ["DEEZER"]),
     (Input.IPOD, ["IPOD"]),
     (Input.IPOD_USB, ["IPODUSB"]),
+    (Input.MCLINK, ["MCLINK"]),
     (Input.NAPSTER, ["NAPSTER"]),
     (Input.NETRADIO, ["NETRADIO"]),
     (Input.PANDORA, ["PANDORA"]),
