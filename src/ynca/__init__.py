@@ -1,6 +1,6 @@
 import logging
 
-# Import intended API so it is easily accessible through `from  ynca import Something`
+# Import intended API so it is easily accessible through `from ynca import Something`
 from .api import YncaApi, YncaConnectionCheckResult
 from .connection import YncaConnection, YncaProtocolStatus
 from .enums import (
@@ -53,6 +53,7 @@ from .subunits.dab import Dab
 from .subunits.deezer import Deezer
 from .subunits.ipod import Ipod
 from .subunits.ipodusb import IpodUsb
+from .subunits.mclink import McLink
 from .subunits.napster import Napster
 from .subunits.netradio import NetRadio
 from .subunits.pandora import Pandora
@@ -89,6 +90,7 @@ __all__ = [
     "Ipod",
     "IpodUsb",
     "Main",
+    "McLink",
     "Mute",
     "Napster",
     "NetRadio",

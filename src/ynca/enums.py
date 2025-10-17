@@ -220,6 +220,7 @@ class Input(StrEnum):
     DEEZER = "Deezer"
     IPOD = "iPod"
     IPOD_USB = "iPod (USB)"
+    MCLINK = "MusicCast Link"
     NAPSTER = "Napster"
     NETRADIO = "NET RADIO"
     PANDORA = "Pandora"
