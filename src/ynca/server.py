@@ -392,6 +392,10 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
             value = float(self.store.get_data(subunit, function))
             value = str(value + (amount * (1 if up else -1)))
 
+        previous_input = None
+        if function == "INP":
+            previous_input = self.store.get_data(subunit, function)
+
         # Store new value, will handle errors for unsupported functions
         result = self.store.put_data(subunit, function, value)
 
@@ -437,40 +441,72 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
 
             # When changing inputs send updates for new input
             if function == "INP":
-                self._handle_input_change(subunit, value)
+                self._handle_input_change(subunit, value, previous_input)
 
-    def _handle_input_change(self, subunit, value) -> None:
-        if subunit not in ZONES:
+    def _handle_input_change(
+        self, zone_subunit, new_input_value, previous_input_value
+    ) -> None:
+        if zone_subunit not in ZONES:
             return
 
-        input_already_active = False
+        new_input_used_on_other_zone = False
+        previous_input_used_on_other_zone = False
         for zone in ZONES:
-            if zone != subunit and self.store.get_data(zone, "INP") == value:
-                input_already_active = True
+            if (
+                zone != zone_subunit
+                and self.store.get_data(zone, "INP") == new_input_value
+                and self.store.get_data(zone, "PWR") == "On"
+            ):
+                new_input_used_on_other_zone = True
+            if (
+                self.store.get_data(zone, "INP") == previous_input_value
+                and self.store.get_data(zone, "PWR") == "On"
+            ):
+                previous_input_used_on_other_zone = True
 
         logging.debug(
-            "Input changed on %s changed to %s, already active %s",
-            subunit,
-            value,
-            input_already_active,
+            "Input changed on %s changed to %s, new value active on other zone %s, previous value active on other zone %s",
+            zone_subunit,
+            new_input_value,
+            new_input_used_on_other_zone,
+            previous_input_used_on_other_zone,
         )
 
         # Real receiver only sends update when input is not active at all
         # So it is not really when input changes but when subunit becomes active
-        # TODO: Add handling of AVAIL for subunits and use that to trigger updates
-        if not input_already_active:
-            input_subunit = self.get_active_input_subunit_for_zone(subunit)
-            logging.debug("Input changed, input_subunit is now: %s", input_subunit)
+        if not previous_input_used_on_other_zone:
+            if previous_input_subunit := self.get_subunit_for_input(
+                previous_input_value
+            ):
+                logging.debug(
+                    "Input changed, previous_input_subunit %s is not active anymore",
+                    previous_input_subunit,
+                )
+                self.store.put_data(previous_input_subunit, "AVAIL", "Not Ready")
+                self._send_ynca_value(previous_input_subunit, "AVAIL", "Not Ready")
 
-            if subunit_functions := self.store.get_subunit_functions(input_subunit):
+        if not new_input_used_on_other_zone:
+            new_input_subunit = self.get_active_input_subunit_for_zone(zone_subunit)
+            logging.debug(
+                "Input changed, new_input_subunit is now: %s", new_input_subunit
+            )
+            self.store.put_data(new_input_subunit, "AVAIL", "Ready")
+
+            if subunit_functions := self.store.get_subunit_functions(new_input_subunit):
                 logging.debug(
                     "Input changed, send update for subunit functions: %s",
                     subunit_functions,
                 )
                 for subunit_function in subunit_functions:
-                    value = self.store.get_data(input_subunit, subunit_function)
-                    if not value.startswith("@"):  # Errors start with @
-                        self._send_ynca_value(input_subunit, subunit_function, value)
+                    subunit_function_value = self.store.get_data(
+                        new_input_subunit, subunit_function
+                    )
+                    if not subunit_function_value.startswith(
+                        "@"
+                    ):  # Errors start with @
+                        self._send_ynca_value(
+                            new_input_subunit, subunit_function, subunit_function_value
+                        )
 
     def _handle_power_change(self, subunit, function, value) -> None:
         if subunit == "SYS":
@@ -508,6 +544,15 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
             )
         except StopIteration:
             return None
+
+    def get_subunit_for_input(self, input_) -> str | None:
+        for m in INPUT_SUBUNITLIST_MAPPING:
+            (subunit_input, zone_subunitlist) = m
+            if subunit_input == input_:
+                for zone_subunit in zone_subunitlist:
+                    if self.store.get_data(zone_subunit, "AVAIL") is not UNDEFINED:
+                        return zone_subunit
+        return None
 
     def handle(self) -> None:
         self._start_elapsedtime_thread()
