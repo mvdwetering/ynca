@@ -201,6 +201,16 @@ More details see <https://github.com/mvdwetering/yamaha_ynca/issues/379>
 
 ## Shuffle and repeat updates
 
-Normally when setting a value different to its current value an event is generated from the receiver. However this is not the case for TIDAL (and probably Deezer) source on CX-A5100 where no update is sent. When changing shuffle/repeat from TIDAL side there are updates being sent. I am assuming that it is a bug in the receiver, either just for these sources or that model.
+Normally when setting a value different to its current value an event is generated from the receiver. However this is not the case for TIDAL (and probably Deezer) source on CX-A5100 where no update seems to be sent. When changing shuffle/repeat from TIDAL side there are updates being sent. I am assuming that it is a bug in the receiver, either just for these sources or that model.
 
 See the logs in <https://github.com/mvdwetering/yamaha_ynca/issues/441> for more details.
+
+## Repeat mode rename
+
+In the logs from a CX-A5100 it was observed that setting repeat mode `Single` resulted in an `@UNDEFINED` error. Later in the logs the user sets repeat modes through other means and it reports mode `One`.
+
+Based on this info it seems that `Single` got renamed to `One`.
+
+Only seen this value on the TIDAL source on CX-A5100. Presumably it is the same for all sources on that model.
+
+For logs see: <https://github.com/mvdwetering/yamaha_ynca/issues/441#issuecomment-3520099036>
