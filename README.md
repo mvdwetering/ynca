@@ -76,33 +76,6 @@ Use this if all that is needed is a basic connection to a receiver.
 The YncaModelInfo class is information about features that a specific model supports.
 It is technically not really related to the protocol, but since there seems to be no other repository with this info I decided to keep it here.
 
-### Tools
-
-#### YNCA Terminal
-
-The YNCA Terminal provides an interactive terminal for manually sending YNCA commands. It is only intended for manual debugging.
-It can be started with commands like below.
-
-```bash
-python3 -m ynca.terminal /dev/ttyUSB0
-python3 -m ynca.terminal socket://192.168.178.21:50000
-```
-
-#### YNCA Server
-
-This is a very basic YNCA server intended to be just enough for debugging and testing without connecting to a real device.
-
-The server needs to be filled with data from an actual device and it will basically just repeat the same answers as the real device gave (with a few exceptions).
-Filling the server can be done by providing it with YNCA logging of a real device, like the ones in the YCNA package repository or a log from your own device e.g. by running `example.py` with loglevel DEBUG (uncomment the line in the example code).
-
-It has some additional commandline options for using different ports, binding to a specific host or testing disconnects
-
-```bash
-python3 -m ynca.server <ynca_repo>/logs/RX-A810.txt
-python3 -m ynca.server --host localhost --port 12345 <ynca_repo>/logs/RX-A810.txt
-python3 -m ynca.server --help
-```
-
 ## Example usage
 
 ```python
@@ -142,4 +115,33 @@ main.vol_up(2)
 
 # When done call close for proper shutdown
 receiver.close()
+```
+
+### Tools
+
+The package comes with some tools to help with debugging.
+
+#### YNCA Terminal
+
+The YNCA Terminal provides an interactive terminal for manually sending YNCA commands. It is only intended for manual debugging.
+It can be started with commands like below.
+
+```bash
+python3 -m ynca.terminal /dev/ttyUSB0
+python3 -m ynca.terminal socket://192.168.178.21:50000
+```
+
+#### YNCA debug server
+
+This is a very basic YNCA server intended to be just enough for debugging and testing without connecting to a real device.
+
+The server needs to be filled with data from an actual device and it will basically just repeat the same answers as the real device gave (with a few exceptions).
+Filling the server can be done by providing it with YNCA logging of a real device, like the ones in the YCNA package repository or a log from your own device e.g. by running `example.py` with loglevel DEBUG (uncomment the line in the example code).
+
+It has some additional commandline options for using different ports, binding to a specific host or testing disconnects
+
+```bash
+python3 -m ynca.debug_server <ynca_repo>/logs/RX-A810.txt
+python3 -m ynca.debug_server --host localhost --port 12345 <ynca_repo>/logs/RX-A810.txt
+python3 -m ynca.debug_server --help
 ```
