@@ -367,6 +367,7 @@ class PwrB(StrEnum):
 class Repeat(StrEnum):
     OFF = "Off"
     SINGLE = "Single"
+    ONE = "One"  # Single got renamed to One on CX-A5100, potentially more
     ALL = "All"
 
     @classmethod
