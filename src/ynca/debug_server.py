@@ -380,6 +380,9 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
         )
 
     def handle_put(self, subunit, function, value) -> None:
+
+        model = self.store.get_data("SYS", "MODELNAME")
+
         # Just eat remote codes as they don't give responses
         # unless not supported, but can not really check
         if subunit == "SYS" and function == "REMOTECODE":
@@ -403,6 +406,14 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
             value = float(self.store.get_data(subunit, function))
             value = str(value + (amount * (1 if up else -1)))
 
+        # CX-A5100 uses "One" instead of "Single"; others use "Single" instead of "One"
+        if function == "REPEAT" and (
+            (model == "CX-A5100" and value == "Single")
+            or (model != "CX-A5100" and value == "One")
+        ):
+            self._send_ynca_error(UNDEFINED)
+            return
+
         previous_input = None
         if function == "INP":
             previous_input = self.store.get_data(subunit, function)
@@ -424,10 +435,11 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
 
             result = self.store.put_data(subunit, function, value)
 
-        if (function in ("SHUFFLE", "REPEAT")) and (subunit in ("TIDAL", "DEEZER")):
-            # TIDAL and probably Deezer (on CX-A5100 at least) does not return response for Shuffle or Repeat changes
-            # See logs in https://github.com/mvdwetering/yamaha_ynca/issues/441
-            return
+        # This does not seem to be true always, see later logs in the linked issue
+        # if (function in ("SHUFFLE", "REPEAT")) and (subunit in ("TIDAL", "DEEZER")):
+        #     # TIDAL and probably Deezer (on CX-A5100 at least) does not return response for Shuffle or Repeat changes
+        #     # See logs in https://github.com/mvdwetering/yamaha_ynca/issues/441
+        #     return
 
         if result[0].startswith("@"):
             self._send_ynca_error(result[0])
