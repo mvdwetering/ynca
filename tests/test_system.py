@@ -5,8 +5,7 @@ from unittest import mock
 import pytest
 
 from tests.mock_yncaconnection import YncaConnectionMock
-from ynca import HdmiOutOnOff, Party, PartyMute, Pwr, SpPattern
-from ynca.subunits.system import System
+from ynca import HdmiOutOnOff, Party, PartyMute, Pwr, SpPattern, System
 
 SYS = "SYS"
 

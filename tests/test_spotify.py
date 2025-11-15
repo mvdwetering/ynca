@@ -2,8 +2,7 @@ from collections.abc import Callable
 from typing import Any
 
 from tests.mock_yncaconnection import YncaConnectionMock
-from ynca import Playback, PlaybackInfo, Repeat, Shuffle
-from ynca.subunits.spotify import Spotify
+from ynca import Playback, PlaybackInfo, Repeat, Shuffle, Spotify
 
 SYS = "SYS"
 SUBUNIT = "SPOTIFY"

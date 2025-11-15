@@ -2,8 +2,7 @@ from collections.abc import Callable
 from typing import Any
 
 from tests.mock_yncaconnection import YncaConnectionMock
-from ynca import Playback, PlaybackInfo
-from ynca.subunits.netradio import NetRadio
+from ynca import NetRadio, Playback, PlaybackInfo
 
 SYS = "SYS"
 SUBUNIT = "NETRADIO"

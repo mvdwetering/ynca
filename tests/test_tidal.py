@@ -3,8 +3,7 @@ from datetime import timedelta
 from typing import Any
 
 from tests.mock_yncaconnection import YncaConnectionMock
-from ynca import Playback, PlaybackInfo, Repeat, Shuffle
-from ynca.subunits.tidal import Tidal
+from ynca import Playback, PlaybackInfo, Repeat, Shuffle, Tidal
 
 SYS = "SYS"
 SUBUNIT = "TIDAL"

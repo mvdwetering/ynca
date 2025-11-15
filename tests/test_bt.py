@@ -2,8 +2,7 @@ from collections.abc import Callable
 from typing import Any
 
 from tests.mock_yncaconnection import YncaConnectionMock
-from ynca import Playback
-from ynca.subunits.bt import Bt
+from ynca import Bt, Playback
 
 SYS = "SYS"
 SUBUNIT = "BT"

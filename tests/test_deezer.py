@@ -3,8 +3,7 @@ from datetime import timedelta
 from typing import Any
 
 from tests.mock_yncaconnection import YncaConnectionMock
-from ynca import Playback, PlaybackInfo, Repeat, Shuffle
-from ynca.subunits.deezer import Deezer
+from ynca import Deezer, Playback, PlaybackInfo, Repeat, Shuffle
 
 SYS = "SYS"
 SUBUNIT = "DEEZER"

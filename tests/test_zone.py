@@ -10,6 +10,7 @@ from ynca import (
     InitVolLvl,
     InitVolMode,
     Input,
+    Main,
     Mute,
     PureDirMode,
     Pwr,
@@ -18,11 +19,11 @@ from ynca import (
     SpeakerA,
     SpeakerB,
     Straight,
+    SurroundAI,
     TwoChDecoder,
+    ZoneBase,
     ZoneBMute,
 )
-from ynca.enums import SurroundAI
-from ynca.subunits.zone import Main, ZoneBase
 
 SYS = "SYS"
 SUBUNIT = "MAIN"

@@ -2,7 +2,7 @@ from collections.abc import Callable
 from typing import Any
 
 from tests.mock_yncaconnection import YncaConnectionMock
-from ynca.subunits.sirius import Sirius
+from ynca import Sirius
 
 SYS = "SYS"
 SUBUNIT = "SIRIUS"

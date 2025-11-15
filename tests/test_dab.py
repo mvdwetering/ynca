@@ -4,9 +4,7 @@ from typing import Any
 import pytest
 
 from tests.mock_yncaconnection import YncaConnectionMock
-from ynca import BandDab
-from ynca.enums import DabPreset, FmPreset
-from ynca.subunits.dab import Dab
+from ynca import BandDab, Dab, DabPreset, FmPreset
 
 SYS = "SYS"
 SUBUNIT = "DAB"

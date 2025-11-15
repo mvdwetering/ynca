@@ -4,8 +4,7 @@ from typing import Any
 import pytest  # type: ignore[import]
 
 from tests.mock_yncaconnection import YncaConnectionMock
-from ynca import BandTun
-from ynca.subunits.tun import Tun
+from ynca import BandTun, Tun
 
 SYS = "SYS"
 SUBUNIT = "TUN"

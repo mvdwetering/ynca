@@ -9,10 +9,6 @@ from ynca.errors import (
     YncaException,
     YncaInitializationFailedException,
 )
-from ynca.subunits.bt import Bt
-from ynca.subunits.system import System
-from ynca.subunits.usb import Usb
-from ynca.subunits.zone import Main
 
 SYS = "SYS"
 MAIN = "MAIN"
@@ -307,7 +303,7 @@ def test_initialize_minimal(
         y = ynca.YncaApi("serial_url", disconnect_callback)
         y.initialize()
 
-        assert isinstance(y.sys, System)
+        assert isinstance(y.sys, ynca.System)
         assert y.sys.version == "Version"
 
         y.close()
@@ -330,7 +326,7 @@ def test_initialize_twice(
         y = ynca.YncaApi("serial_url", disconnect_callback)
         y.initialize()
 
-        assert isinstance(y.sys, System)
+        assert isinstance(y.sys, ynca.System)
         assert y.sys.version == "Version"
 
         with pytest.raises(YncaInitializationFailedException):
@@ -472,15 +468,15 @@ def test_initialize_full(
         y = ynca.YncaApi("serial_url")
         y.initialize()
 
-        assert isinstance(y.sys, System)
+        assert isinstance(y.sys, ynca.System)
         assert y.sys.modelname == "ModelName"
         assert y.sys.version == "Version"
         assert y.sys.inpnameusb == "InputUsb"
 
-        assert isinstance(y.main, Main)
+        assert isinstance(y.main, ynca.Main)
         assert y.main.zonename == "MainZoneName"
-        assert isinstance(y.bt, Bt)
-        assert isinstance(y.usb, Usb)
+        assert isinstance(y.bt, ynca.Bt)
+        assert isinstance(y.usb, ynca.Usb)
         assert y.zone2 is None
         assert y.zone3 is None
         assert y.zone4 is None

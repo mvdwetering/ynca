@@ -3,8 +3,7 @@
 import pytest
 
 from tests.mock_yncaconnection import YncaConnectionMock
-from ynca.enums import PartyMute
-from ynca.subunits.system import System
+from ynca import PartyMute, System
 
 SUBUNIT = "SYS"
 
