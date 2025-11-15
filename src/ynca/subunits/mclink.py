@@ -6,7 +6,6 @@ from . import (
     AlbumFunctionMixin,
     ArtistFunctionMixin,
     ElapsedTimeFunctionMixin,
-    PlaybackFunctionMixin,
     PlaybackInfoFunctionMixin,
     SongFunctionMixin,
 )
@@ -16,7 +15,6 @@ class McLink(
     AlbumFunctionMixin,
     ArtistFunctionMixin,
     ElapsedTimeFunctionMixin,
-    PlaybackFunctionMixin,
     PlaybackInfoFunctionMixin,
     SongFunctionMixin,
     SubunitBase,

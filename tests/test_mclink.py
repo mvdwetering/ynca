@@ -59,6 +59,3 @@ def test_initialize(
     assert mclink.song == "Song"
     assert mclink.playbackinfo is PlaybackInfo.PAUSE
     assert mclink.elapsedtime is None
-
-    mclink.playback(Playback.PLAY)
-    connection.put.assert_called_with(SUBUNIT, "PLAYBACK", "Play")
