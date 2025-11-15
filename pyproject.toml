@@ -50,7 +50,10 @@ exclude_also = [
   # Note that this does not seem to work, unclear why
   "if TYPE_CHECKING:",
 ]
+show_missing = true
+omit = ["src/ynca/server.py", "src/ynca/terminal.py"]
 
+# Debugging tools do not require coverage (for now)
 [tool.pytest.ini_options]
 addopts = "--cov=ynca --cov-report=term-missing --cov-report=html"
 testpaths = ["tests"]

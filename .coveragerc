@@ -1,6 +1,0 @@
-[report]
-show_missing = True
-omit =
-    # Debugging tools do not require coverage (for now)
-    src/ynca/server.py
-    src/ynca/terminal.py
