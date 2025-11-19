@@ -46,7 +46,7 @@ If your receiver works and is not in the list, please post a message in the [dis
 || HTR | HTR-4072 |
 || TSR | TSR-7850 |
 | 2020 | AVENTAGE | RX-A2A, RX-A4A, RX-A6A |
-|| RX-V | RX-V4A |
+|| RX-V | RX-V4A, RX-V6A |
 || TSR | TSR-700 |
 
 ## Installation
