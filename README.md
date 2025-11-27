@@ -7,7 +7,7 @@ Package to control Yamaha receivers that support the YNCA protocol.
 
 ## Working models
 
-Unfortunately, Yamaha does not mention in the manuals if a model supports the YNCA protocol that this integration uses.
+Unfortunately, Yamaha does not mention in the manuals if a model supports the YNCA protocol that this library uses.
 
 The table of working models below is based on reports from users and info found on the internet. Model years were mostly taken from this [Yamaha AVR model history page](https://kane.site44.com/Yamaha/Yamaha_AVR_model_history.html).
 
