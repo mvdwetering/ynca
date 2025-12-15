@@ -51,7 +51,7 @@ exclude_also = [
   "if TYPE_CHECKING:",
 ]
 show_missing = true
-omit = ["src/ynca/server.py", "src/ynca/terminal.py"]
+omit = ["src/ynca/debug_server.py", "src/ynca/terminal.py"]
 
 # Debugging tools do not require coverage (for now)
 [tool.pytest.ini_options]
