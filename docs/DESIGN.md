@@ -47,6 +47,7 @@ The first method gives all inputs that can be renamed which seems to be all inpu
 The second method can be used to detect available subunits (e.g. `TUN`) and then know that the `TUNER` input is available.
 
 The combination of both should give all inputs.
+
 Note that newer models don't seem to respond to `INPUTNAMES` and there are receivers that are missing AUDIO (a single audio input). See <PRACTICALITIES.md> for more details
 
 ### Detection of the inputs on the zone
@@ -100,6 +101,8 @@ RX-A6A, 1.80/3.12
 
 RX-A2A, 1.67/3.14
 RX-V685, 2.13/3.14
+
+CX-A5100 2.86/4.41
 ```
 
 ### Use asyncio
@@ -114,8 +117,9 @@ Maybe something like:
 ```python
 zone.vol.put(12)  # Send command to receiver
 zone.vol.get()    # Would request value at receiver and return value
-zone.vol.value()  # Would return last received value from cache
-zone.vol.is_supported
+zone.vol.get_cached() or zone.vol.value()  # Would return last received value from cache
+zone.vol.is_supported  # Would indicate if the attibute is supported (a value has been read or written succesfully)
+zone.vol.subscribe_for_updates(callback)  # To get instant updates?
 ```
 
 Try and find integrations with similar challenges and see how they solved it.

@@ -5,7 +5,7 @@ The final source of thruth is how the devices actually respond!
 
 ## Description
 
-YNCA is a protocol to control Yamaha receivers. It seems to be supported on most(?) AV receivers from 2010 onwards at least up to the current (=2022) models. For a list of reported working receivers see the main README of this package.
+YNCA is a protocol to control Yamaha receivers. It seems to be supported on most AV receivers from 2010 onwards at least up to the current (=2022) models. For a list of reported working receivers see the main README of this package.
 
 The protocol can be transmitted over serial or a TCP/IP socket.
 
@@ -23,11 +23,11 @@ The end of a command is indicated by Carriage Return + Line Feed (a.k.a. CR/LF o
 
 The receiver will generate messages when a value changes, when a `GET` command is received or other related events (e.g. turning on a zone will send multiple messages).
 There is no way to tell if a message is because of a `GET` request or the value got changed in another way (e.g. using the remote control or buttons on the device)
-This also means that sending a `PUT` will not always result in a message as messages are usually (not always) only sent when the value changes.
+This also means that sending a `PUT` will not always result in a message because messages are usually (not always) only sent when the value changes.
 
-The receiver is split up in SUBUNITs, examples are zones (e.g. MAIN, ZONE2), inputs (e.g. TUN for the Tuner) and the system SYS
+The receiver is split up in SUBUNITs, examples are zones (e.g. MAIN, ZONE2), inputs (e.g. TUN for the Tuner) and the system subunit SYS
 
-An easy way to learn about the commands is to connect to the receiver, change some values and observe the value updates coming out.
+An easy way to learn about the commands is to connect to the receiver, change some values and observe the value updates coming out. Usually writing those values to the receiver will trigger the same change.
 
 ## Examples
 
@@ -39,7 +39,7 @@ To get the current volume for subunit `ZONE2` use command `@ZONE2:VOL=?\r\n` and
 
 There are 2 error types.
 
-Note that there seems to be no error response when writing to a readonly function (e.g. setting MODELNAME). In that case there is no response at all.
+Note that there seems to be no error response when writing to a readonly function (e.g. setting MODELNAME). In that case there is no response at all (at least for my limited testing).
 
 ### @RESTRICTED
 

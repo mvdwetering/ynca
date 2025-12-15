@@ -1,6 +1,6 @@
 # Practicalities
 
-This document describes some notes on weirdness/unexpected behaviour and other practicalities found when working with devices using the YNCA protocol.
+This document describes some notes on weirdness/unexpected behaviour and other practicalities found when working with devices using the YNCA protocol in general, so not limited to this library, but also (potential) usecases for this library.
 
 ## Fixed volume
 
@@ -24,6 +24,8 @@ I could not find a function that indicates which Zone is assigned and I don't ha
 
 Next to that there is `ZoneB` which is a configuration with additional speakers with their own volume control, but same input as Main zone. So not +1ZONE in the name, but does have actual volume control. But then again ZoneB is not a real zone, it is a "subzone" of MAIN.
 
+Would be nice to properly detect this for Home Assistant so the mediaplayer can hide the volume controls.
+
 ## Scene activation not working
 
 For some receivers activating scenes does not work and they answer with @RESTRICTED.
@@ -31,7 +33,7 @@ See <https://github.com/mvdwetering/yamaha_ynca/issues/19> for logs.
 
 Currently known receivers that behave like this:
 
-* RX-V475 1.34/2.06 (probably also RX-V575/HTR-4066/HTR-5066 as they share the same firmware
+* RX-V475 1.34/2.06 (probably also RX-V575/HTR-4066/HTR-5066 because they share the same firmware)
 
 As a workaround the remote codes for SCENE1 etc... can be sent. This works at least on RX-V475 based on user feedback.
 
@@ -45,6 +47,8 @@ Currently known receivers that behave like this:
 
 * TSR-700 1.53/3.12
 * RX-A6A 1.80/3.12
+
+So maybe this is "feature" of the 3.x protocol version?
 
 ## INITVOLLVL variations
 
@@ -205,7 +209,7 @@ Normally when setting a value different from its current value an event is gener
 
 See the logs in <https://github.com/mvdwetering/yamaha_ynca/issues/441> for more details.
 
-NOTE that later logs in the linked issue seem to properly give responses for shuffle and repeat when values are changed. Unclear what happened.
+NOTE that later logs in the linked issue seem to properly give responses for shuffle and repeat when values are changed. Unclear what happened. The workaround to manually request status after changing it in the HA integration might not be needed.
 
 ## Repeat mode rename
 
@@ -213,6 +217,6 @@ In the logs from a CX-A5100 it was observed that setting repeat mode `Single` re
 
 Based on this info it seems that `Single` got renamed to `One`.
 
-Only seen this value on the TIDAL source on CX-A5100. Presumably it is the same for all sources on that model.
+Only seen this value on the TIDAL source on CX-A5100. Presumably it is the same for all sources on that model. This receiver also had protocol version 2.86/4.41, so maybe it is related to that?
 
 For logs see: <https://github.com/mvdwetering/yamaha_ynca/issues/441#issuecomment-3520099036>
