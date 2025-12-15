@@ -102,7 +102,7 @@ combine-as-imports = true
 "dumper.py" = ["T201"]
 # Ignore `T201` (print not allowed) in files that are intended to be used from CLI.
 "src/ynca/terminal.py" = ["T201"]
-"src/ynca/server.py" = [
+"src/ynca/debug_server.py" = [
   "ANN001",
   "C901",
   "FBT002",
@@ -112,7 +112,7 @@ combine-as-imports = true
   "SLF001",
   "T201",
 ]
-# server.py started out as a quick hack and needs some work to get it right, until then disable some rule
+# debug_server.py started out as a quick hack and needs some work to get it right, until then disable some rule
 "tests/*" = [
   "S101",    # Asserts in tests is ok
   "PLR2004", # Magic values in tests is ok(-ish)
