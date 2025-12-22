@@ -9,6 +9,7 @@ from ..enums import (
     AdaptiveDrc,
     DirMode,
     Enhancer,
+    ExBass,
     HdmiOut,
     InitVolLvl,
     InitVolMode,
@@ -72,6 +73,7 @@ class ZoneBase(PlaybackFunctionMixin, SubunitBase):
     adaptivedrc = EnumFunctionMixin[AdaptiveDrc](AdaptiveDrc)
     dirmode = EnumFunctionMixin[DirMode](DirMode, init="BASIC")
     enhancer = EnumFunctionMixin[Enhancer](Enhancer)
+    exbass = EnumFunctionMixin[ExBass](ExBass)
     hdmiout = EnumFunctionMixin[HdmiOut](HdmiOut)
     hpbass = FloatFunctionMixin(
         converter=FloatConverter(

@@ -108,6 +108,20 @@ class Enhancer(StrEnum):
 
 
 @unique
+class ExBass(StrEnum):
+    AUTO = "Auto"
+    OFF = "Off"
+
+    @classmethod
+    def _missing_(cls, value: object) -> Self:
+        logger.warning("Unknown value '%s' in %s", value, cls.__name__)
+        return cls(cls.UNKNOWN)
+
+    UNKNOWN = UNKNOWN_STRING
+    """Unknown values in the enum are mapped to UNKNOWN"""
+
+
+@unique
 class FmPreset(StrEnum):
     NO_PRESET = "No Preset"
 
