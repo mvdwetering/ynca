@@ -107,19 +107,20 @@ CX-A5100 2.86/4.41
 
 ### Use asyncio
 
-This would make it a better fit for Home Assistant. Might also make communication easier?
+Asyncio would make it a better fit for Home Assistant. Might also make communication easier?
 
 There does not seem to be an easy way to wrap the existing API with an asyncio layer in a nice way. So would be an almost complete rewrite?
+
 Would also need a different API as it is not possible to `await` attributes.
 
-Maybe something like:
+Maybe something like below. Could maybe still use a descriptor to avoid writing lots of boilerplate.
 
 ```python
 zone.vol.put(12)  # Send command to receiver
 zone.vol.get()    # Would request value at receiver and return value
 zone.vol.get_cached() or zone.vol.value()  # Would return last received value from cache
-zone.vol.is_supported  # Would indicate if the attibute is supported (a value has been read or written succesfully)
-zone.vol.subscribe_for_updates(callback)  # To get instant updates?
+zone.vol.is_supported  # Would indicate if the attibute is supported (a value has been read or written succesfully). Might need more details? @UNDEFINED vs @RESTRICTED vs timeout
+zone.vol.subscribe_for_updates(callback)  # To get instant updates for the attribute, also needs an unsubscribe, could be a callable returned from the subscribe call.
 ```
 
 Try and find integrations with similar challenges and see how they solved it.
