@@ -34,7 +34,7 @@ For details see the task files under `.github/workflows`
 
 Releasing is not difficult, but could be a bit more automated.
 
-* Do any tests you want to do before release
+* Do any tests you want to do before release, e.g. run `coverage.sh`
 * Run `bump_version` script with the new version and follow the prompts. When done a version tag has been created and pushed to Github
 * Wait a bit until [the actions](https://github.com/mvdwetering/ynca/actions) are all done without errors
 * [On Github](https://github.com/mvdwetering/ynca/tags) create a release from the tag that was pushed
