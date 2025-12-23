@@ -38,8 +38,9 @@ Releasing is not difficult, but could be a bit more automated.
 * Run `bump_version` script with the new version and follow the prompts. When done a version tag has been created and pushed to Github
 * Wait a bit until [the actions](https://github.com/mvdwetering/ynca/actions) are all done without errors
 * [On Github](https://github.com/mvdwetering/ynca/tags) create a release from the tag that was pushed
+* Release title is the version e.g. v5.27.0
 * Write the release notes and save
-* The package will be automatically uploaded to PyPi
+  * The package will be automatically uploaded to PyPi
 
 ## Adding Commands
 
