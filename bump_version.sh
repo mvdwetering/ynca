@@ -18,6 +18,13 @@ fi
 
 cd "$WORKTREE_ROOT"
 
+# Ensure we are on the master branch
+CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+if [ "$CURRENT_BRANCH" != "master" ]; then
+  echo "Error: You must be on the master branch to bump the version. Current branch: $CURRENT_BRANCH" >&2
+  exit 1
+fi
+
 echo "Checking git status..."
 if ! git diff --quiet || ! git diff --cached --quiet; then
   echo "Working tree is not clean. Please commit or stash changes before running this script." >&2
