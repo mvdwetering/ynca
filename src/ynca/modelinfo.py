@@ -73,6 +73,7 @@ MODELINFO = {
     "RX-A1000": ModelInfo(soundprg=BasicSoundPrgSevenChannel),
     "RX-A1010": ModelInfo(soundprg=BasicSoundPrgSevenChannel),
     "RX-A1020": ModelInfo(soundprg=BasicSoundPrgSevenChannel),
+    "RX-A1030": ModelInfo(soundprg=BasicSoundPrgSevenChannel),
     "RX-A2000": ModelInfo(soundprg=ExtendedSoundPrgSevenChannel),
     "RX-A2010": ModelInfo(soundprg=ExtendedSoundPrgNineChannel),
     "RX-A2020": ModelInfo(soundprg=ExtendedSoundPrgNineChannel),
