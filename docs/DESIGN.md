@@ -172,3 +172,15 @@ Probably a better way to improve initization time would be to once do a full ini
 A full initialization would be needed again when new version of the package is used (or just when new functions are added so a supported subunit).
 
 Depending on the export format this method could be used by clients to inentionally initialize only a subset of features. E.g. if an application only want to control the power, volume and mute they could just initialize that and skip all the rest.
+
+### Modelinfo
+
+The modelinfo.py was added to be able to expose the correct sound programs for each receiver model because that is something that can not be autodetected. At the point of writing that was the only thing that could not be autodetected on the RX-A810. However over time is has become clear that on other models there are a lot more things that can not be autodetected or even functions on the RX-A810. E.g. INPNAME can not be used on newer models to detect supported inputs, 2CHDECODER has different possible values depending on the model.
+
+It would be nice to take modelinfo to the next level and make it a proper repository of Yamaha model data (could be generic or just scoped to YNCA). It would, next to SOUNDPRG, include inputs (at least the external ones, subunits can be checked with requesting AVAIL), supported surround modes and possibly other things.
+
+The current Python code is not very convenient, to make the data more accessible, also to other projects, it would require to move to a better suitable format (maybe just some JSON/yaml files?). A tool for users to submit the required data would also be useful so it is easy to submit/add. It is basically required to get a good amount of data.
+
+With enough data it might also be possible to relate some features to certain protocol versions.
+
+It could be a project on its own.
