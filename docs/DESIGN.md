@@ -1,13 +1,13 @@
 # Design stuff document
 
-This file contains some design decisions. Mainly intended for future me.
+This file contains some design decisions and random thoughts related to the package.
 
 ## Scope
 
 The library was initially intended for automation applications, so focused on control, not configuration.
 The scope changed to providing an interface that allows to set/get data using familiar YNCA vocabulary.
 
-Since the amount of supported functions impacts the `initialize`time functions will only be added when someone has a usecase for it and not just all off them.
+Since the amount of supported functions impacts the initializationtime functions will only be added when someone has a usecase for it and not just all off them (an improvement would be to allow for selective initialization).
 
 ## API guidelines
 
@@ -29,7 +29,7 @@ Some guidelines I try to follow when adding functionality to the API.
 * These are guidelines, exceptions can be made.
 
 Note:
-While using attributes to read/write values is pretty neat (and was a nice learning on how to use descriptors) it is a bit weird as you can write a value and it might not have been updated yet when you read it fast enough (sending the command and receiving response takes time). I am not planning to change it any time soon as I do like to just write attributes and not have functions for everything which makes the usage look more messy (IMHO).
+While using attributes to read/write values is pretty neat (and was a nice learning on how to use descriptors) it is a bit weird as you can write a value and it might not have been updated yet when you read it fast enough (sending the command and receiving response takes time). I am not planning to change it any time soon because of the effort involved and I do like to just write attributes and not have functions for everything which makes the usage look more messy (IMHO).
 
 ## Input detection
 
@@ -113,14 +113,14 @@ There does not seem to be an easy way to wrap the existing API with an asyncio l
 
 Would also need a different API as it is not possible to `await` attributes.
 
-Maybe something like below. Could maybe still use a descriptor to avoid writing lots of boilerplate.
+Maybe something like below. Could maybe still use a descriptor to avoid writing lots of boilerplate. Might also need something to indicate if a function is PUT, GET or both.
 
 ```python
 zone.vol.put(12)  # Send command to receiver
 zone.vol.get()    # Would request value at receiver and return value
 zone.vol.get_cached() or zone.vol.value()  # Would return last received value from cache
-zone.vol.is_supported  # Would indicate if the attibute is supported (a value has been read or written succesfully). Might need more details? @UNDEFINED vs @RESTRICTED vs timeout
-zone.vol.subscribe_for_updates(callback)  # To get instant updates for the attribute, also needs an unsubscribe, could be a callable returned from the subscribe call.
+zone.vol.is_supported  # Would indicate if the attibute is supported (a value has been read or written succesfully). Might need more details? @UNDEFINED vs @RESTRICTED vs timeout/no response vs not known yet
+zone.vol.subscribe(callback)  # To get instant updates for the attribute, also needs an unsubscribe, could be a callable returned from the subscribe call.
 ```
 
 Try and find integrations with similar challenges and see how they solved it.
@@ -131,7 +131,7 @@ Somehow I made the assumption there was no real request/response. Just send a co
 
 However this is only true for PUT requests, it wil only send an update when values actualy change.
 For GET commands there should(==assumption) always be a response. Either the value or an error.
-Note that there is of course at least one exception. This is the PRESET function which returns nothing for some subunits on older models. See [PRACTICALITIES.md](PRACTICALITIES.md#presets) for more details.
+Note that there is, of course, at least one exception. This is the PRESET function which returns nothing for some subunits on older models. See [PRACTICALITIES.md](PRACTICALITIES.md#presets) for more details.
 
 This might also allow for better feature detection. Maybe performing a GET can be used to detect if something is suppported.
 Getting a value is easy, but maybe supported commands will still give an @RESTRICTED on the GET even if it is a PUT only command.
@@ -144,18 +144,31 @@ Would allow for an API where attributes are only added when _really_ supported b
 ### Better events/updates
 
 Currently events/updates from the receiver are just passed in a callback with everything as strings.
-
 A better version would be nice.
 
 * Typed arguments?
 * Register for specific updates (next to all?)
-* Would still need a raw callback
+* Would probably still need a raw callback for some use cases
 
 ### Typing
 
 Now all subunits are like `Type|None`. This is a pain with typehints, especially for subunits that should always be there where additional checks, and with that tests, are needed.
 It might have been more convenient to just always have the type and an `is_supported()` method on it.
 
-### Other
+### Zone functions
 
 Now all zones are the same, which is true for most things, but there are some things like @MAIN:HDMIOUT I have only seen on MAIN and does not seem to make much sense on ZONE2 or others. Maybe it would be good to not have them all the same by default? Could save some initialization time... But on the other hand could result in missing features on a Zone because not encountered yet. Now it just-works.
+
+### Initialization time
+
+Initialization takes quite a long time. This is because all known functions are tried in an attempt to fill the cache and learn what is supported.
+
+Some functions can trigger a response for multiple other functions like BASIC, METAINFO etc... so these are already used to limit the amount of requests needed.
+
+To limit the amount even more the Zone implementations could be more selective, but it is hard to figure out what is actually supported on zones of a receiver without having access to them.
+
+Probably a better way to improve initization time would be to once do a full initialization and have a way to export what functions are supported on what subunits. Then when initializing take that exported data into account so only existing functions are initialized which should cut down on the needed time significantly.
+
+A full initialization would be needed again when new version of the package is used (or just when new functions are added so a supported subunit).
+
+Depending on the export format this method could be used by clients to inentionally initialize only a subset of features. E.g. if an application only want to control the power, volume and mute they could just initialize that and skip all the rest.

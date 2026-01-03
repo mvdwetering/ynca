@@ -217,6 +217,6 @@ In the logs from a CX-A5100 it was observed that setting repeat mode `Single` re
 
 Based on this info it seems that `Single` got renamed to `One`.
 
-Only seen this value on the TIDAL source on CX-A5100. Presumably it is the same for all sources on that model. This receiver also had protocol version 2.86/4.41, so maybe it is related to that?
+Only seen this value on the TIDAL source on CX-A5100. Presumably it is the same for all sources on that model. This receiver also had protocol version 2.86/4.41, so it is assumed to be part of version 4 of the protocol.
 
 For logs see: <https://github.com/mvdwetering/yamaha_ynca/issues/441#issuecomment-3520099036>
