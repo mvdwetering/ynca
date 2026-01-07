@@ -373,6 +373,7 @@ class Pwr(StrEnum):
 class PwrB(StrEnum):
     ON = "On"
     STANDBY = "Standby"
+    UNAVAILABLE = "Unavailable"
 
     @classmethod
     def _missing_(cls, value: object) -> Self:

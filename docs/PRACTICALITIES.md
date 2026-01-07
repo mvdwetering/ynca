@@ -153,12 +153,12 @@ e.g. RX-V573?
 
 ### Subzone
 
-Another variation seen on RX-V583 is a "subzone" called Zone B. In the AV Controller app it is shown similar to Zone 2.
+Another variation seen on RX-V583 and RX-V4A is a "subzone" called Zone B. In the AV Controller app it is shown similar to Zone 2.
 This zone can be powered individually from the MAIN zone, but will always have the same input as the MAIN zone.
 
 Reason for calling it a subzone is that its functions are exposed on the MAIN subunit.
 
-On the API, this subzone is controlled by the following functions. Note that Mute only supports On/Off, not the attenuated ones on the main Mute
+On the API, this subzone is controlled by the following functions. Note that Mute only supports On/Off, not the attenuated ones on the main Mute. An other thing to note is that PWRB will report "Unavailable" when the receiver does not have Zone B enabled (see SPPATTERN1AMP).
 
 ```text
 @MAIN:PWRB
