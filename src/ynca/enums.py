@@ -588,6 +588,12 @@ class TwoChDecoder(StrEnum):
     DtsNeuralX = "DTS Neural:X"  # Seen on RX-A1060 and RX-A3070
     Auro3d = "AURO-3D"  # Seen on RX-A6A
 
+    # RX-V4A and probably others use different values to set Dobly Prologic II modes
+    # Might be related to protocol version 3, but sample size is too low to be sure
+    DolbyProLogicII_Music = "Dolby ProLogicII(Music)"
+    DolbyProLogicII_Movie = "Dolby ProLogicII(Movie)"
+    DolbyProLogicII_Game = "Dolby ProLogicII(Game)"
+
     @classmethod
     def _missing_(cls, value: object) -> Self:
         logger.warning("Unknown value '%s' in %s", value, cls.__name__)

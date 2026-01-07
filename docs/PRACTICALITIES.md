@@ -67,10 +67,13 @@ Currently known receivers that can report "Off":
 
 ## 2CHDECODER
 
-It looks like the 2CHDECODER values completely changed on newer models of receivers.
-The older models have support for Dolby Prologic and DTS:Neo settings, while newer models seem to have diffent values.
+This one turned out to be complicated.
 
-Values seen until now:
+It looks like the 2CHDECODER values have different variations and behaviors on different models of receivers.
+
+The older models like RX-A810 have support for Dolby Prologic and DTS:Neo settings where there is also an Dolby ProLogicIIx variant. But the receiver itself will convert the "PLIIx" version to the normal "PLII" version if the speakers required for PLIIx are not installed. I don't know if it also works the other way around, so convert "PLII" to "PLIIx" when you do have the speakers because I don't ahve such a setup.
+
+Some newer models seem to have a different set of surround decoders like:
 
 * "AURO-3D" Seen on RX-A6A
 * "DTS Neural:X" Seen on RX-A1060 and RX-A3070
@@ -79,6 +82,8 @@ From a quick look at the product manuals those models do not support the older s
 However the RX-A3070 does... it supports the DTS:NEO presets and Auto, Dolby Surround, Neural X.
 
 AURO-3D does not seem to be available on RX-1060 and it is unknown how to detect AURO-3D support.
+
+To add to the confusion, it turns out the RX-V4A uses different values to set the Dolby Prologic II decoders from what earlier models used. It uses "Dolby ProLogicII(Movie)" instead of "Dolby PLII Movie" from the older ones. It might be that these new values are for protocol version 3 and the older values for version 2. That matches with the samples I have, but it is only 3 in total (1 version 3, 2 vresion 2)
 
 It is unfortunately unknown if it is possible to derive the 2CHDECODER options from other settings.
 
