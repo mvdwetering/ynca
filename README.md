@@ -8,7 +8,7 @@ Package to control Yamaha receivers that support the YNCA protocol.
 > Announcement: I have replaced my receiver with a new one which is not a Yamaha.
 >
 > What does that mean for this package?
-> In general there is not a lot of maintenance needed, so I intend to keep it working, do small fixes and answer questions, but won't do big reworks anymore. To make it easier for others to contribute and submit PRs I [documented some details about the development](docs).
+> In general there is not a lot of maintenance needed, so I intend to keep it working, do small fixes and answer questions, but won't do big reworks anymore e.g. making an async version. To make it easier for others to contribute and submit PRs I [documented some details about the development and protocol](docs).
 
 ## Working models
 
