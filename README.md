@@ -5,6 +5,11 @@ Package to control Yamaha receivers that support the YNCA protocol.
 >Note that only 1 YNCA connection to a receiver can be made at the time. This is a restriction on the receiver side, not this library.
 >It is usually not a problem since the Yamaha AV Control App uses a different protocol which can be used at the same time, but something to be aware of when testing the library.
 
+> Announcement: I have replaced my receiver with a new one which is not a Yamaha.
+>
+> What does that mean for this package?
+> In general there is not a lot of maintenance needed, so I intend to keep it working, do small fixes and answer questions, but won't do big reworks anymore. To make it easier for others to contribute and submit PRs I [documented some details about the development](docs).
+
 ## Working models
 
 Unfortunately, Yamaha does not mention in the manuals if a model supports the YNCA protocol that this library uses.
