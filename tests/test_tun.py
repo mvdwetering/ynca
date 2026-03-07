@@ -52,6 +52,12 @@ INITIALIZE_FULL_RESPONSES = [
         ],
     ),
     (
+        (SUBUNIT, "SEARCHMODE"),
+        [
+            (SUBUNIT, "SEARCHMODE", "Preset"),
+        ],
+    ),
+    (
         (SYS, "VERSION"),
         [
             (SYS, "VERSION", "Version"),
@@ -82,6 +88,11 @@ def test_initialize(
     assert tun.amfreq == 1080
     assert tun.fmfreq == 101.60
     assert tun.preset == 12
+    assert tun.rdsprgtype == "RDS PRG TYPE"
+    assert tun.rdsprgservice == "RDS PRG SERVICE"
+    assert tun.rdstxta == "RDS RADIO TEXT A"
+    assert tun.rdstxtb == "RDS RADIO TEXT B"
+    assert tun.searchmode == TunSearchMode.PRESET
 
 
 def test_am(connection: YncaConnectionMock, initialized_tun: Tun) -> None:
