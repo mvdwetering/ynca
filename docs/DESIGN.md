@@ -184,3 +184,13 @@ The current Python code is not very convenient, to make the data more accessible
 With enough data it might also be possible to relate some features to certain protocol versions.
 
 It could be a project on its own.
+
+### Enum handling improvements
+
+While I am pretty happy with the current system that translates the string representations in Enums it does have a few flaws.
+
+The UNKNOWN handling is nice to not have crashes and get logging on unknown values, but it also means that clients can send UNKNOWN to the receiver which will not work, but it would be nice it that was not possible.
+
+A similar situation exists for Preset where the receiver can either give back numeric values which can also be set or "No Preset" when not presets exist yet. However the "No Preset" value can not be written. But it is allowed with the current structure.
+
+In general I would not expect people to do stuff like that, but maybe something to iterate on in a redesign.
