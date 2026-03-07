@@ -2,13 +2,13 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from ..converters import FloatConverter, IntOrNoneConverter, TimedeltaOrNoneConverter
-from ..enums import Playback, PlaybackInfo, Repeat, Shuffle
+from ..converters import FloatConverter, TimedeltaOrNoneConverter
+from ..enums import Playback, PlaybackInfo, Preset, Repeat, Shuffle
 from ..function import (
     Cmd,
     EnumFunctionMixin,
+    EnumOrIntFunctionMixin,
     FloatFunctionMixin,
-    IntFunctionMixin,
     StrFunctionMixin,
     TimedeltaFunctionMixin,
 )
@@ -63,8 +63,8 @@ class PlaybackInfoFunctionMixin:
 
 
 class PresetFunctionMixin:
-    preset = IntFunctionMixin(converter=IntOrNoneConverter())
-    """Activate or read preset. Note that only TUN and SIRIUS seem to support GET."""
+    preset = EnumOrIntFunctionMixin[Preset](Preset)
+    """Activate or read preset. Note that only TUN and SIRIUS seem to support GET. Will be Preset.NO_PRESET if no preset is available."""
 
 
 class PresetUpDownFunctionMixin:

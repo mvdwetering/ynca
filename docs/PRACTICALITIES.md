@@ -208,6 +208,10 @@ Newer(?) models don't seem to support presets for those subunits. Doing a GET fo
 On my RX-A810 the receiver does not respond at all on that command.I guess that this is because the additional subunits don't have actual numerical preset values.
 More details see <https://github.com/mvdwetering/yamaha_ynca/issues/379>
 
+Following probably only applies to subunits where you can request the PRESET like Tun and Dab.
+The receiver does _not_ clear the PRESET when manually tuning, it stays at its current value. It does not change to `No Preset` which seems to be for the case were no presets are stored yet.
+However the SEARCHMODE does change to `Tuning` (from `Preset`). This probably means the value in PRESET can only be assumed to be valid when the SEARCHMODE is `Preset`.
+
 ## Shuffle and repeat updates
 
 Normally when setting a value different from its current value an event is generated from the receiver. However this is not the case for TIDAL (and probably Deezer) source on CX-A5100 where no update seems to be sent. When changing shuffle/repeat from TIDAL side there are updates being sent. I am assuming that it is a bug in the receiver, either just for these sources or that model.
