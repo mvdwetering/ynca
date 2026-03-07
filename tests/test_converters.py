@@ -9,6 +9,7 @@ from ynca.converters import (
     EnumConverter,
     FloatConverter,
     IntConverter,
+    IntOrNoneConverter,
     MultiConverter,
     StrConverter,
     TimedeltaOrNoneConverter,
@@ -34,6 +35,18 @@ def test_intconverter() -> None:
     assert c.to_value("123") == 123
 
     c = IntConverter(to_str=lambda v: str(v * 2))
+    assert c.to_str(123) == "246"
+    assert c.to_value("123") == 123
+
+
+def test_intornoneconverter() -> None:
+    c = IntOrNoneConverter()
+    assert c.to_str(123) == "123"
+    assert c.to_value("123") == 123
+
+    assert c.to_value("Invalid") is None
+
+    c = IntOrNoneConverter(to_str=lambda v: str(v * 2))
     assert c.to_str(123) == "246"
     assert c.to_value("123") == 123
 

@@ -21,6 +21,7 @@ from ynca.enums import (
     PartyMute,
     Playback,
     PlaybackInfo,
+    Preset,
     PureDirMode,
     Pwr,
     PwrB,
@@ -62,6 +63,7 @@ def test_invalid_values_on_enums() -> None:
     assert PartyMute("x") is PartyMute.UNKNOWN
     assert Playback("x") is Playback.UNKNOWN
     assert PlaybackInfo("x") is PlaybackInfo.UNKNOWN
+    assert Preset("x") is Preset.UNKNOWN
     assert PureDirMode("x") is PureDirMode.UNKNOWN
     assert Pwr("x") is Pwr.UNKNOWN
     assert PwrB("x") is PwrB.UNKNOWN

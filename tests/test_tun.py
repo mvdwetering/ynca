@@ -5,7 +5,7 @@ import pytest  # type: ignore[import]
 
 from tests.mock_yncaconnection import YncaConnectionMock
 from ynca import BandTun, Tun
-from ynca.enums import TunSearchMode
+from ynca.enums import Preset, TunSearchMode
 
 SYS = "SYS"
 SUBUNIT = "TUN"
@@ -134,7 +134,7 @@ def test_preset(connection: YncaConnectionMock, initialized_tun: Tun) -> None:
     assert initialized_tun.preset == 11
 
     connection.send_protocol_message(SUBUNIT, "PRESET", "No Preset")
-    assert initialized_tun.preset is None
+    assert initialized_tun.preset is Preset.NO_PRESET
 
     # Set preset
     initialized_tun.preset = 10
