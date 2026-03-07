@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from ..constants import Subunit
 from ..converters import IntConverter
-from ..enums import BandTun
+from ..enums import BandTun, TunSearchMode
 from ..function import Cmd, EnumFunctionMixin, IntFunctionMixin, StrFunctionMixin
 from ..helpers import number_to_string_with_stepsize
 from ..subunit import SubunitBase
@@ -36,3 +36,5 @@ class Tun(
     rdsprgtype = StrFunctionMixin(Cmd.GET, init="RDSINFO")
     rdstxta = StrFunctionMixin(Cmd.GET, init="RDSINFO")
     rdstxtb = StrFunctionMixin(Cmd.GET, init="RDSINFO")
+
+    searchmode = EnumFunctionMixin[TunSearchMode](TunSearchMode)

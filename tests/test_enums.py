@@ -33,6 +33,7 @@ from ynca.enums import (
     Straight,
     SurroundAI,
     ThreeDeeCinema,
+    TunSearchMode,
     TwoChDecoder,
     ZoneBAvail,
     ZoneBMute,
@@ -72,6 +73,7 @@ def test_invalid_values_on_enums() -> None:
     assert Straight("x") is Straight.UNKNOWN
     assert SurroundAI("x") is SurroundAI.UNKNOWN
     assert ThreeDeeCinema("x") is ThreeDeeCinema.UNKNOWN
+    assert TunSearchMode("x") is TunSearchMode.UNKNOWN
     assert TwoChDecoder("x") is TwoChDecoder.UNKNOWN
     assert ZoneBAvail("x") is ZoneBAvail.UNKNOWN
     assert ZoneBMute("x") is ZoneBMute.UNKNOWN

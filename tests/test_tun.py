@@ -5,6 +5,7 @@ import pytest  # type: ignore[import]
 
 from tests.mock_yncaconnection import YncaConnectionMock
 from ynca import BandTun, Tun
+from ynca.enums import TunSearchMode
 
 SYS = "SYS"
 SUBUNIT = "TUN"
@@ -143,3 +144,20 @@ def test_mem(connection: YncaConnectionMock, initialized_tun: Tun) -> None:
 
     initialized_tun.mem()
     connection.put.assert_called_with(SUBUNIT, "MEM", "Auto")
+
+
+def test_searchmode(connection: YncaConnectionMock, initialized_tun: Tun) -> None:
+
+    # Updates from device
+    connection.send_protocol_message(SUBUNIT, "SEARCHMODE", "Preset")
+    assert initialized_tun.searchmode == TunSearchMode.PRESET
+
+    connection.send_protocol_message(SUBUNIT, "SEARCHMODE", "Tuning")
+    assert initialized_tun.searchmode == TunSearchMode.TUNING
+
+    # Set
+    initialized_tun.searchmode = TunSearchMode.PRESET
+    connection.put.assert_called_with(SUBUNIT, "SEARCHMODE", "Preset")
+
+    initialized_tun.searchmode = TunSearchMode.TUNING
+    connection.put.assert_called_with(SUBUNIT, "SEARCHMODE", "Tuning")
