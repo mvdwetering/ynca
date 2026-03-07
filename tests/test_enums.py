@@ -5,6 +5,7 @@ from ynca.enums import (
     Avail,
     BandDab,
     BandTun,
+    DabFmSearchMode,
     DabPreset,
     DirMode,
     Enhancer,
@@ -33,6 +34,7 @@ from ynca.enums import (
     Straight,
     SurroundAI,
     ThreeDeeCinema,
+    TunSearchMode,
     TwoChDecoder,
     ZoneBAvail,
     ZoneBMute,
@@ -44,6 +46,7 @@ def test_invalid_values_on_enums() -> None:
     assert Avail("x") is Avail.UNKNOWN
     assert BandDab("x") is BandDab.UNKNOWN
     assert BandTun("x") is BandTun.UNKNOWN
+    assert DabFmSearchMode("x") is DabFmSearchMode.UNKNOWN
     assert DabPreset("x") is DabPreset.UNKNOWN
     assert Enhancer("x") is Enhancer.UNKNOWN
     assert ExBass("x") is ExBass.UNKNOWN
@@ -72,6 +75,7 @@ def test_invalid_values_on_enums() -> None:
     assert Straight("x") is Straight.UNKNOWN
     assert SurroundAI("x") is SurroundAI.UNKNOWN
     assert ThreeDeeCinema("x") is ThreeDeeCinema.UNKNOWN
+    assert TunSearchMode("x") is TunSearchMode.UNKNOWN
     assert TwoChDecoder("x") is TwoChDecoder.UNKNOWN
     assert ZoneBAvail("x") is ZoneBAvail.UNKNOWN
     assert ZoneBMute("x") is ZoneBMute.UNKNOWN

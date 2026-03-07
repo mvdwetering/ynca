@@ -4,7 +4,7 @@ from typing import Any
 import pytest
 
 from tests.mock_yncaconnection import YncaConnectionMock
-from ynca import BandDab, Dab, DabPreset, FmPreset
+from ynca import BandDab, Dab, DabFmSearchMode, DabPreset, FmPreset
 
 SYS = "SYS"
 SUBUNIT = "DAB"
@@ -55,6 +55,12 @@ INITIALIZE_FULL_RESPONSES = [
         ],
     ),
     (
+        (SUBUNIT, "FMSEARCHMODE"),
+        [
+            (SUBUNIT, "FMSEARCHMODE", "Preset"),
+        ],
+    ),
+    (
         (SYS, "VERSION"),
         [
             (SYS, "VERSION", "Version"),
@@ -85,6 +91,7 @@ def test_initialize(
 
     assert dab.band is BandDab.FM
     assert dab.fmfreq == 101.60
+    assert dab.fmsearchmode is DabFmSearchMode.PRESET
 
 
 def test_band(connection: YncaConnectionMock, initialized_dab: Dab) -> None:
@@ -154,3 +161,19 @@ def test_dabpreset(connection: YncaConnectionMock, initialized_dab: Dab) -> None
 
     connection.send_protocol_message(SUBUNIT, "DABPRESET", "No Preset")
     initialized_dab.dabpreset = DabPreset.NO_PRESET
+
+
+def test_fmsearchmode(connection: YncaConnectionMock, initialized_dab: Dab) -> None:
+    # Updates from device
+    connection.send_protocol_message(SUBUNIT, "FMSEARCHMODE", "Preset")
+    assert initialized_dab.fmsearchmode is DabFmSearchMode.PRESET
+
+    connection.send_protocol_message(SUBUNIT, "FMSEARCHMODE", "Tuning")
+    assert initialized_dab.fmsearchmode is DabFmSearchMode.TUNING
+
+    # Set
+    initialized_dab.fmsearchmode = DabFmSearchMode.PRESET
+    connection.put.assert_called_with(SUBUNIT, "FMSEARCHMODE", "Preset")
+
+    initialized_dab.fmsearchmode = DabFmSearchMode.TUNING
+    connection.put.assert_called_with(SUBUNIT, "FMSEARCHMODE", "Tuning")

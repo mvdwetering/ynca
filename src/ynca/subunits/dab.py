@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from ..constants import Subunit
-from ..enums import BandDab, DabPreset, FmPreset
+from ..enums import BandDab, DabFmSearchMode, DabPreset, FmPreset
 from ..function import (
     Cmd,
     EnumFunctionMixin,
@@ -28,3 +28,4 @@ class Dab(SubunitBase, FmFreqFunctionMixin, MemFunctionMixin):
     fmrdsprgservice = StrFunctionMixin(Cmd.GET, init="FMRDSINFO")
     fmrdsprgtype = StrFunctionMixin(Cmd.GET, init="FMRDSINFO")
     fmrdstxt = StrFunctionMixin(Cmd.GET, init="FMRDSINFO")
+    fmsearchmode = EnumFunctionMixin[DabFmSearchMode](DabFmSearchMode)

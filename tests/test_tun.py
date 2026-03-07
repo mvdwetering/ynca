@@ -5,6 +5,7 @@ import pytest  # type: ignore[import]
 
 from tests.mock_yncaconnection import YncaConnectionMock
 from ynca import BandTun, Tun
+from ynca.enums import TunSearchMode
 
 SYS = "SYS"
 SUBUNIT = "TUN"
@@ -51,6 +52,12 @@ INITIALIZE_FULL_RESPONSES = [
         ],
     ),
     (
+        (SUBUNIT, "SEARCHMODE"),
+        [
+            (SUBUNIT, "SEARCHMODE", "Preset"),
+        ],
+    ),
+    (
         (SYS, "VERSION"),
         [
             (SYS, "VERSION", "Version"),
@@ -81,6 +88,11 @@ def test_initialize(
     assert tun.amfreq == 1080
     assert tun.fmfreq == 101.60
     assert tun.preset == 12
+    assert tun.rdsprgtype == "RDS PRG TYPE"
+    assert tun.rdsprgservice == "RDS PRG SERVICE"
+    assert tun.rdstxta == "RDS RADIO TEXT A"
+    assert tun.rdstxtb == "RDS RADIO TEXT B"
+    assert tun.searchmode == TunSearchMode.PRESET
 
 
 def test_am(connection: YncaConnectionMock, initialized_tun: Tun) -> None:
@@ -143,3 +155,20 @@ def test_mem(connection: YncaConnectionMock, initialized_tun: Tun) -> None:
 
     initialized_tun.mem()
     connection.put.assert_called_with(SUBUNIT, "MEM", "Auto")
+
+
+def test_searchmode(connection: YncaConnectionMock, initialized_tun: Tun) -> None:
+
+    # Updates from device
+    connection.send_protocol_message(SUBUNIT, "SEARCHMODE", "Preset")
+    assert initialized_tun.searchmode == TunSearchMode.PRESET
+
+    connection.send_protocol_message(SUBUNIT, "SEARCHMODE", "Tuning")
+    assert initialized_tun.searchmode == TunSearchMode.TUNING
+
+    # Set
+    initialized_tun.searchmode = TunSearchMode.PRESET
+    connection.put.assert_called_with(SUBUNIT, "SEARCHMODE", "Preset")
+
+    initialized_tun.searchmode = TunSearchMode.TUNING
+    connection.put.assert_called_with(SUBUNIT, "SEARCHMODE", "Tuning")
