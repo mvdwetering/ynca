@@ -49,6 +49,7 @@ Subunits live in `src/ynca/subunits/`. Shared capabilities (playback controls, m
 2. If the value is multi-valued, add an `Enum` to `src/ynca/enums.py`
 3. Export the new type from `src/ynca/__init__.py` (both import and `__all__`)
 4. Add a test in `tests/`; coverage must remain at 100%
+   - Unknown enum fallback (`_missing_`) is tested centrally in `tests/test_enums.py` — do **not** add a separate unknown-value test in the subunit test file
 5. Keep attributes/enums alphabetically ordered
 
 **Enums always have an `UNKNOWN` sentinel:**
