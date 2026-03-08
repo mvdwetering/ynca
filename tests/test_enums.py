@@ -27,6 +27,7 @@ from ynca.enums import (
     PwrB,
     Repeat,
     Shuffle,
+    SiriusSearchMode,
     Sleep,
     SoundPrg,
     SpeakerA,
@@ -69,6 +70,7 @@ def test_invalid_values_on_enums() -> None:
     assert PwrB("x") is PwrB.UNKNOWN
     assert Repeat("x") is Repeat.UNKNOWN
     assert Shuffle("x") is Shuffle.UNKNOWN
+    assert SiriusSearchMode("x") is SiriusSearchMode.UNKNOWN
     assert Sleep("x") is Sleep.UNKNOWN
     assert SoundPrg("x") is SoundPrg.UNKNOWN
     assert SpeakerA("x") is SpeakerA.UNKNOWN

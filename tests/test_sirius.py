@@ -2,7 +2,7 @@ from collections.abc import Callable
 from typing import Any
 
 from tests.mock_yncaconnection import YncaConnectionMock
-from ynca import Sirius
+from ynca import Sirius, SiriusSearchMode
 
 SYS = "SYS"
 SUBUNIT = "SIRIUS"
@@ -23,6 +23,12 @@ INITIALIZE_FULL_RESPONSES = [
         (SUBUNIT, "AVAIL"),
         [
             (SUBUNIT, "AVAIL", "Ready"),
+        ],
+    ),
+    (
+        (SUBUNIT, "SEARCHMODE"),
+        [
+            (SUBUNIT, "SEARCHMODE", "Preset"),
         ],
     ),
     (
@@ -47,3 +53,27 @@ def test_initialize(
     assert sirius.artist == "Artist"
     assert sirius.song == "Song"
     assert sirius.chname == "ChName"
+    assert sirius.searchmode == SiriusSearchMode.PRESET
+
+
+def test_searchmode(connection: YncaConnectionMock) -> None:
+    connection.get_response_list = INITIALIZE_FULL_RESPONSES
+    sirius = Sirius(connection)
+    sirius.initialize()
+
+    # Updates from device
+    connection.send_protocol_message(SUBUNIT, "SEARCHMODE", "All Ch")
+    assert sirius.searchmode == SiriusSearchMode.ALL_CH
+
+    connection.send_protocol_message(SUBUNIT, "SEARCHMODE", "Category")
+    assert sirius.searchmode == SiriusSearchMode.CATEGORY
+
+    connection.send_protocol_message(SUBUNIT, "SEARCHMODE", "Preset")
+    assert sirius.searchmode == SiriusSearchMode.PRESET
+
+    # Set
+    sirius.searchmode = SiriusSearchMode.ALL_CH
+    connection.put.assert_called_with(SUBUNIT, "SEARCHMODE", "All Ch")
+
+    sirius.searchmode = SiriusSearchMode.CATEGORY
+    connection.put.assert_called_with(SUBUNIT, "SEARCHMODE", "Category")
