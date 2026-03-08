@@ -428,6 +428,21 @@ class Shuffle(StrEnum):
 
 
 @unique
+class SiriusSearchMode(StrEnum):
+    ALL_CH = "All Ch"
+    CATEGORY = "Category"
+    PRESET = "Preset"
+
+    @classmethod
+    def _missing_(cls, value: object) -> Self:
+        logger.warning("Unknown value '%s' in %s", value, cls.__name__)
+        return cls(cls.UNKNOWN)
+
+    UNKNOWN = UNKNOWN_STRING
+    """Unknown values in the enum are mapped to UNKNOWN"""
+
+
+@unique
 class Sleep(StrEnum):
     OFF = "Off"
     THIRTY_MIN = "30 min"

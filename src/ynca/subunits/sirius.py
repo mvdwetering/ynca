@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 from ..constants import Subunit
+from ..enums import SiriusSearchMode
+from ..function import EnumFunctionMixin
 from ..subunit import SubunitBase
 from . import (
     ArtistFunctionMixin,
@@ -24,6 +26,8 @@ class Sirius(
     SubunitBase,
 ):
     id = Subunit.SIRIUS
+
+    searchmode = EnumFunctionMixin[SiriusSearchMode](SiriusSearchMode)
 
 
 class SiriusIr(
