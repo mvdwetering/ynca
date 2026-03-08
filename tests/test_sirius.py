@@ -56,9 +56,7 @@ def test_initialize(
     assert sirius.searchmode == SiriusSearchMode.PRESET
 
 
-def test_searchmode(
-    connection: YncaConnectionMock, update_callback: Callable[[str, Any], None]
-) -> None:
+def test_searchmode(connection: YncaConnectionMock) -> None:
     connection.get_response_list = INITIALIZE_FULL_RESPONSES
     sirius = Sirius(connection)
     sirius.initialize()
