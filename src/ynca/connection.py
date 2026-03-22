@@ -16,6 +16,28 @@ if TYPE_CHECKING:  # pragma: no cover
 logger = logging.getLogger(__name__)
 
 
+class _ReaderThread(serial.threaded.ReaderThread):
+    """ReaderThread that ensures connection_lost() is always called.
+
+    pyserial's ReaderThread.run() only catches serial.SerialException inside
+    the read loop.  An OSError raised by in_waiting (e.g. EIO when the PTY
+    master is closed or a USB adapter is physically unplugged) escapes the
+    loop without going through connection_lost(), so the disconnect callback
+    would silently never fire.  This subclass catches that case.
+    """
+
+    protocol: YncaProtocol | None
+
+    def run(self) -> None:
+        try:
+            super().run()
+        except OSError as e:
+            if self.protocol is not None:
+                self.alive = False
+                self.protocol.connection_lost(serial.SerialException(str(e)))
+                self.protocol = None
+
+
 class YncaConnection:
     @classmethod
     def create_from_serial_url(cls, serial_url: str) -> YncaConnection:
@@ -44,7 +66,7 @@ class YncaConnection:
         """
         self._port = serial_url
         self._serial = None
-        self._readerthread: serial.threaded.ReaderThread | None = None
+        self._readerthread: _ReaderThread | None = None
         self._protocol: YncaProtocol | None = None
 
         self._is_closing = threading.Event()
@@ -106,7 +128,7 @@ class YncaConnection:
             self._disconnect_callback = disconnect_callback
 
             self._serial = serial.serial_for_url(self._port)
-            self._readerthread = serial.threaded.ReaderThread(
+            self._readerthread = _ReaderThread(
                 self._serial,
                 lambda: YncaProtocol(
                     self._call_registered_message_callbacks,
