@@ -1,10 +1,12 @@
 from collections.abc import Generator
 from contextlib import contextmanager
+import threading
 import time
 from unittest import mock
 
 from mock_serial import MockSerial  # type: ignore[import]
 import pytest
+import serial
 
 from ynca.connection import YncaConnection, YncaProtocolStatus
 from ynca.errors import YncaConnectionError, YncaConnectionFailed
@@ -82,21 +84,69 @@ def test_connect_runtime_error(mock_serial: MockSerial) -> None:
 
 
 def test_disconnect() -> None:
-    mock_serial = MockSerial()
-    mock_serial.open()
+    disconnect_event = threading.Event()
+    disconnect_callback = mock.MagicMock(side_effect=lambda: disconnect_event.set())
 
-    mock_serial.stub(
-        receive_bytes=b"@SYS:MODELNAME=?\r\n",
-        send_bytes=b"@SYS:MODELNAME=TESTMODEL\r\n",
-    )  # Keep alive
+    read_should_fail = threading.Event()
 
-    disconnect_callback = mock.MagicMock()
+    mock_ser = mock.MagicMock()
+    mock_ser.is_open = True
+    mock_ser.in_waiting = 0
 
-    connection = YncaConnection(mock_serial.port)
-    connection.connect(disconnect_callback=disconnect_callback)
+    def controlled_read(_size: int) -> bytes:
+        # Block until the test triggers a simulated disconnect, just like a real
+        # serial port would block until data arrives or the connection drops.
+        read_should_fail.wait(timeout=5.0)
+        msg = "Simulated unexpected disconnect"
+        raise serial.SerialException(msg)
 
-    mock_serial.close()
-    time.sleep(SHORT_DELAY)
+    mock_ser.read.side_effect = controlled_read
+
+    with mock.patch("serial.serial_for_url", return_value=mock_ser):
+        connection = YncaConnection("dummy_port")
+        connection.connect(disconnect_callback=disconnect_callback)
+
+        # Trigger the simulated disconnect; controlled_read raises SerialException
+        # which the ReaderThread detects and routes to connection_lost().
+        read_should_fail.set()
+
+        assert disconnect_event.wait(
+            timeout=2.0
+        ), "Disconnect callback not called within timeout"
+
+    assert disconnect_callback.call_count == 1
+
+
+def test_disconnect_oserror() -> None:
+    """OSError from in_waiting (e.g. EIO on PTY/USB disconnect) must still fire the callback.
+
+    pyserial's ReaderThread only catches serial.SerialException inside its read
+    loop, so an OSError raised by in_waiting escapes without calling
+    connection_lost().  _ReaderThread wraps this case.
+    """
+    disconnect_event = threading.Event()
+    disconnect_callback = mock.MagicMock(side_effect=lambda: disconnect_event.set())
+
+    in_waiting_should_fail = threading.Event()
+
+    mock_ser = mock.MagicMock()
+    mock_ser.is_open = True
+
+    def controlled_in_waiting() -> int:
+        in_waiting_should_fail.wait(timeout=5.0)
+        raise OSError(5, "Input/output error")
+
+    type(mock_ser).in_waiting = mock.PropertyMock(side_effect=controlled_in_waiting)
+
+    with mock.patch("serial.serial_for_url", return_value=mock_ser):
+        connection = YncaConnection("dummy_port")
+        connection.connect(disconnect_callback=disconnect_callback)
+
+        in_waiting_should_fail.set()
+
+        assert disconnect_event.wait(
+            timeout=2.0
+        ), "Disconnect callback not called within timeout"
 
     assert disconnect_callback.call_count == 1
 
