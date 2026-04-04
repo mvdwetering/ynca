@@ -44,11 +44,16 @@ Releasing is not difficult, but could be a bit more automated.
 
 ## Adding Commands
 
-This section is a crash course on how to add new YNCA commands to the package.
-
 > If you have access to a coding agent it should be able to add the command.
-> Just tell it to add a command and provide the range (if numeric) or all valid values
-> The format can just be some logging and it will be able to figure it out.
+> Just tell it to add a command and provide the range of valid values
+> The format can just be some logging.
+>
+> Example prompt that generated the implemention in [#63](https://github.com/mvdwetering/ynca/pull/63) (and a followup prompt to add the other variants)
+> ```
+> Add a command based on this data: "3618651.006055 Received: @sys:SPPATTERN1SWFR1CNFG=None","3618657.598930 Received: @sys:SPPATTERN1SWFR1CNFG=Use",
+>```
+
+This section is a crash course on how to add new YNCA commands to the package.
 
 In general just look at similar existing commands for inspiration.
 
