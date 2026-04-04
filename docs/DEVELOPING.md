@@ -46,6 +46,10 @@ Releasing is not difficult, but could be a bit more automated.
 
 This section is a crash course on how to add new YNCA commands to the package.
 
+> If you have access to a coding agent it should be able to add the command.
+> Just tell it to add a command and provide the range (if numeric) or all valid values
+> The format can just be some logging and it will be able to figure it out.
+
 In general just look at similar existing commands for inspiration.
 
 But basically the steps would be:
