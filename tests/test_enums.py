@@ -33,6 +33,7 @@ from ynca.enums import (
     SpeakerA,
     SpeakerB,
     SpPattern,
+    SpPatternSwfrCnfg,
     Straight,
     SurroundAI,
     ThreeDeeCinema,
@@ -76,6 +77,7 @@ def test_invalid_values_on_enums() -> None:
     assert SpeakerA("x") is SpeakerA.UNKNOWN
     assert SpeakerB("x") is SpeakerB.UNKNOWN
     assert SpPattern("x") is SpPattern.UNKNOWN
+    assert SpPatternSwfrCnfg("x") is SpPatternSwfrCnfg.UNKNOWN
     assert Straight("x") is Straight.UNKNOWN
     assert SurroundAI("x") is SurroundAI.UNKNOWN
     assert ThreeDeeCinema("x") is ThreeDeeCinema.UNKNOWN
