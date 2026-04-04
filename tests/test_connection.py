@@ -104,15 +104,19 @@ def test_disconnect() -> None:
 
     with mock.patch("serial.serial_for_url", return_value=mock_ser):
         connection = YncaConnection("dummy_port")
-        connection.connect(disconnect_callback=disconnect_callback)
 
-        # Trigger the simulated disconnect; controlled_read raises SerialException
-        # which the ReaderThread detects and routes to connection_lost().
-        read_should_fail.set()
+        try:
+            connection.connect(disconnect_callback=disconnect_callback)
 
-        assert disconnect_event.wait(
-            timeout=2.0
-        ), "Disconnect callback not called within timeout"
+            # Trigger the simulated disconnect; controlled_read raises SerialException
+            # which the ReaderThread detects and routes to connection_lost().
+            read_should_fail.set()
+
+            assert disconnect_event.wait(
+                timeout=2.0
+            ), "Disconnect callback not called within timeout"
+        finally:
+            connection.close()
 
     assert disconnect_callback.call_count == 1
 
