@@ -5,7 +5,15 @@ from unittest import mock
 import pytest
 
 from tests.mock_yncaconnection import YncaConnectionMock
-from ynca import HdmiOutOnOff, Party, PartyMute, Pwr, SpPattern, System
+from ynca import (
+    HdmiOutOnOff,
+    Party,
+    PartyMute,
+    Pwr,
+    SpPattern,
+    SpPatternSwfrCnfg,
+    System,
+)
 
 SYS = "SYS"
 
@@ -87,6 +95,30 @@ INITIALIZE_FULL_RESPONSES = [
         ],
     ),
     (
+        (SYS, "SPPATTERN1SWFR1CNFG"),
+        [
+            (SYS, "SPPATTERN1SWFR1CNFG", "Use"),
+        ],
+    ),
+    (
+        (SYS, "SPPATTERN1SWFR2CNFG"),
+        [
+            (SYS, "SPPATTERN1SWFR2CNFG", "None"),
+        ],
+    ),
+    (
+        (SYS, "SPPATTERN2SWFR1CNFG"),
+        [
+            (SYS, "SPPATTERN2SWFR1CNFG", "Use"),
+        ],
+    ),
+    (
+        (SYS, "SPPATTERN2SWFR2CNFG"),
+        [
+            (SYS, "SPPATTERN2SWFR2CNFG", "None"),
+        ],
+    ),
+    (
         (SYS, "VERSION"),
         [
             (SYS, "VERSION", "Version"),
@@ -164,6 +196,10 @@ def test_initialize_minimal(
     assert s.pwr is None
     assert s.party is None
     assert s.sppattern is None
+    assert s.sppattern1swfr1cnfg is None
+    assert s.sppattern1swfr2cnfg is None
+    assert s.sppattern2swfr1cnfg is None
+    assert s.sppattern2swfr2cnfg is None
 
 
 def test_initialize_full(
@@ -211,6 +247,10 @@ def test_initialize_full(
     assert s.party == Party.ON
     assert s.pwr == Pwr.STANDBY
     assert s.sppattern == SpPattern.PATTERN_2
+    assert s.sppattern1swfr1cnfg == SpPatternSwfrCnfg.USE
+    assert s.sppattern1swfr2cnfg == SpPatternSwfrCnfg.NONE
+    assert s.sppattern2swfr1cnfg == SpPatternSwfrCnfg.USE
+    assert s.sppattern2swfr2cnfg == SpPatternSwfrCnfg.NONE
 
 
 def test_hdmiout(connection: YncaConnectionMock, initialized_system: System) -> None:

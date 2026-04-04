@@ -556,6 +556,20 @@ class SpPattern(StrEnum):
 
 
 @unique
+class SpPatternSwfrCnfg(StrEnum):
+    NONE = "None"
+    USE = "Use"
+
+    @classmethod
+    def _missing_(cls, value: object) -> Self:
+        logger.warning("Unknown value '%s' in %s", value, cls.__name__)
+        return cls(cls.UNKNOWN)
+
+    UNKNOWN = UNKNOWN_STRING
+    """Unknown values in the enum are mapped to UNKNOWN"""
+
+
+@unique
 class Straight(StrEnum):
     ON = "On"
     OFF = "Off"
