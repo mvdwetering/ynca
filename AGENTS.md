@@ -78,6 +78,7 @@ Use individual enums per function even when values overlap — receiver models d
 
 **`init=` parameter:** When a single GET command triggers responses for multiple functions (e.g., `BASIC`, `METAINFO`), set `init="BASIC"` on those attributes to avoid redundant initialization requests.
 
+**Data fidelity:** This library is a thin protocol layer. Converters must only convert wire values to Python types (str, int, float, enum, timedelta) — never sanitize, trim, normalize, or otherwise transform the content. If a receiver sends trailing spaces in a metadata string, the library must preserve them. Any cleaning or formatting belongs in the consuming application (e.g., the Home Assistant integration), not here.
 **Converters** (`converters.py`) handle string↔Python-type translation for YNCA protocol values. Each `FunctionMixin` takes a `converter` argument:
 
 | Converter | Python type | Notes |
