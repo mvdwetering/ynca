@@ -28,8 +28,6 @@ mypy src/
 
 This is a Python library (`ynca`) for controlling Yamaha AV receivers via the YNCA serial/IP protocol.
 
-The li
-
 **Core layers:**
 
 - `YncaConnection` (`connection.py`) — low-level: sends/receives raw YNCA protocol messages (`@SUBUNIT:FUNCTION=VALUE`), handles throttling and keep-alive
