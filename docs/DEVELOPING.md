@@ -31,13 +31,26 @@ For details see the task files under `.github/workflows`
 
 ## Releasing
 
-Releasing is triggered from GitHub Actions — no local steps required.
+The easiest way to trigger a release is by running the `bump_version.sh` script locally.
+It requires the [GitHub CLI](https://cli.github.com/) (`gh`) to be installed and authenticated.
 
-1. Go to [Actions → Release](https://github.com/mvdwetering/ynca/actions/workflows/release.yml) and click **Run workflow**
-2. Enter the new version number (e.g. `6.3.0`) and confirm
-3. The workflow validates the version, runs the full test matrix, bumps `pyproject.toml`, commits, tags, and creates a **draft** GitHub Release with auto-generated notes
-4. Open the draft release, edit the notes to highlight breaking changes or exciting features, then click **Publish release**
-   * Publishing automatically uploads the package to PyPI
+```bash
+./bump_version.sh
+```
+
+The script shows the current version, prompts for the new version, validates it, and triggers the
+GitHub Actions Release workflow. Alternatively the workflow can be triggered directly from
+[Actions → Release](https://github.com/mvdwetering/ynca/actions/workflows/release.yml).
+
+The Release workflow:
+
+1. Validates the version number
+2. Runs the full test matrix
+3. Bumps `pyproject.toml`, commits, tags and pushes to `master`
+4. Creates a **draft** GitHub Release with auto-generated notes
+
+After the workflow completes, open the draft release, edit the notes to highlight breaking changes
+or exciting features, then click **Publish release** — this automatically uploads the package to PyPI.
 
 ### Prerequisites (one-time setup)
 
