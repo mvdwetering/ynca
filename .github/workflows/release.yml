@@ -1,0 +1,123 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'New version number (e.g. 6.3.0)'
+        required: true
+        type: string
+
+jobs:
+  validate:
+    name: Validate version
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.check.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check version is valid and greater than current
+        id: check
+        run: |
+          NEW="${{ inputs.version }}"
+
+          # Must match semver X.Y.Z
+          if ! echo "$NEW" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+$'; then
+            echo "::error::Version '$NEW' is not valid semver (expected X.Y.Z)"
+            exit 1
+          fi
+
+          CURRENT=$(grep -E '^version\s*=\s*"[0-9]+' pyproject.toml | head -n1 \
+            | sed -E 's/.*version\s*=\s*"([^"]+)".*/\1/')
+
+          echo "Current version: $CURRENT"
+          echo "Requested version: $NEW"
+
+          version_key() {
+            echo "$1" | awk -F. '{ printf "%05d%05d%05d", $1, $2, $3 }'
+          }
+
+          if [ "$(version_key "$NEW")" -le "$(version_key "$CURRENT")" ]; then
+            echo "::error::New version ($NEW) must be greater than current version ($CURRENT)"
+            exit 1
+          fi
+
+          echo "version=$NEW" >> "$GITHUB_OUTPUT"
+
+  test:
+    name: Test (Python ${{ matrix.python-version }})
+    needs: validate
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      matrix:
+        python-version: ["3.11", "3.12", "3.13", "3.14"]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: 'pip'
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install flake8
+          pip install . .[dev]
+      - name: Lint with flake8
+        run: |
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+      - name: Check typing with mypy
+        run: mypy src/ynca --check-untyped-defs
+      - name: Test with pytest
+        run: pytest tests --doctest-modules --junitxml=junit/test-results.xml --cov=ynca --cov-report=xml --cov-report=html
+
+  release:
+    name: Bump, tag and create draft release
+    needs: test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Generate GitHub App token
+        id: app-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.GH_APP_ID }}
+          private-key: ${{ secrets.GH_APP_PRIVATE_KEY }}
+
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ steps.app-token.outputs.token }}
+          ref: master
+
+      - name: Bump version in pyproject.toml
+        run: |
+          NEW="${{ needs.validate.outputs.version }}"
+          awk -v newver="$NEW" '
+            BEGIN{inproj=0;done=0}
+            /^\[project\]/{inproj=1}
+            inproj && !done && /version\s*=/{sub(/version\s*=\s*"[^"]+"/, "version = \"" newver "\""); done=1}
+            {print}
+          ' pyproject.toml > pyproject.toml.tmp && mv pyproject.toml.tmp pyproject.toml
+
+      - name: Commit, tag and push
+        run: |
+          NEW="${{ needs.validate.outputs.version }}"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add pyproject.toml
+          git commit -m "Bump ynca version to $NEW"
+          git tag -a "v$NEW" -m "Version $NEW"
+          git push --follow-tags
+
+      - name: Create draft release
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+        run: |
+          NEW="${{ needs.validate.outputs.version }}"
+          gh release create "v$NEW" \
+            --draft \
+            --generate-notes \
+            --title "v$NEW"

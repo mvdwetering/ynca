@@ -25,22 +25,27 @@ CI is a bit barebones, but it does:
 
 * Run mypy
 * Run tests
-* When pushing a version tag a sanity check is done against the version number in `pyproject.toml` to make sure they match
 * When a release is made it gets automatically uploaded to PyPi.
 
 For details see the task files under `.github/workflows`
 
 ## Releasing
 
-Releasing is not difficult, but could be a bit more automated.
+Releasing is triggered from GitHub Actions — no local steps required.
 
-* Do any tests you want to do before release, e.g. run `coverage.sh`
-* Run `bump_version.sh` script and follow the prompts. When completed a version tag has been created and pushed to Github
-* Wait a bit until [the actions](https://github.com/mvdwetering/ynca/actions) are all done without errors
-* [On Github](https://github.com/mvdwetering/ynca/tags) create a release from the tag that was pushed
-* Release title is the version e.g. v5.27.0
-* Write the release notes and save
-  * The package will be automatically uploaded to PyPi
+1. Go to [Actions → Release](https://github.com/mvdwetering/ynca/actions/workflows/release.yml) and click **Run workflow**
+2. Enter the new version number (e.g. `6.3.0`) and confirm
+3. The workflow validates the version, runs the full test matrix, bumps `pyproject.toml`, commits, tags, and creates a **draft** GitHub Release with auto-generated notes
+4. Open the draft release, edit the notes to highlight breaking changes or exciting features, then click **Publish release**
+   * Publishing automatically uploads the package to PyPI
+
+### Prerequisites (one-time setup)
+
+The workflow uses a GitHub App token to push to the branch-protected `master` branch.
+The following repository secrets must be configured:
+
+* `GH_APP_ID` — the App ID of the release GitHub App
+* `GH_APP_PRIVATE_KEY` — the private key (`.pem` contents) of that App
 
 ## Adding Commands
 
@@ -49,6 +54,7 @@ Releasing is not difficult, but could be a bit more automated.
 > The format can just be some logging.
 >
 > Example prompt that generated the implementation in [#63](https://github.com/mvdwetering/ynca/pull/63) (and a follow-up prompt to add the other variants)
+>
 > ```text
 > Add a command based on this data: "3618651.006055 Received: @sys:SPPATTERN1SWFR1CNFG=None","3618657.598930 Received: @sys:SPPATTERN1SWFR1CNFG=Use",
 >```
