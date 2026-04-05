@@ -45,33 +45,11 @@ jobs:
           echo "version=$NEW" >> "$GITHUB_OUTPUT"
 
   test:
-    name: Test (Python ${{ matrix.python-version }})
+    name: Test
     needs: validate
-    runs-on: ubuntu-latest
-    strategy:
+    uses: ./.github/workflows/test.yml
+    with:
       fail-fast: true
-      matrix:
-        python-version: ["3.11", "3.12", "3.13", "3.14"]
-    steps:
-      - uses: actions/checkout@v4
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ matrix.python-version }}
-          cache: 'pip'
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          python -m pip install flake8
-          pip install . .[dev]
-      - name: Lint with flake8
-        run: |
-          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-      - name: Check typing with mypy
-        run: mypy src/ynca --check-untyped-defs
-      - name: Test with pytest
-        run: pytest tests --doctest-modules --junitxml=junit/test-results.xml --cov=ynca --cov-report=xml --cov-report=html
 
   release:
     name: Bump, tag and create draft release
