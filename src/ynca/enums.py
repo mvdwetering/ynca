@@ -1,8 +1,9 @@
 """Enums used for mapping YNCA values."""
 
+from __future__ import annotations
+
 from enum import StrEnum, unique
 import logging
-from typing import Self
 
 logger = logging.getLogger(__name__)
 
@@ -15,9 +16,9 @@ class AdaptiveDrc(StrEnum):
     AUTO = "Auto"
 
     @classmethod
-    def _missing_(cls, value: object) -> Self:
+    def _missing_(cls, value: object) -> AdaptiveDrc:
         logger.warning("Unknown value '%s' in %s", value, cls.__name__)
-        return cls(cls.UNKNOWN)
+        return cls.UNKNOWN
 
     UNKNOWN = UNKNOWN_STRING
     """Unknown values in the enum are mapped to UNKNOWN"""
@@ -30,9 +31,9 @@ class Avail(StrEnum):
     READY = "Ready"
 
     @classmethod
-    def _missing_(cls, value: object) -> Self:
+    def _missing_(cls, value: object) -> Avail:
         logger.warning("Unknown value '%s' in %s", value, cls.__name__)
-        return cls(cls.UNKNOWN)
+        return cls.UNKNOWN
 
     UNKNOWN = UNKNOWN_STRING
     """Unknown values in the enum are mapped to UNKNOWN"""
@@ -44,9 +45,9 @@ class BandDab(StrEnum):
     FM = "FM"
 
     @classmethod
-    def _missing_(cls, value: object) -> Self:
+    def _missing_(cls, value: object) -> BandDab:
         logger.warning("Unknown value '%s' in %s", value, cls.__name__)
-        return cls(cls.UNKNOWN)
+        return cls.UNKNOWN
 
     UNKNOWN = UNKNOWN_STRING
     """Unknown values in the enum are mapped to UNKNOWN"""
@@ -58,9 +59,9 @@ class BandTun(StrEnum):
     FM = "FM"
 
     @classmethod
-    def _missing_(cls, value: object) -> Self:
+    def _missing_(cls, value: object) -> BandTun:
         logger.warning("Unknown value '%s' in %s", value, cls.__name__)
-        return cls(cls.UNKNOWN)
+        return cls.UNKNOWN
 
     UNKNOWN = UNKNOWN_STRING
     """Unknown values in the enum are mapped to UNKNOWN"""
@@ -71,9 +72,9 @@ class DabPreset(StrEnum):
     NO_PRESET = "No Preset"
 
     @classmethod
-    def _missing_(cls, value: object) -> Self:
+    def _missing_(cls, value: object) -> DabPreset:
         logger.warning("Unknown value '%s' in %s", value, cls.__name__)
-        return cls(cls.UNKNOWN)
+        return cls.UNKNOWN
 
     UNKNOWN = UNKNOWN_STRING
     """Unknown values in the enum are mapped to UNKNOWN"""
@@ -85,9 +86,9 @@ class DirMode(StrEnum):
     OFF = "Off"
 
     @classmethod
-    def _missing_(cls, value: object) -> Self:
+    def _missing_(cls, value: object) -> DirMode:
         logger.warning("Unknown value '%s' in %s", value, cls.__name__)
-        return cls(cls.UNKNOWN)
+        return cls.UNKNOWN
 
     UNKNOWN = UNKNOWN_STRING
     """Unknown values in the enum are mapped to UNKNOWN"""
@@ -99,9 +100,9 @@ class Enhancer(StrEnum):
     OFF = "Off"
 
     @classmethod
-    def _missing_(cls, value: object) -> Self:
+    def _missing_(cls, value: object) -> Enhancer:
         logger.warning("Unknown value '%s' in %s", value, cls.__name__)
-        return cls(cls.UNKNOWN)
+        return cls.UNKNOWN
 
     UNKNOWN = UNKNOWN_STRING
     """Unknown values in the enum are mapped to UNKNOWN"""
@@ -113,9 +114,9 @@ class ExBass(StrEnum):
     OFF = "Off"
 
     @classmethod
-    def _missing_(cls, value: object) -> Self:
+    def _missing_(cls, value: object) -> ExBass:
         logger.warning("Unknown value '%s' in %s", value, cls.__name__)
-        return cls(cls.UNKNOWN)
+        return cls.UNKNOWN
 
     UNKNOWN = UNKNOWN_STRING
     """Unknown values in the enum are mapped to UNKNOWN"""
@@ -126,9 +127,9 @@ class FmPreset(StrEnum):
     NO_PRESET = "No Preset"
 
     @classmethod
-    def _missing_(cls, value: object) -> Self:
+    def _missing_(cls, value: object) -> FmPreset:
         logger.warning("Unknown value '%s' in %s", value, cls.__name__)
-        return cls(cls.UNKNOWN)
+        return cls.UNKNOWN
 
     UNKNOWN = UNKNOWN_STRING
     """Unknown values in the enum are mapped to UNKNOWN"""
@@ -145,9 +146,9 @@ class HdmiOut(StrEnum):
     OUT1_PLUS_2 = "OUT1 + 2"
 
     @classmethod
-    def _missing_(cls, value: object) -> Self:
+    def _missing_(cls, value: object) -> HdmiOut:
         logger.warning("Unknown value '%s' in %s", value, cls.__name__)
-        return cls(cls.UNKNOWN)
+        return cls.UNKNOWN
 
     UNKNOWN = UNKNOWN_STRING
     """Unknown values in the enum are mapped to UNKNOWN"""
@@ -159,9 +160,9 @@ class HdmiOutOnOff(StrEnum):
     OFF = "Off"
 
     @classmethod
-    def _missing_(cls, value: object) -> Self:
+    def _missing_(cls, value: object) -> HdmiOutOnOff:
         logger.warning("Unknown value '%s' in %s", value, cls.__name__)
-        return cls(cls.UNKNOWN)
+        return cls.UNKNOWN
 
     UNKNOWN = UNKNOWN_STRING
     """Unknown values in the enum are mapped to UNKNOWN"""
@@ -174,9 +175,9 @@ class InitVolLvl(StrEnum):
     """Only some receivers report Off, most seem to use InitVolMode to indicate On/Off"""
 
     @classmethod
-    def _missing_(cls, value: object) -> Self:
+    def _missing_(cls, value: object) -> InitVolLvl:
         logger.warning("Unknown value '%s' in %s", value, cls.__name__)
-        return cls(cls.UNKNOWN)
+        return cls.UNKNOWN
 
     UNKNOWN = UNKNOWN_STRING
     """Unknown values in the enum are mapped to UNKNOWN"""
@@ -188,9 +189,9 @@ class InitVolMode(StrEnum):
     OFF = "Off"
 
     @classmethod
-    def _missing_(cls, value: object) -> Self:
+    def _missing_(cls, value: object) -> InitVolMode:
         logger.warning("Unknown value '%s' in %s", value, cls.__name__)
-        return cls(cls.UNKNOWN)
+        return cls.UNKNOWN
 
     UNKNOWN = UNKNOWN_STRING
     """Unknown values in the enum are mapped to UNKNOWN"""
@@ -257,9 +258,9 @@ class Input(StrEnum):
     USB = "USB"
 
     @classmethod
-    def _missing_(cls, value: object) -> Self:
+    def _missing_(cls, value: object) -> Input:
         logger.warning("Unknown value '%s' in %s", value, cls.__name__)
-        return cls(cls.UNKNOWN)
+        return cls.UNKNOWN
 
     UNKNOWN = UNKNOWN_STRING
     """Unknown values in the enum are mapped to UNKNOWN"""
@@ -273,9 +274,9 @@ class Mute(StrEnum):
     OFF = "Off"
 
     @classmethod
-    def _missing_(cls, value: object) -> Self:
+    def _missing_(cls, value: object) -> Mute:
         logger.warning("Unknown value '%s' in %s", value, cls.__name__)
-        return cls(cls.UNKNOWN)
+        return cls.UNKNOWN
 
     UNKNOWN = UNKNOWN_STRING
     """Unknown values in the enum are mapped to UNKNOWN"""
@@ -287,9 +288,9 @@ class Party(StrEnum):
     OFF = "Off"
 
     @classmethod
-    def _missing_(cls, value: object) -> Self:
+    def _missing_(cls, value: object) -> Party:
         logger.warning("Unknown value '%s' in %s", value, cls.__name__)
-        return cls(cls.UNKNOWN)
+        return cls.UNKNOWN
 
     UNKNOWN = UNKNOWN_STRING
     """Unknown values in the enum are mapped to UNKNOWN"""
@@ -301,9 +302,9 @@ class PartyMute(StrEnum):
     OFF = "Off"
 
     @classmethod
-    def _missing_(cls, value: object) -> Self:
+    def _missing_(cls, value: object) -> PartyMute:
         logger.warning("Unknown value '%s' in %s", value, cls.__name__)
-        return cls(cls.UNKNOWN)
+        return cls.UNKNOWN
 
     UNKNOWN = UNKNOWN_STRING
     """Unknown values in the enum are mapped to UNKNOWN"""
@@ -318,9 +319,9 @@ class Playback(StrEnum):
     SKIP_FWD = "Skip Fwd"
 
     @classmethod
-    def _missing_(cls, value: object) -> Self:
+    def _missing_(cls, value: object) -> Playback:
         logger.warning("Unknown value '%s' in %s", value, cls.__name__)
-        return cls(cls.UNKNOWN)
+        return cls.UNKNOWN
 
     UNKNOWN = UNKNOWN_STRING
     """Unknown values in the enum are mapped to UNKNOWN"""
@@ -333,9 +334,9 @@ class PlaybackInfo(StrEnum):
     PLAY = "Play"
 
     @classmethod
-    def _missing_(cls, value: object) -> Self:
+    def _missing_(cls, value: object) -> PlaybackInfo:
         logger.warning("Unknown value '%s' in %s", value, cls.__name__)
-        return cls(cls.UNKNOWN)
+        return cls.UNKNOWN
 
     UNKNOWN = UNKNOWN_STRING
     """Unknown values in the enum are mapped to UNKNOWN"""
@@ -346,9 +347,9 @@ class Preset(StrEnum):
     NO_PRESET = "No Preset"
 
     @classmethod
-    def _missing_(cls, value: object) -> Self:
+    def _missing_(cls, value: object) -> Preset:
         logger.warning("Unknown value '%s' in %s", value, cls.__name__)
-        return cls(cls.UNKNOWN)
+        return cls.UNKNOWN
 
     UNKNOWN = UNKNOWN_STRING
     """Unknown values in the enum are mapped to UNKNOWN"""
@@ -360,9 +361,9 @@ class PureDirMode(StrEnum):
     OFF = "Off"
 
     @classmethod
-    def _missing_(cls, value: object) -> Self:
+    def _missing_(cls, value: object) -> PureDirMode:
         logger.warning("Unknown value '%s' in %s", value, cls.__name__)
-        return cls(cls.UNKNOWN)
+        return cls.UNKNOWN
 
     UNKNOWN = UNKNOWN_STRING
     """Unknown values in the enum are mapped to UNKNOWN"""
@@ -374,9 +375,9 @@ class Pwr(StrEnum):
     STANDBY = "Standby"
 
     @classmethod
-    def _missing_(cls, value: object) -> Self:
+    def _missing_(cls, value: object) -> Pwr:
         logger.warning("Unknown value '%s' in %s", value, cls.__name__)
-        return cls(cls.UNKNOWN)
+        return cls.UNKNOWN
 
     UNKNOWN = UNKNOWN_STRING
     """Unknown values in the enum are mapped to UNKNOWN"""
@@ -389,9 +390,9 @@ class PwrB(StrEnum):
     UNAVAILABLE = "Unavailable"
 
     @classmethod
-    def _missing_(cls, value: object) -> Self:
+    def _missing_(cls, value: object) -> PwrB:
         logger.warning("Unknown value '%s' in %s", value, cls.__name__)
-        return cls(cls.UNKNOWN)
+        return cls.UNKNOWN
 
     UNKNOWN = UNKNOWN_STRING
     """Unknown values in the enum are mapped to UNKNOWN"""
@@ -405,9 +406,9 @@ class Repeat(StrEnum):
     ALL = "All"
 
     @classmethod
-    def _missing_(cls, value: object) -> Self:
+    def _missing_(cls, value: object) -> Repeat:
         logger.warning("Unknown value '%s' in %s", value, cls.__name__)
-        return cls(cls.UNKNOWN)
+        return cls.UNKNOWN
 
     UNKNOWN = UNKNOWN_STRING
     """Unknown values in the enum are mapped to UNKNOWN"""
@@ -419,9 +420,9 @@ class Shuffle(StrEnum):
     OFF = "Off"
 
     @classmethod
-    def _missing_(cls, value: object) -> Self:
+    def _missing_(cls, value: object) -> Shuffle:
         logger.warning("Unknown value '%s' in %s", value, cls.__name__)
-        return cls(cls.UNKNOWN)
+        return cls.UNKNOWN
 
     UNKNOWN = UNKNOWN_STRING
     """Unknown values in the enum are mapped to UNKNOWN"""
@@ -434,9 +435,9 @@ class SiriusSearchMode(StrEnum):
     PRESET = "Preset"
 
     @classmethod
-    def _missing_(cls, value: object) -> Self:
+    def _missing_(cls, value: object) -> SiriusSearchMode:
         logger.warning("Unknown value '%s' in %s", value, cls.__name__)
-        return cls(cls.UNKNOWN)
+        return cls.UNKNOWN
 
     UNKNOWN = UNKNOWN_STRING
     """Unknown values in the enum are mapped to UNKNOWN"""
@@ -451,9 +452,9 @@ class Sleep(StrEnum):
     ONEHUNDREDTWENTY_MIN = "120 min"
 
     @classmethod
-    def _missing_(cls, value: object) -> Self:
+    def _missing_(cls, value: object) -> Sleep:
         logger.warning("Unknown value '%s' in %s", value, cls.__name__)
-        return cls(cls.UNKNOWN)
+        return cls.UNKNOWN
 
     UNKNOWN = UNKNOWN_STRING
     """Unknown values in the enum are mapped to UNKNOWN"""
@@ -505,9 +506,9 @@ class SoundPrg(StrEnum):
     ALL_CH_STEREO = "All-Ch Stereo"
 
     @classmethod
-    def _missing_(cls, value: object) -> Self:
+    def _missing_(cls, value: object) -> SoundPrg:
         logger.warning("Unknown value '%s' in %s", value, cls.__name__)
-        return cls(cls.UNKNOWN)
+        return cls.UNKNOWN
 
     UNKNOWN = UNKNOWN_STRING
     """Unknown values in the enum are mapped to UNKNOWN"""
@@ -519,9 +520,9 @@ class SpeakerA(StrEnum):
     OFF = "Off"
 
     @classmethod
-    def _missing_(cls, value: object) -> Self:
+    def _missing_(cls, value: object) -> SpeakerA:
         logger.warning("Unknown value '%s' in %s", value, cls.__name__)
-        return cls(cls.UNKNOWN)
+        return cls.UNKNOWN
 
     UNKNOWN = UNKNOWN_STRING
     """Unknown values in the enum are mapped to UNKNOWN"""
@@ -533,9 +534,9 @@ class SpeakerB(StrEnum):
     OFF = "Off"
 
     @classmethod
-    def _missing_(cls, value: object) -> Self:
+    def _missing_(cls, value: object) -> SpeakerB:
         logger.warning("Unknown value '%s' in %s", value, cls.__name__)
-        return cls(cls.UNKNOWN)
+        return cls.UNKNOWN
 
     UNKNOWN = UNKNOWN_STRING
     """Unknown values in the enum are mapped to UNKNOWN"""
@@ -547,9 +548,9 @@ class SpPattern(StrEnum):
     PATTERN_2 = "Pattern 2"
 
     @classmethod
-    def _missing_(cls, value: object) -> Self:
+    def _missing_(cls, value: object) -> SpPattern:
         logger.warning("Unknown value '%s' in %s", value, cls.__name__)
-        return cls(cls.UNKNOWN)
+        return cls.UNKNOWN
 
     UNKNOWN = UNKNOWN_STRING
     """Unknown values in the enum are mapped to UNKNOWN"""
@@ -561,9 +562,9 @@ class SpPatternSwfrCnfg(StrEnum):
     USE = "Use"
 
     @classmethod
-    def _missing_(cls, value: object) -> Self:
+    def _missing_(cls, value: object) -> SpPatternSwfrCnfg:
         logger.warning("Unknown value '%s' in %s", value, cls.__name__)
-        return cls(cls.UNKNOWN)
+        return cls.UNKNOWN
 
     UNKNOWN = UNKNOWN_STRING
     """Unknown values in the enum are mapped to UNKNOWN"""
@@ -575,9 +576,9 @@ class Straight(StrEnum):
     OFF = "Off"
 
     @classmethod
-    def _missing_(cls, value: object) -> Self:
+    def _missing_(cls, value: object) -> Straight:
         logger.warning("Unknown value '%s' in %s", value, cls.__name__)
-        return cls(cls.UNKNOWN)
+        return cls.UNKNOWN
 
     UNKNOWN = UNKNOWN_STRING
     """Unknown values in the enum are mapped to UNKNOWN"""
@@ -589,9 +590,9 @@ class SurroundAI(StrEnum):
     OFF = "Off"
 
     @classmethod
-    def _missing_(cls, value: object) -> Self:
+    def _missing_(cls, value: object) -> SurroundAI:
         logger.warning("Unknown value '%s' in %s", value, cls.__name__)
-        return cls(cls.UNKNOWN)
+        return cls.UNKNOWN
 
     UNKNOWN = UNKNOWN_STRING
     """Unknown values in the enum are mapped to UNKNOWN"""
@@ -603,9 +604,9 @@ class ThreeDeeCinema(StrEnum):
     AUTO = "Auto"
 
     @classmethod
-    def _missing_(cls, value: object) -> Self:
+    def _missing_(cls, value: object) -> ThreeDeeCinema:
         logger.warning("Unknown value '%s' in %s", value, cls.__name__)
-        return cls(cls.UNKNOWN)
+        return cls.UNKNOWN
 
     UNKNOWN = UNKNOWN_STRING
     """Unknown values in the enum are mapped to UNKNOWN"""
@@ -617,9 +618,9 @@ class TunSearchMode(StrEnum):
     TUNING = "Tuning"
 
     @classmethod
-    def _missing_(cls, value: object) -> Self:
+    def _missing_(cls, value: object) -> TunSearchMode:
         logger.warning("Unknown value '%s' in %s", value, cls.__name__)
-        return cls(cls.UNKNOWN)
+        return cls.UNKNOWN
 
     UNKNOWN = UNKNOWN_STRING
     """Unknown values in the enum are mapped to UNKNOWN"""
@@ -631,9 +632,9 @@ class DabFmSearchMode(StrEnum):
     TUNING = "Tuning"
 
     @classmethod
-    def _missing_(cls, value: object) -> Self:
+    def _missing_(cls, value: object) -> DabFmSearchMode:
         logger.warning("Unknown value '%s' in %s", value, cls.__name__)
-        return cls(cls.UNKNOWN)
+        return cls.UNKNOWN
 
     UNKNOWN = UNKNOWN_STRING
     """Unknown values in the enum are mapped to UNKNOWN"""
@@ -666,9 +667,9 @@ class TwoChDecoder(StrEnum):
     DolbyProLogicII_Game = "Dolby ProLogicII(Game)"
 
     @classmethod
-    def _missing_(cls, value: object) -> Self:
+    def _missing_(cls, value: object) -> TwoChDecoder:
         logger.warning("Unknown value '%s' in %s", value, cls.__name__)
-        return cls(cls.UNKNOWN)
+        return cls.UNKNOWN
 
     UNKNOWN = UNKNOWN_STRING
     """Unknown values in the enum are mapped to UNKNOWN"""
@@ -681,9 +682,9 @@ class ZoneBAvail(StrEnum):
     READY = "Ready"
 
     @classmethod
-    def _missing_(cls, value: object) -> Self:
+    def _missing_(cls, value: object) -> ZoneBAvail:
         logger.warning("Unknown value '%s' in %s", value, cls.__name__)
-        return cls(cls.UNKNOWN)
+        return cls.UNKNOWN
 
     UNKNOWN = UNKNOWN_STRING
     """Unknown values in the enum are mapped to UNKNOWN"""
@@ -695,9 +696,9 @@ class ZoneBMute(StrEnum):
     OFF = "Off"
 
     @classmethod
-    def _missing_(cls, value: object) -> Self:
+    def _missing_(cls, value: object) -> ZoneBMute:
         logger.warning("Unknown value '%s' in %s", value, cls.__name__)
-        return cls(cls.UNKNOWN)
+        return cls.UNKNOWN
 
     UNKNOWN = UNKNOWN_STRING
     """Unknown values in the enum are mapped to UNKNOWN"""
