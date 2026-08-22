@@ -229,3 +229,29 @@ Based on this info it seems that `Single` got renamed to `One`.
 Only seen this value on the TIDAL source on CX-A5100. Presumably it is the same for all sources on that model. This receiver also had protocol version 2.86/4.41, so it is assumed to be part of version 4 of the protocol.
 
 For logs see: <https://github.com/mvdwetering/yamaha_ynca/issues/441#issuecomment-3520099036>
+
+## RDS Radio text behavior
+
+### A/B texts
+
+Having different fields for A and B is unexpected. RDS sends only 1 text at the time. The A/B flag just indicates a new text starts. The previous text should be considered invalidated.
+
+Depending on how the radio station uses Radiotext this will lead to undesired results.
+
+E.g. station that sends current song title will end up with having both song titles "active" in the A and B properties. Would be even worse if a station just sends the program name.
+
+Sidenote: The `fmrdstxt` on DAB does not have A/B variants
+
+### Updates
+
+Another thing to note is that, as always, the receiver will only send updates when the data changes. I have seen a radio station sending alternating songinfo and stationname. This results in the station name being only sent out once on YNCA because A is always the songinfo (which changes after a few minutes when the song changes) and B is always the same static station name. So as a YCNA user you can miss updates to static content like this. Something to be aware of.
+
+### Trailing underscores
+
+RDS Radiotext are exposed as `RDSTXTA` and `RDSTXTB` and have trailing `_` on my RX-A810. Unclear why, car radio shows it fine. Maybe the decoder does not properly detect the `end-of-text` marker in the data?
+
+I have also seen trailing _ with spaces like this: `
+
+```text
+@TUN:RDSTXTA=AVROTROS_                           ____
+```
