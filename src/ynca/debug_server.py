@@ -272,7 +272,7 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
 
                     elapsedtime = f"{elapsed_seconds // 60}:{elapsed_seconds % 60:02d}"
 
-                    (_, changed) = self.store.put_data(
+                    _, changed = self.store.put_data(
                         input_subunit, "ELAPSEDTIME", elapsedtime
                     )
                     if changed:
@@ -309,6 +309,12 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
     def _send_ynca_error(self, error) -> None:
         """Just formats and send the value."""
         self._write_line(error)
+
+    def _store_and_send_ynca_value(self, subunit, function, value) -> None:
+        """Store the value and send it."""
+        _, changed = self.store.put_data(subunit, function, value)
+        if changed:
+            self._send_ynca_value(subunit, function, value)
 
     def handle_get(self, subunit, function) -> None:
         """Handle (multi)response(s) for GET."""
@@ -407,6 +413,7 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
             value = str(value + (amount * (1 if up else -1)))
 
         # CX-A5100 uses "One" instead of "Single"; others use "Single" instead of "One"
+        # TODO: Use protocol version instead of modelname
         if function == "REPEAT" and (
             (model == "CX-A5100" and value == "Single")
             or (model != "CX-A5100" and value == "One")
@@ -480,7 +487,7 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
                 value = (
                     "" if new_playbackinfo_value == "Stop" else value or fallback_value
                 )
-                (_, changed) = self.store.put_data(subunit, function, value)
+                _, changed = self.store.put_data(subunit, function, value)
                 if changed:
                     self._send_ynca_value(subunit, function, value)
 
@@ -530,8 +537,9 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
                     "Input changed, previous_input_subunit %s is not active anymore",
                     previous_input_subunit,
                 )
-                self.store.put_data(previous_input_subunit, "AVAIL", "Not Ready")
-                self._send_ynca_value(previous_input_subunit, "AVAIL", "Not Ready")
+                self._store_and_send_ynca_value(
+                    previous_input_subunit, "AVAIL", "Not Ready"
+                )
 
         if not new_input_used_on_other_zone:
             new_input_subunit = self.get_active_input_subunit_for_zone(zone_subunit)
@@ -595,7 +603,7 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
 
     def get_subunit_for_input(self, input_) -> str | None:
         for m in INPUT_SUBUNITLIST_MAPPING:
-            (subunit_input, zone_subunitlist) = m
+            subunit_input, zone_subunitlist = m
             if subunit_input == input_:
                 for zone_subunit in zone_subunitlist:
                     if self.store.get_data(zone_subunit, "AVAIL") is not UNDEFINED:
@@ -626,7 +634,7 @@ class YncaCommandHandler(socketserver.StreamRequestHandler):
                 bytes_line = bytes_line.strip()
                 line = bytes_line.decode(
                     "utf-8"
-                )  # Note that YNCA spec says in some places that text can be ASCII, Latin-1 or UTF-8 without a way to indicate what it is :/ UTF-8 seems to work fine for now
+                )  # Documentation about what encoding is used is conflicting. Found mentions of ASCII, Latin-1 and UTF-8 without a way to indicate what it is. UTF-8 seems to work fine for now
                 print(f"Recv - {line}")
 
                 command = line_to_command(line)
