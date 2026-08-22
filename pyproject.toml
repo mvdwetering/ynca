@@ -41,7 +41,7 @@ dev = [
   "pytest-cov",
   "pytest-mock",
   "mock-serial==0.0.1",
-  "black==25.1.0",
+  "black==26.3.1",
 ]
 
 [tool.coverage.report]
