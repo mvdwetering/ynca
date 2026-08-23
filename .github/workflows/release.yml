@@ -56,7 +56,7 @@ jobs:
 
   release:
     name: Bump, tag and create draft release
-    needs: test
+    needs: [validate, test]
     runs-on: ubuntu-latest
     permissions:
       contents: write
