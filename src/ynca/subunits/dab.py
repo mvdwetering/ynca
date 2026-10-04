@@ -12,7 +12,7 @@ from ..subunit import SubunitBase
 from . import FmFreqFunctionMixin, MemFunctionMixin
 
 
-class Dab(SubunitBase, FmFreqFunctionMixin, MemFunctionMixin):
+class Dab(FmFreqFunctionMixin, MemFunctionMixin, SubunitBase):
     id = Subunit.DAB
 
     band = EnumFunctionMixin[BandDab](BandDab)

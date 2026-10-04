@@ -5,5 +5,5 @@ from ..subunit import SubunitBase
 from . import PlaybackFunctionMixin
 
 
-class Bt(SubunitBase, PlaybackFunctionMixin):
+class Bt(PlaybackFunctionMixin, SubunitBase):
     id = Subunit.BT
