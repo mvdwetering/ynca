@@ -59,6 +59,7 @@ class YncaProtocol:
         self._serial: serialx.BaseSerial | None = None
         self._send_queue: queue.Queue[str] = queue.Queue()
         self._send_thread: threading.Thread | None = None
+        self._connection_failure_callback: Callable[[Exception], None] | None = None
         self._connected = False
         self._keep_alive_pending: threading.Event = threading.Event()
         self._communication_log_buffer: LogBuffer = LogBuffer(communication_log_size)
@@ -84,6 +85,11 @@ class YncaProtocol:
         # So send a dummy keep-alive on connect and a real one to make sure keep-alive administration is up-to-date
         self._send_keepalive()
         self._send_keepalive()
+
+    def set_connection_failure_callback(
+        self, callback: Callable[[Exception], None]
+    ) -> None:
+        self._connection_failure_callback = callback
 
     def connection_lost(self, exc: Exception | None) -> None:
         self._connected = False
@@ -179,8 +185,10 @@ class YncaProtocol:
                 serialx.SerialException,
                 serialx.SerialTimeoutException,
                 OSError,
-            ):
+            ) as exc:
                 logger.exception("Serial error while writing, stopping thread")
+                if self._connection_failure_callback is not None:
+                    self._connection_failure_callback(exc)
                 stop = True
 
     def raw(self, raw_data: str) -> None:

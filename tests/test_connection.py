@@ -84,6 +84,27 @@ def test_connect_runtime_error(mock_serial: MockSerial) -> None:
             connection.connect()
 
 
+def test_reconnect_closes_previous_port() -> None:
+    serial_ports = [mock.MagicMock(), mock.MagicMock()]
+
+    def no_data(_buffer: bytearray, *, timeout: float | None = None) -> int:
+        time.sleep(min(timeout or 0.01, 0.01))
+        return 0
+
+    for serial_port in serial_ports:
+        serial_port.readinto.side_effect = no_data
+
+    with mock.patch("ynca.connection.serialx.serial_for_url", side_effect=serial_ports):
+        connection = YncaConnection("dummy_port")
+        try:
+            connection.connect()
+            connection.connect()
+
+            serial_ports[0].close.assert_called_once()
+        finally:
+            connection.close()
+
+
 def test_disconnect() -> None:
     disconnect_event = threading.Event()
     disconnect_callback = mock.MagicMock(side_effect=lambda: disconnect_event.set())
@@ -181,6 +202,8 @@ def test_disconnect_callback_can_close_connection() -> None:
 
 def test_send_error() -> None:
     write_attempted = threading.Event()
+    disconnect_event = threading.Event()
+    disconnect_callback = mock.MagicMock(side_effect=disconnect_event.set)
     mock_ser = mock.MagicMock()
 
     def controlled_write(_data: bytes) -> int:
@@ -196,12 +219,17 @@ def test_send_error() -> None:
 
     with mock.patch("ynca.connection.serialx.serial_for_url", return_value=mock_ser):
         connection = YncaConnection("dummy_port")
-        connection.connect()
+        try:
+            connection.connect(disconnect_callback=disconnect_callback)
 
-        assert write_attempted.wait(timeout=2.0)
-        connection.close()
+            assert write_attempted.wait(timeout=2.0)
+            assert disconnect_event.wait(timeout=2.0)
+            assert not connection.connected
+        finally:
+            connection.close()
 
     mock_ser.write.assert_called_once()
+    disconnect_callback.assert_called_once()
 
 
 def test_send_raw(mock_serial: MockSerial) -> None:
