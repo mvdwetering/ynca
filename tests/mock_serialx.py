@@ -91,7 +91,7 @@ class MockSerial:
 
             receive_buffer.extend(data)
             while (line_end := receive_buffer.find(b"\n")) >= 0:
-                request = receive_buffer[:line_end].rstrip(b"\r")
+                request = bytes(receive_buffer[:line_end]).rstrip(b"\r")
                 del receive_buffer[: line_end + 1]
                 self._respond(client, request)
 
