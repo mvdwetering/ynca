@@ -1,11 +1,21 @@
 """Fixtures for testing."""
 
-from collections.abc import Callable
+from collections.abc import Callable, Generator
 from unittest import mock
 
 import pytest
 
+from .mock_serialx import MockSerial
 from .mock_yncaconnection import YncaConnectionMock
+
+
+@pytest.fixture
+def mock_serial() -> Generator[MockSerial, None, None]:
+    server = MockSerial()
+    try:
+        yield server
+    finally:
+        server.close()
 
 
 @pytest.fixture
