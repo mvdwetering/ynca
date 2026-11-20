@@ -166,7 +166,7 @@ class YncaConnection:
             self._readerthread = _ReaderThread(serial_port, self._protocol)
             self._protocol.connection_made(serial_port)
             self._readerthread.start()
-        except (serialx.SerialException, OSError) as e:
+        except (serialx.SerialException, OSError, ValueError) as e:
             raise YncaConnectionError from e
         except RuntimeError as e:
             raise YncaConnectionFailed from e
