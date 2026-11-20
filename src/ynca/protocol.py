@@ -91,7 +91,12 @@ class YncaProtocol:
     ) -> None:
         self._connection_failure_callback = callback
 
-    def connection_lost(self, exc: Exception | None) -> None:
+    def connection_lost(
+        self,
+        exc: Exception | None,
+        *,
+        notify_disconnect_callback: bool = True,
+    ) -> None:
         self._connected = False
 
         logger.debug("Connection closed/lost %s", exc)
@@ -111,7 +116,7 @@ class YncaProtocol:
 
         self._serial = None
 
-        if self._disconnect_callback:
+        if notify_disconnect_callback and self._disconnect_callback:
             self._disconnect_callback()
 
     def handle_line(self, line: str) -> None:

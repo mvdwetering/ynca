@@ -105,6 +105,47 @@ def test_reconnect_closes_previous_port() -> None:
             connection.close()
 
 
+def test_reconnect_preserves_disconnect_callback() -> None:
+    disconnect_event = threading.Event()
+    fail_second_read = threading.Event()
+    serial_ports = [mock.MagicMock(), mock.MagicMock()]
+    connection = YncaConnection("dummy_port")
+
+    def no_data(_buffer: bytearray, *, timeout: float | None = None) -> int:
+        time.sleep(min(timeout or 0.01, 0.01))
+        return 0
+
+    def fail_read(_buffer: bytearray, *, timeout: float | None = None) -> int:
+        fail_second_read.wait(timeout=max(timeout or 0, 5.0))
+        raise serialx.SerialException
+
+    serial_ports[0].readinto.side_effect = no_data
+    serial_ports[1].readinto.side_effect = fail_read
+
+    def close_and_signal() -> None:
+        connection.close()
+        disconnect_event.set()
+
+    first_callback = mock.MagicMock(side_effect=connection.close)
+    second_callback = mock.MagicMock(side_effect=close_and_signal)
+
+    with mock.patch("ynca.connection.serialx.serial_for_url", side_effect=serial_ports):
+        try:
+            connection.connect(disconnect_callback=first_callback)
+            connection.connect(disconnect_callback=second_callback)
+
+            first_callback.assert_not_called()
+            fail_second_read.set()
+
+            assert disconnect_event.wait(timeout=2.0)
+            assert not connection.connected
+        finally:
+            connection.close()
+
+    first_callback.assert_not_called()
+    second_callback.assert_called_once()
+
+
 def test_disconnect() -> None:
     disconnect_event = threading.Event()
     disconnect_callback = mock.MagicMock(side_effect=lambda: disconnect_event.set())
@@ -200,7 +241,10 @@ def test_disconnect_callback_can_close_connection() -> None:
     disconnect_callback.assert_called_once()
 
 
-def test_send_error() -> None:
+@pytest.mark.parametrize(
+    "error_type", [serialx.SerialException, serialx.SerialTimeoutException]
+)
+def test_send_error(error_type: type[Exception]) -> None:
     write_attempted = threading.Event()
     disconnect_event = threading.Event()
     disconnect_callback = mock.MagicMock(side_effect=disconnect_event.set)
@@ -208,7 +252,7 @@ def test_send_error() -> None:
 
     def controlled_write(_data: bytes) -> int:
         write_attempted.set()
-        raise serialx.SerialException
+        raise error_type
 
     def no_data(_buffer: bytearray, *, timeout: float | None = None) -> int:
         time.sleep(min(timeout or 0.01, 0.01))

@@ -21,6 +21,7 @@ class _ReaderThread(threading.Thread):
         self._serial_port = serial_port
         self._protocol = protocol
         self._stop_event = threading.Event()
+        self._suppress_disconnect_callback = threading.Event()
         self._requested_error: Exception | None = None
         self._protocol.set_connection_failure_callback(self.stop)
 
@@ -45,7 +46,10 @@ class _ReaderThread(threading.Thread):
             if not self._stop_event.is_set():
                 logger.exception("Serial error while reading")
         finally:
-            self._protocol.connection_lost(error or self._requested_error)
+            self._protocol.connection_lost(
+                error or self._requested_error,
+                notify_disconnect_callback=not self._suppress_disconnect_callback.is_set(),
+            )
 
     def stop(self, error: Exception | None = None) -> None:
         if error is not None:
@@ -53,6 +57,7 @@ class _ReaderThread(threading.Thread):
         self._stop_event.set()
 
     def close(self) -> None:
+        self._suppress_disconnect_callback.set()
         self.stop()
         if self.ident is not None and threading.current_thread() is not self:
             self.join(2)
@@ -145,6 +150,7 @@ class YncaConnection:
                 self._protocol = None
                 readerthread.close()
 
+            self._is_closing.clear()
             self._disconnect_callback = disconnect_callback
 
             serial_port = serialx.serial_for_url(
