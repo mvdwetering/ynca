@@ -8,8 +8,7 @@ import threading
 import time
 from typing import TYPE_CHECKING
 
-import serial  # type: ignore[import-untyped]
-import serial.threaded  # type: ignore[import-untyped]
+import serialx
 
 from .helpers import RingBuffer
 
@@ -39,7 +38,7 @@ class YncaProtocolStatus(Enum):
     RESTRICTED = 2
 
 
-class YncaProtocol(serial.threaded.LineReader):
+class YncaProtocol:
     # YNCA spec specifies that there should be at least 100 milliseconds between commands
     COMMAND_SPACING = 0.1
 
@@ -55,11 +54,12 @@ class YncaProtocol(serial.threaded.LineReader):
         disconnect_callback: Callable[[], None] | None = None,
         communication_log_size: int = 0,
     ) -> None:
-        super().__init__()
         self._message_callback = message_callback
         self._disconnect_callback = disconnect_callback
-        self._send_queue: queue.Queue
-        self._send_thread: threading.Thread
+        self._serial: serialx.BaseSerial | None = None
+        self._send_queue: queue.Queue[str] = queue.Queue()
+        self._send_thread: threading.Thread | None = None
+        self._connection_failure_callback: Callable[[Exception], None] | None = None
         self._connected = False
         self._keep_alive_pending: threading.Event = threading.Event()
         self._communication_log_buffer: LogBuffer = LogBuffer(communication_log_size)
@@ -69,13 +69,13 @@ class YncaProtocol(serial.threaded.LineReader):
     def connected(self) -> bool:
         return self._connected
 
-    def connection_made(self, transport) -> None:  # noqa: ANN001
-        super().connection_made(transport)
+    def connection_made(self, transport: serialx.BaseSerial) -> None:
+        self._serial = transport
 
         logger.debug("Connected")
 
         self._send_queue = queue.Queue()
-        self._send_thread = threading.Thread(target=self._send_handler)
+        self._send_thread = threading.Thread(target=self._send_handler, daemon=True)
         self._send_thread.start()
 
         self._connected = True
@@ -86,7 +86,17 @@ class YncaProtocol(serial.threaded.LineReader):
         self._send_keepalive()
         self._send_keepalive()
 
-    def connection_lost(self, exc: Exception) -> None:
+    def set_connection_failure_callback(
+        self, callback: Callable[[Exception], None]
+    ) -> None:
+        self._connection_failure_callback = callback
+
+    def connection_lost(
+        self,
+        exc: Exception | None,
+        *,
+        notify_disconnect_callback: bool = True,
+    ) -> None:
         self._connected = False
 
         logger.debug("Connection closed/lost %s", exc)
@@ -102,8 +112,11 @@ class YncaProtocol(serial.threaded.LineReader):
                 self._send_queue.put("_EXIT")
         if self._send_thread:
             self._send_thread.join(2)
+            self._send_thread = None
 
-        if self._disconnect_callback:
+        self._serial = None
+
+        if notify_disconnect_callback and self._disconnect_callback:
             self._disconnect_callback()
 
     def handle_line(self, line: str) -> None:
@@ -163,15 +176,24 @@ class YncaProtocol(serial.threaded.LineReader):
                         f"{time.perf_counter():.6f} Send: {message}"
                     )
 
-                    self.write_line(message)
+                    if self._serial is not None:
+                        self._serial.write(
+                            message.encode("utf-8", errors="replace") + b"\r\n"
+                        )
 
                     # Maintain required command spacing
                     time.sleep(self.COMMAND_SPACING)
             except queue.Empty:
                 # To avoid random message being eaten because device goes to sleep, keep it alive
                 self._send_keepalive()
-            except serial.SerialException:  # pragma: no cover
+            except (
+                serialx.SerialException,
+                serialx.SerialTimeoutException,
+                OSError,
+            ) as exc:
                 logger.exception("Serial error while writing, stopping thread")
+                if self._connection_failure_callback is not None:
+                    self._connection_failure_callback(exc)
                 stop = True
 
     def raw(self, raw_data: str) -> None:

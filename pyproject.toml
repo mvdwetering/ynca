@@ -29,7 +29,7 @@ classifiers = [
   "Topic :: Home Automation",
   "Topic :: Software Development :: Libraries",
 ]
-dependencies = ["pyserial>=3.4"]
+dependencies = ["serialx>=1.15.1"]
 
 urls = { Homepage = "https://github.com/mvdwetering/ynca" }
 
@@ -40,7 +40,6 @@ dev = [
   "pytest>=7.0.0",
   "pytest-cov",
   "pytest-mock",
-  "mock-serial==0.0.1",
   "black==26.3.1",
 ]
 

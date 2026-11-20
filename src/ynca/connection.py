@@ -2,10 +2,9 @@ from __future__ import annotations
 
 import logging
 import threading
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING
 
-import serial  # type: ignore[import-untyped]
-import serial.threaded  # type: ignore[import-untyped]
+import serialx
 
 from .errors import YncaConnectionError, YncaConnectionFailed
 from .protocol import YncaProtocol, YncaProtocolStatus
@@ -16,26 +15,53 @@ if TYPE_CHECKING:  # pragma: no cover
 logger = logging.getLogger(__name__)
 
 
-class _ReaderThread(serial.threaded.ReaderThread):
-    """ReaderThread that ensures connection_lost() is always called.
-
-    pyserial's ReaderThread.run() only catches serial.SerialException inside
-    the read loop.  An OSError raised by in_waiting (e.g. EIO when the PTY
-    master is closed or a USB adapter is physically unplugged) escapes the
-    loop without going through connection_lost(), so the disconnect callback
-    would silently never fire.  This subclass catches that case.
-    """
-
-    protocol: YncaProtocol | None
+class _ReaderThread(threading.Thread):
+    def __init__(self, serial_port: serialx.BaseSerial, protocol: YncaProtocol) -> None:
+        super().__init__(daemon=True)
+        self._serial_port = serial_port
+        self._protocol = protocol
+        self._stop_event = threading.Event()
+        self._suppress_disconnect_callback = threading.Event()
+        self._requested_error: Exception | None = None
+        self._protocol.set_connection_failure_callback(self.stop)
 
     def run(self) -> None:
+        receive_buffer = bytearray(4096)
+        line_buffer = bytearray()
+        error: Exception | None = None
+
         try:
-            super().run()
-        except OSError as e:
-            if self.protocol is not None:
-                self.alive = False
-                self.protocol.connection_lost(serial.SerialException(str(e)))
-                self.protocol = None
+            while not self._stop_event.is_set():
+                bytes_read = self._serial_port.readinto(receive_buffer, timeout=1)
+                if not bytes_read:
+                    continue
+
+                line_buffer.extend(receive_buffer[:bytes_read])
+                while (line_end := line_buffer.find(b"\r\n")) >= 0:
+                    line = line_buffer[:line_end]
+                    del line_buffer[: line_end + 2]
+                    self._protocol.handle_line(line.decode("utf-8", errors="replace"))
+        except (serialx.SerialException, OSError) as exc:
+            error = exc
+            if not self._stop_event.is_set():
+                logger.exception("Serial error while reading")
+        finally:
+            self._protocol.connection_lost(
+                error or self._requested_error,
+                notify_disconnect_callback=not self._suppress_disconnect_callback.is_set(),
+            )
+
+    def stop(self, error: Exception | None = None) -> None:
+        if error is not None:
+            self._requested_error = error
+        self._stop_event.set()
+
+    def close(self) -> None:
+        self._suppress_disconnect_callback.set()
+        self.stop()
+        if self.ident is not None and threading.current_thread() is not self:
+            self.join(2)
+        self._serial_port.close()
 
 
 class YncaConnection:
@@ -45,11 +71,7 @@ class YncaConnection:
 
         serial_url:
             Can be a devicename (e.g. /dev/ttyUSB0 or COM3),
-            but also any of supported url handlers by pyserial
-            https://pyserial.readthedocs.io/en/latest/url_handlers.html
-            This allows to setup IP connections with socket://ip:50000
-            or select a specific usb-2-serial with hwgrep:// which is
-            useful when the links to ttyUSB# change randomly.
+            or a URL supported by serialx, such as socket://ip:50000.
         """
         return cls(serial_url)
 
@@ -58,14 +80,10 @@ class YncaConnection:
 
         serial_url:
             Can be a devicename (e.g. /dev/ttyUSB0 or COM3),
-            but also any of supported url handlers by pyserial
-            https://pyserial.readthedocs.io/en/latest/url_handlers.html
-            This allows to setup IP connections with socket://ip:50000
-            or select a specific usb-2-serial with hwgrep:// which is
-            useful when the links to ttyUSB# change randomly.
+            or a URL supported by serialx, such as socket://ip:50000.
         """
         self._port = serial_url
-        self._serial = None
+        self._serial: serialx.BaseSerial | None = None
         self._readerthread: _ReaderThread | None = None
         self._protocol: YncaProtocol | None = None
 
@@ -125,21 +143,30 @@ class YncaConnection:
             Get the logged items with the `get_communication_log_items` method
         """
         try:
+            if self._readerthread:
+                readerthread = self._readerthread
+                self._readerthread = None
+                self._serial = None
+                self._protocol = None
+                readerthread.close()
+
+            self._is_closing.clear()
             self._disconnect_callback = disconnect_callback
 
-            self._serial = serial.serial_for_url(self._port)
-            self._readerthread = _ReaderThread(
-                self._serial,
-                lambda: YncaProtocol(
-                    self._call_registered_message_callbacks,
-                    self._on_disconnect,
-                    communication_log_size,
-                ),
+            serial_port = serialx.serial_for_url(
+                self._port, read_timeout=1, write_timeout=1
             )
+            serial_port.open()
+            self._serial = serial_port
+            self._protocol = YncaProtocol(
+                self._call_registered_message_callbacks,
+                self._on_disconnect,
+                communication_log_size,
+            )
+            self._readerthread = _ReaderThread(serial_port, self._protocol)
+            self._protocol.connection_made(serial_port)
             self._readerthread.start()
-            _, protocol = self._readerthread.connect()
-            self._protocol = cast(YncaProtocol, protocol)
-        except serial.SerialException as e:
+        except (serialx.SerialException, OSError, ValueError) as e:
             raise YncaConnectionError from e
         except RuntimeError as e:
             raise YncaConnectionFailed from e

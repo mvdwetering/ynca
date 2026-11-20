@@ -1,6 +1,6 @@
-from mock_serial import MockSerial  # type: ignore[import]
-
 import ynca
+
+from .mock_serialx import MockSerial
 
 
 def test_basic_end_to_end_connection_check(mock_serial: MockSerial) -> None:

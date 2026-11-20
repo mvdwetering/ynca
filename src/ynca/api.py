@@ -61,11 +61,7 @@ class YncaApi:
 
         serial_url:
             Can be a devicename (e.g. /dev/ttyUSB0 or COM3),
-            but also any of supported url handlers by pyserial
-            https://pyserial.readthedocs.io/en/latest/url_handlers.html
-            This allows to setup IP connections with socket://ip:50000
-            or select a specific usb-2-serial with hwgrep:// which is
-            useful when the links to ttyUSB# change randomly.
+            or a URL supported by serialx, such as socket://ip:50000.
 
         disconnect_callback:
             Callable that gets called when the connection gets disconnected.
