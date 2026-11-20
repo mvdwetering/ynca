@@ -37,9 +37,9 @@ class _ReaderThread(threading.Thread):
                     continue
 
                 line_buffer.extend(receive_buffer[:bytes_read])
-                while (line_end := line_buffer.find(b"\n")) >= 0:
-                    line = line_buffer[:line_end].rstrip(b"\r")
-                    del line_buffer[: line_end + 1]
+                while (line_end := line_buffer.find(b"\r\n")) >= 0:
+                    line = line_buffer[:line_end]
+                    del line_buffer[: line_end + 2]
                     self._protocol.handle_line(line.decode("utf-8", errors="replace"))
         except (serialx.SerialException, OSError) as exc:
             error = exc
