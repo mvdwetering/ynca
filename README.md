@@ -126,9 +126,7 @@ main.vol_up(2)
 receiver.close()
 ```
 
-The `serial_url` may be a device path or a [URL supported by serialx](https://puddly.github.io/serialx/),
-such as `socket://`. PySerial-specific URLs like `hwgrep://` are not supported; on
-Linux, use a stable `/dev/serial/by-id/...` path instead.
+The `serial_url` may be a device path or a [URL supported by serialx](https://puddly.github.io/serialx/), such as `socket://`.
 
 ### Tools
 
