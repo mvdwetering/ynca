@@ -89,8 +89,8 @@ It is technically not really related to the protocol, but since there seems to b
 
 ```python
 # Create a YncaApi class by specifying the port on your receiver.
-# Port could also be e.g. COM3 on Windows or any `serial_url` as supported by PySerial
-# Like for example `socket://192.168.178.21:50000` for IP connection
+# Port could also be e.g. COM3 on Windows or a serialx-supported URL
+# Like `socket://192.168.178.21:50000` for an IP connection
 receiver = YncaApi("/dev/tty1")
 
 # Initializing takes a while (~10 seconds for a 2 zone receiver) since it communicates
@@ -125,6 +125,8 @@ main.vol_up(2)
 # When done call close for proper shutdown
 receiver.close()
 ```
+
+The `serial_url` may be a device path or a [URL supported by serialx](https://puddly.github.io/serialx/), such as `socket://`.
 
 ### Tools
 
